@@ -5,10 +5,10 @@
 <title>Stackd — Premium digital deals</title>
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
-<link rel="stylesheet" href="styles.css?v=stackd-fix-20261104">
-<!-- Supabase SDK: primary CDN + fallback CDN. Both are deferred and execute before app.js. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+<!-- Cloudflare Turnstile -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -63,7 +63,6 @@
   <!-- Строгий профиль и баланс -->
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
-    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" style="display:none;" data-i18n="orders_btn">Мои заказы</button>
     <div class="balance-group">
       <div class="balance-display">
         <span class="b-label" data-i18n="balance_label">Баланс</span>
@@ -127,12 +126,6 @@
   </footer>
 </dialog>
 
-<dialog id="orders" class="modal glass" aria-labelledby="ordersTitle">
-  <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
-  <h2 id="ordersTitle" data-i18n="orders_title" style="margin-bottom:16px;">Мои заказы</h2>
-  <div id="ordersList" class="orders-list" aria-live="polite"></div>
-</dialog>
-
 <dialog id="detail" class="modal glass" aria-labelledby="dtn">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <div id="detailBody"></div>
@@ -165,8 +158,7 @@
   <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
   
   <div class="payment-instructions" role="status">
-    <p data-i18n="topup_instructions">Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала.</p>
-    <a href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer" class="tg-channel-btn"><svg class="ic"><use href="#i-tg"/></svg><span data-i18n="topup_channel">Открыть Telegram-канал</span></a>
+    Реквизиты и способы оплаты появятся после настройки безопасного платёжного процесса. Не отправляйте деньги по реквизитам, полученным из непроверенных сообщений.
   </div>
   <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">Отправка заявки не означает автоматическое зачисление. Поступление средств проверяется отдельно.</p>
 
@@ -177,6 +169,9 @@
     <label data-i18n="topup_check">Скриншот чека</label>
     <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
     
+    <!-- Cloudflare Turnstile -->
+    <div class="cf-turnstile" data-sitekey="REPLACE_WITH_REAL_TURNSTILE_SITE_KEY" style="margin-bottom:15px;"></div>
+
     <label class="check terms-check">
       <input type="checkbox" id="termsCheck" required>
       <span data-i18n="topup_terms">Я подтверждаю, что данные заявки верны. Зачисление выполняется только после проверки платежа.</span>
@@ -214,10 +209,6 @@
         <div><label for="pc" data-i18n="form_cat">Категория</label><input id="pc" list="categoryOptions" required maxlength="40" placeholder="Burgers"><datalist id="categoryOptions"></datalist></div>
         <div><label for="pp" data-i18n="form_price">Цена (AZN)</label><input id="pp" type="number" min="0" step="0.01" inputmode="decimal" required></div>
       </div>
-      <div class="two">
-        <div><label for="pStock" data-i18n="form_stock">Количество</label><input id="pStock" type="number" min="0" max="100000" step="1" value="10" required></div>
-        <label class="check featured-check"><input id="pFeatured" type="checkbox"><span data-i18n="form_featured">Популярное</span></label>
-      </div>
       <label for="pf" data-i18n="form_image">Картинка (с ПК)</label>
       <input id="pf" type="file" accept="image/jpeg,image/png,image/webp">
       <div class="upload-preview" id="productImagePreviewWrap" hidden>
@@ -243,4 +234,6 @@
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
-<script
+<script src="app.js" defer></script>
+</body>
+</html>
