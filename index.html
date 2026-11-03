@@ -6,18 +6,15 @@
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
 <link rel="stylesheet" href="styles.css">
-<!-- Используем unpkg, он реже блокируется -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<svg width="0" height="0" hidden aria-hidden="true">
+<svg width="0" height="0" hidden>
   <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L19 8H6.2M9 19.5a.5.5 0 1 0 0 .01M17 19.5a.5.5 0 1 0 0 .01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-google" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></symbol>
-  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-tg" viewBox="0 0 24 24"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></symbol>
 </svg>
 
 <header class="nav glass">
@@ -28,14 +25,6 @@
       <svg class="ic"><use href="#i-search"/></svg>
       <input id="q" type="search" placeholder="Поиск в Stackd" autocomplete="off">
     </form>
-    <div class="search-suggestions glass" id="searchSuggestions"></div>
-  </div>
-
-  <div class="lang-selector" id="langSelector">
-    <button class="btn btn-ghost lang-btn" data-act="toggle-lang"><span id="currentLangLabel">RU</span><svg class="ic" width="16" height="16"><use href="#i-chevron"/></svg></button>
-    <div class="lang-dropdown glass" id="langDropdown">
-      <button data-lang="ru">Русский</button><button data-lang="en">English</button><button data-lang="az">Azərbaycan</button>
-    </div>
   </div>
 
   <div class="seg" role="group" aria-label="Theme" id="themeSeg">
@@ -45,7 +34,7 @@
 
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
-    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" style="display:none; padding:0 10px;">Заказы</button>
+    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" style="display:none;">Мои заказы</button>
     <div class="balance-group">
       <div class="balance-display"><span class="b-label">Баланс</span><span class="b-amount"><span id="userBalance">0.00</span> AZN</span></div>
       <button class="btn-topup" id="topupBtn" title="Пополнить">+</button>
@@ -55,33 +44,26 @@
 
   <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth">Войти</button>
   <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;">Каталог</button>
-  <button class="cart-btn" data-act="cart-open" aria-label="Открыть корзину"><svg class="ic"><use href="#i-cart"/></svg><span class="badge" id="badge">0</span></button>
+  <button class="cart-btn" data-act="cart-open"><svg class="ic"><use href="#i-cart"/></svg><span class="badge" id="badge">0</span></button>
 </header>
 
 <main id="top">
   <section class="showcase"><div class="showcase-slider" id="showcaseSlider"></div></section>
-  <section class="wrap" id="catalog" aria-labelledby="ch">
-    <div class="head"><h2 id="ch">Меню</h2><nav class="chips-wrapper"><nav class="chips" id="chips" aria-label="Категории"><div class="chips-slider" id="chipsSlider"></div></nav></nav></div>
-    <div class="grid" id="grid" aria-live="polite"></div>
+  <section class="wrap" id="catalog">
+    <div class="head"><h2>Меню</h2><nav class="chips-wrapper"><nav class="chips" id="chips"><div class="chips-slider" id="chipsSlider"></div></nav></nav></div>
+    <div class="grid" id="grid"></div>
   </section>
 </main>
 
 <footer class="foot"><div class="wrap">
-  <div>
-    <strong>Stackd</strong>
-    <p>Лучшие предложения на еду в Баку.</p>
-    <div class="social-links">
-      <a href="https://t.me/stackdbaku" target="_blank" rel="noopener" aria-label="Telegram Channel"><svg class="ic"><use href="#i-tg"/></svg> Канал: @stackdbaku</a>
-      <a href="https://t.me/sharkiff" target="_blank" rel="noopener" aria-label="Telegram Support"><svg class="ic"><use href="#i-tg"/></svg> Поддержка: @sharkiff</a>
-    </div>
-  </div>
+  <div><strong>Stackd</strong><p>Лучшие предложения на еду в Баку.</p></div>
   <div><strong>Поддержка</strong><p><a href="https://t.me/sharkiff" target="_blank" style="color:var(--text);">Telegram: @sharkiff</a></p></div>
   <div><strong>О проекте</strong><p>Данные хранятся в облаке Supabase.</p></div>
 </div></footer>
 
 <!-- КОРЗИНА -->
-<dialog id="drawer" class="drawer glass" aria-labelledby="dh">
-  <header><h2 id="dh">Корзина</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
+<dialog id="drawer" class="drawer glass">
+  <header><h2>Корзина</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
   <ul id="lines" class="lines"></ul>
   <footer>
     <div class="total"><span>Итого</span><strong id="total">0.00 AZN</strong></div>
@@ -90,26 +72,26 @@
   </footer>
 </dialog>
 
-<!-- МОИ ЗАКАЗЫ -->
+<!-- ЗАКАЗЫ -->
 <dialog id="orders" class="modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;">Мои заказы</h2>
-  <div id="ordersList" style="display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto;"></div>
+  <div id="ordersList" style="display:flex; flex-direction:column; gap:15px; max-height:70vh; overflow-y:auto; padding-bottom:10px;"></div>
 </dialog>
 
-<!-- ДЕТАЛИ ТОВАРА -->
-<dialog id="detail" class="modal glass" aria-labelledby="dtn">
+<!-- ДЕТАЛИ -->
+<dialog id="detail" class="modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button><div id="detailBody"></div>
 </dialog>
 
 <!-- АВТОРИЗАЦИЯ -->
-<dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
+<dialog id="auth" class="modal auth-modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <div class="auth-content">
-    <h2 id="authTitle">Добро пожаловать</h2><p class="auth-sub">Войдите или создайте аккаунт</p>
-    <button class="btn btn-google" id="googleLoginBtn"><svg class="ic" width="20" height="20"><use href="#i-google"/></svg> <span>Продолжить с Google</span></button>
+    <h2>Добро пожаловать</h2><p class="auth-sub">Войдите или создайте аккаунт</p>
+    <button class="btn btn-google" id="googleLoginBtn"><svg class="ic" width="20" height="20"><use href="#i-google"/></svg> Продолжить с Google</button>
     <div class="divider"><span>или</span></div>
-    <form class="auth-form" id="authForm" novalidate>
+    <form id="authForm">
       <input type="email" id="emailInput" placeholder="Email" required>
       <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" required minlength="6">
       <p class="msg" id="authMsg"></p>
@@ -118,68 +100,54 @@
   </div>
 </dialog>
 
-<!-- ПОПОЛНЕНИЕ (Обновлено) -->
+<!-- ПОПОЛНЕНИЕ -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;">Пополнение</h2>
-  
-  <div class="payment-instructions" role="status" style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:15px; font-size:0.9rem; line-height: 1.5;">
-    Номер карты для перевода находится в <b>закрепленном сообщении</b> в нашем Telegram-канале. 
-    <br><br>
+  <div class="payment-instructions" style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:15px; font-size:0.9rem;">
+    Номер карты для перевода находится в <b>закрепленном сообщении</b> в нашем Telegram-канале. <br><br>
     <a href="https://t.me/stackdbaku" target="_blank" class="tg-channel-btn">
       <svg class="ic" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
       Перейти в Telegram-канал
     </a>
   </div>
-
   <form id="topupForm">
-    <label>Сумма (AZN)</label><input type="number" id="topupAmount" required min="1" max="100" step="0.01">
+    <label>Сумма (от 1 AZN)</label><input type="number" id="topupAmount" required min="1" max="100" step="0.01">
     <label>Скриншот чека</label><input type="file" id="topupFile" accept="image/*" required>
-    <label class="check terms-check"><input type="checkbox" id="termsCheck" required><span>Я подтверждаю, что данные верны. Зачисление выполняется только после проверки.</span></label>
+    <label class="check"><input type="checkbox" id="termsCheck" required><span>Я подтверждаю, что данные верны.</span></label>
     <p class="msg" id="topupMsg"></p><button type="submit" class="btn btn-primary block">Отправить чек</button>
   </form>
 </dialog>
 
 <!-- АДМИНКА -->
-<dialog id="editor" class="modal wide glass" aria-labelledby="eh">
-  <header><h2 id="eh">Управление</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
-  <div class="admin-tabs">
-    <button class="btn btn-ghost active" data-tab="products">Товары</button>
-    <button class="btn btn-ghost" data-tab="settings">Настройки сайта</button>
-  </div>
-  <div class="ed tab-content" id="tab-products">
+<dialog id="editor" class="modal wide glass">
+  <header><h2>Управление</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
+  <div class="ed">
     <div>
-      <div class="row"><h3>Товары <span class="count" id="adminCount"></span></h3><button class="btn btn-ghost sm" data-act="new">Добавить</button></div>
-      <div class="admin-filter"><input id="adminSearch" type="search" placeholder="Поиск товаров"></div>
+      <div class="row"><h3>Товары</h3><button class="btn btn-ghost sm" data-act="new">Добавить</button></div>
       <ul id="adminList" class="alist"></ul>
     </div>
-    <form id="pform" novalidate>
+    <form id="pform">
       <h3 id="formTitle">Новый товар</h3>
-      <label>Название</label><input id="pn" required maxlength="60">
-      <label>Описание</label><textarea id="pd" rows="3" maxlength="200"></textarea>
+      <label>Название</label><input id="pn" required>
+      <label>Описание</label><textarea id="pd" rows="3"></textarea>
       <div class="two">
-        <div><label>Категория</label><input id="pc" list="categoryOptions" required placeholder="Burgers"><datalist id="categoryOptions"></datalist></div>
+        <div><label>Категория</label><input id="pc" list="categoryOptions" required></div>
         <div><label>Цена (AZN)</label><input id="pp" type="number" min="0" step="0.01" required></div>
       </div>
       <div class="two" style="margin-top:10px;">
         <div><label>Кол-во (Stock)</label><input id="pStock" type="number" min="0" value="10" required></div>
-        <label class="check" style="margin-top:25px;"><input id="pFeatured" type="checkbox"> <span>Популярное (Хит)</span></label>
+        <label class="check" style="margin-top:25px;"><input id="pFeatured" type="checkbox"> Популярное</label>
       </div>
-      <label>Картинка (с ПК)</label><input id="pf" type="file" accept="image/*">
+      <label>Картинка</label><input id="pf" type="file" accept="image/*">
       <p class="msg" id="formMsg"></p>
       <div class="row"><button type="submit" class="btn btn-primary">Сохранить</button></div>
     </form>
   </div>
-  <div class="tab-content" id="tab-settings" style="display:none; padding: 20px 0;">
-    <h3>Настройки главной страницы</h3>
-    <label>Заголовок на главной</label><input id="settingHeroTitle" type="text">
-    <label>Подзаголовок</label><textarea id="settingHeroSub" rows="2"></textarea>
-    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;">Сохранить настройки</button>
-    <p class="msg" id="settingsMsg"></p>
-  </div>
 </dialog>
 
-<div id="toasts" class="toasts" aria-live="polite"></div>
-<script src="app.js" defer></script>
+<div id="toasts" class="toasts"></div>
+<datalist id="categoryOptions"></datalist>
+<script src="app.js"></script>
 </body>
 </html>
