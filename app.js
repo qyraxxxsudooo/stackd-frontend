@@ -9,8 +9,17 @@ const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>
 const fmt = n => (Number(n)||0).toFixed(2)+' AZN';
 const PH = 'assets/icons/placeholder.svg';
 const CATS = ['Burgers','Sides','Drinks','Desserts'];
-const S = { products: [], cart: [], cat: 'All', q: '', user: null, profile: null, draft: null, duration: 5000 };
+
+const S = { products: [], cart: [], cat: 'All', q: '', user: null, profile: null, draft: null, duration: 5000, lang: 'ru' };
 let orderTimers = {};
+
+const translations = {
+  ru: { search: 'Поиск в Stackd', menu: 'Меню', orders: 'Мои заказы', login: 'Войти', logout: 'Выйти', catalog: 'Каталог', topup: 'Пополнить', balance: 'Баланс', cancel: 'Отменить', cancel_msg: 'Отменить заказ', wait: 'Ожидает', ready: 'Готов', cancelled: 'Отменен', completed: 'Выполнен' },
+  en: { search: 'Search in Stackd', menu: 'Menu', orders: 'My Orders', login: 'Log in', logout: 'Log out', catalog: 'Catalog', topup: 'Top up', balance: 'Balance', cancel: 'Cancel', cancel_msg: 'Cancel order', wait: 'Pending', ready: 'Ready', cancelled: 'Cancelled', completed: 'Completed' },
+  az: { search: 'Stackd-də axtar', menu: 'Menyu', orders: 'Sifarişlərim', login: 'Daxil ol', logout: 'Çıxış', catalog: 'Kataloq', topup: 'Artır', balance: 'Balans', cancel: 'Ləğv et', cancel_msg: 'Sifarişi ləğv et', wait: 'Gözləyir', ready: 'Hazırdır', cancelled: 'Ləğv edildi', completed: 'Tamamlandı' }
+};
+
+const T = key => translations[S.lang]?.[key] || key;
 
 try { S.cart = JSON.parse(localStorage.getItem('pdd.cart')) || []; } catch { S.cart = []; }
 const saveCart = () => localStorage.setItem('pdd.cart', JSON.stringify(S.cart));
@@ -70,7 +79,7 @@ const card = p => {
       <span class="tag">${esc(p.category)}</span>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.description)}</p>
-      <div class="stock-info ${stock < 5 ? 'stock-low' : ''}">В наличии: ${stock} шт.</div>
+      <div class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock} шт.</div>
       <div class="card-foot">
         <strong>${fmt(p.price)}</strong>
         <button class="btn btn-primary sm" data-act="add" ${stock > 0 ? '' : 'disabled'}>${stock > 0 ? 'В корзину' : 'Нет'}</button>
@@ -85,7 +94,6 @@ function renderAll() {
   const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || (p.name + ' ' + p.description).toLowerCase().includes(q)));
   if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>Ничего не найдено</p></div>`;
   
-  // Категории
   const cats = ['All', ...new Set([...CATS, ...L.map(p => p.category)])].filter(c => c === 'All' || L.some(p => p.category === c));
   if ($('#chips')) $('#chips').innerHTML = cats.map(c => `<button data-act="cat" data-cat="${esc(c)}" aria-pressed="${S.cat === c}">${c === 'All' ? 'Все' : esc(c)}</button>`).join('');
   setTimeout(updateChipsSlider, 50);
@@ -150,7 +158,7 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
   }
 });
 
-// ЗАКАЗЫ (С ПЕРЕВОРОТОМ И ТАЙМЕРОМ)
+// ЗАКАЗЫ
 $('#myOrdersBtn')?.addEventListener('click', () => {
   $('#orders').showModal();
   loadOrders();
@@ -164,8 +172,10 @@ async function loadOrders() {
   }
 
   $('#ordersList').innerHTML = data.map(o => {
-    let sc = o.status === 'pending' ? 'status-pending' : o.status === 'ready' ? 'status-ready' : 'status-completed';
-    let st = o.status === 'pending' ? 'Ожидает' : o.status === 'ready' ? 'Готов' : 'Выполнен';
+    let sc = o.status === 'pending' ? 'status-pending' : o.status === 'ready' ? 'status-ready' : o.status === 'cancelled' ? 'status-cancelled' : 'status-completed';
+    let st = T(o.status === 'pending' ? 'wait' : o.status === 'ready' ? 'ready' : o.status === 'cancelled' ? 'cancelled' : 'completed');
+    
+    const canCancel = o.status === 'pending' && (new Date(o.created_at).getTime() + 120000 > Date.now());
     
     if (o.qr_code_url) {
       return `<div class="flip-card" onclick="this.classList.toggle('flipped')">
@@ -182,9 +192,11 @@ async function loadOrders() {
         </div>
       </div>`;
     }
+    
     return `<div class="order-card">
       <div class="order-header"><span>Заказ #${o.id.slice(0,6).toUpperCase()}</span><span class="order-status ${sc}">${st}</span></div>
-      <div style="font-weight:bold; margin-top:5px;">Сумма: ${fmt(o.total)}</div>
+      <div style="font-weight:bold; margin-top:5px; margin-bottom:10px;">Сумма: ${fmt(o.total)}</div>
+      ${canCancel ? `<button class="btn btn-ghost block sm" onclick="cancelOrder('${o.id}')">${T('cancel_msg')}</button>` : ''}
       ${o.status === 'pending' ? '<p style="font-size:0.8rem; color:orange; margin-top:5px;">Ждем подтверждения оператора...</p>' : ''}
     </div>`;
   }).join('');
@@ -193,6 +205,19 @@ async function loadOrders() {
     if (o.qr_code_url && o.qr_expires_at) startTimer(o.id, o.qr_expires_at);
   });
 }
+
+window.cancelOrder = async (id) => {
+  if(!confirm('Вы уверены, что хотите отменить заказ? Баланс вернется.')) return;
+  try {
+    const { error } = await _supabase.rpc('cancel_order', { order_uuid: id });
+    if (error) throw error;
+    toast('Заказ отменен, баланс возвращен');
+    await checkAuth();
+    loadOrders();
+  } catch (e) {
+    alert('Ошибка отмены: ' + e.message);
+  }
+};
 
 function startTimer(id, expires) {
   if (orderTimers[id]) clearInterval(orderTimers[id]);
@@ -214,14 +239,6 @@ function startTimer(id, expires) {
   tick();
   orderTimers[id] = setInterval(tick, 1000);
 }
-
-// РЕАЛТАЙМ
-_supabase.channel('orders-rt')
-  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, payload => {
-    if (S.user && payload.new.user_id === S.user.id && $('#orders').open) {
-      loadOrders();
-    }
-  }).subscribe();
 
 // СЛАЙДЕР
 function initSlider(slides) {
@@ -276,6 +293,24 @@ $('#pform')?.addEventListener('submit', async e => {
   } catch (err) { $('#formMsg').textContent = 'Ошибка: ' + err.message; }
 });
 
+// ЯЗЫК
+function applyLanguage(lang) {
+  S.lang = lang;
+  localStorage.setItem('pdd.lang', lang);
+  document.documentElement.lang = lang;
+  if($('#currentLangLabel')) $('#currentLangLabel').textContent = lang.toUpperCase();
+  
+  const searchInput = $('#q');
+  if (searchInput) searchInput.placeholder = T('search');
+  if ($('#myOrdersBtn')) $('#myOrdersBtn').textContent = T('orders');
+  if ($('#loginBtn')) $('#loginBtn').textContent = T('login');
+  if ($('#logoutBtn')) $('#logoutBtn').textContent = T('logout');
+  if ($('#adminBtn')) $('#adminBtn').textContent = T('catalog');
+  if ($('#topupBtn')) $('#topupBtn').title = T('topup');
+  
+  loadOrders();
+}
+
 // ДЕЙСТВИЯ
 const A = {
   add: id => { const p = find(id); if(p) { setQty(id, 1); toast('Добавлен'); } },
@@ -287,6 +322,7 @@ const A = {
   close: (_, b) => closeDlg(b.closest('dialog')),
   cat: (_, b) => { S.cat = b.dataset.cat; renderAll(); },
   theme: (_, b) => { localStorage.setItem('pdd.theme', b.dataset.v); applyTheme(); },
+  'toggle-lang': () => { $('#langDropdown').classList.toggle('active'); },
   new: () => setDraft(null),
   edit: id => setDraft(find(id)),
   del: async id => { if(!isAdmin()) return; if(!confirm('Удалить?')) return; await _supabase.from('products').delete().eq('id', id); S.products = S.products.filter(x => x.id !== id); renderAll(); toast('Удален'); }
@@ -297,12 +333,17 @@ A.detail = id => { const p = find(id); if(!p) return; $('#detailBody').innerHTML
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-act]');
-  if (!b) { if (e.target.matches('dialog')) closeDlg(e.target); return; }
+  if (!b) { if (e.target.matches('dialog')) closeDlg(e.target); if(!e.target.closest('.lang-selector')) $('#langDropdown')?.classList.remove('active'); return; }
   A[b.dataset.act]?.(b.closest('[data-id]')?.dataset.id, b);
 });
 
 $('#q')?.addEventListener('input', e => { S.q = e.target.value.trim(); renderAll(); });
 $('#topupBtn')?.addEventListener('click', () => $('#topup').showModal());
+
+document.querySelector('.lang-dropdown')?.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-lang]');
+  if(btn) { applyLanguage(btn.dataset.lang); $('#langDropdown').classList.remove('active'); }
+});
 
 function closeDlg(d) { if(!d || !d.open) return; d.close(); }
 function toast(m) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; $('#toasts').append(t); setTimeout(() => t.remove(), 3000); }
@@ -361,5 +402,7 @@ $('#topupForm')?.addEventListener('submit', async e => {
   } finally { btn.disabled = false; }
 });
 
-applyTheme(); checkAuth();
+applyTheme(); 
+applyLanguage(localStorage.getItem('pdd.lang') || 'ru');
+checkAuth();
 $('#categoryOptions').innerHTML = CATS.map(c => `<option value="${c}">`).join('');
