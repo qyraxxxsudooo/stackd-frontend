@@ -9,7 +9,7 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>(Number(n)||0).toFixed(2)+' AZN',PH='assets/icons/placeholder.svg',CATS=['Burgers','Sides','Drinks','Desserts'];
-const S={products:[],cart:[],cat:'All',q:'',adminQ:'',user:null,profile:null,draft:null,lang:'ru',catalogError:null};
+const S={products:[],cart:[],cat:'All',q:'',adminQ:'',user:null,profile:null,draft:null,lang:'ru',catalogError:null,ordersTimer:null,checkoutBusy:false,ordersBusy:false};
 
 try {
   const cached = JSON.parse(localStorage.getItem('pdd.cart') || '[]');
@@ -71,6 +71,7 @@ async function checkAuth() {
     if (S.user) {
       if (loginBtn) loginBtn.style.display = 'none';
       if (userProfile) userProfile.style.display = 'flex';
+      if ($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'inline-flex';
       if (adminBtn) adminBtn.style.display = isAdmin() ? 'block' : 'none';
       const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
       if ($('#userAvatar')) $('#userAvatar').src = safeImageUrl(avatarUrl);
@@ -83,6 +84,7 @@ async function checkAuth() {
     } else {
       if (loginBtn) loginBtn.style.display = 'block';
       if (userProfile) userProfile.style.display = 'none';
+      if ($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'none';
       if (adminBtn) adminBtn.style.display = 'none';
       if ($('#userBalance')) $('#userBalance').textContent = '0.00';
     }
@@ -407,15 +409,202 @@ $('#saveSettingsBtn')?.addEventListener('click', async () => {
   }
 });
 
+
+// Заказы и получение QR от Telegram-оператора.
+// notify-telegram отправляет карточку заказа в Telegram.
+// telegram-webhook должен сохранить QR администратора в orders.qr_code_url.
+function orderStatusLabel(status) {
+  return ({
+    pending: 'Ожидает подтверждения',
+    ready: 'QR-код готов',
+    cancelled: 'Отменён',
+    completed: 'Выполнен'
+  })[status] || 'В обработке';
+}
+
+function orderTimeLeft(expiresAt) {
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  if (!Number.isFinite(diff) || diff <= 0) return 'Срок действия QR-кода истёк';
+  const mins = Math.floor(diff / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  return `QR действует ещё ${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+function renderOrders(orders) {
+  const host = $('#ordersList');
+  if (!host) return;
+  if (!orders.length) {
+    host.innerHTML = '<div class="orders-empty">У вас пока нет заказов.</div>';
+    return;
+  }
+
+  host.innerHTML = orders.map(order => {
+    const id = String(order.id || '');
+    const shortId = esc(id.slice(0, 8).toUpperCase());
+    const status = String(order.status || 'pending');
+    const createdAt = order.created_at ? new Date(order.created_at) : null;
+    const createdLabel = createdAt && !Number.isNaN(createdAt.getTime())
+      ? createdAt.toLocaleString('ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+    const expiry = order.qr_expires_at ? new Date(order.qr_expires_at).getTime() : 0;
+    const qrActive = Boolean(order.qr_code_url) && status === 'ready' && expiry > Date.now();
+    const canCancel = status === 'pending' && createdAt &&
+      !Number.isNaN(createdAt.getTime()) && Date.now() - createdAt.getTime() < 120000;
+    const count = Array.isArray(order.items)
+      ? order.items.reduce((sum, item) => sum + Math.max(0, Number(item.qty) || 0), 0) : 0;
+
+    let content;
+    if (qrActive) {
+      content = `
+        <button type="button" class="order-qr-toggle" data-act="toggle-qr" data-id="${esc(id)}" aria-expanded="false">
+          <span class="order-qr-hint">Нажмите, чтобы открыть QR-код</span>
+          <img class="order-qr-image" src="${esc(safeImageUrl(order.qr_code_url))}" alt="QR-код заказа ${shortId}" loading="lazy">
+        </button>
+        <div class="order-qr-expiry">${esc(orderTimeLeft(order.qr_expires_at))}</div>`;
+    } else if (order.qr_code_url && expiry && expiry <= Date.now()) {
+      content = '<p class="order-note order-note-expired">Срок действия QR-кода истёк. Обратитесь в поддержку.</p>';
+    } else if (status === 'pending') {
+      content = `<p class="order-note">Оператор проверяет заказ. QR-код появится здесь после ответа в Telegram.</p>
+        ${canCancel ? `<button type="button" class="btn btn-ghost sm order-cancel" data-act="cancel-order" data-id="${esc(id)}">Отменить заказ</button>` : ''}`;
+    } else if (status === 'cancelled') {
+      content = '<p class="order-note">Заказ отменён.</p>';
+    } else if (status === 'completed') {
+      content = '<p class="order-note">Заказ выполнен.</p>';
+    } else {
+      content = '<p class="order-note">Ожидаем обновления статуса заказа.</p>';
+    }
+
+    return `<article class="order-card" data-order="${esc(id)}">
+      <div class="order-card-head">
+        <div><strong>Заказ #${shortId}</strong>${createdLabel ? `<small>${esc(createdLabel)}</small>` : ''}</div>
+        <span class="order-status order-status-${esc(status)}">${esc(orderStatusLabel(status))}</span>
+      </div>
+      <div class="order-card-meta"><span>${count ? `${count} поз.` : 'Цифровой заказ'}</span><strong>${fmt(order.total)}</strong></div>
+      ${content}
+    </article>`;
+  }).join('');
+}
+
+async function loadOrders() {
+  if (!S.user || S.ordersBusy) return;
+  S.ordersBusy = true;
+  const host = $('#ordersList');
+  try {
+    const { data, error } = await _supabase.from('orders').select('*')
+      .eq('user_id', S.user.id).order('created_at', { ascending: false });
+    if (error) throw error;
+    renderOrders(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error('Orders load failed:', error);
+    if (host) host.innerHTML = '<p class="orders-error">Не удалось загрузить заказы. Попробуйте обновить список.</p>';
+  } finally {
+    S.ordersBusy = false;
+  }
+}
+
+function openOrders() {
+  if (!S.user) { $('#auth')?.showModal(); return; }
+  const dialog = $('#orders');
+  if (!dialog) return;
+  if (!dialog.open) dialog.showModal();
+  if (S.ordersTimer) clearInterval(S.ordersTimer);
+  loadOrders();
+  // QR появляется автоматически после того, как Telegram webhook обновит запись заказа.
+  S.ordersTimer = setInterval(() => {
+    if (!dialog.open) {
+      clearInterval(S.ordersTimer);
+      S.ordersTimer = null;
+      return;
+    }
+    loadOrders();
+  }, 5000);
+}
+
+$('#orders')?.addEventListener('close', () => {
+  if (S.ordersTimer) clearInterval(S.ordersTimer);
+  S.ordersTimer = null;
+});
+
+async function cancelOrder(orderId) {
+  if (!S.user || !orderId) return;
+  if (!window.confirm('Отменить заказ? Возврат средств выполняется сервером.')) return;
+  try {
+    const { error } = await _supabase.rpc('cancel_order', { order_uuid: orderId });
+    if (error) throw error;
+    toast('Заказ отменён. Баланс обновлён.');
+    const { data, error: profileError } = await _supabase.from('profiles')
+      .select('id,balance').eq('id', S.user.id).maybeSingle();
+    if (!profileError) {
+      S.profile = data || null;
+      if ($('#userBalance')) $('#userBalance').textContent = Number(data?.balance || 0).toFixed(2);
+    }
+    await loadOrders();
+  } catch (error) {
+    console.error('Order cancellation failed:', error);
+    toast('Не удалось отменить заказ: ' + (error.message || 'ошибка сервера'));
+  }
+}
+
 const A={
   add:id=>{const p=find(id);if(p&&isAvailable(p)){setQty(id,1);toast(p.name+' '+translations[S.lang].added_to_cart)}},
   inc:id=>setQty(id,1),dec:id=>setQty(id,-1),
   rm:id=>{S.cart=S.cart.filter(c=>c.id!==id);saveCart();renderCart();bump()},
   clear:()=>{S.cart=[];saveCart();renderCart();toast(translations[S.lang].cart_cleared)},
-  checkout:()=>{
+  checkout:async()=>{
     if(!S.user) return $('#auth').showModal();
-    toast('Оформление заказа временно отключено: серверное списание и создание заказа ещё не подключены.');
+    if(S.checkoutBusy) return;
+    if(!lines().length) return toast('Корзина пуста.');
+    const button=$('#checkoutBtn');
+    const oldText=button?.textContent || 'Оформить заказ';
+    S.checkoutBusy=true;
+    if(button){button.disabled=true;button.textContent='Оформляем заказ…';}
+    try {
+      // Списание баланса и создание заказа выполняются атомарно серверной RPC.
+      const { data, error } = await _supabase.rpc('checkout_order', {
+        cart_items:S.cart.map(item=>({id:item.id,qty:item.qty}))
+      });
+      if(error) throw error;
+      const orderId = typeof data === 'string' ? data :
+        (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
+      if(!orderId) throw new Error('Сервер не вернул ID заказа. Проверьте RPC checkout_order.');
+
+      // Заказ уже создан — сбрасываем корзину. Ошибка Telegram не отменяет заказ.
+      S.cart=[]; saveCart(); renderCart(); closeDlg($('#drawer'));
+      let telegramSent=true;
+      try {
+        const { data: notifyData, error: notifyError } = await _supabase.functions.invoke('notify-telegram', {
+          body:{orderId}
+        });
+        if(notifyError || notifyData?.ok===false) {
+          telegramSent=false;
+          console.error('Telegram order notification failed:', notifyError || notifyData);
+        }
+      } catch(error) {
+        telegramSent=false;
+        console.error('Telegram order notification failed:', error);
+      }
+
+      openOrders();
+      toast(telegramSent
+        ? 'Заказ создан. QR-код появится здесь после ответа оператора в Telegram.'
+        : 'Заказ создан, но Telegram не получил уведомление. Обратитесь в поддержку.');
+      await loadOrders();
+    } catch(error) {
+      console.error('Checkout failed:', error);
+      toast('Не удалось оформить заказ: ' + (error.message || 'ошибка сервера'));
+    } finally {
+      S.checkoutBusy=false;
+      if(button){button.disabled=false;button.textContent=oldText;}
+      renderCart();
+    }
   },
+  orders:openOrders,
+  'toggle-qr':(id,button)=>{
+    const card=button.closest('.order-card');
+    if(!card)return;
+    const opened=card.classList.toggle('qr-open');
+    button.setAttribute('aria-expanded',String(opened));
+  },
+  'cancel-order':id=>cancelOrder(id),
   detail:openDetail,
   reload:()=>load(),
   'cart-open':()=>{const d=$('#drawer');if(!d.open)d.showModal()},
