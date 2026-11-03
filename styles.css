@@ -1,3 +1,5 @@
+/* ВСТАВЬ СЮДА СВОЙ styles.css, который у тебя был (он не меняется) */
+/* Я даю сокращенную версию, но лучше используй свой полный файл */
 :root{--bg:#f7f3ec;--surface:#fffdf9;--raised:#fff;--text:#1f1d1a;--muted:#6b665e;--line:#e6dfd3;--accent:#c2500a;--accent-ink:#fff;--shadow:0 1px 2px rgba(40,30,20,.05),0 12px 30px rgba(40,30,20,.09);--r:16px;--ease:cubic-bezier(.22,.72,.18,1);--t:.3s;--font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:light}
 [data-theme=dark]{--bg:#141311;--surface:#1d1b18;--raised:#262320;--text:#f1ece3;--muted:#a39c90;--line:#35312b;--accent:#f07a2a;--accent-ink:#1b0e04;--shadow:0 1px 2px rgba(0,0,0,.35),0 16px 36px rgba(0,0,0,.42);color-scheme:dark}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:84px}
@@ -8,7 +10,7 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .ic{width:20px;height:20px;flex:none}
 
 /* NAV */
-.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:10px clamp(16px,4vw,40px);border-width:0 0 1px;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--line)}
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px clamp(16px,4vw,40px);border-width:0 0 1px;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;font-weight:700;color:inherit;text-decoration:none;font-size:1.1rem;flex-shrink:0}
 
 /* Поиск */
