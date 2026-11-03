@@ -41,7 +41,10 @@ async function checkAuth() {
 
 // ЗАГРУЗКА
 async function load(){
-  const { data: prods } = await _supabase.from('products').select('*');
+  const { data: prods, error } = await _supabase.from('products').select('*');
+  if (error) {
+    console.error("Ошибка загрузки товаров:", error);
+  }
   S.products = prods || []; 
   renderAll();
 }
@@ -72,7 +75,7 @@ function renderAll(){
   renderCart();
 }
 
-// КОРЗИНА И ОФОРМЛЕНИЕ ЗАКАЗА
+// КОРЗИНА
 const find=id=>S.products.find(p=>String(p.id)===String(id));
 const lines=()=>S.cart.map(c=>({p:find(c.id),qty:c.qty})).filter(l=>l.p);
 function renderCart(){
@@ -82,13 +85,13 @@ function renderCart(){
   $('#checkoutBtn').disabled = !L.length;
 }
 
+// ОФОРМЛЕНИЕ (RPC)
 $('#checkoutBtn')?.addEventListener('click', async () => {
   if(!S.user) return $('#auth').showModal();
   const btn = $('#checkoutBtn');
   btn.disabled = true; btn.textContent = 'Оформление...';
 
   try {
-    // Вызываем защищенную функцию в базе
     const { data: orderId, error } = await _supabase.rpc('checkout_order', {
       cart_items: S.cart.map(c => ({ id: c.id, qty: c.qty }))
     });
@@ -96,10 +99,10 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
 
     S.cart = []; saveCart(); renderCart();
     closeDlg($('#drawer'));
-    toast('Заказ оформлен! Ожидайте QR-код в Telegram.');
+    toast('Заказ оформлен!');
     await checkAuth(); 
     
-    // Отправляем пуш тебе в ТГ (через Edge Function)
+    // Пуш в ТГ
     await _supabase.functions.invoke('notify-telegram', { body: { orderId } }).catch(console.error);
 
   } catch (error) {
@@ -124,6 +127,35 @@ $('#myOrdersBtn')?.addEventListener('click', async () => {
     return `<div class="order-card"><div class="order-header"><span>Заказ #${o.id.slice(0,6).toUpperCase()}</span><span class="order-status ${statusClass}">${statusText}</span></div><div style="font-size:0.85rem; color:var(--muted); margin-bottom:5px;">${new Date(o.created_at).toLocaleString()}</div><div style="font-weight:bold;">Сумма: ${fmt(o.total)}</div></div>`;
   }).join('');
 });
+
+// СЛАЙДЕР (Исправлен баг с пустой картинкой)
+let sliderTimer = null;
+function initSlider(slides) {
+  const container = $('#showcaseSlider');
+  if (!container) return;
+  if (sliderTimer) { clearInterval(sliderTimer); sliderTimer = null; }
+
+  const validSlides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
+  const source = validSlides.length ? validSlides : [{
+    title: 'Добро пожаловать в Stackd', description: 'Подборка предложений', image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
+  }];
+
+  container.innerHTML = source.map((slide, index) => `
+    <div class="slide ${index === 0 ? 'active' : ''}" aria-hidden="${index !== 0}">
+      <img src="${esc(slide.image_url)}" alt="${esc(slide.title)}" onerror="this.src='https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200'">
+      <div class="slide-content"><h2>${esc(slide.title)}</h2><p>${esc(slide.description || '')}</p></div>
+    </div>`).join('');
+
+  if (source.length < 2) return;
+  let current = 0;
+  sliderTimer = setInterval(() => {
+    const elements = $$('.slide', container);
+    if (elements.length < 2) return;
+    elements[current].classList.remove('active');
+    current = (current + 1) % elements.length;
+    elements[current].classList.add('active');
+  }, 5000);
+}
 
 // АДМИНКА
 function renderAdmin(){
@@ -166,7 +198,13 @@ $('#pform')?.addEventListener('submit', async e => {
   } catch(e) { $('#formMsg').textContent = 'Ошибка: ' + e.message; }
 });
 
-// ОСТАЛЬНЫЕ ОБРАБОТЧИКИ (корзина, темы, язык)
+// ЗАГРУЗКА СЛАЙДОВ
+async function loadSlides() {
+  const { data } = await _supabase.from('slides').select('*');
+  initSlider(data || []);
+}
+
+// ОСТАЛЬНЫЕ ОБРАБОТЧИКИ
 const A={
   add:id=>{const p=find(id);if(p){setQty(id,1);toast(p.name+' добавлен')}},
   inc:id=>setQty(id,1),dec:id=>setQty(id,-1),
@@ -189,12 +227,40 @@ const A={
   }
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b){if(e.target.matches('dialog'))closeDlg(e.target);return}A[b.dataset.act]?.(b.closest('[data-id]')?.dataset.id,b);});
+
 function setQty(id,d){const key=String(id),c=S.cart.find(x=>String(x.id)===key);if(c){c.qty=Math.min(50,Math.max(0,Number(c.qty||0)+d));if(c.qty<=0)S.cart=S.cart.filter(x=>x!==c)}else if(d>0)S.cart.push({id:key,qty:1});saveCart();renderCart();}
 function closeDlg(d){if(!d||!d.open)return; d.classList.add('closing'); setTimeout(()=>{d.close();d.classList.remove('closing');},250);}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts')?.append(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2400)}
 function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
 function applyTheme(){const t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t;}
 
-// ИНИЦИАЛИЗАЦИЯ
+// ВХОД / РЕГИСТРАЦИЯ / GOOGLE
+$('#authForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#emailInput').value, pass = $('#passInput').value;
+  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
+  const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
+  if (error) return $('#authMsg').textContent = 'Ошибка: ' + error.message;
+  closeDlg($('#auth')); toast('Вы вошли!'); await checkAuth();
+});
+
+$('#signUpBtn')?.addEventListener('click', async () => {
+  const email = $('#emailInput').value, pass = $('#passInput').value;
+  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
+  const { data, error } = await _supabase.auth.signUp({ email, password: pass });
+  if (error) return $('#authMsg').textContent = 'Ошибка: ' + error.message;
+  if (data.user) { closeDlg($('#auth')); toast('Аккаунт создан!'); await checkAuth(); }
+});
+
+$('#googleLoginBtn')?.addEventListener('click', async () => {
+  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+  if (error) toast('Ошибка Google: ' + error.message);
+});
+
+$('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
+
+// ЗАПУСК
+$('#categoryOptions').innerHTML=CATS.map(c=>`<option value="${c}">`).join('');
+applyTheme(); 
 checkAuth();
-applyTheme();
+loadSlides(); // Запускаем слайдер отдельно
