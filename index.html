@@ -5,8 +5,6 @@
 <title>Stackd — Premium digital deals</title>
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
-<!-- Скрипт Cloudflare Turnstile -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -73,7 +71,6 @@
   <div><strong>О проекте</strong><p>Данные хранятся в облаке Supabase.</p></div>
 </div></footer>
 
-<!-- КОРЗИНА -->
 <dialog id="drawer" class="drawer glass" aria-labelledby="dh">
   <header><h2 id="dh">Корзина</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
   <ul id="lines" class="lines"></ul>
@@ -84,19 +81,16 @@
   </footer>
 </dialog>
 
-<!-- МОИ ЗАКАЗЫ -->
 <dialog id="orders" class="modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;">Мои заказы</h2>
   <div id="ordersList" style="display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto;"></div>
 </dialog>
 
-<!-- ДЕТАЛИ ТОВАРА -->
 <dialog id="detail" class="modal glass" aria-labelledby="dtn">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button><div id="detailBody"></div>
 </dialog>
 
-<!-- АВТОРИЗАЦИЯ -->
 <dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <div class="auth-content">
@@ -112,7 +106,6 @@
   </div>
 </dialog>
 
-<!-- ПОПОЛНЕНИЕ -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;">Пополнение</h2>
@@ -120,16 +113,12 @@
   <form id="topupForm">
     <label>Сумма (AZN)</label><input type="number" id="topupAmount" required min="1" max="100" step="0.01">
     <label>Скриншот чека</label><input type="file" id="topupFile" accept="image/*" required>
-    
-    <!-- ТВОЙ РЕАЛЬНЫЙ SITE KEY + Защита от падения (data-error-callback) -->
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAAAFyiGNR3xSgbNKv7" data-error-callback="onTurnstileError" data-retry="never" style="margin-bottom:15px;"></div>
-    
+    <!-- КАПЧА УДАЛЕНА -->
     <label class="check terms-check"><input type="checkbox" id="termsCheck" required><span>Я подтверждаю, что данные верны. Зачисление выполняется только после проверки.</span></label>
     <p class="msg" id="topupMsg"></p><button type="submit" class="btn btn-primary block">Отправить чек</button>
   </form>
 </dialog>
 
-<!-- АДМИНКА -->
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
   <header><h2 id="eh">Управление</h2><button class="icon-btn" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button></header>
   <div class="admin-tabs">
