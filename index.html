@@ -5,6 +5,8 @@
 <title>Stackd — Premium digital deals</title>
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
+<!-- Cloudflare Turnstile -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -25,6 +27,7 @@
   <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-tg" viewBox="0 0 24 24"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 4v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2zm-4 4h2v8a2 2 0 0 0 2 2h8v2H6a2 2 0 0 1-2-2V8z"/></symbol>
 </svg>
 
 <header class="nav glass">
@@ -57,10 +60,16 @@
     <button data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
   </div>
 
-  <!-- Профиль и баланс с аватаркой -->
-  <div id="userProfile" class="user-profile" style="display:none; align-items:center; gap:10px;">
-    <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-    <div class="balance-badge" id="balanceBtn"><span data-i18n="balance_label">Баланс</span>: <span id="userBalance">0.00</span> AZN</div>
+  <!-- Строгий профиль и баланс -->
+  <div id="userProfile" class="user-profile" style="display:none;">
+    <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
+    <div class="balance-group">
+      <div class="balance-display">
+        <span class="b-label" data-i18n="balance_label">Баланс</span>
+        <span class="b-amount"><span id="userBalance">0.00</span> AZN</span>
+      </div>
+      <button class="btn-topup" id="topupBtn" title="Пополнить">+</button>
+    </div>
     <button class="btn btn-ghost nav-btn" id="logoutBtn" data-i18n="logout_btn">Выйти</button>
   </div>
 
@@ -124,24 +133,19 @@
   <div id="detailBody"></div>
 </dialog>
 
-<!-- Окно Входа / Регистрации -->
 <dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <div class="auth-content">
     <h2 id="authTitle" data-i18n="auth_title">Добро пожаловать</h2>
     <p class="auth-sub" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
-    
     <button class="btn btn-google" id="googleLoginBtn">
       <svg class="ic" width="20" height="20"><use href="#i-google"/></svg> <span data-i18n="auth_google">Продолжить с Google</span>
     </button>
-    
     <div class="divider"><span data-i18n="auth_or">или</span></div>
-    
     <form class="auth-form" id="authForm" novalidate>
-      <input type="email" id="emailInput" placeholder="Email" required style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
-      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" required minlength="6" style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
-      <p class="msg" id="authMsg" style="color:#c0341d; font-size:0.85rem; margin-bottom:10px; text-align:center;"></p>
-      
+      <input type="email" id="emailInput" placeholder="Email" required>
+      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+      <p class="msg" id="authMsg"></p>
       <div style="display: flex; gap: 10px;">
         <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
         <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Регистрация</button>
@@ -150,30 +154,57 @@
   </div>
 </dialog>
 
+<!-- Окно Пополнения (С капчей и условиями) -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
-  <p class="warn" data-i18n="topup_card">Перевод на карту: 4169 7388 1234 5678</p>
+  
+  <div class="card-copy-box">
+    <div class="card-number">5411 2498 0724 4822</div>
+    <button class="btn btn-ghost sm copy-btn" id="copyCardBtn">
+      <svg class="ic" width="16" height="16"><use href="#i-copy"/></svg> <span data-i18n="copy_btn">Копировать</span>
+    </button>
+  </div>
+  <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">Переведите точную сумму и прикрепите чек. Возврат средств не предусмотрен.</p>
+
   <form id="topupForm">
-    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;" data-i18n="topup_amount">Сумма (AZN)</label>
-    <input type="number" id="topupAmount" required min="1" style="margin-bottom:10px;">
-    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;" data-i18n="topup_check">Скриншот чека</label>
-    <input type="file" id="topupFile" accept="image/*" required style="margin-bottom:10px;">
-    <p class="msg" id="topupMsg" style="color:red;"></p>
+    <label data-i18n="topup_amount">Сумма (AZN)</label>
+    <input type="number" id="topupAmount" required min="1" step="0.01">
+    
+    <label data-i18n="topup_check">Скриншот чека</label>
+    <input type="file" id="topupFile" accept="image/*" required>
+    
+    <!-- Cloudflare Turnstile -->
+    <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" style="margin-bottom:15px;"></div>
+
+    <label class="check terms-check">
+      <input type="checkbox" id="termsCheck" required>
+      <span data-i18n="topup_terms">Я оплатил(а) и согласен(на) с правилами сервиса. Возврат средств не осуществляется.</span>
+    </label>
+
+    <p class="msg" id="topupMsg"></p>
     <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Отправить чек</button>
   </form>
 </dialog>
 
+<!-- Админка (С настройками сайта) -->
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
-  <header><h2 id="eh" data-i18n="admin_title">Управление каталогом</h2><button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button></header>
-  <div class="ed">
-      <div>
-        <div class="row">
-          <h3><span data-i18n="admin_products">Товары</span> <span class="count" id="adminCount"></span></h3>
-          <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add">Добавить</button>
-        </div>
-        <div class="admin-filter"><input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off"></div>
-        <ul id="adminList" class="alist"></ul>
+  <header><h2 id="eh" data-i18n="admin_title">Управление</h2><button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button></header>
+  
+  <div class="admin-tabs">
+    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products">Товары</button>
+    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings">Настройки сайта</button>
+  </div>
+
+  <!-- Вкладка Товары -->
+  <div class="ed tab-content" id="tab-products">
+    <div>
+      <div class="row">
+        <h3><span data-i18n="admin_products">Товары</span> <span class="count" id="adminCount"></span></h3>
+        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add">Добавить</button>
+      </div>
+      <div class="admin-filter"><input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off"></div>
+      <ul id="adminList" class="alist"></ul>
     </div>
     <form id="pform" novalidate>
       <h3 id="formTitle" data-i18n="form_new">Новый товар</h3>
@@ -188,6 +219,18 @@
       <div class="row"><button type="submit" class="btn btn-primary" data-i18n="form_save">Сохранить</button></div>
     </form>
   </div>
+
+  <!-- Вкладка Настройки сайта -->
+  <div class="tab-content" id="tab-settings" style="display:none; padding: 20px 0;">
+    <h3 data-i18n="settings_title">Настройки главной страницы</h3>
+    <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
+    <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в Stackd">
+    <label for="settingHeroSub" data-i18n="settings_hero_sub">Подзаголовок / Описание</label>
+    <textarea id="settingHeroSub" rows="2" placeholder="Лучшие предложения на еду..."></textarea>
+    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" data-i18n="settings_save">Сохранить настройки</button>
+    <p class="msg" id="settingsMsg"></p>
+  </div>
+
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
