@@ -210,19 +210,13 @@ label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(
   #userProfile, #loginBtn, #adminBtn { grid-area: profile; justify-self: end; }
   .cart-btn { grid-area: cart; justify-self: end; }
   
-  /* Поиск теперь на всю ширину снизу */
-  .search-container { 
-    grid-area: search; 
-    width: 100%; 
-    max-width: none; 
-    margin: 0; 
-  }
+  .search-container { grid-area: search; width: 100%; max-width: none; margin: 0; }
 }
 
 @media(max-width: 680px) {
-  .nav { padding: 10px 12px; }
+  .nav { padding: 10px 12px; gap: 8px; }
   .seg button { min-width: 60px; font-size: .8rem; padding: 4px 0; }
-  .balance-group { display: none; } /* Скрываем баланс на мобилке, чтобы не мешал */
+  .balance-group { display: none; }
   .nav-btn { padding: 0 8px; font-size: .85rem; }
   
   .showcase-slider { height: clamp(210px, 58vw, 300px); }
