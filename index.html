@@ -5,8 +5,10 @@
 <title>Stackd — Premium digital deals</title>
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=stackd-fix-20261104">
+<!-- Supabase SDK: primary CDN + fallback CDN. Both are deferred and execute before app.js. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
 </head>
 <body>
 
@@ -241,6 +243,4 @@
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
-<script src="app.js" defer></script>
-</body>
-</html>
+<script
