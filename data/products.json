@@ -1,0 +1,90 @@
+[
+ {
+  "id": "burger-classic",
+  "name": "Classic Stack",
+  "description": "Beef patty, aged cheddar, crisp lettuce and house sauce on a toasted bun.",
+  "price": 12.9,
+  "category": "Burgers",
+  "available": true,
+  "active": true,
+  "featured": true,
+  "image": "assets/products/burger-classic.svg"
+ },
+ {
+  "id": "burger-double",
+  "name": "Double Cheddar",
+  "description": "Two smashed patties, melted cheddar and pickled onion.",
+  "price": 16.5,
+  "category": "Burgers",
+  "available": true,
+  "active": true,
+  "featured": true,
+  "image": "assets/products/burger-double.svg"
+ },
+ {
+  "id": "burger-chicken",
+  "name": "Crispy Chicken",
+  "description": "Buttermilk-fried chicken thigh, slaw and honey mustard.",
+  "price": 13.9,
+  "category": "Burgers",
+  "available": true,
+  "active": true,
+  "featured": true,
+  "image": "assets/products/burger-chicken.svg"
+ },
+ {
+  "id": "burger-veggie",
+  "name": "Garden Veggie",
+  "description": "Spiced chickpea patty, roasted tomato and fresh herbs.",
+  "price": 12.4,
+  "category": "Burgers",
+  "available": true,
+  "active": true,
+  "featured": false,
+  "image": "assets/products/burger-veggie.svg"
+ },
+ {
+  "id": "fries",
+  "name": "Skin-On Fries",
+  "description": "Hand-cut potatoes, fried twice and finished with sea salt.",
+  "price": 5.5,
+  "category": "Sides",
+  "available": true,
+  "active": true,
+  "featured": false,
+  "image": "assets/products/fries.svg"
+ },
+ {
+  "id": "lemonade",
+  "name": "Fresh Lemonade",
+  "description": "Pressed lemons, mint and a little cane sugar.",
+  "price": 4.9,
+  "category": "Drinks",
+  "available": true,
+  "active": true,
+  "featured": false,
+  "image": "assets/products/lemonade.svg"
+ },
+ {
+  "id": "coldbrew",
+  "name": "Cold Brew",
+  "description": "Slow-steeped for 18 hours, served over ice.",
+  "price": 5.8,
+  "category": "Drinks",
+  "available": false,
+  "active": true,
+  "featured": false,
+  "image": "assets/products/coldbrew.svg"
+ },
+ {
+  "id": "brownie",
+  "name": "Chocolate Brownie",
+  "description": "Dense dark chocolate brownie with a crackled top.",
+  "price": 6.5,
+  "category": "Desserts",
+  "available": true,
+  "active": true,
+  "featured": false,
+  "image": "assets/products/brownie.svg"
+ }
+]
