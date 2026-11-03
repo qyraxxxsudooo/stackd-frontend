@@ -63,6 +63,7 @@
   <!-- Строгий профиль и баланс -->
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
+    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" data-act="orders" type="button" style="display:none;">Мои заказы</button>
     <div class="balance-group">
       <div class="balance-display">
         <span class="b-label" data-i18n="balance_label">Баланс</span>
@@ -124,6 +125,17 @@
     <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout">Оформить заказ</button>
     <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear">Очистить</button>
   </footer>
+</dialog>
+
+<!-- МОИ ЗАКАЗЫ: QR появляется после ответа оператора в Telegram -->
+<dialog id="orders" class="modal wide glass" aria-labelledby="ordersTitle">
+  <header class="orders-dialog-header">
+    <h2 id="ordersTitle">Мои заказы</h2>
+    <button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
+  </header>
+  <div id="ordersList" class="orders-list" aria-live="polite">
+    <p class="orders-empty">Здесь появятся ваши заказы.</p>
+  </div>
 </dialog>
 
 <dialog id="detail" class="modal glass" aria-labelledby="dtn">
