@@ -303,3 +303,36 @@ button, .btn { touch-action: manipulation; }
     -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--surface);
   }
 }
+
+
+/* Stackd order cards and Telegram QR reveal */
+.orders-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.orders-list{display:grid;gap:14px;max-height:min(68vh,720px);overflow:auto;padding:2px}
+.orders-empty,.orders-error{padding:24px;text-align:center;color:var(--muted);background:var(--bg);border:1px dashed var(--line);border-radius:14px}
+.orders-error{color:#c0341d}
+.order-card{padding:17px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:grid;gap:12px}
+.order-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.order-card-head>div{display:grid;gap:3px;min-width:0}
+.order-card-head strong{font-size:1rem}
+.order-card-head small{color:var(--muted);font-size:.8rem}
+.order-card-meta{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:.88rem}
+.order-card-meta strong{font-size:1rem;color:var(--text)}
+.order-status{display:inline-flex;align-items:center;justify-content:center;padding:5px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:.76rem;font-weight:700;white-space:nowrap}
+.order-status-pending{color:#a96815}
+.order-status-ready{color:#287a46}
+.order-status-cancelled{color:#b42318}
+.order-status-completed{color:var(--muted)}
+.order-note{padding:12px 14px;border-radius:12px;background:var(--bg);color:var(--muted);font-size:.9rem}
+.order-note-expired{color:#b42318}
+.order-cancel{justify-self:start}
+.order-qr-toggle{width:100%;display:grid;justify-items:center;gap:10px;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--text);cursor:pointer;font:inherit}
+.order-qr-hint{font-size:.88rem;color:var(--muted);font-weight:600}
+.order-qr-image{display:none;width:min(100%,260px);aspect-ratio:1;object-fit:contain;padding:9px;background:#fff;border-radius:10px}
+.order-card.qr-open .order-qr-image{display:block;animation:qrReveal .28s var(--ease)}
+.order-card.qr-open .order-qr-hint{color:var(--accent)}
+.order-qr-expiry{text-align:center;color:var(--muted);font-size:.8rem}
+@keyframes qrReveal{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:680px){
+  .orders-dialog-header{padding-bottom:14px}
+  .order-card{padding:13px}
+  .order-card-head{flex-wrap:wrap}
