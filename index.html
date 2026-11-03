@@ -25,16 +25,19 @@
       <svg class="ic"><use href="#i-search"/></svg>
       <input id="q" type="search" placeholder="Поиск в Stackd" autocomplete="off">
     </form>
+    <div class="search-suggestions glass" id="searchSuggestions"></div>
   </div>
 
   <div class="seg" role="group" aria-label="Theme" id="themeSeg">
     <div class="seg-slider" id="themeSlider"></div>
-    <button data-act="theme" data-v="light">Светлая</button><button data-act="theme" data-v="dark">Темная</button><button data-act="theme" data-v="system">Авто</button>
+    <button data-act="theme" data-v="light">Светлая</button>
+    <button data-act="theme" data-v="dark">Темная</button>
+    <button data-act="theme" data-v="system">Авто</button>
   </div>
 
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
-    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" style="display:none;">Мои заказы</button>
+    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" style="display:none; padding:0 10px;">Заказы</button>
     <div class="balance-group">
       <div class="balance-display"><span class="b-label">Баланс</span><span class="b-amount"><span id="userBalance">0.00</span> AZN</span></div>
       <button class="btn-topup" id="topupBtn" title="Пополнить">+</button>
