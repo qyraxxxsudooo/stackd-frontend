@@ -6,12 +6,10 @@
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
 <link rel="stylesheet" href="styles.css">
-<!-- Подключаем Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- SVG Фильтры и Иконки -->
 <svg width="0" height="0" style="position:absolute; pointer-events:none;" aria-hidden="true">
   <filter id="liquid-lens" x="-20%" y="-20%" width="140%" height="140%">
     <feTurbulence type="fractalNoise" baseFrequency="0.008" numOctaves="2" result="noise" />
@@ -34,7 +32,6 @@
   
   <div class="search-container">
     <form class="search" role="search" id="searchForm">
-      <label class="sr" for="q" data-i18n="search_label">Поиск</label>
       <svg class="ic"><use href="#i-search"/></svg>
       <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="Поиск в Stackd" autocomplete="off">
     </form>
@@ -53,6 +50,7 @@
     </div>
   </div>
 
+  <!-- Плавный переключатель тем -->
   <div class="seg" role="group" aria-label="Theme" id="themeSeg">
     <div class="seg-slider" id="themeSlider"></div>
     <button data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
@@ -60,14 +58,14 @@
     <button data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
   </div>
 
-  <!-- Блок баланса (Скрыт пока не вошел) -->
-  <div id="userProfile" style="display:none; align-items:center; gap:10px;">
-    <div class="balance-badge" id="balanceBtn">Баланс: <span id="userBalance">0.00</span> AZN</div>
-    <button class="btn btn-ghost" id="logoutBtn">Выйти</button>
+  <!-- Профиль и баланс -->
+  <div id="userProfile" class="user-profile" style="display:none; align-items:center; gap:10px;">
+    <div class="balance-badge" id="balanceBtn"><span data-i18n="balance_label">Баланс</span>: <span id="userBalance">0.00</span> AZN</div>
+    <button class="btn btn-ghost nav-btn" id="logoutBtn" data-i18n="logout_btn">Выйти</button>
   </div>
 
-  <button class="btn btn-ghost nav-btn" id="loginBtn" data-i18n="login_btn">Войти</button>
-  <button class="btn btn-ghost nav-btn" data-act="manage" id="adminBtn" style="display:none;" data-i18n="catalog_btn">Каталог</button>
+  <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn">Войти</button>
+  <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;" data-i18n="catalog_btn">Каталог</button>
   <button class="cart-btn" data-act="cart-open" aria-label="Открыть корзину"><svg class="ic"><use href="#i-cart"/></svg><span class="badge" id="badge">0</span></button>
 </header>
 
@@ -92,14 +90,23 @@
 <footer class="foot"><div class="wrap">
   <div>
     <strong>Stackd</strong>
-    <p data-i18n="footer_demo">Демонстрационный прототип.</p>
+    <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
     <div class="social-links">
       <a href="https://t.me/sharkiff" target="_blank" rel="noopener" aria-label="Telegram"><svg class="ic"><use href="#i-tg"/></svg> @sharkiff</a>
       <a href="https://wa.me/994505555555" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="ic"><use href="#i-wa"/></svg> @sharkif</a>
     </div>
   </div>
-  <div><strong data-i18n="footer_support">Поддержка</strong><p>demo.support@example.com</p></div>
-  <div><strong data-i18n="footer_about">О проекте</strong><p data-i18n="footer_about_text">Данные хранятся в облаке Supabase.</p></div>
+  <div>
+    <strong data-i18n="footer_support">Поддержка</strong>
+    <p>
+      <a href="https://t.me/sharkiff" target="_blank" style="color:var(--text); text-decoration:none;">Telegram: @sharkiff</a><br>
+      <a href="https://wa.me/994505555555" target="_blank" style="color:var(--text); text-decoration:none;">WhatsApp: @sharkif</a>
+    </p>
+  </div>
+  <div>
+    <strong data-i18n="footer_about">О проекте</strong>
+    <p data-i18n="footer_about_text">Данные хранятся в облаке Supabase.</p>
+  </div>
 </div></footer>
 
 <dialog id="drawer" class="drawer glass" aria-labelledby="dh">
@@ -117,53 +124,49 @@
   <div id="detailBody"></div>
 </dialog>
 
-<!-- Вход (Email/Пароль) -->
 <dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <div class="auth-content">
     <h2 id="authTitle" data-i18n="auth_title">Добро пожаловать</h2>
     <p class="auth-sub" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
     
-    <button class="btn btn-google" data-act="google-login">
+    <button class="btn btn-google" id="googleLoginBtn">
       <svg class="ic" width="20" height="20"><use href="#i-google"/></svg> <span data-i18n="auth_google">Продолжить с Google</span>
     </button>
     
     <div class="divider"><span data-i18n="auth_or">или</span></div>
     
     <form class="auth-form" id="authForm" novalidate>
-      <input type="email" id="emailInput" placeholder="Email (твой Gmail)" required style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
+      <input type="email" id="emailInput" placeholder="Email (yuska...)" required style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
       <input type="password" id="passInput" placeholder="Пароль" required style="margin-bottom:12px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
       <button type="submit" class="btn btn-primary block" data-i18n="auth_get_code">Войти / Создать</button>
     </form>
   </div>
 </dialog>
 
-<!-- Пополнение баланса -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
-  <h2 style="margin-bottom:15px;">Пополнение</h2>
-  <p class="warn">Перевод на карту: <b>4169 7388 1234 5678</b></p>
+  <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
+  <p class="warn" data-i18n="topup_card">Перевод на карту: 4169 7388 1234 5678</p>
   <form id="topupForm">
-    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;">Сумма (AZN)</label>
+    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;" data-i18n="topup_amount">Сумма (AZN)</label>
     <input type="number" id="topupAmount" required min="1" style="margin-bottom:10px;">
-    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;">Скриншот чека</label>
+    <label style="font-size:.88rem; font-weight:600; margin-top:6px; display:block;" data-i18n="topup_check">Скриншот чека</label>
     <input type="file" id="topupFile" accept="image/*" required style="margin-bottom:10px;">
     <p class="msg" id="topupMsg" style="color:red;"></p>
-    <button type="submit" class="btn btn-primary block">Отправить чек</button>
+    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Отправить чек</button>
   </form>
 </dialog>
 
-<!-- Админка -->
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
-  <header><h2 id="eh" data-i18n="admin_title">Редактор каталога</h2><button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button></header>
-  <p class="warn" role="note" data-i18n="admin_warn">Облачное хранилище Supabase.</p>
+  <header><h2 id="eh" data-i18n="admin_title">Управление каталогом</h2><button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button></header>
   <div class="ed">
       <div>
         <div class="row">
           <h3><span data-i18n="admin_products">Товары</span> <span class="count" id="adminCount"></span></h3>
           <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add">Добавить</button>
         </div>
-        <div class="admin-filter"><input id="adminSearch" type="search" placeholder="Поиск товаров" autocomplete="off" data-i18n-placeholder="admin_search"></div>
+        <div class="admin-filter"><input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off"></div>
         <ul id="adminList" class="alist"></ul>
     </div>
     <form id="pform" novalidate>
@@ -176,7 +179,7 @@
       </div>
       <label for="pf" data-i18n="form_image">Картинка (с ПК)</label><input id="pf" type="file" accept="image/*">
       <p class="msg" id="formMsg" role="alert"></p>
-      <div class="row"><button type="submit" class="btn btn-primary" data-i18n="form_save">Загрузить в облако</button></div>
+      <div class="row"><button type="submit" class="btn btn-primary" data-i18n="form_save">Сохранить</button></div>
     </form>
   </div>
 </dialog>
