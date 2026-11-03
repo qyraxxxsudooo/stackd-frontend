@@ -3,7 +3,6 @@ const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
 const ADMIN_EMAIL = 'yuska20102010@gmail.com'; // ТВОЙ EMAIL
 const PRODUCT_BUCKET = 'product-images';
 const MAX_PRODUCT_IMAGE_BYTES = 5 * 1024 * 1024;
-const IMAGE_TYPES = Object.freeze({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' });
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -13,10 +12,10 @@ const S={products:[],cart:[],cat:'All',q:'',adminQ:'',user:null,profile:null,dra
 
 try {
   const cached = JSON.parse(localStorage.getItem('pdd.cart') || '[]');
-  S.cart = Array.isArray(cached) ? cached.filter(x => x && (typeof x.id === 'string' || typeof x.id === 'number') && Number.isInteger(Number(x.qty)) && Number(x.qty) > 0 && Number(x.qty) <= 50).map(x => ({ id: String(x.id), qty: Number(x.qty) })) : [];
+  S.cart = Array.isArray(cached) ? cached.filter(x => x && (typeof x.id === 'string' || typeof x.id === 'number') && Number.isInteger(Number(x.qty)) && Number(x.qty) > 0).map(x => ({ id: String(x.id), qty: Number(x.qty) })) : [];
 } catch { S.cart = []; }
-const saveCart=()=>{ try { localStorage.setItem('pdd.cart',JSON.stringify(S.cart)); } catch (e) { console.warn('Cart persistence unavailable', e); } };
-const isAdmin=()=>String(S.user?.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase() && !ADMIN_EMAIL.startsWith('REPLACE_');
+const saveCart=()=>{ try { localStorage.setItem('pdd.cart',JSON.stringify(S.cart)); } catch (e) {} };
+const isAdmin=()=>String(S.user?.email || '').toLowerCase() === ADMIN_EMAIL.toLowerCase();
 const normalizeSearch=s=>String(s ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase().trim();
 function safeImageUrl(value) {
   if (!value || typeof value !== 'string') return PH;
@@ -31,7 +30,7 @@ const translations = {
     footer_desc: 'Лучшие предложения на еду в Баку.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'Данные хранятся в облаке Supabase.',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
     auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
-    topup_title: 'Пополнение', topup_card_warn: '', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
+    topup_title: 'Пополнение', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
     admin_title: 'Управление', admin_tab_products: 'Товары', admin_tab_settings: 'Настройки сайта', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / Описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
@@ -44,12 +43,10 @@ function applyLanguage(lang) {
   localStorage.setItem('pdd.lang', lang);
   document.documentElement.lang = lang;
   if($('#currentLangLabel')) $('#currentLangLabel').textContent = lang.toUpperCase();
-  
   $$('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if(translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
   });
-  
   $$('[data-i18n-placeholder]').forEach(el => {
     const key = el.dataset.i18nPlaceholder;
     if(translations[lang] && translations[lang][key]) el.placeholder = translations[lang][key];
@@ -59,8 +56,7 @@ function applyLanguage(lang) {
 
 async function checkAuth() {
   try {
-    const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
-    if (sessionError) throw sessionError;
+    const { data: { session } } = await _supabase.auth.getSession();
     S.user = session?.user || null;
     S.profile = null;
 
@@ -72,8 +68,7 @@ async function checkAuth() {
       const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
       if ($('#userAvatar')) $('#userAvatar').src = safeImageUrl(avatarUrl);
 
-      const { data, error } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
-      if (error) throw error;
+      const { data } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
       S.profile = data || null;
       if ($('#userBalance')) $('#userBalance').textContent = Number(data?.balance || 0).toFixed(2);
     } else {
@@ -83,14 +78,13 @@ async function checkAuth() {
       if ($('#userBalance')) $('#userBalance').textContent = '0.00';
     }
   } catch (error) {
-    console.error('Authentication/profile loading failed:', error);
+    console.error('Auth error:', error);
   }
   await Promise.allSettled([load(), loadSettings()]);
 }
 
 async function loadSettings() {
-  const { data, error } = await _supabase.from('site_settings').select('key,value');
-  if (error) { console.error('Settings load failed:', error); return; }
+  const { data } = await _supabase.from('site_settings').select('key,value');
   (data || []).forEach(item => {
     if (item.key === 'hero_title' && $('#settingHeroTitle')) $('#settingHeroTitle').value = item.value || '';
     if (item.key === 'hero_subtitle' && $('#settingHeroSub')) $('#settingHeroSub').value = item.value || '';
@@ -131,18 +125,12 @@ async function load(){
   S.catalogError = null;
   const [slideResult, productResult] = await Promise.all([
     _supabase.from('slides').select('image_url,title,description'),
-    _supabase.from('products').select('id,name,description,category,price,image_url')
+    _supabase.from('products').select('*')
   ]);
-  if (slideResult.error) {
-    console.error('Slides load failed:', slideResult.error);
-    initSlider([]);
-  } else {
-    initSlider(slideResult.data || []);
-  }
+  if (!slideResult.error) initSlider(slideResult.data || []);
   if (productResult.error) {
-    console.error('Products load failed:', productResult.error);
     S.products = [];
-    S.catalogError = 'Не удалось загрузить каталог.';
+    S.catalogError = 'Ошибка загрузки каталога.';
   } else {
     S.products = Array.isArray(productResult.data) ? productResult.data : [];
   }
@@ -153,6 +141,8 @@ const find=id=>S.products.find(p=>String(p.id)===String(id));
 const live=()=>S.products.filter(p=>p.active!==false);
 const isAvailable=p=>p.available!==false;
 const imgSrc=p=>safeImageUrl(p?.image_url || p?.image || '');
+
+const card=p=>`<article class="card" data-id="${esc(p.id)}"><button class="card-media" data-act="detail"><img src="${esc(imgSrc(p))}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='${PH}'"></button><div class="card-body"><span class="tag">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary sm" data-act="add">В корзину</button></div></div></article>`;
 
 function renderAll(){
   const L=live();
@@ -232,8 +222,6 @@ const reduce=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 function closeDlg(d){if(!d||!d.open)return; if(reduce())return d.close(); d.classList.add('closing'); d.style.pointerEvents='none'; setTimeout(()=>{d.close();d.classList.remove('closing');d.style.pointerEvents='';},250);}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts')?.append(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2400)}
 
-const card=p=>`<article class="card" data-id="${esc(p.id)}"><button class="card-media" data-act="detail"><img src="${esc(imgSrc(p))}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='${PH}'"></button><div class="card-body"><span class="tag">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary sm" data-act="add">В корзину</button></div></div></article>`;
-
 function openDetail(id){
   const p=find(id),d=$('#detail');if(!p||d?.open)return;
   if($('#detailBody')) $('#detailBody').innerHTML=`<div class="detail" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><span class="tag">${esc(p.category)}</span><h2>${esc(p.name)}</h2><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary" data-act="add">В корзину</button></div></div>`;
@@ -248,9 +236,7 @@ function initSlider(slides) {
 
   const validSlides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
   const source = validSlides.length ? validSlides : [{
-    title: 'Добро пожаловать в Stackd',
-    description: 'Подборка предложений',
-    image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
+    title: 'Добро пожаловать в Stackd', description: 'Подборка предложений', image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
   }];
 
   container.innerHTML = source.map((slide, index) => `
@@ -280,15 +266,8 @@ function renderAdmin(){
   if($('#adminList')) $('#adminList').innerHTML=list.length?list.map(p=>`<li data-id="${esc(p.id)}" class="${p.active===false?'off':''}"><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${fmt(p.price)}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit">Ред.</button><button class="btn btn-ghost sm" data-act="del">Удал.</button></div></li>`).join(''):`<li>Ничего нет.</li>`;
 }
 
-let productPreviewObjectUrl = null;
-function clearProductPreviewObjectUrl() {
-  if (productPreviewObjectUrl) URL.revokeObjectURL(productPreviewObjectUrl);
-  productPreviewObjectUrl = null;
-}
-
 const F=()=>$('#pform')?.elements;
 function setDraft(p){
-  clearProductPreviewObjectUrl();
   S.draft=p?{...p}:blank();
   const f=F(),d=S.draft;
   if(!f) return;
@@ -322,7 +301,6 @@ document.querySelectorAll('.admin-tabs .btn').forEach(btn => {
 $('#saveSettingsBtn')?.addEventListener('click', async () => {
   if (!isAdmin()) { toast('Недостаточно прав.'); return; }
   const msg = $('#settingsMsg');
-  if (msg) { msg.textContent = 'Сохранение...'; msg.style.color = 'var(--muted)'; }
   try {
     const rows = [
       { key: 'hero_title', value: $('#settingHeroTitle').value.trim() },
@@ -381,7 +359,6 @@ $('#topupBtn')?.addEventListener('click', () => $('#topup')?.showModal());
 $('#pform')?.addEventListener('submit', async e => {
   e.preventDefault();
   const msg = $('#formMsg');
-  let uploadedPath = null;
   try {
     if (!isAdmin()) throw new Error('Только владелец может управлять товарами.');
     readForm();
@@ -398,7 +375,6 @@ $('#pform')?.addEventListener('submit', async e => {
       if (upErr) throw upErr;
       const { data } = _supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(objectPath);
       imageUrl = data.publicUrl;
-      uploadedPath = objectPath;
     }
 
     const payload = { name:d.name, description:d.description, category:d.category, price:d.price, image_url:imageUrl };
@@ -414,7 +390,6 @@ $('#pform')?.addEventListener('submit', async e => {
     if (msg) { msg.textContent = 'Товар сохранён.'; msg.style.color = 'green'; }
     toast('Сохранено!');
   } catch (error) {
-    if (uploadedPath) await _supabase.storage.from(PRODUCT_BUCKET).remove([uploadedPath]);
     if (msg) { msg.textContent = 'Ошибка: ' + (error.message || 'неизвестно'); msg.style.color = 'red'; }
   }
 });
@@ -446,7 +421,6 @@ $('#topupForm')?.addEventListener('submit', async e => {
 
     if (msg) { msg.textContent = 'Заявка отправлена! Ожидайте проверки.'; msg.style.color = 'green'; }
     $('#topupForm').reset();
-    if (window.turnstile) window.turnstile.reset();
   } catch (error) {
     if (msg) { msg.textContent = error.message; msg.style.color = 'red'; }
   }
