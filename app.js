@@ -18,8 +18,10 @@ const translations = {
     footer_desc: 'Лучшие предложения на еду в Баку.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'Данные хранятся в облаке Supabase.',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
     auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
-    topup_title: 'Пополнение', topup_card: 'Перевод на карту: 4169 7388 1234 5678', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
-    admin_title: 'Управление каталогом', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
+    topup_title: 'Пополнение', topup_card_warn: 'Переведите точную сумму и прикрепите чек. Возврат средств не предусмотрен.', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
+    copy_btn: 'Копировать', topup_terms: 'Я оплатил(а) и согласен(на) с правилами сервиса. Возврат средств не осуществляется.',
+    admin_title: 'Управление', admin_tab_products: 'Товары', admin_tab_settings: 'Настройки сайта', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
+    settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / Описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
     added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.'
   },
@@ -29,8 +31,10 @@ const translations = {
     footer_desc: 'Best food deals in Baku.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'Data is stored in Supabase cloud.',
     cart_title: 'Cart', cart_total: 'Total', cart_checkout: 'Checkout', cart_clear: 'Clear', cart_empty: 'Your cart is empty', cart_remove: 'Remove',
     auth_title: 'Welcome', auth_sub: 'Sign in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_login_btn: 'Log in', auth_register_btn: 'Register',
-    topup_title: 'Top-up', topup_card: 'Card transfer: 4169 7388 1234 5678', topup_amount: 'Amount (AZN)', topup_check: 'Receipt screenshot', topup_btn: 'Send receipt',
-    admin_title: 'Catalog Management', admin_products: 'Products', admin_add: 'Add', admin_search: 'Search products',
+    topup_title: 'Top-up', topup_card_warn: 'Transfer exact amount and attach receipt. No refunds.', topup_amount: 'Amount (AZN)', topup_check: 'Receipt screenshot', topup_btn: 'Send receipt',
+    copy_btn: 'Copy', topup_terms: 'I have paid and agree to the terms. No refunds.',
+    admin_title: 'Management', admin_tab_products: 'Products', admin_tab_settings: 'Site Settings', admin_products: 'Products', admin_add: 'Add', admin_search: 'Search products',
+    settings_title: 'Homepage Settings', settings_hero_title: 'Hero Title', settings_hero_sub: 'Hero Subtitle', settings_save: 'Save Settings',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from PC)', form_save: 'Save',
     added_to_cart: 'added to cart', cart_cleared: 'Cart cleared', checkout_msg: 'Order created!', product_deleted: 'Deleted', saved: 'Saved', out_of_stock: 'Out of stock', add_to_cart: 'Add to cart', no_results: 'No products found.', empty_catalog: 'No products yet.'
   },
@@ -40,8 +44,10 @@ const translations = {
     footer_desc: 'Bakıda ən yaxşı yemək təklifləri.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'Məlumatlar Supabase buludunda saxlanılır.',
     cart_title: 'Səbət', cart_total: 'Cəmi', cart_checkout: 'Sifariş et', cart_clear: 'Təmizlə', cart_empty: 'Səbətiniz boşdur', cart_remove: 'Sil',
     auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_login_btn: 'Daxil ol', auth_register_btn: 'Qeydiyyat',
-    topup_title: 'Balans artırma', topup_card: 'Karta köçürmə: 4169 7388 1234 5678', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbz ekran görüntüsü', topup_btn: 'Qəbzi göndər',
-    admin_title: 'Kataloq İdarəetməsi', admin_products: 'Məhsullar', admin_add: 'Əlavə et', admin_search: 'Məhsul axtar',
+    topup_title: 'Balans artırma', topup_card_warn: 'Dəqiq məbləği köçürün və qəbzi əlavə edin. Geri qaytarma yoxdur.', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbz ekran görüntüsü', topup_btn: 'Qəbzi göndər',
+    copy_btn: 'Kopyala', topup_terms: 'Ödəniş etdim və qaydalarla razıyam. Geri qaytarma yoxdur.',
+    admin_title: 'İdarəetmə', admin_tab_products: 'Məhsullar', admin_tab_settings: 'Sayt Parametrləri', admin_products: 'Məhsullar', admin_add: 'Əlavə et', admin_search: 'Məhsul axtar',
+    settings_title: 'Ana Səhifə Parametrləri', settings_hero_title: 'Başlıq', settings_hero_sub: 'Alt başlıq', settings_save: 'Yadda saxla',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (PC-dən)', form_save: 'Yadda saxla',
     added_to_cart: 'səbətə əlavə edildi', cart_cleared: 'Səbət təmizləndi', checkout_msg: 'Sifariş yaradıldı!', product_deleted: 'Silindi', saved: 'Yadda saxlanıldı', out_of_stock: 'Stokda yoxdur', add_to_cart: 'Səbətə at', no_results: 'Heç nə tapılmadı.', empty_catalog: 'Hələ məhsul yoxdur.'
   }
@@ -75,13 +81,8 @@ async function checkAuth() {
     $('#loginBtn').style.display = 'none';
     $('#userProfile').style.display = 'flex';
     
-    // --- АВАТАРКА GOOGLE ---
     const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
-    if (avatarUrl) {
-        $('#userAvatar').src = avatarUrl;
-    } else {
-        $('#userAvatar').src = PH;
-    }
+    $('#userAvatar').src = avatarUrl || PH;
     
     const { data } = await _supabase.from('profiles').select('*').eq('id', S.user.id).single();
     if (data) {
@@ -98,6 +99,18 @@ async function checkAuth() {
     $('#adminBtn').style.display = 'none';
   }
   await load(); 
+  await loadSettings();
+}
+
+// ЗАГРУЗКА НАСТРОЕК САЙТА
+async function loadSettings() {
+  const { data } = await _supabase.from('site_settings').select('*');
+  if (data) {
+    data.forEach(item => {
+      if (item.key === 'hero_title' && $('#settingHeroTitle')) $('#settingHeroTitle').value = item.value;
+      if (item.key === 'hero_subtitle' && $('#settingHeroSub')) $('#settingHeroSub').value = item.value;
+    });
+  }
 }
 
 // ВХОД (Кнопка "Войти")
@@ -109,16 +122,14 @@ $('#authForm').addEventListener('submit', async (e) => {
   if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
 
   const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-  if (error) {
-    return $('#authMsg').textContent = 'Неверный email или пароль.';
-  }
+  if (error) return $('#authMsg').textContent = 'Неверный email или пароль.';
   
   closeDlg($('#auth'));
   toast('Вы вошли!');
   checkAuth();
 });
 
-// РЕГИСТРАЦИЯ (Кнопка "Регистрация")
+// РЕГИСТРАЦИЯ
 $('#signUpBtn').addEventListener('click', async () => {
   $('#authMsg').textContent = 'Загрузка...';
   const email = $('#emailInput').value, pass = $('#passInput').value;
@@ -127,10 +138,7 @@ $('#signUpBtn').addEventListener('click', async () => {
   if (pass.length < 6) return $('#authMsg').textContent = 'Пароль должен быть не менее 6 символов';
 
   const { data, error } = await _supabase.auth.signUp({ email, password: pass });
-  
-  if (error) {
-    return $('#authMsg').textContent = 'Ошибка: ' + error.message;
-  }
+  if (error) return $('#authMsg').textContent = 'Ошибка: ' + error.message;
 
   if (data.user) {
     await _supabase.auth.signInWithPassword({ email, password: pass });
@@ -321,6 +329,30 @@ function setDraft(p){
 }
 function readForm(){const f=F();Object.assign(S.draft,{name:f.pn.value.trim(),description:f.pd.value.trim(),category:f.pc.value.trim(),price:Math.max(0,parseFloat(f.pp.value)||0)})}
 
+// ВКЛАДКИ АДМИНКИ
+document.querySelectorAll('.admin-tabs .btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.admin-tabs .btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    e.target.classList.add('active');
+    $(`#tab-${e.target.dataset.tab}`).style.display = 'block';
+  });
+});
+
+// СОХРАНЕНИЕ НАСТРОЕК
+$('#saveSettingsBtn').addEventListener('click', async () => {
+  const title = $('#settingHeroTitle').value;
+  const sub = $('#settingHeroSub').value;
+  $('#settingsMsg').textContent = 'Сохранение...';
+  
+  await _supabase.from('site_settings').upsert({ key: 'hero_title', value: title });
+  await _supabase.from('site_settings').upsert({ key: 'hero_subtitle', value: sub });
+  
+  $('#settingsMsg').textContent = 'Сохранено!';
+  $('#settingsMsg').style.color = '#2e7d32';
+  setTimeout(() => $('#settingsMsg').textContent = '', 2000);
+});
+
 // ДЕЙСТВИЯ
 const A={
   add:id=>{const p=find(id);if(p&&isAvailable(p)){setQty(id,1);toast(p.name+' '+translations[S.lang].added_to_cart)}},
@@ -364,6 +396,25 @@ document.addEventListener('click',e=>{
 $('#searchForm').addEventListener('submit',e=>e.preventDefault());
 $('#adminSearch').addEventListener('input',e=>{S.adminQ=e.target.value.trim();renderAdmin()});
 
+// КОПИРОВАНИЕ КАРТЫ
+$('#copyCardBtn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText('5411249807244822');
+    const btn = $('#copyCardBtn');
+    btn.innerHTML = 'Скопировано!';
+    btn.style.color = '#2e7d32';
+    setTimeout(() => {
+      btn.innerHTML = '<svg class="ic" width="16" height="16"><use href="#i-copy"/></svg> Копировать';
+      btn.style.color = '';
+    }, 2000);
+  } catch (err) {
+    toast('Не удалось скопировать');
+  }
+});
+
+$('#balanceBtn').addEventListener('click', () => $('#topup').showModal());
+$('#topupBtn').addEventListener('click', () => $('#topup').showModal());
+
 // ЗАГРУЗКА ФОТО В БАЗУ
 $('#pform').addEventListener('submit',async e=>{
   e.preventDefault(); readForm(); const d=S.draft;
@@ -375,7 +426,8 @@ $('#pform').addEventListener('submit',async e=>{
   
   try {
     const fileName = `prod_${Date.now()}.jpg`;
-    const { error: upError } = await _supabase.storage.from('images').upload(fileName, file);
+    // Добавлен upsert: true, чтобы избежать конфликтов
+    const { error: upError } = await _supabase.storage.from('images').upload(fileName, file, { upsert: true });
     if (upError) throw upError;
     const { data: { publicUrl } } = _supabase.storage.from('images').getPublicUrl(fileName);
 
@@ -391,13 +443,24 @@ $('#pform').addEventListener('submit',async e=>{
   }
 });
 
-// ПОПОЛНЕНИЕ БАЛАНСА
-$('#balanceBtn').addEventListener('click', () => $('#topup').showModal());
-
+// ПОПОЛНЕНИЕ БАЛАНСА (С проверкой условий и капчи)
 $('#topupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  
+  if (!$('#termsCheck').checked) {
+    return $('#topupMsg').textContent = 'Необходимо согласиться с условиями.';
+  }
+  
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+  if (!turnstileToken) {
+    return $('#topupMsg').textContent = 'Пожалуйста, пройдите капчу.';
+  }
+
   const file = $('#topupFile').files[0], amount = parseFloat($('#topupAmount').value);
+  if (!file || !amount) return $('#topupMsg').textContent = 'Заполните все поля';
+
   $('#topupMsg').textContent = 'Загрузка...';
+  $('#topupMsg').style.color = 'var(--muted)';
   
   try {
     const fileName = `check_${S.user.id}_${Date.now()}.jpg`;
@@ -406,10 +469,17 @@ $('#topupForm').addEventListener('submit', async (e) => {
     const { data: { publicUrl } } = _supabase.storage.from('images').getPublicUrl(fileName);
 
     await _supabase.from('topups').insert({ user_id: S.user.id, amount: amount, screenshot_url: publicUrl });
-    $('#topupMsg').textContent = 'Отправлено!';
-    setTimeout(() => closeDlg($('#topup')), 2000);
-  } catch(e) {
-    $('#topupMsg').textContent = 'Ошибка загрузки';
+    
+    $('#topupMsg').textContent = 'Чек отправлен! Ожидайте проверки.';
+    $('#topupMsg').style.color = '#2e7d32';
+    
+    $('#topupForm').reset();
+    if (window.turnstile) window.turnstile.reset();
+    
+    setTimeout(() => closeDlg($('#topup')), 3000);
+  } catch(err) {
+    $('#topupMsg').textContent = 'Ошибка: ' + err.message;
+    $('#topupMsg').style.color = 'red';
   }
 });
 
