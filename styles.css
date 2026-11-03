@@ -154,7 +154,7 @@ input:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0
 .toast{padding:12px 24px;border-radius:999px;box-shadow:var(--shadow);animation:toastIn .3s var(--ease);font-size:.92rem;background:var(--text);color:var(--bg)}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}}
 
-/* НОВОЕ: Баланс */
+/* Баланс */
 .balance-badge{background:var(--accent);color:#fff;padding:8px 16px;border-radius:999px;font-weight:bold;cursor:pointer;font-size:.9rem;transition:transform .2s; box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 30%,transparent)}
 .balance-badge:hover{transform:scale(1.05)}
 
