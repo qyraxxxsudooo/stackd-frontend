@@ -1,4 +1,3 @@
-// ТВОИ КЛЮЧИ ИЗ SUPABASE
 const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
 
@@ -8,18 +7,17 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const fmt=n=>(Number(n)||0).toFixed(2)+' AZN',PH='assets/icons/placeholder.svg',CATS=['Burgers','Sides','Drinks','Desserts'];
 const S={products:[],cart:[],cat:'All',q:'',adminQ:'',user:null,profile:null,draft:null,lang:'ru'};
 
-// Корзина сохраняется локально, чтобы не терялась при обновлении
 try{S.cart=JSON.parse(localStorage.getItem('pdd.cart'))||[]}catch{}
 const saveCart=()=>localStorage.setItem('pdd.cart',JSON.stringify(S.cart));
 
-// СЛОВАРИ ПЕРЕВОДОВ
+/* СЛОВАРИ ПЕРЕВОДОВ */
 const translations = {
   ru: {
     search_placeholder: 'Поиск в Stackd', theme_light: 'Светлая', theme_dark: 'Темная', theme_system: 'Авто',
     login_btn: 'Войти', logout_btn: 'Выйти', catalog_btn: 'Каталог', menu_title: 'Меню', balance_label: 'Баланс',
     footer_desc: 'Лучшие предложения на еду в Баку.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'Данные хранятся в облаке Supabase.',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
-    auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_get_code: 'Войти / Создать',
+    auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
     topup_title: 'Пополнение', topup_card: 'Перевод на карту: 4169 7388 1234 5678', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
     admin_title: 'Управление каталогом', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
@@ -30,7 +28,7 @@ const translations = {
     login_btn: 'Log in', logout_btn: 'Log out', catalog_btn: 'Catalog', menu_title: 'Menu', balance_label: 'Balance',
     footer_desc: 'Best food deals in Baku.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'Data is stored in Supabase cloud.',
     cart_title: 'Cart', cart_total: 'Total', cart_checkout: 'Checkout', cart_clear: 'Clear', cart_empty: 'Your cart is empty', cart_remove: 'Remove',
-    auth_title: 'Welcome', auth_sub: 'Sign in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_get_code: 'Log in / Create',
+    auth_title: 'Welcome', auth_sub: 'Sign in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_login_btn: 'Log in', auth_register_btn: 'Register',
     topup_title: 'Top-up', topup_card: 'Card transfer: 4169 7388 1234 5678', topup_amount: 'Amount (AZN)', topup_check: 'Receipt screenshot', topup_btn: 'Send receipt',
     admin_title: 'Catalog Management', admin_products: 'Products', admin_add: 'Add', admin_search: 'Search products',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from PC)', form_save: 'Save',
@@ -41,7 +39,7 @@ const translations = {
     login_btn: 'Daxil ol', logout_btn: 'Çıxış', catalog_btn: 'Kataloq', menu_title: 'Menyu', balance_label: 'Balans',
     footer_desc: 'Bakıda ən yaxşı yemək təklifləri.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'Məlumatlar Supabase buludunda saxlanılır.',
     cart_title: 'Səbət', cart_total: 'Cəmi', cart_checkout: 'Sifariş et', cart_clear: 'Təmizlə', cart_empty: 'Səbətiniz boşdur', cart_remove: 'Sil',
-    auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_get_code: 'Daxil ol / Yarad',
+    auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_login_btn: 'Daxil ol', auth_register_btn: 'Qeydiyyat',
     topup_title: 'Balans artırma', topup_card: 'Karta köçürmə: 4169 7388 1234 5678', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbz ekran görüntüsü', topup_btn: 'Qəbzi göndər',
     admin_title: 'Kataloq İdarəetməsi', admin_products: 'Məhsullar', admin_add: 'Əlavə et', admin_search: 'Məhsul axtar',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (PC-dən)', form_save: 'Yadda saxla',
@@ -49,7 +47,6 @@ const translations = {
   }
 };
 
-// ФУНКЦИЯ ПЕРЕВОДА
 function applyLanguage(lang) {
   S.lang = lang;
   localStorage.setItem('pdd.lang', lang);
@@ -70,7 +67,7 @@ function applyLanguage(lang) {
   setTimeout(updateThemeSlider, 50);
 }
 
-// АВТОРИЗАЦИЯ SUPABASE
+/* 1. АВТОРИЗАЦИЯ SUPABASE */
 async function checkAuth() {
   const { data: { session } } = await _supabase.auth.getSession();
   if (session) {
@@ -78,12 +75,18 @@ async function checkAuth() {
     $('#loginBtn').style.display = 'none';
     $('#userProfile').style.display = 'flex';
     
-    // Получаем баланс из базы
+    // --- АВАТАРКА GOOGLE ---
+    const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
+    if (avatarUrl) {
+        $('#userAvatar').src = avatarUrl;
+    } else {
+        $('#userAvatar').src = PH;
+    }
+    
     const { data } = await _supabase.from('profiles').select('*').eq('id', S.user.id).single();
     if (data) {
       S.profile = data;
       $('#userBalance').textContent = data.balance.toFixed(2);
-      // Если это твой gmail, показываем кнопку Каталог
       if (data.email === 'yuska20102010@gmail.com' || data.role === 'admin') {
         $('#adminBtn').style.display = 'block';
       }
@@ -97,23 +100,48 @@ async function checkAuth() {
   await load(); 
 }
 
-// ВХОД ЧЕРЕЗ EMAIL
+// ВХОД (Кнопка "Войти")
 $('#authForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  $('#authMsg').textContent = 'Загрузка...';
   const email = $('#emailInput').value, pass = $('#passInput').value;
+  
+  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
+
   const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
   if (error) {
-    // Если аккаунта нет, регистрируем
-    const { error: regErr } = await _supabase.auth.signUp({ email, password: pass });
-    if (regErr) return alert(regErr.message);
-    await _supabase.auth.signInWithPassword({ email, password: pass });
+    return $('#authMsg').textContent = 'Неверный email или пароль.';
   }
+  
   closeDlg($('#auth'));
   toast('Вы вошли!');
   checkAuth();
 });
 
-// ВХОД ЧЕРЕЗ GOOGLE (РАБОТАЕТ ЧЕРЕЗ SUPABASE)
+// РЕГИСТРАЦИЯ (Кнопка "Регистрация")
+$('#signUpBtn').addEventListener('click', async () => {
+  $('#authMsg').textContent = 'Загрузка...';
+  const email = $('#emailInput').value, pass = $('#passInput').value;
+  
+  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
+  if (pass.length < 6) return $('#authMsg').textContent = 'Пароль должен быть не менее 6 символов';
+
+  const { data, error } = await _supabase.auth.signUp({ email, password: pass });
+  
+  if (error) {
+    return $('#authMsg').textContent = 'Ошибка: ' + error.message;
+  }
+
+  // Если регистрация успешна, сразу логиним
+  if (data.user) {
+    await _supabase.auth.signInWithPassword({ email, password: pass });
+    closeDlg($('#auth'));
+    toast('Аккаунт создан!');
+    checkAuth();
+  }
+});
+
+// ВХОД ЧЕРЕЗ GOOGLE
 $('#googleLoginBtn').addEventListener('click', async () => {
   const { error } = await _supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -125,12 +153,11 @@ $('#googleLoginBtn').addEventListener('click', async () => {
 // ВЫХОД
 $('#logoutBtn').addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
-// ЗАГРУЗКА ТОВАРОВ
+// 2. ЗАГРУЗКА ДАННЫХ
 async function load(){
   try {
     const { data: slides } = await _supabase.from('slides').select('*');
     initSlider(slides || []);
-    
     const { data: prods } = await _supabase.from('products').select('*');
     S.products = prods || []; 
   } catch (e) { console.error(e); }
@@ -140,7 +167,7 @@ async function load(){
 const find=id=>S.products.find(p=>p.id===id),live=()=>S.products.filter(p=>p.active!==false),isAvailable=p=>p.available!==false;
 const imgSrc=p=>p.image_url || p.image || PH; 
 
-// ОТРИСОВКА
+// 3. ОТРИСОВКА
 const card=p=>`<article class="card${isAvailable(p)?'':' is-out'}" data-id="${esc(p.id)}"><button class="card-media" data-act="detail"><img src="${esc(imgSrc(p))}" alt="${esc(p.name)}" loading="lazy"></button><div class="card-body"><span class="tag">${esc(p.category)}${isAvailable(p)?'':' · '+translations[S.lang].out_of_stock}</span><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary sm" data-act="add"${isAvailable(p)?'':' disabled'}>${isAvailable(p)?translations[S.lang].add_to_cart:translations[S.lang].out_of_stock}</button></div></div></article>`;
 
 function renderAll(){
