@@ -19,10 +19,10 @@ async function checkAuth() {
   S.user = session?.user || null;
   
   if (S.user) {
-    $('#loginBtn').style.display = 'none';
-    $('#userProfile').style.display = 'flex';
+    if($('#loginBtn')) $('#loginBtn').style.display = 'none';
+    if($('#userProfile')) $('#userProfile').style.display = 'flex';
     if($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'block';
-    $('#adminBtn').style.display = isAdmin() ? 'block' : 'none';
+    if($('#adminBtn')) $('#adminBtn').style.display = isAdmin() ? 'block' : 'none';
     
     const avatarUrl = S.user.user_metadata?.avatar_url;
     if ($('#userAvatar') && avatarUrl) $('#userAvatar').src = avatarUrl;
@@ -31,10 +31,10 @@ async function checkAuth() {
     S.profile = data;
     if ($('#userBalance')) $('#userBalance').textContent = Number(data?.balance || 0).toFixed(2);
   } else {
-    $('#loginBtn').style.display = 'block';
-    $('#userProfile').style.display = 'none';
+    if($('#loginBtn')) $('#loginBtn').style.display = 'block';
+    if($('#userProfile')) $('#userProfile').style.display = 'none';
     if($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'none';
-    $('#adminBtn').style.display = 'none';
+    if($('#adminBtn')) $('#adminBtn').style.display = 'none';
   }
   await load();
 }
@@ -42,9 +42,7 @@ async function checkAuth() {
 // ЗАГРУЗКА
 async function load(){
   const { data: prods, error } = await _supabase.from('products').select('*');
-  if (error) {
-    console.error("Ошибка загрузки товаров:", error);
-  }
+  if (error) console.error("Ошибка загрузки:", error);
   S.products = prods || []; 
   renderAll();
 }
@@ -71,7 +69,7 @@ const card=p=>{
 function renderAll(){
   const L=S.products.filter(p=>p.active!==false);
   const q=S.q.toLowerCase(), list=L.filter(p=>(S.cat==='All'||p.category===S.cat)&&(!q||(p.name+' '+p.description).toLowerCase().includes(q)));
-  $('#grid').innerHTML = list.length?list.map(card).join(''):`<div class="state"><p>Ничего не найдено</p></div>`;
+  if($('#grid')) $('#grid').innerHTML = list.length?list.map(card).join(''):`<div class="state"><p>Ничего не найдено</p></div>`;
   renderCart();
 }
 
@@ -80,12 +78,12 @@ const find=id=>S.products.find(p=>String(p.id)===String(id));
 const lines=()=>S.cart.map(c=>({p:find(c.id),qty:c.qty})).filter(l=>l.p);
 function renderCart(){
   const L=lines(),n=L.reduce((a,l)=>a+l.qty,0),t=L.reduce((a,l)=>a+l.qty*l.p.price,0);
-  $('#badge').textContent=n; $('#total').textContent=fmt(t);
-  $('#lines').innerHTML=L.length?L.map(({p,qty})=>`<li><img src="${esc(imgSrc(p))}"><div><strong>${esc(p.name)}</strong><small>${fmt(p.price)}</small><div class="qty"><button data-act="dec">−</button><span>${qty}</span><button data-act="inc">+</button></div></div></li>`).join(''):'<li>Корзина пуста</li>';
-  $('#checkoutBtn').disabled = !L.length;
+  if($('#badge')) $('#badge').textContent=n;
+  if($('#total')) $('#total').textContent=fmt(t);
+  if($('#lines')) $('#lines').innerHTML=L.length?L.map(({p,qty})=>`<li data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><div><strong>${esc(p.name)}</strong><small>${fmt(p.price)}</small><div class="qty"><button data-act="dec">−</button><span>${qty}</span><button data-act="inc">+</button></div></div><button class="link" data-act="rm">Удалить</button></li>`).join(''):'<li>Корзина пуста</li>';
+  if($('#checkoutBtn')) $('#checkoutBtn').disabled = !L.length;
 }
 
-// ОФОРМЛЕНИЕ (RPC)
 $('#checkoutBtn')?.addEventListener('click', async () => {
   if(!S.user) return $('#auth').showModal();
   const btn = $('#checkoutBtn');
@@ -99,12 +97,9 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
 
     S.cart = []; saveCart(); renderCart();
     closeDlg($('#drawer'));
-    toast('Заказ оформлен!');
+    toast('Заказ оформлен! Ожидайте подтверждения.');
     await checkAuth(); 
-    
-    // Пуш в ТГ
     await _supabase.functions.invoke('notify-telegram', { body: { orderId } }).catch(console.error);
-
   } catch (error) {
     alert('Ошибка: ' + error.message);
   } finally {
@@ -128,7 +123,7 @@ $('#myOrdersBtn')?.addEventListener('click', async () => {
   }).join('');
 });
 
-// СЛАЙДЕР (Исправлен баг с пустой картинкой)
+// СЛАЙДЕР
 let sliderTimer = null;
 function initSlider(slides) {
   const container = $('#showcaseSlider');
@@ -160,15 +155,16 @@ function initSlider(slides) {
 // АДМИНКА
 function renderAdmin(){
   const list=S.products;
-  $('#adminList').innerHTML=list.map(p=>`<li><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${fmt(p.price)} · Ост: ${p.stock}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit" data-id="${p.id}">Ред.</button><button class="btn btn-ghost sm" data-act="del" data-id="${p.id}">Удал.</button></div></li>`).join('');
+  if($('#adminList')) $('#adminList').innerHTML=list.map(p=>`<li><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${fmt(p.price)} · Ост: ${p.stock}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit" data-id="${p.id}">Ред.</button><button class="btn btn-ghost sm" data-act="del" data-id="${p.id}">Удал.</button></div></li>`).join('');
 }
 
 function setDraft(p){
   S.draft=p?{...p}:{id:Date.now().toString(),name:'',description:'',price:0,category:'Burgers',stock:10,featured:false,image_url:''};
-  const f=$('#pform').elements, d=S.draft;
+  const f=$('#pform')?.elements, d=S.draft;
+  if(!f) return;
   f.pn.value=d.name||''; f.pd.value=d.description||''; f.pc.value=d.category||''; f.pp.value=d.price||0;
   f.pStock.value=d.stock||0; f.pFeatured.checked=d.featured||false;
-  f.pf.value=''; $('#formMsg').textContent='';
+  f.pf.value=''; if($('#formMsg')) $('#formMsg').textContent='';
 }
 
 $('#pform')?.addEventListener('submit', async e => {
@@ -197,12 +193,6 @@ $('#pform')?.addEventListener('submit', async e => {
     await load(); closeDlg($('#editor')); toast('Товар сохранен!');
   } catch(e) { $('#formMsg').textContent = 'Ошибка: ' + e.message; }
 });
-
-// ЗАГРУЗКА СЛАЙДОВ
-async function loadSlides() {
-  const { data } = await _supabase.from('slides').select('*');
-  initSlider(data || []);
-}
 
 // ОСТАЛЬНЫЕ ОБРАБОТЧИКИ
 const A={
@@ -260,7 +250,10 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
 $('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
 // ЗАПУСК
-$('#categoryOptions').innerHTML=CATS.map(c=>`<option value="${c}">`).join('');
+if($('#categoryOptions')) $('#categoryOptions').innerHTML=CATS.map(c=>`<option value="${c}">`).join('');
 applyTheme(); 
 checkAuth();
-loadSlides(); // Запускаем слайдер отдельно
+(async () => {
+  const { data } = await _supabase.from('slides').select('*');
+  initSlider(data || []);
+})();
