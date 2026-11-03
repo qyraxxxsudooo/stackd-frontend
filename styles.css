@@ -8,7 +8,7 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .ic{width:20px;height:20px;flex:none}
 
 /* NAV */
-.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;padding:10px clamp(16px,4vw,40px);border-width:0 0 1px;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--line)}
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px clamp(16px,4vw,40px);border-width:0 0 1px;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;font-weight:700;color:inherit;text-decoration:none;font-size:1.1rem;flex-shrink:0}
 
 /* Поиск */
@@ -192,8 +192,48 @@ label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(
 .payment-instructions{background:var(--bg);padding:12px;border-radius:8px;margin-bottom:15px;font-size:.9rem;color:var(--muted);border:1px solid var(--line)}
 .payment-instructions a{color:var(--accent);font-weight:bold;text-decoration:none}
 
-/* Адаптивность */
-@media(max-width:980px){.nav{flex-wrap:wrap}.search-container{order:5;flex-basis:100%;max-width:none;margin:0;margin-top:10px}.brand{margin-right:auto}.seg{display:flex}}
-@media(max-width:680px){.nav{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;padding:8px 12px}.brand{grid-column:1;margin:0}.lang-selector{grid-column:2}.cart-btn{grid-column:3}.search-container{grid-column:1/-1;order:initial;width:100%;min-width:0}.nav-btn{min-width:0;padding-inline:10px}.user-profile{grid-column:1/-1;flex-wrap:wrap;justify-content:space-between}.seg{display:flex;grid-column:1/-1;justify-self:start}.seg button{min-width:62px;font-size:.78rem;padding:5px 7px}.showcase-slider{height:clamp(210px,58vw,300px)}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card-body{padding:11px;gap:5px}.card-foot{align-items:stretch;flex-direction:column;gap:8px}.card-foot .btn{width:100%}.modal,.modal.wide{width:100vw;max-width:100%;max-height:94dvh;border-radius:20px 20px 0 0;padding:18px;margin:auto 0 0}.drawer{width:100vw;border-radius:18px 18px 0 0}.two{grid-template-columns:1fr;gap:0}.foot .wrap{grid-template-columns:1fr}}
-@media(max-width:380px){.grid{grid-template-columns:1fr}.card-media{aspect-ratio:16/10}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* АДАПТИВНОСТЬ (ФИКС ПОИСКА) */
+@media(max-width: 980px) {
+  .nav {
+    display: grid;
+    grid-template-columns: auto auto auto 1fr auto;
+    grid-template-areas: 
+      "brand lang seg profile cart"
+      "search search search search search";
+    gap: 10px;
+    padding: 10px 16px;
+    align-items: center;
+  }
+  .brand { grid-area: brand; }
+  .lang-selector { grid-area: lang; }
+  .seg { grid-area: seg; }
+  #userProfile, #loginBtn, #adminBtn { grid-area: profile; justify-self: end; }
+  .cart-btn { grid-area: cart; justify-self: end; }
+  
+  /* Поиск теперь на всю ширину снизу */
+  .search-container { 
+    grid-area: search; 
+    width: 100%; 
+    max-width: none; 
+    margin: 0; 
+  }
+}
+
+@media(max-width: 680px) {
+  .nav { padding: 10px 12px; }
+  .seg button { min-width: 60px; font-size: .8rem; padding: 4px 0; }
+  .balance-group { display: none; } /* Скрываем баланс на мобилке, чтобы не мешал */
+  .nav-btn { padding: 0 8px; font-size: .85rem; }
+  
+  .showcase-slider { height: clamp(210px, 58vw, 300px); }
+  .grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  .card-body { padding: 11px; gap: 5px; }
+  .card-foot { align-items: stretch; flex-direction: column; gap: 8px; }
+  .card-foot .btn { width: 100%; }
+  
+  .modal, .modal.wide { width: 100vw; max-width: 100%; max-height: 94dvh; border-radius: 20px 20px 0 0; padding: 18px; margin: auto 0 0; }
+  .drawer { width: 100vw; border-radius: 18px 18px 0 0; }
+  
+  .two { grid-template-columns: 1fr; gap: 0; }
+  .foot .wrap { grid-template-columns: 1fr; }
+}
