@@ -1,17 +1,6 @@
-// ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ОШИБКИ CLOUDFLARE
-window.onTurnstileError = function(errorCode) {
-  console.error("Cloudflare Turnstile Error:", errorCode);
-  const msg = document.getElementById('topupMsg');
-  if (msg) {
-    msg.textContent = 'Ошибка проверки безопасности. Попробуйте позже.';
-    msg.style.color = 'red';
-  }
-  return true; // Говорим Turnstile, что мы обработали ошибку
-};
-
 const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
-const ADMIN_EMAIL = 'yuska20102010@gmail.com';
+const ADMIN_EMAIL = 'yuska20102010@gmail.com'; 
 const PRODUCT_BUCKET = 'product-images';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -299,7 +288,7 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
 
 $('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
-// ОТПРАВКА ЧЕКА (С капчей)
+// ОТПРАВКА ЧЕКА (БЕЗ КАПЧИ)
 $('#topupForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   const msg = $('#topupMsg');
@@ -307,13 +296,11 @@ $('#topupForm')?.addEventListener('submit', async e => {
   try {
     if (!S.user) throw new Error('Сначала войдите в аккаунт.');
     if (!$('#termsCheck')?.checked) throw new Error('Подтвердите условия отправки заявки.');
-    const token = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
     const file = $('#topupFile')?.files?.[0];
     const amount = Number($('#topupAmount')?.value);
     
     if (!Number.isFinite(amount) || amount < 1 || amount > 100) throw new Error('Сумма должна быть от 1 до 100 AZN.');
     if (!file) throw new Error('Выберите изображение подтверждения платежа.');
-    if (!token) throw new Error('Пройдите проверку Turnstile (капчу).');
 
     if (msg) { msg.textContent = 'Отправка...'; msg.style.color = 'var(--muted)'; }
     if (button) button.disabled = true;
@@ -331,7 +318,6 @@ $('#topupForm')?.addEventListener('submit', async e => {
 
     if (msg) { msg.textContent = 'Заявка отправлена на проверку!'; msg.style.color = 'green'; }
     $('#topupForm').reset();
-    if (window.turnstile) window.turnstile.reset();
     setTimeout(() => closeDlg($('#topup')), 3000);
     
   } catch (error) {
