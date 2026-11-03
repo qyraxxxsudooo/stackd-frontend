@@ -3,7 +3,6 @@ const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
 const ADMIN_EMAIL = 'yuska20102010@gmail.com'; 
 const PRODUCT_BUCKET = 'product-images';
 
-// ЗАЩИТА ОТ ПАДЕНИЯ СКРИПТА
 if (typeof supabase === 'undefined') {
   console.error('КРИТИЧЕСКАЯ ОШИБКА: Библиотека Supabase не загрузилась. Проверьте блокировщик рекламы.');
   alert('Ошибка загрузки библиотеки. Пожалуйста, отключите AdBlock и обновите страницу.');
@@ -72,10 +71,42 @@ if (typeof supabase === 'undefined') {
     </article>`;
   };
 
+  function renderCategories() {
+    const root = $('#chips');
+    if (!root) return;
+    const slider = $('#chipsSlider');
+    const categories = [...new Set(S.products.filter(p => p.active !== false).map(p => String(p.category || '').trim()).filter(Boolean))];
+    const options = ['All', ...categories];
+    if (!options.includes(S.cat)) S.cat = 'All';
+
+    root.innerHTML = '';
+    if (slider) root.append(slider);
+
+    for (const category of options) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.act = 'cat';
+      button.dataset.cat = category;
+      button.textContent = category === 'All' ? 'Все' : category;
+      button.setAttribute('aria-pressed', String(S.cat === category));
+      root.append(button);
+    }
+    updateChipsSlider();
+  }
+
+  function updateChipsSlider() {
+    const active = $('#chips button[aria-pressed="true"]');
+    const slider = $('#chipsSlider');
+    if (!active || !slider) return;
+    slider.style.width = `${active.offsetWidth}px`;
+    slider.style.transform = `translateX(${active.offsetLeft}px)`;
+  }
+
   function renderAll(){
     const L=S.products.filter(p=>p.active!==false);
     const q=S.q.toLowerCase(), list=L.filter(p=>(S.cat==='All'||p.category===S.cat)&&(!q||(p.name+' '+p.description).toLowerCase().includes(q)));
     if($('#grid')) $('#grid').innerHTML = list.length?list.map(card).join(''):`<div class="state"><p>Ничего не найдено</p></div>`;
+    renderCategories();
     renderCart();
   }
 
@@ -89,6 +120,33 @@ if (typeof supabase === 'undefined') {
     if($('#total')) $('#total').textContent=fmt(t);
     if($('#lines')) $('#lines').innerHTML=L.length?L.map(({p,qty})=>`<li data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><div><strong>${esc(p.name)}</strong><small>${fmt(p.price)}</small><div class="qty"><button data-act="dec">−</button><span>${qty}</span><button data-act="inc">+</button></div></div><button class="link" data-act="rm">Удалить</button></li>`).join(''):'<li style="text-align:center;padding:20px;">Корзина пуста</li>';
     if($('#checkoutBtn')) $('#checkoutBtn').disabled=$('#clearBtn').disabled=!L.length;
+  }
+
+  function setQty(id, delta) {
+    const key = String(id);
+    const product = find(key);
+    if (!product) return;
+
+    const stock = Math.max(0, Math.floor(Number(product.stock) || 0));
+    const current = S.cart.find(item => String(item.id) === key);
+    const currentQty = current ? Math.max(0, Math.floor(Number(current.qty) || 0)) : 0;
+    const nextQty = delta > 0 ? Math.min(50, stock, currentQty + delta) : Math.max(0, currentQty + delta);
+
+    if (delta > 0 && nextQty === currentQty) {
+      toast(stock < 1 ? 'Товар закончился.' : 'Больше нет в наличии.');
+      return;
+    }
+
+    if (nextQty <= 0) {
+      S.cart = S.cart.filter(item => String(item.id) !== key);
+    } else if (current) {
+      current.qty = nextQty;
+    } else {
+      S.cart.push({ id: key, qty: nextQty });
+    }
+
+    saveCart();
+    renderCart();
   }
 
   // ОФОРМЛЕНИЕ (RPC)
@@ -161,8 +219,26 @@ if (typeof supabase === 'undefined') {
   }
 
   // АДМИНКА
-  function renderAdmin(){
-    if($('#adminList')) $('#adminList').innerHTML=S.products.map(p=>`<li><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${fmt(p.price)} · Ост: ${p.stock||0}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit" data-id="${p.id}">Ред.</button><button class="btn btn-ghost sm" data-act="del" data-id="${p.id}">Удал.</button></div></li>`).join('');
+  function renderAdmin() {
+    const root = $('#adminList');
+    if (!root) return;
+
+    const q = String(S.adminQ || '').toLowerCase();
+    const items = S.products.filter(p => String(p.name || '').toLowerCase().includes(q) || String(p.category || '').toLowerCase().includes(q));
+
+    if ($('#adminCount')) $('#adminCount').textContent = `(${items.length})`;
+    root.innerHTML = items.map(p => `
+      <li>
+        <img src="${esc(imgSrc(p))}" alt="${esc(p.name)}">
+        <div class="info">
+          <strong>${esc(p.name)}</strong>
+          <small>${fmt(p.price)} · Ост: ${Number(p.stock) || 0}</small>
+        </div>
+        <div class="acts">
+          <button class="btn btn-ghost sm" data-act="edit" data-id="${esc(p.id)}">Ред.</button>
+          <button class="btn btn-ghost sm" data-act="del" data-id="${esc(p.id)}">Удал.</button>
+        </div>
+      </li>`).join('');
   }
 
   function setDraft(p){
@@ -187,43 +263,78 @@ if (typeof supabase === 'undefined') {
       if(file) {
         const ext = file.name.split('.').pop();
         const path = `products/${crypto.randomUUID()}.${ext}`;
-        await _supabase.storage.from(PRODUCT_BUCKET).upload(path, file);
+        const { error: upError } = await _supabase.storage.from(PRODUCT_BUCKET).upload(path, file);
+        if (upError) throw upError;
         const { data } = _supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(path);
         imageUrl = data.publicUrl;
       }
       const payload = { name, category, price, stock, featured: f.pFeatured.checked, description: f.pd.value.trim(), image_url: imageUrl };
-      if(S.products.find(p=>p.id===S.draft.id)) {
-        await _supabase.from('products').update(payload).eq('id', S.draft.id);
+      
+      if (S.products.some(p => String(p.id) === String(S.draft.id))) {
+        const { error } = await _supabase.from('products').update(payload).eq('id', S.draft.id);
+        if (error) throw error;
       } else {
-        await _supabase.from('products').insert(payload);
+        const { error } = await _supabase.from('products').insert(payload);
+        if (error) throw error;
       }
+      
       await load(); 
       if($('#editor')) closeDlg($('#editor')); 
       toast('Товар сохранен!');
     } catch(e) { if($('#formMsg')) $('#formMsg').textContent = 'Ошибка: ' + e.message; }
   });
 
-  // ОСТАЛЬНЫЕ ОБРАБОТЧИКИ
-  const A={
-    add:id=>{const p=find(id);if(p){setQty(id,1);toast(p.name+' добавлен')}},
-    inc:id=>setQty(id,1),dec:id=>setQty(id,-1),
-    rm:id=>{S.cart=S.cart.filter(c=>c.id!==id);saveCart();renderCart();},
-    clear:()=>{S.cart=[];saveCart();renderCart();toast('Корзина очищена')},
-    manage:()=>{if(!isAdmin()){toast('Доступ только владельцу.');return;}const d=$('#editor');if(d && !d.open){d.showModal();setDraft(null)}renderAdmin()},
-    auth:()=>{const d=$('#auth');if(d && !d.open)d.showModal()},
-    'toggle-lang':()=>{const d=$('#langDropdown');if(d)d.classList.toggle('active')},
-    close:(_,b)=>closeDlg(b.closest('dialog')),
-    cat:(_,b)=>{S.cat=b.dataset.cat;renderAll()},
-    theme:(_,b)=>{localStorage.setItem('pdd.theme',b.dataset.v);applyTheme()},
-    new:()=>{if(!isAdmin()){toast('Нет прав.');return;}setDraft(null)},
-    edit:id=>{if(!isAdmin()){toast('Нет прав.');return;}setDraft(find(id))},
-    del:async id=>{
-      const p=find(id); if (!p || !isAdmin()) { toast('Нет прав.'); return; }
+  // ДЕЙСТВИЯ
+  const A = {
+    add: id => { const p=find(id); if(p){ setQty(id,1); toast(p.name+' добавлен') } },
+    inc: id => setQty(id,1), dec: id => setQty(id,-1),
+    rm: id => { S.cart=S.cart.filter(item => String(item.id) !== String(id)); saveCart(); renderCart(); },
+    clear: () => { S.cart=[]; saveCart(); renderCart(); toast('Корзина очищена') },
+    manage: () => { if(!isAdmin()){ toast('Доступ только владельцу.'); return; } const d=$('#editor'); if(d && !d.open){ d.showModal(); setDraft(null) } renderAdmin(); },
+    auth: () => { const d=$('#auth'); if(d && !d.open) d.showModal(); },
+    'toggle-lang': () => { const d=$('#langDropdown'); if(d) d.classList.toggle('active'); },
+    close: (_,b) => closeDlg(b.closest('dialog')),
+    cat: (_,b) => { S.cat=b.dataset.cat; renderAll(); },
+    theme: (_,b) => { localStorage.setItem('pdd.theme',b.dataset.v); applyTheme(); },
+    new: () => { if(!isAdmin()){ toast('Нет прав.'); return; } setDraft(null); },
+    edit: id => { if(!isAdmin()){ toast('Нет прав.'); return; } setDraft(find(id)); },
+    del: async id => {
+      const p=find(id); if(!p || !isAdmin()){ toast('Нет прав.'); return; }
       if(!window.confirm(`Удалить "${p.name}"?`)) return;
-      await _supabase.from('products').delete().eq('id', id);
+      const { error } = await _supabase.from('products').delete().eq('id', id);
+      if (error) { toast('Не удалось удалить: ' + error.message); return; }
       S.products=S.products.filter(x=>String(x.id)!==String(id)); S.cart=S.cart.filter(c=>String(c.id)!==String(id)); saveCart();
       renderAll(); toast('Товар удалён.');
     }
+  };
+
+  // ВОССТАНОВЛЕННЫЕ ФУНКЦИИ
+  A['cart-open'] = () => {
+    const drawer = $('#drawer');
+    if (!drawer) return;
+    renderCart();
+    if (!drawer.open) drawer.showModal();
+  };
+
+  A.detail = id => {
+    const product = find(id), dialog = $('#detail'), body = $('#detailBody');
+    if (!product || !dialog || !body) return;
+
+    body.innerHTML = `
+      <div data-id="${esc(product.id)}">
+        <img src="${esc(imgSrc(product))}" alt="${esc(product.name)}" loading="lazy" style="width:100%;max-height:280px;object-fit:cover;border-radius:12px">
+        <p class="tag">${esc(product.category)}</p>
+        <h2 id="dtn">${esc(product.name)}</h2>
+        <p>${esc(product.description)}</p>
+        <div class="card-foot">
+          <strong>${fmt(product.price)}</strong>
+          <button class="btn btn-primary sm" data-act="add" ${Number(product.stock) > 0 ? '' : 'disabled'}>
+            ${Number(product.stock) > 0 ? 'В корзину' : 'Нет в наличии'}
+          </button>
+        </div>
+      </div>`;
+
+    if (!dialog.open) dialog.showModal();
   };
 
   document.addEventListener('click',e=>{
@@ -238,25 +349,22 @@ if (typeof supabase === 'undefined') {
 
   $('#searchForm')?.addEventListener('submit',e=>e.preventDefault());
   $('#adminSearch')?.addEventListener('input',e=>{S.adminQ=e.target.value.trim();renderAdmin()});
+  
+  // Фикс поиска
+  $('#q')?.addEventListener('input', e => {
+    S.q = e.target.value.trim();
+    renderAll();
+    $('#searchSuggestions')?.classList.remove('active');
+  });
 
   $('#topupBtn')?.addEventListener('click', () => $('#topup')?.showModal());
-
-  function setQty(id,d){
-    const key=String(id),c=S.cart.find(x=>String(x.id)===key);
-    if(c){c.qty=Math.min(50,Math.max(0,Number(c.qty||0)+d));if(c.qty<=0)S.cart=S.cart.filter(x=>x!==c)}
-    else if(d>0)S.cart.push({id:key,qty:1});
-    saveCart();renderCart();
-  }
 
   function closeDlg(d){if(!d||!d.open)return; d.classList.add('closing'); setTimeout(()=>{d.close();d.classList.remove('closing');},250);}
   function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts')?.append(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2400)}
 
   function updateThemeSlider() {
     const activeBtn = $('.seg button[aria-pressed="true"]'), slider = $('#themeSlider');
-    if(activeBtn && slider) { 
-      slider.style.width = `${activeBtn.offsetWidth}px`; 
-      slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`; 
-    }
+    if(activeBtn && slider) { slider.style.width = `${activeBtn.offsetWidth}px`; slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`; }
   }
   function applyTheme(){
     const t=localStorage.getItem('pdd.theme')||'system';
@@ -265,8 +373,6 @@ if (typeof supabase === 'undefined') {
     setTimeout(updateThemeSlider, 50);
   }
   window.addEventListener('resize', updateThemeSlider);
-
-  function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
 
   // ВХОД / РЕГИСТРАЦИЯ
   $('#authForm')?.addEventListener('submit', async (e) => {
@@ -293,7 +399,7 @@ if (typeof supabase === 'undefined') {
 
   $('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
-  // ОТПРАВКА ЧЕКА (В БОТА)
+  // ОТПРАВКА ЧЕКА
   $('#topupForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const msg = $('#topupMsg');
