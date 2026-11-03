@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
-const ADMIN_EMAIL = 'yuska20102010@gmail.com'; 
+const ADMIN_EMAIL = 'yuska20102010@gmail.com'; // ТВОЙ EMAIL ВОЗВРАЩЕН!
 const PRODUCT_BUCKET = 'product-images';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -49,10 +49,8 @@ async function load(){
 
 const imgSrc=p=>p?.image_url || PH;
 const card=p=>{
-  // Если stock undefined, считаем что 0
   const stockCount = p.stock || 0;
   const isAvail = (stockCount > 0);
-  
   return `<article class="card" data-id="${esc(p.id)}" style="position:relative;">
     ${p.featured ? '<span class="badge-popular">🔥 ХИТ</span>' : ''}
     <button class="card-media" data-act="detail"><img src="${esc(imgSrc(p))}" alt="${esc(p.name)}" loading="lazy"></button>
@@ -76,42 +74,21 @@ function renderAll(){
   renderCart();
 }
 
-// КОРЗИНА (С ЗАЩИТОЙ ОТ ВЫЛЕТОВ)
+// КОРЗИНА
 const find=id=>S.products.find(p=>String(p.id)===String(id));
 const lines=()=>S.cart.map(c=>({p:find(c.id),qty:c.qty})).filter(l=>l.p);
 
 function renderCart(){
-  const L=lines();
-  const n=L.reduce((a,l)=>a+l.qty,0);
-  const t=L.reduce((a,l)=>a+l.qty*l.p.price,0);
-  
+  const L=lines(),n=L.reduce((a,l)=>a+l.qty,0),t=L.reduce((a,l)=>a+l.qty*l.p.price,0);
   if($('#badge')) $('#badge').textContent=n;
   if($('#total')) $('#total').textContent=fmt(t);
-  
-  if($('#lines')) {
-    $('#lines').innerHTML = L.length ? L.map(({p,qty})=>`
-      <li data-id="${esc(p.id)}">
-        <img src="${esc(imgSrc(p))}">
-        <div>
-          <strong>${esc(p.name)}</strong>
-          <small>${fmt(p.price)}</small>
-          <div class="qty">
-            <button data-act="dec">−</button>
-            <span>${qty}</span>
-            <button data-act="inc">+</button>
-          </div>
-        </div>
-        <button class="link" data-act="rm">Удалить</button>
-      </li>
-    `).join('') : '<li>Корзина пуста</li>';
-  }
-  
-  if($('#checkoutBtn')) $('#checkoutBtn').disabled = !L.length;
-  if($('#clearBtn')) $('#clearBtn').disabled = !L.length;
+  if($('#lines')) $('#lines').innerHTML=L.length?L.map(({p,qty})=>`<li data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><div><strong>${esc(p.name)}</strong><small>${fmt(p.price)}</small><div class="qty"><button data-act="dec">−</button><span>${qty}</span><button data-act="inc">+</button></div></div><button class="link" data-act="rm">Удалить</button></li>`).join(''):'<li style="text-align:center;padding:20px;">Корзина пуста</li>';
+  if($('#checkoutBtn')) $('#checkoutBtn').disabled=$('#clearBtn').disabled=!L.length;
 }
 
+// ОФОРМЛЕНИЕ (ЗАЩИЩЕННЫЙ RPC)
 $('#checkoutBtn')?.addEventListener('click', async () => {
-  if(!S.user) return $('#auth')?.showModal();
+  if(!S.user) return $('#auth').showModal();
   const btn = $('#checkoutBtn');
   btn.disabled = true; btn.textContent = 'Оформление...';
 
@@ -122,33 +99,33 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
     if (error) throw error;
 
     S.cart = []; saveCart(); renderCart();
-    if($('#drawer')) closeDlg($('#drawer'));
-    toast('Заказ оформлен! Ожидайте подтверждения.');
+    closeDlg($('#drawer'));
+    toast('Заказ оформлен! Ожидайте QR-код.');
     await checkAuth(); 
+    
+    // Пуш в ТГ
     await _supabase.functions.invoke('notify-telegram', { body: { orderId } }).catch(console.error);
   } catch (error) {
     alert('Ошибка: ' + error.message);
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Оформить заказ'; }
+    btn.disabled = false; btn.textContent = 'Оформить заказ';
   }
 });
 
 // МОИ ЗАКАЗЫ
 $('#myOrdersBtn')?.addEventListener('click', async () => {
   const d = $('#orders'); if(!d) return;
-  if($('#ordersList')) $('#ordersList').innerHTML = '<div style="text-align:center;">Загрузка...</div>';
+  $('#ordersList').innerHTML = '<div style="text-align:center;">Загрузка...</div>';
   d.showModal();
 
   const { data, error } = await _supabase.from('orders').select('*').eq('user_id', S.user.id).order('created_at', { ascending: false });
-  if(error || !data.length) { if($('#ordersList')) $('#ordersList').innerHTML = '<div style="text-align:center;">У вас пока нет заказов.</div>'; return; }
+  if(error || !data.length) { $('#ordersList').innerHTML = '<div style="text-align:center;">У вас пока нет заказов.</div>'; return; }
 
-  if($('#ordersList')) {
-    $('#ordersList').innerHTML = data.map(o => {
-      let statusClass = o.status === 'pending' ? 'status-pending' : o.status === 'processing' ? 'status-processing' : o.status === 'completed' ? 'status-completed' : 'status-cancelled';
-      let statusText = o.status === 'pending' ? 'Ожидает' : o.status === 'processing' ? 'Готовится' : o.status === 'completed' ? 'Выполнен' : 'Отменен';
-      return `<div class="order-card"><div class="order-header"><span>Заказ #${o.id.slice(0,6).toUpperCase()}</span><span class="order-status ${statusClass}">${statusText}</span></div><div style="font-size:0.85rem; color:var(--muted); margin-bottom:5px;">${new Date(o.created_at).toLocaleString()}</div><div style="font-weight:bold;">Сумма: ${fmt(o.total)}</div></div>`;
-    }).join('');
-  }
+  $('#ordersList').innerHTML = data.map(o => {
+    let statusClass = o.status === 'pending' ? 'status-pending' : o.status === 'processing' ? 'status-processing' : o.status === 'completed' ? 'status-completed' : 'status-cancelled';
+    let statusText = o.status === 'pending' ? 'Ожидает' : o.status === 'processing' ? 'Готовится' : o.status === 'completed' ? 'Выполнен' : 'Отменен';
+    return `<div class="order-card"><div class="order-header"><span>Заказ #${o.id.slice(0,6).toUpperCase()}</span><span class="order-status ${statusClass}">${statusText}</span></div><div style="font-size:0.85rem; color:var(--muted); margin-bottom:5px;">${new Date(o.created_at).toLocaleString()}</div><div style="font-weight:bold;">Сумма: ${fmt(o.total)}</div></div>`;
+  }).join('');
 });
 
 // СЛАЙДЕР
@@ -182,9 +159,7 @@ function initSlider(slides) {
 
 // АДМИНКА
 function renderAdmin(){
-  if($('#adminList')) {
-    $('#adminList').innerHTML=S.products.map(p=>`<li><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${fmt(p.price)} · Ост: ${p.stock||0}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit" data-id="${p.id}">Ред.</button><button class="btn btn-ghost sm" data-act="del" data-id="${p.id}">Удал.</button></div></li>`).join('');
-  }
+  if($('#adminList')) $('#adminList').innerHTML=S.products.map(p=>`<li><img src="${esc(imgSrc(p))}"><div class="info"><strong>${esc(p.name)}</strong><small>${fmt(p.price)} · Ост: ${p.stock||0}</small></div><div class="acts"><button class="btn btn-ghost sm" data-act="edit" data-id="${p.id}">Ред.</button><button class="btn btn-ghost sm" data-act="del" data-id="${p.id}">Удал.</button></div></li>`).join('');
 }
 
 function setDraft(p){
@@ -233,7 +208,7 @@ const A={
   clear:()=>{S.cart=[];saveCart();renderCart();toast('Корзина очищена')},
   manage:()=>{if(!isAdmin()){toast('Доступ только владельцу.');return;}const d=$('#editor');if(d && !d.open){d.showModal();setDraft(null)}renderAdmin()},
   auth:()=>{const d=$('#auth');if(d && !d.open)d.showModal()},
-  'toggle-lang':toggleLangDropdown,
+  'toggle-lang':()=>{const d=$('#langDropdown');if(d)d.classList.toggle('active')},
   close:(_,b)=>closeDlg(b.closest('dialog')),
   cat:(_,b)=>{S.cat=b.dataset.cat;renderAll()},
   theme:(_,b)=>{localStorage.setItem('pdd.theme',b.dataset.v);applyTheme()},
@@ -252,10 +227,17 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');
   if(!b){
     if(e.target.matches('dialog')) closeDlg(e.target);
+    // Закрываем дропдаун языка при клике вне его
+    if(!e.target.closest('.lang-selector')) $('#langDropdown')?.classList.remove('active');
     return;
   }
   A[b.dataset.act]?.(b.closest('[data-id]')?.dataset.id,b);
 });
+
+$('#searchForm')?.addEventListener('submit',e=>e.preventDefault());
+$('#adminSearch')?.addEventListener('input',e=>{S.adminQ=e.target.value.trim();renderAdmin()});
+
+$('#topupBtn')?.addEventListener('click', () => $('#topup')?.showModal());
 
 function setQty(id,d){
   const key=String(id),c=S.cart.find(x=>String(x.id)===key);
@@ -266,10 +248,25 @@ function setQty(id,d){
 
 function closeDlg(d){if(!d||!d.open)return; d.classList.add('closing'); setTimeout(()=>{d.close();d.classList.remove('closing');},250);}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts')?.append(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2400)}
-function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
-function applyTheme(){const t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t;}
 
-// ВХОД / РЕГИСТРАЦИЯ / GOOGLE
+function updateThemeSlider() {
+  const activeBtn = $('.seg button[aria-pressed="true"]'), slider = $('#themeSlider');
+  if(activeBtn && slider) { 
+    slider.style.width = `${activeBtn.offsetWidth}px`; 
+    slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`; 
+  }
+}
+function applyTheme(){
+  const t=localStorage.getItem('pdd.theme')||'system';
+  document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t;
+  $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===t));
+  setTimeout(updateThemeSlider, 50); // Пересчитываем ползунок
+}
+window.addEventListener('resize', updateThemeSlider);
+
+function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
+
+// ВХОД / РЕГИСТРАЦИЯ
 $('#authForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = $('#emailInput').value, pass = $('#passInput').value;
