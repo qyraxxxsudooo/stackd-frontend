@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
-const ADMIN_EMAIL = 'yuska20102010@gmail.com'; 
+const ADMIN_EMAIL = 'yuska20102010@gmail.com'; // ТВОЙ EMAIL
 const PRODUCT_BUCKET = 'product-images';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -102,6 +102,8 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
     closeDlg($('#drawer'));
     toast('Заказ оформлен! Ожидайте QR-код.');
     await checkAuth(); 
+    
+    // Отправка в Telegram
     await _supabase.functions.invoke('notify-telegram', { body: { orderId } }).catch(console.error);
   } catch (error) {
     alert('Ошибка: ' + error.message);
@@ -288,7 +290,7 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
 
 $('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
-// ОТПРАВКА ЧЕКА (БЕЗ КАПЧИ)
+// ОТПРАВКА ЧЕКА (БЕЗ КАПЧИ, С ОТПРАВКОЙ В БОТА)
 $('#topupForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   const msg = $('#topupMsg');
@@ -305,16 +307,15 @@ $('#topupForm')?.addEventListener('submit', async e => {
     if (msg) { msg.textContent = 'Отправка...'; msg.style.color = 'var(--muted)'; }
     if (button) button.disabled = true;
     
-    const fileName = `check_${S.user.id}_${Date.now()}.jpg`;
-    const { error: uploadError } = await _supabase.storage.from('payment-proofs').upload(fileName, file);
-    if (uploadError) throw uploadError;
-
-    const { error: dbError } = await _supabase.from('topups').insert({ 
-      user_id: S.user.id, 
-      amount: amount, 
-      screenshot_url: fileName 
-    });
-    if (dbError) throw dbError;
+    // ВЫЗОВ EDGE FUNCTION ДЛЯ ОТПРАВКИ ЧЕКА В ТЕЛЕГРАМ
+    const body = new FormData();
+    body.append('amount', String(amount));
+    body.append('file', file, file.name);
+    body.append('requestId', crypto.randomUUID()); // Защита от дублей
+    
+    const { data, error } = await _supabase.functions.invoke('submit-topup', { body });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.message || 'Сервер не подтвердил заявку.');
 
     if (msg) { msg.textContent = 'Заявка отправлена на проверку!'; msg.style.color = 'green'; }
     $('#topupForm').reset();
