@@ -16,7 +16,7 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .search .ic{position:absolute;left:14px;color:var(--muted);pointer-events:none}
 .search input{width:100%;height:100%;padding:0 14px 0 44px;border:none;background:transparent;color:inherit;outline:none;border-radius:999px}
 
-/* Профиль, Язык, Темы */
+/* Профиль и Баланс */
 .user-profile{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--line);background:var(--raised)}
 .balance-group{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
@@ -26,14 +26,7 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .btn-topup{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:none;font-size:1.2rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .btn-topup:hover{transform:scale(1.05);filter:brightness(1.1)}
 
-.lang-selector{position:relative;display:flex;align-items:center;flex-shrink:0}
-.lang-btn{gap:4px;font-size:.85rem;padding:0 10px;min-width:60px;justify-content:center}
-#currentLangLabel{display:inline-block;min-width:22px;text-align:center}
-.lang-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:none;flex-direction:column;min-width:140px;z-index:50}
-.lang-dropdown.active{display:flex}
-.lang-dropdown button{padding:10px 14px;border:none;background:none;color:var(--text);text-align:left;cursor:pointer;border-radius:6px;font-size:.9rem;transition:background .2s}
-.lang-dropdown button:hover{background:var(--raised)}
-
+/* Темы */
 .seg{position:relative;display:flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--raised);z-index:1;flex-shrink:0;isolation:isolate}
 .seg-slider{position:absolute;top:3px;bottom:3px;border-radius:999px;background:var(--text);transition:all .3s var(--ease);z-index:0;pointer-events:none}
 .seg button{border:0;background:none;color:var(--muted);font-size:.85rem;padding:5px 0;border-radius:999px;cursor:pointer;z-index:1;min-width:68px;text-align:center;position:relative}
@@ -57,8 +50,10 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .slide.active{opacity:1;transform:scale(1)}
 .slide img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 .slide-content{position:relative;z-index:2;padding:40px 30px 30px;width:100%;background:linear-gradient(transparent, rgba(0,0,0,.9));color:#fff}
+.slide-content h2{font-size:clamp(1.5rem, 4vw, 2.2rem);margin-bottom:8px}
+.slide-content p{font-size:1rem;opacity:.9}
 
-/* Сетка */
+/* Категории */
 .wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
 .head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px;margin-top:40px}
 .chips-wrapper{overflow-x:auto;max-width:100%;padding-bottom:2px}
@@ -67,6 +62,7 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .chips button{flex:none;height:36px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:.9rem;cursor:pointer;z-index:2;white-space:nowrap}
 .chips button[aria-pressed=true]{color:var(--bg);border-color:transparent}
 
+/* Сетка и Карточки */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:20px;margin-top:20px}
 .card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);position:relative;transition:transform .3s var(--ease)}
 .card:hover{transform:translateY(-4px);box-shadow:0 10px 25px rgba(0,0,0,.08)}
@@ -75,16 +71,18 @@ img{max-width:100%;display:block}h1,h2,h3,p{margin:0}
 .card:hover .card-media img{transform:scale(1.05)}
 .card-body{display:flex;flex-direction:column;gap:6px;padding:16px;flex:1}
 .card-body p{color:var(--muted);font-size:.92rem;flex:1}
+.tag{font-size:.8rem;color:var(--muted)}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .badge-popular{position:absolute;top:10px;right:10px;background:var(--accent);color:#fff;padding:4px 8px;border-radius:6px;font-size:.75rem;font-weight:bold;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .stock-info{font-size:.75rem;color:var(--muted);margin-top:2px}
 .stock-low{color:#c0341d;font-weight:bold}
 
-/* Окна */
+/* Модалки */
 dialog{color:var(--text);padding:0;border:0}
 dialog::backdrop{background:rgba(20,15,10,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
 .modal{margin:auto;width:min(92vw,520px);max-height:90vh;overflow:auto;padding:24px;border-radius:24px;background:var(--surface);border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .modal.wide{width:min(94vw,1000px)}
-.drawer{margin:0 0 0 auto;height:100dvh;max-height:none;width:min(100vw,420px);display:none;flex-direction:column;background:var(--surface);border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(0,0,0,0.2)}
+.drawer{margin:0 0 0 auto;height:100dvh;max-height:none;width:min(100vw,420px);border-width:0;display:none;flex-direction:column;background:var(--surface);border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(0,0,0,0.2)}
 .drawer[open]{display:flex}
 .icon-btn.close{position:absolute;top:20px;right:20px;z-index:10;background:var(--raised);border:1px solid var(--line)}
 
@@ -97,12 +95,13 @@ dialog::backdrop{background:rgba(20,15,10,.6);backdrop-filter:blur(8px);animatio
 .drawer>footer{padding:20px;border-top:1px solid var(--line);display:grid;gap:10px}
 .total{display:flex;justify-content:space-between;font-size:1.1rem;margin-bottom:10px}
 
-/* Формы */
+/* Инпуты и Формы */
 input:not([type=checkbox]):not([type=file]),textarea,select,input[type=file]{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);margin-bottom:15px;font:inherit}
 input:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
 label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(--text)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
 .check{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:15px 0;cursor:pointer;font-size:.85rem;color:var(--muted)}
+.check input{margin-top:3px;width:16px;height:16px}
 .msg{color:#c0341d;font-size:.88rem;min-height:1.2em;margin-bottom:10px}
 
 /* Админка */
@@ -113,7 +112,16 @@ label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(
 .alist .info{flex:1;min-width:0}
 .alist .acts{display:flex;gap:5px}
 
-/* 3D ФЛИП КАРТОЧКА */
+/* Футер */
+.foot{margin-top:48px;border-top:1px solid var(--line);padding-block:32px;color:var(--muted);font-size:.92rem}
+.foot .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.foot strong{color:var(--text);display:block;margin-bottom:8px}
+
+/* Тосты */
+.toasts{position:fixed;left:50%;bottom:20px;translate:-50% 0;z-index:100;display:grid;gap:8px}
+.toast{padding:12px 24px;border-radius:999px;box-shadow:var(--shadow);background:var(--text);color:var(--bg);font-weight:600;text-align:center}
+
+/* 3D КАРТОЧКА ЗАКАЗА (FLIP) */
 .flip-card{background-color:transparent;perspective:1000px;width:100%;min-height:220px;cursor:pointer;margin-bottom:10px}
 .flip-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);transform-style:preserve-3d}
 .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
@@ -129,37 +137,13 @@ label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(
 .status-pending{background:#fff3cd;color:#856404}
 .status-ready{background:#cce5ff;color:#004085}
 .status-completed{background:#d4edda;color:#155724}
-.status-cancelled{background:#f8d7da;color:#721c24}
+.cancel-btn{background:transparent;border:1px solid #c0341d;color:#c0341d;padding:6px 12px;border-radius:6px;cursor:pointer;margin-top:10px;font-weight:600;transition:background .2s}
+.cancel-btn:hover{background:#f8d7da}
 
 /* Кнопка ТГ */
 .tg-channel-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:#229ED9;color:#fff!important;font-weight:600;padding:10px 16px;border-radius:8px;text-decoration:none;width:100%}
 .tg-channel-btn:hover{background:#1E8BC3}
 
-/* Уведомления */
-.toasts{position:fixed;left:50%;bottom:20px;translate:-50% 0;z-index:100;display:grid;gap:8px}
-.toast{padding:12px 24px;border-radius:999px;box-shadow:var(--shadow);background:var(--text);color:var(--bg);font-weight:600;text-align:center}
-
-/* АДАПТИВ (Исправлен) */
+/* Адаптивность */
 @media(max-width: 980px) {
-  .nav { flex-wrap: wrap; }
-  .search-container { order: 5; flex-basis: 100%; max-width: none; margin: 0; margin-top: 10px; }
-  .brand { margin-right: auto; }
-  .seg { display: none; } /* Скрываем темы на мобилке, чтобы не мешали */
-}
-@media(max-width: 680px) {
-  .nav { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; padding: 10px 12px; }
-  .brand { grid-column: 1; margin: 0; }
-  .lang-selector { grid-column: 2; }
-  .user-profile { grid-column: 3; }
-  .cart-btn { grid-column: 4; }
-  .search-container { grid-column: 1 / -1; order: initial; width: 100%; min-width: 0; margin: 0; }
-  .balance-group { display: none; } /* Скрываем баланс на мобилке, чтобы не мешал */
-  .nav-btn { padding: 0 8px; font-size: .85rem; }
-  
-  .grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-  .card-foot { flex-direction: column; gap: 8px; }
-  .card-foot .btn { width: 100%; }
-  .modal { width: 100vw; max-height: 94dvh; border-radius: 20px 20px 0 0; padding: 18px; margin: auto 0 0; }
-  .ed { grid-template-columns: 1fr; }
-  .two { grid-template-columns: 1fr; gap: 0; }
-}
+  .nav { flex-wrap: wrap;
