@@ -421,6 +421,9 @@ if (typeof supabase === 'undefined') {
       body.append('file', file, file.name);
       body.append('requestId', crypto.randomUUID()); 
       
+      // ВАЖНЕЙШАЯ СТРОЧКА: Передаем ID пользователя для функции
+      body.append('userId', S.user.id); 
+      
       const { data, error } = await _supabase.functions.invoke('submit-topup', { body });
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.message || 'Сервер не подтвердил заявку.');
