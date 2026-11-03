@@ -7,7 +7,19 @@ const QR_BUCKET = 'order-qrs';
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const IMAGE_TYPES = Object.freeze({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' });
 
-if (!window.supabase?.createClient) throw new Error('Supabase SDK не загружен.');
+if (!window.supabase?.createClient) {
+  console.error('[Stackd] Supabase SDK не загрузился ни с одного CDN.');
+  const showBootError = () => {
+    const panel = document.createElement('section');
+    panel.setAttribute('role', 'alert');
+    panel.style.cssText = 'max-width:900px;margin:28px auto;padding:20px 24px;border:1px solid #c2500a;border-radius:16px;background:#211b16;color:#fff;font:15px/1.5 system-ui,sans-serif';
+    panel.innerHTML = '<strong>Stackd не смог подключить Supabase SDK.</strong><p style="margin:8px 0 0">Проверьте доступ к CDN и обновите страницу. Каталог не будет загружен, пока библиотека Supabase недоступна.</p>';
+    document.querySelector('main')?.prepend(panel);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showBootError, { once: true });
+  else showBootError();
+  throw new Error('Supabase SDK не загружен. Проверьте CDN.');
+}
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -760,15 +772,3 @@ db.auth.onAuthStateChange((_event, session) => {
   });
 });
 window.addEventListener('focus', () => { if (state.user) refreshProfile().catch(console.error); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && state.user) refreshProfile().catch(console.error); });
-window.addEventListener('resize', () => requestAnimationFrame(updateThemeSlider));
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
-  let theme = 'system'; try { theme = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-  if (theme === 'system') applyTheme();
-});
-
-if ($('#categoryOptions')) $('#categoryOptions').innerHTML = DEFAULT_CATEGORIES.map(category => `<option value="${escapeHTML(category)}"></option>`).join('');
-applyTheme();
-let preferredLanguage = 'ru'; try { preferredLanguage = localStorage.getItem('pdd.lang') || 'ru'; } catch {}
-applyLanguage(preferredLanguage);
-checkAuth().catch(error => { console.error('Stackd initialization failed:', error); toast('Не удалось запустить Stackd. Обновите страницу.'); });
