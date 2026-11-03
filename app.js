@@ -1,6 +1,17 @@
+// ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ОШИБКИ CLOUDFLARE
+window.onTurnstileError = function(errorCode) {
+  console.error("Cloudflare Turnstile Error:", errorCode);
+  const msg = document.getElementById('topupMsg');
+  if (msg) {
+    msg.textContent = 'Ошибка проверки безопасности. Попробуйте позже.';
+    msg.style.color = 'red';
+  }
+  return true; // Говорим Turnstile, что мы обработали ошибку
+};
+
 const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
-const ADMIN_EMAIL = 'yuska20102010@gmail.com'; // ТВОЙ EMAIL ВОЗВРАЩЕН!
+const ADMIN_EMAIL = 'yuska20102010@gmail.com';
 const PRODUCT_BUCKET = 'product-images';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -102,8 +113,6 @@ $('#checkoutBtn')?.addEventListener('click', async () => {
     closeDlg($('#drawer'));
     toast('Заказ оформлен! Ожидайте QR-код.');
     await checkAuth(); 
-    
-    // Пуш в ТГ
     await _supabase.functions.invoke('notify-telegram', { body: { orderId } }).catch(console.error);
   } catch (error) {
     alert('Ошибка: ' + error.message);
@@ -227,7 +236,6 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');
   if(!b){
     if(e.target.matches('dialog')) closeDlg(e.target);
-    // Закрываем дропдаун языка при клике вне его
     if(!e.target.closest('.lang-selector')) $('#langDropdown')?.classList.remove('active');
     return;
   }
@@ -260,7 +268,7 @@ function applyTheme(){
   const t=localStorage.getItem('pdd.theme')||'system';
   document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t;
   $$('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===t));
-  setTimeout(updateThemeSlider, 50); // Пересчитываем ползунок
+  setTimeout(updateThemeSlider, 50);
 }
 window.addEventListener('resize', updateThemeSlider);
 
@@ -290,6 +298,48 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
 });
 
 $('#logoutBtn')?.addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
+
+// ОТПРАВКА ЧЕКА (С капчей)
+$('#topupForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('#topupMsg');
+  const button = $('#topupForm button[type="submit"]');
+  try {
+    if (!S.user) throw new Error('Сначала войдите в аккаунт.');
+    if (!$('#termsCheck')?.checked) throw new Error('Подтвердите условия отправки заявки.');
+    const token = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
+    const file = $('#topupFile')?.files?.[0];
+    const amount = Number($('#topupAmount')?.value);
+    
+    if (!Number.isFinite(amount) || amount < 1 || amount > 100) throw new Error('Сумма должна быть от 1 до 100 AZN.');
+    if (!file) throw new Error('Выберите изображение подтверждения платежа.');
+    if (!token) throw new Error('Пройдите проверку Turnstile (капчу).');
+
+    if (msg) { msg.textContent = 'Отправка...'; msg.style.color = 'var(--muted)'; }
+    if (button) button.disabled = true;
+    
+    const fileName = `check_${S.user.id}_${Date.now()}.jpg`;
+    const { error: uploadError } = await _supabase.storage.from('payment-proofs').upload(fileName, file);
+    if (uploadError) throw uploadError;
+
+    const { error: dbError } = await _supabase.from('topups').insert({ 
+      user_id: S.user.id, 
+      amount: amount, 
+      screenshot_url: fileName 
+    });
+    if (dbError) throw dbError;
+
+    if (msg) { msg.textContent = 'Заявка отправлена на проверку!'; msg.style.color = 'green'; }
+    $('#topupForm').reset();
+    if (window.turnstile) window.turnstile.reset();
+    setTimeout(() => closeDlg($('#topup')), 3000);
+    
+  } catch (error) {
+    if (msg) { msg.textContent = error.message || 'Ошибка отправки.'; msg.style.color = 'red'; }
+  } finally {
+    if (button) button.disabled = false;
+  }
+});
 
 // ЗАПУСК
 if($('#categoryOptions')) $('#categoryOptions').innerHTML=CATS.map(c=>`<option value="${c}">`).join('');
