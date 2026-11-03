@@ -6,7 +6,8 @@
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
 <link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Двойная защита от блокировки CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
 </head>
 <body>
 
@@ -89,7 +90,7 @@
   <div id="ordersList" style="display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow-y:auto;"></div>
 </dialog>
 
-<!-- ДЕТАЛИ ТОВАРА -->
+<!-- ДЕТАЛИ -->
 <dialog id="detail" class="modal glass" aria-labelledby="dtn">
   <button class="icon-btn close" data-act="close"><svg class="ic"><use href="#i-x"/></svg></button><div id="detailBody"></div>
 </dialog>
@@ -118,9 +119,6 @@
   <form id="topupForm">
     <label>Сумма (AZN)</label><input type="number" id="topupAmount" required min="1" max="100" step="0.01">
     <label>Скриншот чека</label><input type="file" id="topupFile" accept="image/*" required>
-    
-    <!-- Капча удалена, чтобы не ломать сайт -->
-    
     <label class="check terms-check"><input type="checkbox" id="termsCheck" required><span>Я подтверждаю, что данные верны. Зачисление выполняется только после проверки.</span></label>
     <p class="msg" id="topupMsg"></p><button type="submit" class="btn btn-primary block">Отправить чек</button>
   </form>
