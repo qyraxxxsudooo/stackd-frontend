@@ -50,7 +50,6 @@
     </div>
   </div>
 
-  <!-- Плавный переключатель тем -->
   <div class="seg" role="group" aria-label="Theme" id="themeSeg">
     <div class="seg-slider" id="themeSlider"></div>
     <button data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
@@ -58,8 +57,9 @@
     <button data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
   </div>
 
-  <!-- Профиль и баланс -->
+  <!-- Профиль и баланс с аватаркой -->
   <div id="userProfile" class="user-profile" style="display:none; align-items:center; gap:10px;">
+    <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     <div class="balance-badge" id="balanceBtn"><span data-i18n="balance_label">Баланс</span>: <span id="userBalance">0.00</span> AZN</div>
     <button class="btn btn-ghost nav-btn" id="logoutBtn" data-i18n="logout_btn">Выйти</button>
   </div>
@@ -124,6 +124,7 @@
   <div id="detailBody"></div>
 </dialog>
 
+<!-- Окно Входа / Регистрации -->
 <dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <div class="auth-content">
@@ -137,9 +138,14 @@
     <div class="divider"><span data-i18n="auth_or">или</span></div>
     
     <form class="auth-form" id="authForm" novalidate>
-      <input type="email" id="emailInput" placeholder="Email (yuska...)" required style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
-      <input type="password" id="passInput" placeholder="Пароль" required style="margin-bottom:12px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
-      <button type="submit" class="btn btn-primary block" data-i18n="auth_get_code">Войти / Создать</button>
+      <input type="email" id="emailInput" placeholder="Email" required style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
+      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" required minlength="6" style="margin-bottom:10px; width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--raised); color:inherit;">
+      <p class="msg" id="authMsg" style="color:#c0341d; font-size:0.85rem; margin-bottom:10px; text-align:center;"></p>
+      
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
+        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Регистрация</button>
+      </div>
     </form>
   </div>
 </dialog>
