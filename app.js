@@ -1,5 +1,5 @@
-// ВСТАВЬ СВОИ КЛЮЧИ ИЗ SUPABASE (Settings -> API Keys)
-const SUPABASE_URL = 'ТВОЙ_URL_ИЗ_СУПАБЕЙЗ'; // Например: https://wjlktzgm...supabase.co
+// ТВОИ КЛЮЧИ (Я ИХ УЖЕ ВСТАВИЛ)
+const SUPABASE_URL = 'https://wjlkztgmbqaflcdldapi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DpbANPkD124VOGD3JkS7AA_pd2n_Ong';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -16,7 +16,6 @@ async function checkAuth() {
     $('#loginBtn').style.display = 'none';
     $('#userProfile').style.display = 'flex';
     
-    // Получаем баланс и роль
     const { data } = await _supabase.from('profiles').select('*').eq('id', S.user.id).single();
     if (data) {
       S.profile = data;
@@ -47,7 +46,7 @@ $('#authForm').addEventListener('submit', async (e) => {
 
 $('#logoutBtn').addEventListener('click', async () => { await _supabase.auth.signOut(); location.reload(); });
 
-// 2. ЗАГРУЗКА ДАННЫХ (Товары и Слайдер)
+// 2. ЗАГРУЗКА ДАННЫХ
 async function loadData() {
   // Слайдер
   const { data: slides } = await _supabase.from('slides').select('*');
@@ -65,7 +64,7 @@ async function loadData() {
   renderAll();
 }
 
-// 3. ОТРИСОВКА (Сохранен твой оригинальный вид)
+// 3. ОТРИСОВКА
 const card=p=>`<article class="card" data-id="${esc(p.id)}"><button class="card-media" data-act="detail"><img src="${esc(p.image_url || PH)}" alt=""></button><div class="card-body"><span class="tag">${esc(p.category||'Меню')}</span><h3>${esc(p.name)}</h3><p>${esc(p.description||'')}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary sm" data-act="add">В корзину</button></div></div></article>`;
 
 function renderAll(){
@@ -86,7 +85,7 @@ function renderCart(){
 function bump(){const b=$('#badge');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}
 function setQty(id,d){const c=S.cart.find(x=>x.id===id);if(c){c.qty+=d;if(c.qty<=0)S.cart=S.cart.filter(x=>x!==c)}else if(d>0)S.cart.push({id,qty:1});renderCart();bump()}
 
-// 5. ПОПОЛНЕНИЕ БАЛАНСА
+// 5. ПОПОЛНЕНИЕ
 $('#balanceBtn').addEventListener('click', () => $('#topup').showModal());
 
 $('#topupForm').addEventListener('submit', async (e) => {
@@ -106,7 +105,7 @@ $('#topupForm').addEventListener('submit', async (e) => {
   setTimeout(() => closeDlg($('#topup')), 2000);
 });
 
-// 6. АДМИНКА (Загрузка фото с ПК)
+// 6. АДМИНКА
 $('#adminBtn').addEventListener('click', () => { renderAdmin(); $('#editor').showModal(); });
 function renderAdmin(){
   $('#adminList').innerHTML = S.products.map(p => `<li><img src="${esc(p.image_url || PH)}"><div><strong>${esc(p.name)}</strong><br><small>${fmt(p.price)}</small></div><button class="btn btn-ghost sm" onclick="deleteProd('${p.id}')" style="color:red;">Удал.</button></li>`).join('');
@@ -146,7 +145,7 @@ $('#pform').addEventListener('submit', async (e) => {
   alert('Товар добавлен в облако!');
 });
 
-// 7. ОКНА И ДЕЙСТВИЯ
+// 7. ОКНА
 const reduce=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 function closeDlg(d){if(!d.open)return; d.classList.add('closing'); d.style.pointerEvents='none'; setTimeout(()=>{d.close();d.classList.remove('closing');d.style.pointerEvents='';},250);}
 
@@ -160,7 +159,6 @@ const A={
     const total = S.cart.reduce((a, c) => a + (c.p.price * c.qty), 0);
     if(S.profile.balance < total) return alert('Недостаточно средств! Пополните баланс.');
     alert('Заказ оформлен! Перенаправление в бота...');
-    // Сюда потом вставим ссылку на бота
   },
   detail:id=>{
     const p=find(id); if(!p) return;
@@ -185,6 +183,8 @@ function applyTheme(){
   const t=localStorage.getItem('pdd.theme')||'system';
   document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t;
 }
+
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts').append(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300)},2400)}
 
 // Старт
 checkAuth();
