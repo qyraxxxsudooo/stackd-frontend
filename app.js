@@ -132,7 +132,6 @@ $('#signUpBtn').addEventListener('click', async () => {
     return $('#authMsg').textContent = 'Ошибка: ' + error.message;
   }
 
-  // Если регистрация успешна, сразу логиним
   if (data.user) {
     await _supabase.auth.signInWithPassword({ email, password: pass });
     closeDlg($('#auth'));
