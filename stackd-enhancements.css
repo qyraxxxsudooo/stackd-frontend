@@ -100,3 +100,121 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
  .stackd-fly-image,.stackd-spinner{animation:none!important;transition:none!important}
  .stackd-toast{animation:none!important}
 }
+\n\n/* Catalog polish: aligned input text, predictable category pill, campaign and profile UI. */\n.search{display:flex!important;align-items:center!important;height:44px!important;min-height:44px!important}\n.search input,.search input[type="search"]{display:block!important;flex:1 1 auto!important;align-self:stretch!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0 16px 0 44px!important;line-height:normal!important;vertical-align:middle!important;transform:none!important;box-sizing:border-box!important}\n.search input::placeholder{line-height:normal!important;opacity:.82}\n.search .ic{top:50%!important;transform:translateY(-50%)!important}\n.chips{position:relative;isolation:isolate}\n.chips-slider{left:0;transform:none!important;transition:left .34s cubic-bezier(.22,.72,.18,1),width .34s cubic-bezier(.22,.72,.18,1)!important;will-change:left,width}\n.chips button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center}\n.badge-popular{letter-spacing:.045em;font-size:.67rem;font-weight:800}\n.stackd-sale-badge{position:absolute;z-index:5;top:11px;left:11px;display:inline-flex;align-items:center;gap:7px;max-width:calc(100% - 22px);padding:7px 10px;border-radius:9px;background:#c62828;color:#fff;box-shadow:0 5px 16px rgba(151,24,24,.26);font-size:.72rem;line-height:1}\n.stackd-sale-badge b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.stackd-sale-badge strong{font-size:.8rem}\n.stackd-price-stack{display:grid;gap:1px;align-content:center;min-width:0}\n.stackd-price-stack del{font-size:.77rem;color:var(--muted);font-weight:500}\n.stackd-price-stack strong{font-size:1.03rem;color:#c62828}\n[data-theme="dark"] .stackd-price-stack strong{color:#ff7979}\n.stackd-arches{width:42px;height:39px;padding:5px;border-radius:12px;color:#ffc72c;background:rgba(22,20,18,.82);border-color:rgba(255,255,255,.4)}\n.stackd-arches svg{width:100%;height:100%}\n.stackd-arches path{fill:currentColor}\n.stackd-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}\n.stackd-section-head h3{margin:0}\n.stackd-section-head span{font-size:.64rem;letter-spacing:.13em;font-weight:800;color:var(--muted)}\n.stackd-promo-settings{border-color:rgba(198,40,40,.28)}\n.stackd-promo-settings .stackd-section-head span{color:#c62828}\n.stackd-promo-settings>select,.stackd-promo-settings>input{margin:0 0 12px!important}\n.stackd-promo-settings .stackd-settings-grid{margin:6px 0 10px}\n.stackd-promo-check{display:flex;align-items:center;gap:9px;margin:6px 0 13px;font-size:.86rem}\n.stackd-promo-check input{width:16px;height:16px;margin:0;accent-color:#c62828}\n.stackd-promo-save{background:#c62828;color:#fff}\n.stackd-promo-save:hover{background:#aa2020;filter:none}\n#stackdPromoStatus{min-height:1.25em;margin-top:9px}\n.stackd-news-section{padding-top:24px;margin:0 0 26px}\n.stackd-news-section[hidden]{display:none}\n.stackd-news-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}\n.stackd-news-heading h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}\n.stackd-news-heading span{font-size:.64rem;letter-spacing:.13em;font-weight:800;color:var(--muted)}\n.stackd-news-viewport{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;border-radius:17px;touch-action:pan-x;overscroll-behavior-inline:contain}\n.stackd-news-viewport::-webkit-scrollbar{display:none}\n.stackd-news-track{display:flex;gap:13px;width:max-content}\n.stackd-news-card{position:relative;display:block;flex:0 0 clamp(260px,34vw,400px);aspect-ratio:2.15/1;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--raised);color:#fff;text-decoration:none;scroll-snap-align:start;box-shadow:var(--shadow)}\n.stackd-news-card img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s var(--ease)}\n.stackd-news-card:hover img{transform:scale(1.025)}\n.stackd-news-caption{position:absolute;inset:auto 0 0;padding:26px 15px 13px;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:.88rem;font-weight:700}\n.stackd-news-admin-list{display:grid;gap:9px;list-style:none;margin:15px 0 0;padding:0}\n.stackd-news-admin-list li{display:flex;align-items:center;gap:10px;min-width:0;padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}\n.stackd-news-admin-list li>img{width:72px;height:50px;object-fit:cover;border-radius:8px;flex:none}\n.stackd-news-meta{display:grid;gap:2px;min-width:0;flex:1}\n.stackd-news-meta strong{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.stackd-news-meta small{font-size:.72rem;color:var(--muted)}\n.stackd-news-actions{display:flex;gap:4px}\n.stackd-news-empty{font-size:.82rem;color:var(--muted)}\n.stackd-profile-anchor{position:relative;display:flex;align-items:center}\n.stackd-profile-trigger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:76px;padding:2px 6px;border:0;border-radius:12px;color:var(--text);background:transparent;cursor:pointer;font:inherit}\n.stackd-profile-trigger:hover,.stackd-profile-trigger[aria-expanded="true"]{background:var(--raised)}\n.stackd-profile-trigger img{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;object-fit:cover}\n.stackd-profile-trigger strong{font-size:.67rem;line-height:1.05}\n.stackd-profile-trigger small{font-size:.59rem;line-height:1.1;color:var(--muted)}\n.stackd-profile-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:10000;display:grid;gap:12px;width:min(330px,calc(100vw - 24px));padding:17px;border:1px solid color-mix(in srgb,var(--text) 12%,transparent);border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,transparent);box-shadow:0 18px 54px rgba(25,20,14,.24),inset 0 1px 0 rgba(255,255,255,.28);-webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);animation:stackdProfileIn .2s var(--ease)}\n.stackd-profile-menu[hidden]{display:none!important}\n.stackd-profile-head{display:grid;gap:4px;padding-bottom:11px;border-bottom:1px solid var(--line)}\n.stackd-profile-head small,.stackd-profile-note{font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}\n.stackd-profile-action{width:100%;min-height:42px;padding:10px 12px;text-align:left;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--text);font:inherit;font-size:.88rem;cursor:pointer}\n.stackd-profile-action:hover{background:var(--raised)}\n.stackd-profile-logout{color:#c62828;border-color:rgba(198,40,40,.22)}\n.stackd-profile-theme{display:grid;gap:8px;font-size:.82rem;font-weight:650}\n.stackd-profile-theme .seg{width:100%}\n.stackd-profile-theme .seg button{min-width:0;flex:1}\n@keyframes stackdProfileIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}\n[data-theme="dark"] .stackd-profile-menu{background:color-mix(in srgb,#26231f 94%,transparent);border-color:rgba(255,255,255,.13)}\n@media(max-width:680px){\n .search input,.search input[type="search"]{padding-left:44px!important}\n .stackd-news-section{padding-top:18px;margin-bottom:19px}\n .stackd-news-card{flex-basis:calc(100vw - 54px);max-width:440px;aspect-ratio:1.9/1}\n .stackd-news-track{gap:10px}\n .stackd-profile-menu{right:auto;left:0;top:calc(100% + 8px)}\n .stackd-profile-trigger strong{font-size:.7rem}\n .stackd-news-admin-list li{flex-wrap:wrap}\n .stackd-news-actions{margin-left:auto}\n .stackd-settings-grid{grid-template-columns:minmax(0,1fr)}\n .stackd-sale-badge{top:8px;left:8px;padding:6px 7px;font-size:.63rem}\n .stackd-arches{left:8px;bottom:8px;width:36px;height:34px}\n}\n@media(max-width:380px){.stackd-card-actions{flex-wrap:wrap}.stackd-news-card{flex-basis:calc(100vw - 44px)}}\n@media(prefers-reduced-motion:reduce){.stackd-news-viewport{scroll-behavior:auto}.stackd-news-card img{transition:none}}\n
+  function safeWebLink(value) {
+    try { const url = new URL(String(value || '').trim()); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; }
+    catch { return ''; }
+  }
+  function renderNewsRail() {
+    const catalog = $('#catalog');
+    if (!catalog) return;
+    let section = $('#stackdNewsRail');
+    if (!section) {
+      section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
+      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKD / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
+      catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
+    }
+    const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
+    if (newsTimer) { clearInterval(newsTimer); newsTimer = null; }
+    const items = newsItems.filter(item => item && item.image_url);
+    newsIndex = 0; section.hidden = !items.length;
+    if (!items.length) { track.replaceChildren(); viewport.scrollLeft = 0; return; }
+    const slides = items.length > 1 ? [...items, items[0]] : items;
+    track.innerHTML = slides.map((item, index) => {
+      const image = safeImageUrl(item.image_url);
+      const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
+      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'Stackd news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
+      const href = safeWebLink(item.href);
+      return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
+    }).join('');
+    viewport.scrollLeft = 0;
+    if (items.length < 2) return;
+    newsTimer = setInterval(() => {
+      if (document.hidden) return;
+      newsIndex += 1;
+      const next = $$('.stackd-news-card', track)[newsIndex];
+      if (!next) return;
+      viewport.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
+      if (newsIndex === items.length) setTimeout(() => { viewport.scrollTo({ left: 0, behavior: 'auto' }); newsIndex = 0; }, 560);
+    }, 4000);
+  }
+  function renderNewsAdmin() {
+    const host = $('#stackdNewsList');
+    if (!host) return;
+    if (!newsItems.length) { host.innerHTML = `<li class="stackd-news-empty">${esc(t('newsEmpty'))}</li>`; return; }
+    host.innerHTML = newsItems.map((item, index) => `<li data-news-index="${index}"><img src="${esc(item.image_url)}" alt=""><div class="stackd-news-meta"><strong>${esc(item.title || 'Фото без подписи')}</strong><small>${index + 1} / ${newsItems.length}</small></div><div class="stackd-news-actions"><button type="button" class="btn btn-ghost sm" data-news-action="up" data-index="${index}" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" class="btn btn-ghost sm" data-news-action="down" data-index="${index}" ${index === newsItems.length - 1 ? 'disabled' : ''}>↓</button><button type="button" class="btn btn-ghost sm" data-news-action="remove" data-index="${index}">${esc(t('newsRemove'))}</button></div></li>`).join('');
+  }
+  async function persistNews() {
+    const { error } = await _supabase.from('site_settings').upsert([{ key: 'news_items', value: JSON.stringify(newsItems) }], { onConflict: 'key' });
+    if (error) throw error;
+  }
+  function makeNewsUI() {
+    const tab = $('#tab-settings');
+    if (!tab || $('#stackdNewsSettings')) return;
+    const section = document.createElement('section'); section.id = 'stackdNewsSettings'; section.className = 'stackd-settings-section stackd-news-settings';
+    section.innerHTML = `<div class="stackd-section-head"><h3>${esc(t('newsTitle'))}</h3><span>UPDATES</span></div><p class="stackd-admin-note">${esc(t('newsHelp'))}</p><label for="stackdNewsFile">${esc(t('newsImage'))}</label><input type="file" id="stackdNewsFile" accept="image/jpeg,image/png,image/webp"><label for="stackdNewsCaption">${esc(t('newsCaption'))}</label><input type="text" id="stackdNewsCaption" maxlength="90"><label for="stackdNewsLink">${esc(t('newsLink'))}</label><input type="url" id="stackdNewsLink" placeholder="https://"><button class="btn btn-primary" type="button" id="stackdNewsAdd">${esc(t('newsAdd'))}</button><ul id="stackdNewsList" class="stackd-news-admin-list"></ul>`;
+    tab.append(section);
+    $('#stackdNewsAdd').addEventListener('click', addNewsItem);
+    $('#stackdNewsList').addEventListener('click', handleNewsAction);
+    renderNewsAdmin();
+  }
+  async function addNewsItem() {
+    if (!isAdmin()) { toast('Недостаточно прав.'); return; }
+    const input = $('#stackdNewsFile'), file = input?.files?.[0], button = $('#stackdNewsAdd');
+    if (!file) { toast('Выберите изображение.'); return; }
+    if (newsItems.length >= 20) { toast('Можно добавить максимум 20 фотографий.'); return; }
+    let uploadedPath = '';
+    try {
+      await validateProductImage(file);
+      button.disabled = true;
+      const extension = IMAGE_TYPES[file.type];
+      uploadedPath = `news/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await _supabase.storage.from(PRODUCT_BUCKET).upload(uploadedPath, file, { cacheControl: '31536000', upsert: false, contentType: file.type });
+      if (uploadError) throw uploadError;
+      const { data } = _supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(uploadedPath);
+      if (!data?.publicUrl) throw new Error('Storage не вернул публичную ссылку.');
+      newsItems.push({ id: crypto.randomUUID(), image_url: data.publicUrl, title: String($('#stackdNewsCaption')?.value || '').trim().slice(0, 90), href: safeWebLink($('#stackdNewsLink')?.value || '') });
+      await persistNews();
+      input.value = ''; $('#stackdNewsCaption').value = ''; $('#stackdNewsLink').value = '';
+      renderNewsAdmin(); renderNewsRail(); toast('Фотография добавлена в новости.');
+    } catch (error) {
+      if (uploadedPath) await _supabase.storage.from(PRODUCT_BUCKET).remove([uploadedPath]);
+      newsItems = newsItems.filter(item => !uploadedPath || !item.image_url.includes(uploadedPath));
+      toast('Не удалось добавить новость: ' + (error.message || 'ошибка загрузки'));
+    } finally { if (button) button.disabled = false; }
+  }
+  async function handleNewsAction(event) {
+    const button = event.target.closest('[data-news-action]');
+    if (!button || !isAdmin()) return;
+    const index = Number(button.dataset.index), action = button.dataset.newsAction;
+    if (!Number.isInteger(index) || !newsItems[index]) return;
+    if (action === 'remove') {
+      const removed = newsItems.splice(index, 1)[0];
+      await persistNews();
+      const path = getProductStoragePath(removed.image_url);
+      if (path?.startsWith('news/')) { const { error } = await _supabase.storage.from(PRODUCT_BUCKET).remove([path]); if (error) console.warn(error); }
+    } else {
+      const next = index + (action === 'up' ? -1 : 1);
+      if (next < 0 || next >= newsItems.length) return;
+      [newsItems[index], newsItems[next]] = [newsItems[next], newsItems[index]];
+      await persistNews();
+    }
+    renderNewsAdmin(); renderNewsRail();
+  }
+  function refreshPromotionNewsLabels() {
+    const pairs = [
+      ['stackdPromoSettings h3', 'discountTitle'], ['stackdNewsSettings h3', 'newsTitle'],
+      ['.stackd-news-heading h3', 'newsSection'], ['#stackdPromoScope', null]
+    ];
+    for (const [selector, key] of pairs) { const node = document.querySelector(selector); if (node && key) node.textContent = t(key); }
+    const profileText = {
+      stackdProfileHint: 'profileHint', stackdProfileClick: 'profileClick', stackdProfileTitle: 'profileTitle',
+      stackdProfileNote: 'profileNote', stackdProfileOrders: 'profileOrders', stackdProfileTheme: 'profileTheme',
+      stackdProfileLogout: 'profileLogout', stackdProfileEmailLabel: 'profileEmail'
+    };
+    for (const [id, key] of Object.entries(profileText)) { const node = $('#' + id); if (node) node.textContent = t(key); }
+    const scope = $('#stackdPromoScope'); if (scope) { scope.options[0].text = t('discountAll'); scope.options[1].text = t('discountCategory'); scope.options[2].text = t('discountProduct'); }
+    const save = $('#stackdPromoSave'); if (save) save.textContent = t('discountSave');
+    const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
+    renderPromotionTargetOptions(); renderNewsAdmin();
+  }
