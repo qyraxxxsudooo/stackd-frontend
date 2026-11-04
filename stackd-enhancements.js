@@ -22,7 +22,19 @@
       stockError: 'Количество должно быть целым числом от 0 и выше.',
       unlimitedNote: 'Оставьте пустым, если ограничение остатка не требуется.',
       sourceHelp: 'Укажите язык, на котором написаны название и описание.',
-      imageHelp: 'JPG, PNG или WebP. Максимум 5 МБ.'
+      imageHelp: 'JPG, PNG или WebP. Максимум 5 МБ.',
+      featured: 'ПОПУЛЯРНОЕ', profileHint: 'Настройки профиля', profileClick: 'Нажмите, чтобы открыть',
+      profileTitle: 'Профиль', profileNote: 'Управляйте аккаунтом и оформлением сайта.', profileOrders: 'Мои заказы',
+      profileTheme: 'Тема оформления', profileLogout: 'Выйти из аккаунта', profileEmail: 'Вы вошли как',
+      discountTitle: 'Скидки', discountHelp: 'Выберите, где действует скидка: во всём каталоге, в категории или на одном товаре.',
+      discountScope: 'Область действия', discountAll: 'Весь каталог', discountCategory: 'Категория', discountProduct: 'Один товар',
+      discountTarget: 'Выберите категорию или товар', discountPercent: 'Скидка, %', discountBadge: 'Текст на плашке',
+      discountEnabled: 'Скидка активна', discountSave: 'Применить скидку', discountSaved: 'Скидка применена и учитывается при оформлении заказа.',
+      discountDisabled: 'Скидка выключена. Исходные цены восстановлены.', newsTitle: 'Новости каталога',
+      newsHelp: 'Добавляйте фотографии. Лента прокручивается сама каждые 4 секунды, её также можно листать вручную.',
+      newsImage: 'Фотография', newsCaption: 'Подпись (необязательно)', newsLink: 'Ссылка (необязательно)',
+      newsAdd: 'Добавить в ленту', newsRemove: 'Убрать', newsUp: 'Выше', newsDown: 'Ниже',
+      newsEmpty: 'Пока нет фотографий в ленте.', newsSection: 'Новости'
     },
     en: {
       inStock: 'In stock', outStock: 'Out of stock', unlimited: 'Unlimited',
@@ -41,7 +53,19 @@
       stockError: 'Stock must be a whole number equal to or greater than zero.',
       unlimitedNote: 'Leave empty when stock is not limited.',
       sourceHelp: 'Choose the language used for the product name and description.',
-      imageHelp: 'JPG, PNG or WebP. Maximum 5 MB.'
+      imageHelp: 'JPG, PNG or WebP. Maximum 5 MB.',
+      featured: 'POPULAR', profileHint: 'Profile settings', profileClick: 'Tap to open',
+      profileTitle: 'Profile', profileNote: 'Manage your account and the site appearance.', profileOrders: 'My orders',
+      profileTheme: 'Appearance', profileLogout: 'Log out', profileEmail: 'Signed in as',
+      discountTitle: 'Discounts', discountHelp: 'Choose where the discount applies: the whole catalog, a category or one product.',
+      discountScope: 'Discount applies to', discountAll: 'Entire catalog', discountCategory: 'A category', discountProduct: 'One product',
+      discountTarget: 'Choose a category or product', discountPercent: 'Discount, %', discountBadge: 'Badge text',
+      discountEnabled: 'Discount is active', discountSave: 'Apply discount', discountSaved: 'Discount applied and included in checkout.',
+      discountDisabled: 'Discount turned off. Original prices restored.', newsTitle: 'Catalog news',
+      newsHelp: 'Add photos. The rail advances every 4 seconds and can also be swiped manually.',
+      newsImage: 'Photo', newsCaption: 'Caption (optional)', newsLink: 'Link (optional)',
+      newsAdd: 'Add to news', newsRemove: 'Remove', newsUp: 'Move up', newsDown: 'Move down',
+      newsEmpty: 'There are no photos in the news rail yet.', newsSection: 'News'
     },
     az: {
       inStock: 'Stokda var', outStock: 'Stokda yoxdur', unlimited: 'Limitsiz',
@@ -60,7 +84,19 @@
       stockError: 'Stok 0 və ya daha böyük tam ədəd olmalıdır.',
       unlimitedNote: 'Stok məhdudiyyəti yoxdursa, sahəni boş saxlayın.',
       sourceHelp: 'Məhsulun adı və təsvirinin yazıldığı dili seçin.',
-      imageHelp: 'JPG, PNG və ya WebP. Maksimum 5 MB.'
+      imageHelp: 'JPG, PNG və ya WebP. Maksimum 5 MB.',
+      featured: 'SEÇİLƏN', profileHint: 'Profil ayarları', profileClick: 'Açmaq üçün toxunun',
+      profileTitle: 'Profil', profileNote: 'Hesabınızı və saytın görünüşünü idarə edin.', profileOrders: 'Sifarişlərim',
+      profileTheme: 'Görünüş', profileLogout: 'Hesabdan çıx', profileEmail: 'Daxil olan hesab',
+      discountTitle: 'Endirimlər', discountHelp: 'Endirimin bütün kataloqa, kateqoriyaya və ya bir məhsula tətbiq olunmasını seçin.',
+      discountScope: 'Endirim harada keçərlidir', discountAll: 'Bütün kataloq', discountCategory: 'Kateqoriya', discountProduct: 'Bir məhsul',
+      discountTarget: 'Kateqoriya və ya məhsul seçin', discountPercent: 'Endirim, %', discountBadge: 'Nişanın mətni',
+      discountEnabled: 'Endirim aktivdir', discountSave: 'Endirimi tətbiq et', discountSaved: 'Endirim tətbiq edildi və sifariş zamanı nəzərə alınacaq.',
+      discountDisabled: 'Endirim söndürüldü. İlkin qiymətlər bərpa edildi.', newsTitle: 'Kataloq xəbərləri',
+      newsHelp: 'Şəkillər əlavə edin. Lent hər 4 saniyədən bir dəyişir və əl ilə də sürüşdürülə bilər.',
+      newsImage: 'Şəkil', newsCaption: 'Başlıq (istəyə bağlı)', newsLink: 'Keçid (istəyə bağlı)',
+      newsAdd: 'Lentə əlavə et', newsRemove: 'Sil', newsUp: 'Yuxarı', newsDown: 'Aşağı',
+      newsEmpty: 'Hələ lentdə şəkil yoxdur.', newsSection: 'Xəbərlər'
     }
   };
   const t = key => copy[S.lang]?.[key] || copy.ru[key] || key;
@@ -77,6 +113,10 @@
   const baseInitSlider = initSlider;
   const baseLoadSettings = loadSettings;
   let hero = { hero_image_url: '', hero_fit: 'cover', hero_position: 'center', hero_height: '400', hero_ratio: 'auto', hero_title: '', hero_subtitle: '' };
+  let promo = { enabled: false, scope: 'all', target: '', percent: 0, label: 'СКИДКА', originalPrices: {} };
+  let newsItems = [];
+  let newsTimer = null;
+  let newsIndex = 0;
   let translationBusy = false;
   let rateFallback = new Map();
 
@@ -117,11 +157,14 @@
     const stock = stockValue(p);
     const available = p.available !== false && (stock === null || stock > 0);
     const image = imgSrc(p);
+    const saleOriginal = Number(promo.originalPrices?.[String(p.id)]);
+    const hasSale = promo.enabled && promotionMatches(p, promo) && Number.isFinite(saleOriginal) && saleOriginal > Number(p.price);
     return `<article class="card ${available ? '' : 'is-out'}" data-id="${esc(p.id)}">
-      ${p.featured ? `<span class="badge-popular">${S.lang === 'en' ? 'FEATURED' : S.lang === 'az' ? 'SEÇİLİB' : 'ХИТ'}</span>` : ''}
+      ${p.featured ? `<span class="badge-popular">${t('featured')}</span>` : ''}
+      ${hasSale ? `<span class="stackd-sale-badge"><b>${esc(promo.label || 'СКИДКА')}</b><strong>−${Number(promo.percent)}%</strong></span>` : ''}
       <button class="card-media" type="button" data-act="detail" aria-label="${esc(p.name || 'Товар')}">
         <img src="${esc(image)}" alt="${esc(p.name || '')}" loading="lazy" decoding="async">
-        <span class="stackd-arches" aria-label="McDonald’s"><svg viewBox="0 0 36 30" aria-hidden="true"><path d="M3 27C3 3 13 3 18 27C23 3 33 3 33 27" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="stackd-arches" aria-label="McDonald’s"><svg viewBox="0 0 48 40" aria-hidden="true"><path d="M3 37V17.5C3 8.8 7.8 3 14 3c5.5 0 8.4 8.2 10 18.6C25.6 11.2 28.5 3 34 3c6.2 0 11 5.8 11 14.5V37h-6.2V17.5c0-5.2-1.7-8.4-4.8-8.4-3.6 0-6.8 15.6-9 27.9h-2c-2.2-12.3-5.4-27.9-9-27.9-3.1 0-4.8 3.2-4.8 8.4V37Z" fill="currentColor"/></svg></span>
       </button>
       <div class="card-body">
         <span class="tag">${esc(p.category || '')}</span>
@@ -129,7 +172,7 @@
         <p>${esc(p.description || '')}</p>
         ${stock !== null ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock > 0 ? `${stock} ${S.lang === 'en' ? 'left' : S.lang === 'az' ? 'ədəd qalıb' : 'шт. осталось'}` : esc(t('outStock'))}</span>` : ''}
         <div class="card-foot">
-          <strong>${fmt(p.price)}</strong>
+          ${hasSale ? `<span class="stackd-price-stack"><del>${fmt(saleOriginal)}</del><strong>${fmt(p.price)}</strong></span>` : `<strong>${fmt(p.price)}</strong>`}
           <div class="stackd-card-actions">
             ${qty > 0 ? `<div class="stackd-card-qty" aria-label="${S.lang === 'en' ? 'Quantity' : S.lang === 'az' ? 'Miqdar' : 'Количество'}"><button type="button" data-act="dec" aria-label="−">−</button><span>${qty}</span><button type="button" data-act="inc" aria-label="+" ${stock !== null && qty >= stock ? 'disabled' : ''}>+</button></div>` : ''}
             <button class="btn btn-primary sm" type="button" data-act="add" ${available && (stock === null || qty < stock) ? '' : 'disabled'}>${available ? (qty > 0 ? (S.lang === 'en' ? 'Add one' : S.lang === 'az' ? 'Birini əlavə et' : 'Ещё один') : tr('add_to_cart')) : t('outStock')}</button>
@@ -153,10 +196,13 @@
       S.catalogError = S.lang === 'en' ? 'Could not load the catalog. Check connection and database policies.' : S.lang === 'az' ? 'Kataloqu yükləmək mümkün olmadı. Bağlantını və verilənlər bazası icazələrini yoxlayın.' : 'Не удалось загрузить каталог. Проверьте подключение и права доступа.';
     } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
     renderAll();
+    renderPromotionTargetOptions();
+    syncPromotionForm();
   };
 
   setDraft = function stackdSetDraft(product) {
-    baseSetDraft(product);
+    const editable = product ? { ...product, price: Number(promo.originalPrices?.[String(product.id)]) || product.price } : product;
+    baseSetDraft(editable);
     const stock = $('#stackdStock');
     if (stock) stock.value = product?.stock == null ? '' : String(product.stock);
     const active = $('#stackdActive');
@@ -250,8 +296,11 @@
       if (submit) submit.disabled = true;
       let imageUrl = d.image_url || d.image || '';
       if (file) { const uploaded = await uploadProductImage(file); uploadedPath = uploaded.path; imageUrl = uploaded.url; }
+      const willBeDiscounted = promo.enabled && promotionMatches(d, promo);
+      const originalProductPrice = Number(d.price);
+      const storedProductPrice = willBeDiscounted ? Number((originalProductPrice * (1 - Number(promo.percent) / 100)).toFixed(2)) : originalProductPrice;
       const payload = {
-        name: d.name, description: d.description, category: d.category, price: d.price,
+        name: d.name, description: d.description, category: d.category, price: storedProductPrice,
         image_url: imageUrl, stock: d.stock, available: d.available, active: d.active,
         featured: d.featured, source_lang: d.source_lang || 'ru', translations: d.translations || {}
       };
@@ -261,6 +310,10 @@
         : await _supabase.from('products').insert(payload).select('id,name,description,category,price,image_url,stock,available,active,featured,translations,source_lang').single();
       if (result.error) throw result.error;
       if (!result.data) throw new Error('База данных не вернула сохранённый товар.');
+      const savedId = String(result.data.id);
+      if (willBeDiscounted) promo.originalPrices[savedId] = originalProductPrice;
+      else delete promo.originalPrices[savedId];
+      if (promo.enabled) await persistPromotion();
       const oldPath = getProductStoragePath(previousImageUrl);
       if (oldPath && previousImageUrl !== imageUrl) await _supabase.storage.from(PRODUCT_BUCKET).remove([oldPath]);
       uploadedPath = null;
@@ -364,6 +417,239 @@
     finally { translationBusy = false; if (button) { button.disabled = false; button.textContent = old || t('translateAll'); } }
   }
 
+
+  function promotionMatches(product, config = promo) {
+    if (!config?.enabled) return false;
+    if (config.scope === 'all') return true;
+    if (config.scope === 'category') return String(product.category || '').trim().toLowerCase() === String(config.target || '').trim().toLowerCase();
+    if (config.scope === 'product') return String(product.id) === String(config.target);
+    return false;
+  }
+  function parseSetting(value, fallback) {
+    if (value && typeof value === 'object') return value;
+    try { return JSON.parse(String(value || '')); } catch { return fallback; }
+  }
+  function renderPromotionTargetOptions() {
+    const scope = $('#stackdPromoScope')?.value || promo.scope || 'all';
+    const select = $('#stackdPromoTarget');
+    if (!select) return;
+    select.hidden = scope === 'all';
+    if (scope === 'category') {
+      const categories = [...new Map(S.products.filter(p => p.category).map(p => [String(p.category).trim().toLowerCase(), String(p.category).trim()])).values()];
+      select.innerHTML = categories.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join('');
+    } else {
+      select.innerHTML = S.products.map(p => `<option value="${esc(p.id)}">${esc(p.name || 'Без названия')}</option>`).join('');
+    }
+    if (promo.target && [...select.options].some(option => option.value === promo.target)) select.value = promo.target;
+  }
+  function syncPromotionForm() {
+    if (!$('#stackdPromoScope')) return;
+    $('#stackdPromoScope').value = promo.scope || 'all';
+    if ($('#stackdPromoPercent')) $('#stackdPromoPercent').value = promo.percent || '';
+    if ($('#stackdPromoBadge')) $('#stackdPromoBadge').value = promo.label || 'СКИДКА';
+    if ($('#stackdPromoEnabled')) $('#stackdPromoEnabled').checked = promo.enabled === true;
+    renderPromotionTargetOptions();
+  }
+  async function persistPromotion() {
+    const { error } = await _supabase.from('site_settings').upsert(
+      [{ key: 'discount_config', value: JSON.stringify(promo) }], { onConflict: 'key' }
+    );
+    if (error) throw error;
+  }
+  async function savePromotion() {
+    if (!isAdmin()) { toast('Недостаточно прав.'); return; }
+    const enabled = Boolean($('#stackdPromoEnabled')?.checked);
+    const scope = $('#stackdPromoScope')?.value || 'all';
+    const target = scope === 'all' ? '' : String($('#stackdPromoTarget')?.value || '');
+    const percent = Number($('#stackdPromoPercent')?.value);
+    const label = String($('#stackdPromoBadge')?.value || 'СКИДКА').trim().slice(0, 22) || 'СКИДКА';
+    const status = $('#stackdPromoStatus');
+    if (enabled && (!Number.isFinite(percent) || percent < 1 || percent > 90)) { if (status) status.textContent = 'Укажите скидку от 1 до 90%.'; return; }
+    if (enabled && scope !== 'all' && !target) { if (status) status.textContent = 'Выберите категорию или товар.'; return; }
+    const previous = promo;
+    const next = { enabled, scope, target, percent: enabled ? percent : 0, label, originalPrices: {} };
+    const changed = [];
+    const button = $('#stackdPromoSave');
+    try {
+      if (button) button.disabled = true;
+      if (status) status.textContent = 'Применяем изменения…';
+      for (const product of S.products) {
+        const id = String(product.id);
+        const oldBase = Number(previous.originalPrices?.[id]);
+        const basePrice = previous.enabled && Number.isFinite(oldBase) ? oldBase : Number(product.price);
+        const apply = enabled && promotionMatches(product, next);
+        const desired = apply ? Number((basePrice * (1 - percent / 100)).toFixed(2)) : basePrice;
+        if (apply) next.originalPrices[id] = basePrice;
+        const oldPrice = Number(product.price);
+        if (!Number.isFinite(desired) || desired < 0) throw new Error('Некорректная цена: ' + id);
+        if (Math.abs(desired - oldPrice) < 0.001) continue;
+        const { error } = await _supabase.from('products').update({ price: desired }).eq('id', product.id);
+        if (error) throw error;
+        changed.push({ id: product.id, oldPrice, newPrice: desired });
+      }
+      promo = next;
+      await persistPromotion();
+      S.products = S.products.map(product => {
+        const item = changed.find(change => String(change.id) === String(product.id));
+        if (item) return { ...product, price: item.newPrice };
+        const base = previous.enabled && Number.isFinite(Number(previous.originalPrices?.[String(product.id)]))
+          ? Number(previous.originalPrices[String(product.id)]) : Number(product.price);
+        const shouldApply = enabled && promotionMatches(product, next);
+        return { ...product, price: shouldApply ? Number((base * (1 - percent / 100)).toFixed(2)) : base };
+      });
+      renderAll();
+      if (status) status.textContent = enabled ? t('discountSaved') : t('discountDisabled');
+      syncPromotionForm();
+    } catch (error) {
+      console.error('Promotion update failed:', error);
+      for (const item of changed.reverse()) {
+        const rollback = await _supabase.from('products').update({ price: item.oldPrice }).eq('id', item.id);
+        if (rollback.error) console.error('Promotion rollback failed:', rollback.error);
+      }
+      promo = previous;
+      if (status) status.textContent = 'Не удалось применить скидку: ' + (error.message || 'ошибка базы данных');
+      await load();
+    } finally { if (button) button.disabled = false; }
+  }
+  function makePromotionUI() {
+    const tab = $('#tab-settings');
+    if (!tab || $('#stackdPromoSettings')) return;
+    const section = document.createElement('section');
+    section.id = 'stackdPromoSettings'; section.className = 'stackd-settings-section stackd-promo-settings';
+    section.innerHTML = `
+      <div class="stackd-section-head"><h3>${esc(t('discountTitle'))}</h3><span>PROMOTIONS</span></div>
+      <p class="stackd-admin-note">${esc(t('discountHelp'))}</p>
+      <label for="stackdPromoScope">${esc(t('discountScope'))}</label>
+      <select id="stackdPromoScope"><option value="all">${esc(t('discountAll'))}</option><option value="category">${esc(t('discountCategory'))}</option><option value="product">${esc(t('discountProduct'))}</option></select>
+      <label for="stackdPromoTarget">${esc(t('discountTarget'))}</label><select id="stackdPromoTarget"></select>
+      <div class="stackd-settings-grid"><div><label for="stackdPromoPercent">${esc(t('discountPercent'))}</label><input id="stackdPromoPercent" type="number" min="1" max="90" step="1" placeholder="20"></div><div><label for="stackdPromoBadge">${esc(t('discountBadge'))}</label><input id="stackdPromoBadge" maxlength="22" value="СКИДКА"></div></div>
+      <label class="stackd-promo-check"><input id="stackdPromoEnabled" type="checkbox"><span>${esc(t('discountEnabled'))}</span></label>
+      <button type="button" class="btn btn-primary stackd-promo-save" id="stackdPromoSave">${esc(t('discountSave'))}</button><p id="stackdPromoStatus" class="stackd-admin-note" role="status"></p>`;
+    tab.append(section);
+    $('#stackdPromoScope').addEventListener('change', renderPromotionTargetOptions);
+    $('#stackdPromoSave').addEventListener('click', savePromotion);
+    syncPromotionForm();
+  }
+
+
+  function safeWebLink(value) {
+    try { const url = new URL(String(value || '').trim()); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; }
+    catch { return ''; }
+  }
+  function renderNewsRail() {
+    const catalog = $('#catalog');
+    if (!catalog) return;
+    let section = $('#stackdNewsRail');
+    if (!section) {
+      section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
+      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKD / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
+      catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
+    }
+    const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
+    if (newsTimer) { clearInterval(newsTimer); newsTimer = null; }
+    const items = newsItems.filter(item => item && item.image_url);
+    newsIndex = 0; section.hidden = !items.length;
+    if (!items.length) { track.replaceChildren(); viewport.scrollLeft = 0; return; }
+    const slides = items.length > 1 ? [...items, items[0]] : items;
+    track.innerHTML = slides.map((item, index) => {
+      const image = safeImageUrl(item.image_url);
+      const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
+      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'Stackd news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
+      const href = safeWebLink(item.href);
+      return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
+    }).join('');
+    viewport.scrollLeft = 0;
+    if (items.length < 2) return;
+    newsTimer = setInterval(() => {
+      if (document.hidden) return;
+      newsIndex += 1;
+      const next = $$('.stackd-news-card', track)[newsIndex];
+      if (!next) return;
+      viewport.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
+      if (newsIndex === items.length) setTimeout(() => { viewport.scrollTo({ left: 0, behavior: 'auto' }); newsIndex = 0; }, 560);
+    }, 4000);
+  }
+  function renderNewsAdmin() {
+    const host = $('#stackdNewsList');
+    if (!host) return;
+    if (!newsItems.length) { host.innerHTML = `<li class="stackd-news-empty">${esc(t('newsEmpty'))}</li>`; return; }
+    host.innerHTML = newsItems.map((item, index) => `<li data-news-index="${index}"><img src="${esc(item.image_url)}" alt=""><div class="stackd-news-meta"><strong>${esc(item.title || 'Фото без подписи')}</strong><small>${index + 1} / ${newsItems.length}</small></div><div class="stackd-news-actions"><button type="button" class="btn btn-ghost sm" data-news-action="up" data-index="${index}" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" class="btn btn-ghost sm" data-news-action="down" data-index="${index}" ${index === newsItems.length - 1 ? 'disabled' : ''}>↓</button><button type="button" class="btn btn-ghost sm" data-news-action="remove" data-index="${index}">${esc(t('newsRemove'))}</button></div></li>`).join('');
+  }
+  async function persistNews() {
+    const { error } = await _supabase.from('site_settings').upsert([{ key: 'news_items', value: JSON.stringify(newsItems) }], { onConflict: 'key' });
+    if (error) throw error;
+  }
+  function makeNewsUI() {
+    const tab = $('#tab-settings');
+    if (!tab || $('#stackdNewsSettings')) return;
+    const section = document.createElement('section'); section.id = 'stackdNewsSettings'; section.className = 'stackd-settings-section stackd-news-settings';
+    section.innerHTML = `<div class="stackd-section-head"><h3>${esc(t('newsTitle'))}</h3><span>UPDATES</span></div><p class="stackd-admin-note">${esc(t('newsHelp'))}</p><label for="stackdNewsFile">${esc(t('newsImage'))}</label><input type="file" id="stackdNewsFile" accept="image/jpeg,image/png,image/webp"><label for="stackdNewsCaption">${esc(t('newsCaption'))}</label><input type="text" id="stackdNewsCaption" maxlength="90"><label for="stackdNewsLink">${esc(t('newsLink'))}</label><input type="url" id="stackdNewsLink" placeholder="https://"><button class="btn btn-primary" type="button" id="stackdNewsAdd">${esc(t('newsAdd'))}</button><ul id="stackdNewsList" class="stackd-news-admin-list"></ul>`;
+    tab.append(section);
+    $('#stackdNewsAdd').addEventListener('click', addNewsItem);
+    $('#stackdNewsList').addEventListener('click', handleNewsAction);
+    renderNewsAdmin();
+  }
+  async function addNewsItem() {
+    if (!isAdmin()) { toast('Недостаточно прав.'); return; }
+    const input = $('#stackdNewsFile'), file = input?.files?.[0], button = $('#stackdNewsAdd');
+    if (!file) { toast('Выберите изображение.'); return; }
+    if (newsItems.length >= 20) { toast('Можно добавить максимум 20 фотографий.'); return; }
+    let uploadedPath = '';
+    try {
+      await validateProductImage(file);
+      button.disabled = true;
+      const extension = IMAGE_TYPES[file.type];
+      uploadedPath = `news/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await _supabase.storage.from(PRODUCT_BUCKET).upload(uploadedPath, file, { cacheControl: '31536000', upsert: false, contentType: file.type });
+      if (uploadError) throw uploadError;
+      const { data } = _supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(uploadedPath);
+      if (!data?.publicUrl) throw new Error('Storage не вернул публичную ссылку.');
+      newsItems.push({ id: crypto.randomUUID(), image_url: data.publicUrl, title: String($('#stackdNewsCaption')?.value || '').trim().slice(0, 90), href: safeWebLink($('#stackdNewsLink')?.value || '') });
+      await persistNews();
+      input.value = ''; $('#stackdNewsCaption').value = ''; $('#stackdNewsLink').value = '';
+      renderNewsAdmin(); renderNewsRail(); toast('Фотография добавлена в новости.');
+    } catch (error) {
+      if (uploadedPath) await _supabase.storage.from(PRODUCT_BUCKET).remove([uploadedPath]);
+      newsItems = newsItems.filter(item => !uploadedPath || !item.image_url.includes(uploadedPath));
+      toast('Не удалось добавить новость: ' + (error.message || 'ошибка загрузки'));
+    } finally { if (button) button.disabled = false; }
+  }
+  async function handleNewsAction(event) {
+    const button = event.target.closest('[data-news-action]');
+    if (!button || !isAdmin()) return;
+    const index = Number(button.dataset.index), action = button.dataset.newsAction;
+    if (!Number.isInteger(index) || !newsItems[index]) return;
+    if (action === 'remove') {
+      const removed = newsItems.splice(index, 1)[0];
+      await persistNews();
+      const path = getProductStoragePath(removed.image_url);
+      if (path?.startsWith('news/')) { const { error } = await _supabase.storage.from(PRODUCT_BUCKET).remove([path]); if (error) console.warn(error); }
+    } else {
+      const next = index + (action === 'up' ? -1 : 1);
+      if (next < 0 || next >= newsItems.length) return;
+      [newsItems[index], newsItems[next]] = [newsItems[next], newsItems[index]];
+      await persistNews();
+    }
+    renderNewsAdmin(); renderNewsRail();
+  }
+  function refreshPromotionNewsLabels() {
+    const pairs = [
+      ['stackdPromoSettings h3', 'discountTitle'], ['stackdNewsSettings h3', 'newsTitle'],
+      ['.stackd-news-heading h3', 'newsSection'], ['#stackdPromoScope', null]
+    ];
+    for (const [selector, key] of pairs) { const node = document.querySelector(selector); if (node && key) node.textContent = t(key); }
+    const profileText = {
+      stackdProfileHint: 'profileHint', stackdProfileClick: 'profileClick', stackdProfileTitle: 'profileTitle',
+      stackdProfileNote: 'profileNote', stackdProfileOrders: 'profileOrders', stackdProfileTheme: 'profileTheme',
+      stackdProfileLogout: 'profileLogout', stackdProfileEmailLabel: 'profileEmail'
+    };
+    for (const [id, key] of Object.entries(profileText)) { const node = $('#' + id); if (node) node.textContent = t(key); }
+    const scope = $('#stackdPromoScope'); if (scope) { scope.options[0].text = t('discountAll'); scope.options[1].text = t('discountCategory'); scope.options[2].text = t('discountProduct'); }
+    const save = $('#stackdPromoSave'); if (save) save.textContent = t('discountSave');
+    const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
+    renderPromotionTargetOptions(); renderNewsAdmin();
+  }
+
   function makeSettingsUI() {
     const tab = $('#tab-settings');
     if (!tab || $('#stackdHeroSettings')) return;
@@ -407,8 +693,13 @@
     await baseLoadSettings();
     const { data, error } = await _supabase.from('site_settings').select('key,value');
     if (error) { console.warn('Extended settings could not be loaded:', error); return; }
+    const values = new Map((data || []).map(row => [row.key, row.value]));
     for (const row of data || []) if (Object.hasOwn(hero, row.key)) hero[row.key] = row.value ?? hero[row.key];
-    makeSettingsUI(); updateHero();
+    const savedPromo = parseSetting(values.get('discount_config'), null);
+    if (savedPromo && typeof savedPromo === 'object') promo = { enabled: savedPromo.enabled === true, scope: ['all','category','product'].includes(savedPromo.scope) ? savedPromo.scope : 'all', target: String(savedPromo.target || ''), percent: Math.max(0, Math.min(90, Number(savedPromo.percent) || 0)), label: String(savedPromo.label || 'СКИДКА').slice(0,22), originalPrices: savedPromo.originalPrices && typeof savedPromo.originalPrices === 'object' ? savedPromo.originalPrices : {} };
+    const savedNews = parseSetting(values.get('news_items'), []);
+    newsItems = Array.isArray(savedNews) ? savedNews.filter(item => item && typeof item.image_url === 'string').slice(0,20).map(item => ({ id: String(item.id || crypto.randomUUID()), image_url: safeImageUrl(item.image_url), title: String(item.title || '').slice(0,90), href: safeWebLink(item.href || '') })) : [];
+    makeSettingsUI(); makePromotionUI(); makeNewsUI(); updateHero(); syncPromotionForm(); renderNewsRail(); renderNewsAdmin();
   };
 
   async function saveHeroSettings(event) {
@@ -583,9 +874,48 @@
   updateChipsSlider = function stackdUpdateChipsSlider() {
     const chips = $('#chips'), active = $('#chips button[aria-pressed="true"]'), slider = $('#chipsSlider');
     if (!chips || !active || !slider) return;
-    const left = active.getBoundingClientRect().left - chips.getBoundingClientRect().left;
-    slider.style.width = `${active.getBoundingClientRect().width}px`;
-    slider.style.transform = `translate3d(${left}px,0,0)`;
+    slider.style.width = `${active.offsetWidth}px`;
+    slider.style.left = `${active.offsetLeft}px`;
+    slider.style.transform = 'none';
+  };
+
+
+  function initProfileMenu() {
+    const trigger = $('#stackdProfileTrigger');
+    const menu = $('#stackdProfileMenu');
+    if (!trigger || !menu || trigger.dataset.bound === '1') return;
+    trigger.dataset.bound = '1';
+    const toggle = () => {
+      menu.hidden = !menu.hidden;
+      trigger.setAttribute('aria-expanded', String(!menu.hidden));
+      if (!menu.hidden) requestAnimationFrame(updateThemeSlider);
+    };
+    trigger.addEventListener('click', toggle);
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.stackd-profile-anchor')) { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
+    });
+    $('#myOrdersBtn')?.addEventListener('click', () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); });
+    const logout = $('#logoutBtn');
+    if (logout) logout.addEventListener('click', () => { menu.hidden = true; });
+    syncProfileMenu();
+    _supabase.auth.onAuthStateChange((_event, session) => {
+      setTimeout(() => { S.user = session?.user || null; syncProfileMenu(); }, 0);
+    });
+  }
+  function syncProfileMenu() {
+    if ($('#stackdProfileEmail')) $('#stackdProfileEmail').textContent = S.user?.email || '';
+    const avatar = $('#userAvatar');
+    if (avatar) avatar.alt = 'Profile';
+    refreshPromotionNewsLabels();
+  }
+  const baseCheckAuth = checkAuth;
+  checkAuth = async function stackdCheckAuthWithProfile(...args) {
+    const result = await baseCheckAuth(...args);
+    syncProfileMenu();
+    return result;
   };
 
   function refreshAddedLabels() {
@@ -602,7 +932,7 @@
     }
     const active = $('#stackdActive'), featured = $('#stackdFeatured');
     if (active?.parentElement) active.parentElement.lastChild.nodeValue = ` ${S.lang === 'en' ? 'Show product in catalog' : S.lang === 'az' ? 'Məhsulu kataloqda göstər' : 'Показывать товар в каталоге'}`;
-    if (featured?.parentElement) featured.parentElement.lastChild.nodeValue = ` ${S.lang === 'en' ? 'Featured product' : S.lang === 'az' ? 'Seçilmiş məhsul' : 'Отметить как популярный'}`;
+    if (featured?.parentElement) featured.parentElement.lastChild.nodeValue = ` ${S.lang === 'en' ? 'Show POPULAR label' : S.lang === 'az' ? 'Populyar nişanını göstər' : 'Показывать метку «Популярное»'}`;
     const titleMap = {
       stackdHeroFile: t('heroImage'), stackdHeroFit: t('heroFit'), stackdHeroPosition: t('heroPosition'),
       stackdHeroHeight: t('heroHeight'), stackdHeroRatio: t('heroRatio')
@@ -617,12 +947,18 @@
     const ratio = $('#stackdHeroRatio'); if (ratio) ratio.options[3].text = S.lang === 'en' ? 'Natural height' : S.lang === 'az' ? 'Təbii hündürlük' : 'Автоматически';
     const translateButton = $('#stackdTranslateAll'); if (translateButton) translateButton.textContent = t('translateAll');
     renderGuideText();
+    refreshPromotionNewsLabels();
   }
 
   function initialise() {
     injectProductFields();
     makeSettingsUI();
+    makePromotionUI();
+    makeNewsUI();
+    renderNewsRail();
+    initProfileMenu();
     refreshAddedLabels();
+    refreshPromotionNewsLabels();
     buildCartGuide();
     bindFloodProtection();
     bindTopupRateLimit();
@@ -644,7 +980,7 @@
     document.addEventListener('click', event => {
       const langButton = event.target.closest('[data-lang]');
       if (!langButton) return;
-      setTimeout(refreshAddedLabels, 0);
+      setTimeout(() => { refreshAddedLabels(); refreshPromotionNewsLabels(); }, 0);
     });
     console.info(`Stackd enhancements ${VERSION} loaded`);
   }
