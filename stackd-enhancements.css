@@ -1,220 +1,403 @@
-/* Stackd refinements. Loaded after styles.css. */
-.search-container,.search{min-width:0}
-.search{height:44px;align-items:center;isolation:isolate}
-.search .ic{top:50%;transform:translateY(-50%);left:15px}
-.search input{display:block;min-width:0;height:42px;line-height:normal;padding-top:0!important;padding-bottom:0!important;text-align:left;vertical-align:middle}
-.search input::-webkit-search-cancel-button{margin-left:8px}
-
-.chips{isolation:isolate;align-items:center}
-.chips-slider{left:0;will-change:transform,width;pointer-events:none}
-.chips button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;line-height:1;min-height:38px}
-.chips-wrapper{scrollbar-width:none;overscroll-behavior-inline:contain}
-.chips-wrapper::-webkit-scrollbar{display:none}
-
-.card{position:relative;min-width:0}
-.card-media{position:relative;isolation:isolate}
-.card-media img{display:block}
-.stackd-arches{position:absolute;left:11px;bottom:11px;z-index:2;width:36px;height:34px;display:grid;place-items:center;padding:4px;border:1px solid rgba(255,255,255,.65);border-radius:11px;background:rgba(25,22,19,.78);color:#ffc72c;box-shadow:0 5px 15px rgba(0,0,0,.22);pointer-events:none}
-.stackd-arches svg{display:block;width:100%;height:100%}
-.stackd-card-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
-.stackd-card-actions>.btn{min-width:0}
-.stackd-card-qty{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:2px 5px;border:1px solid var(--line);border-radius:999px;background:var(--raised);font-weight:700;font-variant-numeric:tabular-nums}
-.stackd-card-qty button{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--bg);color:var(--text);font:700 17px/1 inherit;cursor:pointer}
-.stackd-card-qty button:hover{background:var(--line)}
-.stackd-card-qty button:disabled{opacity:.35;cursor:not-allowed}
-.stock-info{display:block;color:var(--muted);font-size:.78rem;font-weight:600}
-.stock-low{color:#bd6a16}
-.card.is-out .stackd-arches{opacity:.65}
-
-/* Top-layer notifications: solid surface, max five visible. */
-#checkoutBtn[hidden]{display:none!important}
-#toasts{position:fixed;inset:auto 0 max(18px,env(safe-area-inset-bottom)) 0;z-index:2147483000;display:grid;justify-items:center;gap:8px;width:100%;max-width:none;max-height:50vh;overflow:visible;padding:0 14px;border:0;background:transparent;color:inherit;pointer-events:none;translate:none}
-#toasts[popover]{position:fixed;inset:auto 0 max(18px,env(safe-area-inset-bottom)) 0;margin:0;overflow:visible}
-#toasts:popover-open{display:grid}
-.stackd-toast{width:max-content;max-width:min(520px,100%);padding:12px 18px;border:1px solid color-mix(in srgb,var(--text) 15%,transparent);border-radius:14px;background:#24211d!important;color:#fff!important;box-shadow:0 12px 34px rgba(0,0,0,.28);font-size:.9rem;font-weight:650;line-height:1.4;text-align:center;pointer-events:auto;opacity:1;transform:translateY(0);animation:stackdToastIn .22s cubic-bezier(.2,.8,.2,1) both;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.stackd-toast-out{opacity:0!important;transform:translateY(8px) scale(.98)!important;transition:opacity .2s ease,transform .2s ease}
-@keyframes stackdToastIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-.stackd-fly-image{position:fixed;z-index:2147482000;object-fit:cover;border-radius:14px;pointer-events:none;opacity:1;transform:translate(0,0) scale(1);transition:transform .62s cubic-bezier(.2,.75,.2,1),opacity .62s ease;box-shadow:0 12px 28px rgba(0,0,0,.25)}
-.stackd-fly-mark{position:fixed;z-index:2147482001;display:grid;place-items:center;padding:4px;border:1px solid rgba(255,255,255,.65);border-radius:11px;background:rgba(25,22,19,.88);color:#ffc72c;pointer-events:none;transition:transform .62s cubic-bezier(.2,.75,.2,1),opacity .62s ease;box-shadow:0 5px 15px rgba(0,0,0,.22)}
-.stackd-fly-mark svg{width:100%;height:100%}
-.cart-btn .badge.pop{animation:pop .38s var(--ease)}
-
-/* Product editor additions */
-.stackd-product-fields{display:grid;gap:13px;margin:8px 0 18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
-.stackd-field{display:grid;gap:5px;min-width:0}
-.stackd-field label{margin:0}
-.stackd-field input,.stackd-field select{margin:0!important}
-.stackd-field small,.stackd-admin-note{display:block;color:var(--muted);font-size:.78rem;line-height:1.45}
-.stackd-checks{display:grid;gap:8px}
-.stackd-checks label{display:flex;align-items:center;gap:9px;margin:0;font-size:.88rem;font-weight:550}
-.stackd-checks input{width:16px;height:16px;accent-color:var(--accent)}
-#stackdTranslateAll{margin-left:auto}
-#stackdStockHint{margin:7px 0 12px}
-.stackd-settings-section{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}
-.stackd-settings-section h3{margin:0 0 14px}
-.stackd-settings-section>input{margin-bottom:12px}
-.stackd-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.stackd-settings-grid>div{min-width:0}
-.stackd-settings-grid input,.stackd-settings-grid select{margin:0!important}
-
-/* Cart guide and swipe checkout */
-.stackd-purchase-guide{display:grid;gap:7px;margin:4px 20px 12px;padding:14px 15px;border:1px solid var(--line);border-radius:13px;background:var(--bg);font-size:.82rem;line-height:1.45;color:var(--muted)}
-.stackd-purchase-guide strong{color:var(--text);font-size:.92rem}
-.stackd-purchase-guide p{margin:0}
-.stackd-swipe{display:grid;gap:6px;min-width:0}
-.stackd-swipe-track{position:relative;display:flex;align-items:center;height:58px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--bg);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
-.stackd-swipe-fill{position:absolute;inset:4px auto 4px 4px;width:0;max-width:calc(100% - 8px);border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,var(--surface));pointer-events:none;transition:width .08s linear}
-.stackd-swipe-label{position:absolute;inset:0;display:grid;place-items:center;padding:0 62px;color:var(--muted);font-size:.82rem;font-weight:700;text-align:center;pointer-events:none}
-.stackd-swipe-thumb{position:relative;z-index:2;flex:0 0 48px;width:48px;height:48px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:grab;touch-action:pan-y;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 28%,transparent);will-change:transform}
-.stackd-swipe-thumb:active{cursor:grabbing}
-.stackd-swipe-thumb span{width:11px;height:11px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);margin-left:-4px}
-.stackd-swipe-track.is-dragging .stackd-swipe-thumb{transition:none}
-.stackd-swipe-track:not(.is-dragging) .stackd-swipe-thumb{transition:transform .26s cubic-bezier(.2,.75,.2,1)}
-.stackd-swipe-hint{min-height:1.2em;color:var(--muted);font-size:.74rem;text-align:center}
-.stackd-preparing{display:grid;justify-items:center;gap:9px;padding:16px 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);text-align:center}
-.stackd-preparing[hidden]{display:none}
-.stackd-preparing strong{font-size:.96rem}
-.stackd-preparing p{max-width:42ch;color:var(--muted);font-size:.82rem;line-height:1.45}
-.stackd-spinner{width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:stackdSpin .8s linear infinite}
-@keyframes stackdSpin{to{transform:rotate(360deg)}}
-
-/* Dialog stacking and solid surfaces */
-dialog[open]{z-index:1000}
-dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;isolation:isolate}
-#drawer>header{position:relative;z-index:1;background:var(--surface)}
-#drawer>footer{background:var(--surface)}
-
-@media(max-width:680px){
- .stackd-card-actions{justify-content:space-between;flex-wrap:wrap}
- .stackd-card-actions>.btn{flex:1}
- .stackd-card-qty{align-self:stretch}
- .stackd-purchase-guide{margin-inline:14px;padding:12px}
- .stackd-settings-grid{grid-template-columns:minmax(0,1fr)}
- .stackd-product-fields{padding:13px}
- #stackdTranslateAll{margin-left:0}
- #toasts{bottom:max(14px,env(safe-area-inset-bottom));padding-inline:12px}
- .stackd-toast{max-width:100%;border-radius:13px}
+/* Stackd visual QA patch. Load AFTER stackd-enhancements.css. */
+:root {
+  --stackd-glass: color-mix(in srgb, var(--surface) 86%, transparent);
+  --stackd-glass-border: color-mix(in srgb, var(--text) 10%, transparent);
+  --stackd-panel-shadow: 0 18px 54px rgba(27, 22, 16, .16), inset 0 1px 0 rgba(255,255,255,.48);
 }
-@media(prefers-reduced-motion:reduce){
- .stackd-fly-image,.stackd-spinner{animation:none!important;transition:none!important}
- .stackd-toast{animation:none!important}
+[data-theme="dark"] {
+  --stackd-glass: color-mix(in srgb, #24211d 88%, transparent);
+  --stackd-glass-border: rgba(255,255,255,.12);
+  --stackd-panel-shadow: 0 22px 58px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09);
 }
-\n\n/* Catalog polish: aligned input text, predictable category pill, campaign and profile UI. */\n.search{display:flex!important;align-items:center!important;height:44px!important;min-height:44px!important}\n.search input,.search input[type="search"]{display:block!important;flex:1 1 auto!important;align-self:stretch!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0 16px 0 44px!important;line-height:normal!important;vertical-align:middle!important;transform:none!important;box-sizing:border-box!important}\n.search input::placeholder{line-height:normal!important;opacity:.82}\n.search .ic{top:50%!important;transform:translateY(-50%)!important}\n.chips{position:relative;isolation:isolate}\n.chips-slider{left:0;transform:none!important;transition:left .34s cubic-bezier(.22,.72,.18,1),width .34s cubic-bezier(.22,.72,.18,1)!important;will-change:left,width}\n.chips button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center}\n.badge-popular{letter-spacing:.045em;font-size:.67rem;font-weight:800}\n.stackd-sale-badge{position:absolute;z-index:5;top:11px;left:11px;display:inline-flex;align-items:center;gap:7px;max-width:calc(100% - 22px);padding:7px 10px;border-radius:9px;background:#c62828;color:#fff;box-shadow:0 5px 16px rgba(151,24,24,.26);font-size:.72rem;line-height:1}\n.stackd-sale-badge b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.stackd-sale-badge strong{font-size:.8rem}\n.stackd-price-stack{display:grid;gap:1px;align-content:center;min-width:0}\n.stackd-price-stack del{font-size:.77rem;color:var(--muted);font-weight:500}\n.stackd-price-stack strong{font-size:1.03rem;color:#c62828}\n[data-theme="dark"] .stackd-price-stack strong{color:#ff7979}\n.stackd-arches{width:42px;height:39px;padding:5px;border-radius:12px;color:#ffc72c;background:rgba(22,20,18,.82);border-color:rgba(255,255,255,.4)}\n.stackd-arches svg{width:100%;height:100%}\n.stackd-arches path{fill:currentColor}\n.stackd-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}\n.stackd-section-head h3{margin:0}\n.stackd-section-head span{font-size:.64rem;letter-spacing:.13em;font-weight:800;color:var(--muted)}\n.stackd-promo-settings{border-color:rgba(198,40,40,.28)}\n.stackd-promo-settings .stackd-section-head span{color:#c62828}\n.stackd-promo-settings>select,.stackd-promo-settings>input{margin:0 0 12px!important}\n.stackd-promo-settings .stackd-settings-grid{margin:6px 0 10px}\n.stackd-promo-check{display:flex;align-items:center;gap:9px;margin:6px 0 13px;font-size:.86rem}\n.stackd-promo-check input{width:16px;height:16px;margin:0;accent-color:#c62828}\n.stackd-promo-save{background:#c62828;color:#fff}\n.stackd-promo-save:hover{background:#aa2020;filter:none}\n#stackdPromoStatus{min-height:1.25em;margin-top:9px}\n.stackd-news-section{padding-top:24px;margin:0 0 26px}\n.stackd-news-section[hidden]{display:none}\n.stackd-news-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}\n.stackd-news-heading h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}\n.stackd-news-heading span{font-size:.64rem;letter-spacing:.13em;font-weight:800;color:var(--muted)}\n.stackd-news-viewport{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;border-radius:17px;touch-action:pan-x;overscroll-behavior-inline:contain}\n.stackd-news-viewport::-webkit-scrollbar{display:none}\n.stackd-news-track{display:flex;gap:13px;width:max-content}\n.stackd-news-card{position:relative;display:block;flex:0 0 clamp(260px,34vw,400px);aspect-ratio:2.15/1;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--raised);color:#fff;text-decoration:none;scroll-snap-align:start;box-shadow:var(--shadow)}\n.stackd-news-card img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s var(--ease)}\n.stackd-news-card:hover img{transform:scale(1.025)}\n.stackd-news-caption{position:absolute;inset:auto 0 0;padding:26px 15px 13px;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:.88rem;font-weight:700}\n.stackd-news-admin-list{display:grid;gap:9px;list-style:none;margin:15px 0 0;padding:0}\n.stackd-news-admin-list li{display:flex;align-items:center;gap:10px;min-width:0;padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}\n.stackd-news-admin-list li>img{width:72px;height:50px;object-fit:cover;border-radius:8px;flex:none}\n.stackd-news-meta{display:grid;gap:2px;min-width:0;flex:1}\n.stackd-news-meta strong{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.stackd-news-meta small{font-size:.72rem;color:var(--muted)}\n.stackd-news-actions{display:flex;gap:4px}\n.stackd-news-empty{font-size:.82rem;color:var(--muted)}\n.stackd-profile-anchor{position:relative;display:flex;align-items:center}\n.stackd-profile-trigger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:76px;padding:2px 6px;border:0;border-radius:12px;color:var(--text);background:transparent;cursor:pointer;font:inherit}\n.stackd-profile-trigger:hover,.stackd-profile-trigger[aria-expanded="true"]{background:var(--raised)}\n.stackd-profile-trigger img{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;object-fit:cover}\n.stackd-profile-trigger strong{font-size:.67rem;line-height:1.05}\n.stackd-profile-trigger small{font-size:.59rem;line-height:1.1;color:var(--muted)}\n.stackd-profile-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:10000;display:grid;gap:12px;width:min(330px,calc(100vw - 24px));padding:17px;border:1px solid color-mix(in srgb,var(--text) 12%,transparent);border-radius:20px;background:color-mix(in srgb,var(--surface) 94%,transparent);box-shadow:0 18px 54px rgba(25,20,14,.24),inset 0 1px 0 rgba(255,255,255,.28);-webkit-backdrop-filter:blur(24px) saturate(165%);backdrop-filter:blur(24px) saturate(165%);animation:stackdProfileIn .2s var(--ease)}\n.stackd-profile-menu[hidden]{display:none!important}\n.stackd-profile-head{display:grid;gap:4px;padding-bottom:11px;border-bottom:1px solid var(--line)}\n.stackd-profile-head small,.stackd-profile-note{font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}\n.stackd-profile-action{width:100%;min-height:42px;padding:10px 12px;text-align:left;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--text);font:inherit;font-size:.88rem;cursor:pointer}\n.stackd-profile-action:hover{background:var(--raised)}\n.stackd-profile-logout{color:#c62828;border-color:rgba(198,40,40,.22)}\n.stackd-profile-theme{display:grid;gap:8px;font-size:.82rem;font-weight:650}\n.stackd-profile-theme .seg{width:100%}\n.stackd-profile-theme .seg button{min-width:0;flex:1}\n@keyframes stackdProfileIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}\n[data-theme="dark"] .stackd-profile-menu{background:color-mix(in srgb,#26231f 94%,transparent);border-color:rgba(255,255,255,.13)}\n@media(max-width:680px){\n .search input,.search input[type="search"]{padding-left:44px!important}\n .stackd-news-section{padding-top:18px;margin-bottom:19px}\n .stackd-news-card{flex-basis:calc(100vw - 54px);max-width:440px;aspect-ratio:1.9/1}\n .stackd-news-track{gap:10px}\n .stackd-profile-menu{right:auto;left:0;top:calc(100% + 8px)}\n .stackd-profile-trigger strong{font-size:.7rem}\n .stackd-news-admin-list li{flex-wrap:wrap}\n .stackd-news-actions{margin-left:auto}\n .stackd-settings-grid{grid-template-columns:minmax(0,1fr)}\n .stackd-sale-badge{top:8px;left:8px;padding:6px 7px;font-size:.63rem}\n .stackd-arches{left:8px;bottom:8px;width:36px;height:34px}\n}\n@media(max-width:380px){.stackd-card-actions{flex-wrap:wrap}.stackd-news-card{flex-basis:calc(100vw - 44px)}}\n@media(prefers-reduced-motion:reduce){.stackd-news-viewport{scroll-behavior:auto}.stackd-news-card img{transition:none}}\n
-  function safeWebLink(value) {
-    try { const url = new URL(String(value || '').trim()); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; }
-    catch { return ''; }
+
+/* Calm, consistent navigation and glass surfaces. */
+.nav.stackd-visual-nav {
+  isolation: isolate;
+  gap: clamp(8px, 1.2vw, 16px);
+  background: var(--stackd-glass);
+  border-bottom: 1px solid var(--stackd-glass-border);
+  box-shadow: 0 5px 22px rgba(28, 22, 15, .045);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  backdrop-filter: blur(22px) saturate(165%);
+}
+.nav .brand { gap: 9px; letter-spacing: -.035em; }
+.nav .brand img { width: 29px; height: 29px; }
+.nav .search { border-color: color-mix(in srgb, var(--text) 9%, var(--line)); background: color-mix(in srgb, var(--raised) 88%, transparent); }
+.nav .search:focus-within { border-color: color-mix(in srgb, var(--accent) 62%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 11%, transparent); }
+.nav .cart-btn { box-shadow: 0 2px 8px rgba(20,15,10,.045); }
+
+/* Featured product: quiet warm label, never the default red badge. */
+.card .badge-popular {
+  position: absolute;
+  z-index: 6;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 24px);
+  padding: 7px 10px;
+  overflow: hidden;
+  border: 1px solid rgba(136, 103, 49, .18);
+  border-radius: 999px;
+  background: rgba(250, 246, 236, .95);
+  color: #6d542a;
+  box-shadow: 0 3px 12px rgba(27, 22, 16, .12);
+  font: 700 10px/1.1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.card .badge-popular::before {
+  content: "✦";
+  color: #b58a40;
+  font-size: 12px;
+  line-height: 1;
+}
+[data-theme="dark"] .card .badge-popular {
+  background: rgba(54, 46, 33, .94);
+  color: #ead8b2;
+  border-color: rgba(214, 180, 117, .22);
+}
+
+/* Desktop profile control. */
+#userProfile.user-profile {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+.stackd-profile-anchor { position: relative; display: flex; align-items: center; }
+.stackd-profile-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 48px;
+  height: 48px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--raised) 90%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 2px 9px rgba(20,15,10,.06), inset 0 1px 0 rgba(255,255,255,.45);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.stackd-profile-trigger:hover,
+.stackd-profile-trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.stackd-profile-trigger:active { transform: scale(.96); }
+.stackd-profile-avatar-frame { display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; border-radius: 50%; }
+.stackd-profile-trigger img,
+.stackd-profile-trigger .avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--raised);
+}
+.stackd-profile-trigger-chevron {
+  position: absolute;
+  right: -3px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid var(--surface);
+  border-radius: 50%;
+  background: var(--raised);
+  color: var(--muted);
+  font: 700 12px/1 ui-sans-serif, system-ui, sans-serif;
+}
+.stackd-profile-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 2000;
+  display: grid;
+  gap: 14px;
+  width: min(340px, calc(100vw - 28px));
+  max-height: min(72dvh, 560px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--stackd-glass-border);
+  border-radius: 23px;
+  background: var(--stackd-glass);
+  color: var(--text);
+  box-shadow: var(--stackd-panel-shadow);
+  -webkit-backdrop-filter: blur(25px) saturate(170%);
+  backdrop-filter: blur(25px) saturate(170%);
+  transform-origin: top right;
+  animation: stackdProfileEnter .19s cubic-bezier(.2,.75,.2,1) both;
+}
+.stackd-profile-menu[hidden] { display: none !important; }
+@keyframes stackdProfileEnter { from { opacity: 0; transform: translateY(-6px) scale(.985); } to { opacity: 1; transform: none; } }
+.stackd-profile-head { display: grid; gap: 5px; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+.stackd-profile-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stackd-profile-head-row > strong { font-size: 1.05rem; letter-spacing: -.025em; }
+.stackd-profile-status { padding: 4px 7px; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 999px; color: var(--accent); font-size: .61rem; font-weight: 800; letter-spacing: .09em; }
+#stackdProfileEmailLabel { color: var(--muted); font-size: .75rem; }
+.stackd-profile-email { overflow-wrap: anywhere; font-size: .84rem; font-weight: 650; }
+.stackd-profile-note { margin: -4px 0 0; color: var(--muted); font-size: .78rem; line-height: 1.45; }
+.stackd-profile-actions { display: grid; gap: 7px; }
+.stackd-profile-action {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--raised) 88%, transparent);
+  color: var(--text);
+  text-align: left;
+  font: 600 .87rem/1.3 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.stackd-profile-action:hover { background: var(--raised); border-color: color-mix(in srgb, var(--text) 17%, var(--line)); }
+.stackd-profile-action:active { transform: scale(.99); }
+.stackd-profile-action-icon { display: grid; place-items: center; width: 27px; height: 27px; flex: 0 0 27px; border-radius: 9px; background: var(--bg); color: var(--muted); font-size: 17px; }
+.stackd-profile-arrow { margin-left: auto; color: var(--muted); font-size: 22px; line-height: 1; }
+.stackd-profile-theme { display: grid; gap: 9px; padding-top: 2px; }
+.stackd-profile-theme > strong { font-size: .79rem; }
+.stackd-profile-theme-segment { display: flex; width: 100%; min-width: 0; padding: 3px; gap: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.stackd-profile-theme-segment .seg-slider { display: none !important; }
+.stackd-profile-theme-segment button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 36px;
+  padding: 6px 7px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 .77rem/1.15 ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.stackd-profile-theme-segment button[aria-pressed="true"],
+.stackd-profile-theme-segment button.is-selected { background: var(--text); color: var(--bg); }
+.stackd-profile-footer { padding-top: 11px; border-top: 1px solid var(--line); }
+.stackd-profile-logout { border-color: color-mix(in srgb, #b5473c 22%, var(--line)); color: #a83b32; }
+.stackd-profile-logout .stackd-profile-action-icon { background: color-mix(in srgb, #b5473c 10%, var(--bg)); color: #a83b32; }
+[data-theme="dark"] .stackd-profile-logout { color: #f08b80; }
+[data-theme="dark"] .stackd-profile-logout .stackd-profile-action-icon { color: #f08b80; }
+
+/* Balance stays compact and does not force the header to wrap. */
+#userProfile .balance-group { margin: 0; flex: 0 0 auto; }
+#userProfile .balance-display { gap: 5px; padding: 4px 10px; }
+#userProfile .b-label { font-size: .67rem; letter-spacing: .04em; }
+#userProfile .b-amount { font-size: .88rem; }
+#userProfile .btn-topup { width: 30px; height: 30px; }
+
+/* Product cards and category rail. */
+.card { min-width: 0; }
+.card .badge-popular + .stackd-sale-badge { top: 47px; }
+.chips-wrapper { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.chips { width: max-content; min-width: 100%; }
+.chips button { min-height: 39px; padding-inline: 15px; font-size: .86rem; font-weight: 580; }
+
+/* Mobile quick actions, Wolt-like horizontal pill dock. */
+.stackd-mobile-dock { display: none; }
+
+@media (max-width: 680px) {
+  body { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .nav.stackd-visual-nav {
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "brand lang account" "search search search" "admin admin admin";
+    gap: 9px 10px;
+    min-height: 0;
+    padding: max(8px, env(safe-area-inset-top)) 13px 10px;
+    border-radius: 0 0 17px 17px;
   }
-  function renderNewsRail() {
-    const catalog = $('#catalog');
-    if (!catalog) return;
-    let section = $('#stackdNewsRail');
-    if (!section) {
-      section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
-      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKD / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
-      catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
-    }
-    const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
-    if (newsTimer) { clearInterval(newsTimer); newsTimer = null; }
-    const items = newsItems.filter(item => item && item.image_url);
-    newsIndex = 0; section.hidden = !items.length;
-    if (!items.length) { track.replaceChildren(); viewport.scrollLeft = 0; return; }
-    const slides = items.length > 1 ? [...items, items[0]] : items;
-    track.innerHTML = slides.map((item, index) => {
-      const image = safeImageUrl(item.image_url);
-      const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
-      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'Stackd news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
-      const href = safeWebLink(item.href);
-      return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
-    }).join('');
-    viewport.scrollLeft = 0;
-    if (items.length < 2) return;
-    newsTimer = setInterval(() => {
-      if (document.hidden) return;
-      newsIndex += 1;
-      const next = $$('.stackd-news-card', track)[newsIndex];
-      if (!next) return;
-      viewport.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
-      if (newsIndex === items.length) setTimeout(() => { viewport.scrollTo({ left: 0, behavior: 'auto' }); newsIndex = 0; }, 560);
-    }, 4000);
+  .nav.stackd-visual-nav > .brand { grid-area: brand; min-width: 0; margin: 0; font-size: 1.04rem; }
+  .nav.stackd-visual-nav > .lang-selector { grid-area: lang; }
+  .nav.stackd-visual-nav > #userProfile,
+  .nav.stackd-visual-nav > #loginBtn { grid-area: account; justify-self: end; }
+  .nav.stackd-visual-nav > #adminBtn { grid-area: admin; justify-self: start; min-height: 34px; height: 34px; }
+  .nav.stackd-visual-nav > .search-container { grid-area: search; order: initial; width: 100%; max-width: none; min-width: 0; margin: 0; }
+  .nav.stackd-visual-nav > .cart-btn,
+  .nav.stackd-visual-nav > #themeSeg { display: none !important; }
+  #userProfile.user-profile { gap: 0; min-width: 0; }
+  #userProfile .balance-group { display: none !important; }
+  .stackd-profile-trigger { width: 42px; height: 42px; }
+  .stackd-profile-menu {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 108px);
+    right: 10px;
+    left: auto;
+    width: min(340px, calc(100vw - 20px));
+    max-height: min(56dvh, 420px);
+    overflow-y: auto;
+    padding: 16px;
+    border-radius: 21px;
+    transform-origin: top right;
   }
-  function renderNewsAdmin() {
-    const host = $('#stackdNewsList');
-    if (!host) return;
-    if (!newsItems.length) { host.innerHTML = `<li class="stackd-news-empty">${esc(t('newsEmpty'))}</li>`; return; }
-    host.innerHTML = newsItems.map((item, index) => `<li data-news-index="${index}"><img src="${esc(item.image_url)}" alt=""><div class="stackd-news-meta"><strong>${esc(item.title || 'Фото без подписи')}</strong><small>${index + 1} / ${newsItems.length}</small></div><div class="stackd-news-actions"><button type="button" class="btn btn-ghost sm" data-news-action="up" data-index="${index}" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" class="btn btn-ghost sm" data-news-action="down" data-index="${index}" ${index === newsItems.length - 1 ? 'disabled' : ''}>↓</button><button type="button" class="btn btn-ghost sm" data-news-action="remove" data-index="${index}">${esc(t('newsRemove'))}</button></div></li>`).join('');
+  .stackd-profile-note { display: none; }
+  .stackd-profile-head { padding-bottom: 11px; }
+  .stackd-profile-theme { gap: 7px; }
+  .stackd-profile-theme-segment button { min-height: 34px; font-size: .72rem; }
+
+  .showcase { margin: 12px auto 0; padding-inline: 13px; }
+  .showcase-slider { height: clamp(180px, 53vw, 255px) !important; border-radius: 18px; }
+  .slide-content { padding: 17px; }
+  .wrap { padding-inline: 13px; }
+  .head { align-items: center; gap: 10px; margin-top: 26px; margin-bottom: 12px; }
+  .head h2 { font-size: 1.25rem; letter-spacing: -.025em; }
+  .chips-wrapper { width: 100%; margin-inline: -1px; padding-bottom: 4px; }
+  .chips { gap: 7px; }
+  .chips button { min-height: 37px; padding-inline: 13px; font-size: .82rem; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; margin-top: 13px; }
+  .card { border-radius: 15px; box-shadow: 0 4px 16px rgba(30,24,17,.055); }
+  .card-body { gap: 5px; padding: 10px; }
+  .card-body h3 { font-size: .91rem; line-height: 1.25; }
+  .card-body p { font-size: .77rem; line-height: 1.35; }
+  .card-foot { align-items: stretch; flex-direction: column; gap: 8px; margin-top: 7px; }
+  .card-foot > strong { font-size: .98rem; }
+  .stackd-card-actions { justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .stackd-card-actions > .btn { flex: 1 1 auto; min-height: 35px; height: 35px; padding-inline: 10px; font-size: .77rem; }
+  .stackd-card-qty { min-height: 35px; }
+  .card .badge-popular { top: 8px; right: 8px; padding: 6px 8px; font-size: 8.5px; }
+  .stackd-sale-badge { top: 8px; left: 8px; padding: 6px 8px; font-size: .62rem; }
+  .card .badge-popular + .stackd-sale-badge { top: 39px; }
+
+  .stackd-mobile-dock {
+    position: fixed;
+    z-index: 950;
+    inset: auto 0 max(10px, env(safe-area-inset-bottom)) 0;
+    display: block;
+    width: min(500px, calc(100% - 22px));
+    margin-inline: auto;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    box-shadow: 0 12px 36px rgba(24,18,12,.2), inset 0 1px 0 rgba(255,255,255,.4);
+    -webkit-backdrop-filter: blur(24px) saturate(175%);
+    backdrop-filter: blur(24px) saturate(175%);
   }
-  async function persistNews() {
-    const { error } = await _supabase.from('site_settings').upsert([{ key: 'news_items', value: JSON.stringify(newsItems) }], { onConflict: 'key' });
-    if (error) throw error;
+  .stackd-mobile-dock-inner { display: grid; grid-template-columns: 1fr 1.12fr; gap: 7px; }
+  .stackd-mobile-dock button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 0;
+    min-height: 51px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 999px;
+    font: 700 .88rem/1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    cursor: pointer;
+    transition: transform .16s ease, filter .16s ease;
+    -webkit-tap-highlight-color: transparent;
   }
-  function makeNewsUI() {
-    const tab = $('#tab-settings');
-    if (!tab || $('#stackdNewsSettings')) return;
-    const section = document.createElement('section'); section.id = 'stackdNewsSettings'; section.className = 'stackd-settings-section stackd-news-settings';
-    section.innerHTML = `<div class="stackd-section-head"><h3>${esc(t('newsTitle'))}</h3><span>UPDATES</span></div><p class="stackd-admin-note">${esc(t('newsHelp'))}</p><label for="stackdNewsFile">${esc(t('newsImage'))}</label><input type="file" id="stackdNewsFile" accept="image/jpeg,image/png,image/webp"><label for="stackdNewsCaption">${esc(t('newsCaption'))}</label><input type="text" id="stackdNewsCaption" maxlength="90"><label for="stackdNewsLink">${esc(t('newsLink'))}</label><input type="url" id="stackdNewsLink" placeholder="https://"><button class="btn btn-primary" type="button" id="stackdNewsAdd">${esc(t('newsAdd'))}</button><ul id="stackdNewsList" class="stackd-news-admin-list"></ul>`;
-    tab.append(section);
-    $('#stackdNewsAdd').addEventListener('click', addNewsItem);
-    $('#stackdNewsList').addEventListener('click', handleNewsAction);
-    renderNewsAdmin();
+  .stackd-mobile-dock button:active { transform: scale(.975); }
+  .stackd-mobile-dock button svg { width: 21px; height: 21px; flex: 0 0 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .stackd-dock-orders { background: color-mix(in srgb, var(--raised) 92%, #8d8d8d 8%); color: var(--text); border: 1px solid var(--line) !important; }
+  .stackd-dock-cart { background: var(--accent); color: var(--accent-ink); box-shadow: 0 5px 14px color-mix(in srgb, var(--accent) 24%, transparent); }
+  .stackd-dock-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: rgba(255,255,255,.23); color: inherit; font-size: .7rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .stackd-dock-badge[hidden] { display: none !important; }
+
+  /* On mobile, the cart is a compact bottom sheet, not a desktop side drawer. */
+  #drawer.drawer.stackd-mobile-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    display: none;
+    width: 100%;
+    height: min(84dvh, 760px);
+    max-height: 84dvh;
+    margin: 0;
+    padding: 0 0 env(safe-area-inset-bottom);
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 25px 25px 0 0;
+    background: var(--surface);
+    box-shadow: 0 -14px 48px rgba(20,15,10,.2);
+    animation: stackdSheetEnter .25s cubic-bezier(.2,.75,.2,1);
   }
-  async function addNewsItem() {
-    if (!isAdmin()) { toast('Недостаточно прав.'); return; }
-    const input = $('#stackdNewsFile'), file = input?.files?.[0], button = $('#stackdNewsAdd');
-    if (!file) { toast('Выберите изображение.'); return; }
-    if (newsItems.length >= 20) { toast('Можно добавить максимум 20 фотографий.'); return; }
-    let uploadedPath = '';
-    try {
-      await validateProductImage(file);
-      button.disabled = true;
-      const extension = IMAGE_TYPES[file.type];
-      uploadedPath = `news/${crypto.randomUUID()}.${extension}`;
-      const { error: uploadError } = await _supabase.storage.from(PRODUCT_BUCKET).upload(uploadedPath, file, { cacheControl: '31536000', upsert: false, contentType: file.type });
-      if (uploadError) throw uploadError;
-      const { data } = _supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(uploadedPath);
-      if (!data?.publicUrl) throw new Error('Storage не вернул публичную ссылку.');
-      newsItems.push({ id: crypto.randomUUID(), image_url: data.publicUrl, title: String($('#stackdNewsCaption')?.value || '').trim().slice(0, 90), href: safeWebLink($('#stackdNewsLink')?.value || '') });
-      await persistNews();
-      input.value = ''; $('#stackdNewsCaption').value = ''; $('#stackdNewsLink').value = '';
-      renderNewsAdmin(); renderNewsRail(); toast('Фотография добавлена в новости.');
-    } catch (error) {
-      if (uploadedPath) await _supabase.storage.from(PRODUCT_BUCKET).remove([uploadedPath]);
-      newsItems = newsItems.filter(item => !uploadedPath || !item.image_url.includes(uploadedPath));
-      toast('Не удалось добавить новость: ' + (error.message || 'ошибка загрузки'));
-    } finally { if (button) button.disabled = false; }
+  #drawer.drawer.stackd-mobile-sheet[open] { display: flex; }
+  #drawer > header { padding: 17px 17px 13px; }
+  #drawer > header h2 { font-size: 1.12rem; }
+  #drawer .lines { padding-inline: 17px; }
+  #drawer > footer { padding: 14px 17px max(14px, env(safe-area-inset-bottom)); }
+  @keyframes stackdSheetEnter { from { opacity: .75; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+  .modal, .modal.wide { max-height: 92dvh; padding: 18px 16px max(18px, env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; }
+  #orders.modal { width: 100%; max-width: 100%; max-height: 88dvh; }
+  .orders-list { max-height: 70dvh; }
+  .foot { margin-top: 32px; padding-bottom: 28px; }
+  #toasts { bottom: calc(78px + env(safe-area-inset-bottom)) !important; }
+}
+
+@media (max-width: 390px) {
+  .nav.stackd-visual-nav { gap: 7px 8px; padding-inline: 10px; }
+  .nav .brand { font-size: 1rem; }
+  .nav .lang-btn { min-width: 54px; padding-inline: 7px; }
+  .grid { gap: 9px; }
+  .card-body { padding: 9px; }
+  .card-body h3 { font-size: .86rem; }
+  .stackd-mobile-dock button { min-height: 49px; padding-inline: 11px; font-size: .82rem; }
+}
+
+@media (min-width: 681px) {
+  .stackd-mobile-dock { display: none !important; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .nav.stackd-visual-nav, .stackd-profile-menu, .stackd-mobile-dock {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
-  async function handleNewsAction(event) {
-    const button = event.target.closest('[data-news-action]');
-    if (!button || !isAdmin()) return;
-    const index = Number(button.dataset.index), action = button.dataset.newsAction;
-    if (!Number.isInteger(index) || !newsItems[index]) return;
-    if (action === 'remove') {
-      const removed = newsItems.splice(index, 1)[0];
-      await persistNews();
-      const path = getProductStoragePath(removed.image_url);
-      if (path?.startsWith('news/')) { const { error } = await _supabase.storage.from(PRODUCT_BUCKET).remove([path]); if (error) console.warn(error); }
-    } else {
-      const next = index + (action === 'up' ? -1 : 1);
-      if (next < 0 || next >= newsItems.length) return;
-      [newsItems[index], newsItems[next]] = [newsItems[next], newsItems[index]];
-      await persistNews();
-    }
-    renderNewsAdmin(); renderNewsRail();
-  }
-  function refreshPromotionNewsLabels() {
-    const pairs = [
-      ['stackdPromoSettings h3', 'discountTitle'], ['stackdNewsSettings h3', 'newsTitle'],
-      ['.stackd-news-heading h3', 'newsSection'], ['#stackdPromoScope', null]
-    ];
-    for (const [selector, key] of pairs) { const node = document.querySelector(selector); if (node && key) node.textContent = t(key); }
-    const profileText = {
-      stackdProfileHint: 'profileHint', stackdProfileClick: 'profileClick', stackdProfileTitle: 'profileTitle',
-      stackdProfileNote: 'profileNote', stackdProfileOrders: 'profileOrders', stackdProfileTheme: 'profileTheme',
-      stackdProfileLogout: 'profileLogout', stackdProfileEmailLabel: 'profileEmail'
-    };
-    for (const [id, key] of Object.entries(profileText)) { const node = $('#' + id); if (node) node.textContent = t(key); }
-    const scope = $('#stackdPromoScope'); if (scope) { scope.options[0].text = t('discountAll'); scope.options[1].text = t('discountCategory'); scope.options[2].text = t('discountProduct'); }
-    const save = $('#stackdPromoSave'); if (save) save.textContent = t('discountSave');
-    const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
-    renderPromotionTargetOptions(); renderNewsAdmin();
-  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stackd-profile-menu, #drawer.drawer.stackd-mobile-sheet { animation: none !important; }
+  .stackd-mobile-dock button { transition: none !important; }
+}
+
+/* The balance remains reachable on phones even though the crowded header pill is hidden. */
+.stackd-profile-balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+.stackd-profile-balance-info { display: grid; gap: 3px; min-width: 0; }
+.stackd-profile-balance-info span { color: var(--muted); font-size: .72rem; }
+.stackd-profile-balance-info strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.stackd-profile-topup {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 .77rem/1 ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.stackd-profile-topup:hover { filter: brightness(1.06); }
