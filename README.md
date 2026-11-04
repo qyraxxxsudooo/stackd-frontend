@@ -1,10 +1,10 @@
-# Stackd — Food Deals & Ordering in Baku
+# Stacked — Food Deals & Ordering in Baku
 
 Stackd is a food deals and ordering platform based in Baku, Azerbaijan.
 
 Website: https://stackd-frontend.vercel.app/
 
-## What is Stackd?
+## What is Stacked?
 
 Stackd provides a platform where users can discover food offers,
 browse a product catalog, search for items, add products to their cart
@@ -45,8 +45,8 @@ Baku, Azerbaijan.
 
 ## Search Keywords
 
-Stackd, Stackd Baku, Stackd Azerbaijan, food deals Baku,
-food offers Baku, food ordering Baku, Stackd QR,
+Stacked, Stacked Baku, Stacked Azerbaijan, food deals Baku,
+food offers Baku, food ordering Baku, Stacked QR,
 QR code orders, скидки на еду Баку, Stackd Азербайджан.
 
 ## Official Website
