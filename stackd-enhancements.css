@@ -1,0 +1,102 @@
+/* Stackd refinements. Loaded after styles.css. */
+.search-container,.search{min-width:0}
+.search{height:44px;align-items:center;isolation:isolate}
+.search .ic{top:50%;transform:translateY(-50%);left:15px}
+.search input{display:block;min-width:0;height:42px;line-height:normal;padding-top:0!important;padding-bottom:0!important;text-align:left;vertical-align:middle}
+.search input::-webkit-search-cancel-button{margin-left:8px}
+
+.chips{isolation:isolate;align-items:center}
+.chips-slider{left:0;will-change:transform,width;pointer-events:none}
+.chips button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;line-height:1;min-height:38px}
+.chips-wrapper{scrollbar-width:none;overscroll-behavior-inline:contain}
+.chips-wrapper::-webkit-scrollbar{display:none}
+
+.card{position:relative;min-width:0}
+.card-media{position:relative;isolation:isolate}
+.card-media img{display:block}
+.stackd-arches{position:absolute;left:11px;bottom:11px;z-index:2;width:36px;height:34px;display:grid;place-items:center;padding:4px;border:1px solid rgba(255,255,255,.65);border-radius:11px;background:rgba(25,22,19,.78);color:#ffc72c;box-shadow:0 5px 15px rgba(0,0,0,.22);pointer-events:none}
+.stackd-arches svg{display:block;width:100%;height:100%}
+.stackd-card-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
+.stackd-card-actions>.btn{min-width:0}
+.stackd-card-qty{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:2px 5px;border:1px solid var(--line);border-radius:999px;background:var(--raised);font-weight:700;font-variant-numeric:tabular-nums}
+.stackd-card-qty button{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--bg);color:var(--text);font:700 17px/1 inherit;cursor:pointer}
+.stackd-card-qty button:hover{background:var(--line)}
+.stackd-card-qty button:disabled{opacity:.35;cursor:not-allowed}
+.stock-info{display:block;color:var(--muted);font-size:.78rem;font-weight:600}
+.stock-low{color:#bd6a16}
+.card.is-out .stackd-arches{opacity:.65}
+
+/* Top-layer notifications: solid surface, max five visible. */
+#checkoutBtn[hidden]{display:none!important}
+#toasts{position:fixed;inset:auto 0 max(18px,env(safe-area-inset-bottom)) 0;z-index:2147483000;display:grid;justify-items:center;gap:8px;width:100%;max-width:none;max-height:50vh;overflow:visible;padding:0 14px;border:0;background:transparent;color:inherit;pointer-events:none;translate:none}
+#toasts[popover]{position:fixed;inset:auto 0 max(18px,env(safe-area-inset-bottom)) 0;margin:0;overflow:visible}
+#toasts:popover-open{display:grid}
+.stackd-toast{width:max-content;max-width:min(520px,100%);padding:12px 18px;border:1px solid color-mix(in srgb,var(--text) 15%,transparent);border-radius:14px;background:#24211d!important;color:#fff!important;box-shadow:0 12px 34px rgba(0,0,0,.28);font-size:.9rem;font-weight:650;line-height:1.4;text-align:center;pointer-events:auto;opacity:1;transform:translateY(0);animation:stackdToastIn .22s cubic-bezier(.2,.8,.2,1) both;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.stackd-toast-out{opacity:0!important;transform:translateY(8px) scale(.98)!important;transition:opacity .2s ease,transform .2s ease}
+@keyframes stackdToastIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.stackd-fly-image{position:fixed;z-index:2147482000;object-fit:cover;border-radius:14px;pointer-events:none;opacity:1;transform:translate(0,0) scale(1);transition:transform .62s cubic-bezier(.2,.75,.2,1),opacity .62s ease;box-shadow:0 12px 28px rgba(0,0,0,.25)}
+.stackd-fly-mark{position:fixed;z-index:2147482001;display:grid;place-items:center;padding:4px;border:1px solid rgba(255,255,255,.65);border-radius:11px;background:rgba(25,22,19,.88);color:#ffc72c;pointer-events:none;transition:transform .62s cubic-bezier(.2,.75,.2,1),opacity .62s ease;box-shadow:0 5px 15px rgba(0,0,0,.22)}
+.stackd-fly-mark svg{width:100%;height:100%}
+.cart-btn .badge.pop{animation:pop .38s var(--ease)}
+
+/* Product editor additions */
+.stackd-product-fields{display:grid;gap:13px;margin:8px 0 18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.stackd-field{display:grid;gap:5px;min-width:0}
+.stackd-field label{margin:0}
+.stackd-field input,.stackd-field select{margin:0!important}
+.stackd-field small,.stackd-admin-note{display:block;color:var(--muted);font-size:.78rem;line-height:1.45}
+.stackd-checks{display:grid;gap:8px}
+.stackd-checks label{display:flex;align-items:center;gap:9px;margin:0;font-size:.88rem;font-weight:550}
+.stackd-checks input{width:16px;height:16px;accent-color:var(--accent)}
+#stackdTranslateAll{margin-left:auto}
+#stackdStockHint{margin:7px 0 12px}
+.stackd-settings-section{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}
+.stackd-settings-section h3{margin:0 0 14px}
+.stackd-settings-section>input{margin-bottom:12px}
+.stackd-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stackd-settings-grid>div{min-width:0}
+.stackd-settings-grid input,.stackd-settings-grid select{margin:0!important}
+
+/* Cart guide and swipe checkout */
+.stackd-purchase-guide{display:grid;gap:7px;margin:4px 20px 12px;padding:14px 15px;border:1px solid var(--line);border-radius:13px;background:var(--bg);font-size:.82rem;line-height:1.45;color:var(--muted)}
+.stackd-purchase-guide strong{color:var(--text);font-size:.92rem}
+.stackd-purchase-guide p{margin:0}
+.stackd-swipe{display:grid;gap:6px;min-width:0}
+.stackd-swipe-track{position:relative;display:flex;align-items:center;height:58px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--bg);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.stackd-swipe-fill{position:absolute;inset:4px auto 4px 4px;width:0;max-width:calc(100% - 8px);border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,var(--surface));pointer-events:none;transition:width .08s linear}
+.stackd-swipe-label{position:absolute;inset:0;display:grid;place-items:center;padding:0 62px;color:var(--muted);font-size:.82rem;font-weight:700;text-align:center;pointer-events:none}
+.stackd-swipe-thumb{position:relative;z-index:2;flex:0 0 48px;width:48px;height:48px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:grab;touch-action:pan-y;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 28%,transparent);will-change:transform}
+.stackd-swipe-thumb:active{cursor:grabbing}
+.stackd-swipe-thumb span{width:11px;height:11px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);margin-left:-4px}
+.stackd-swipe-track.is-dragging .stackd-swipe-thumb{transition:none}
+.stackd-swipe-track:not(.is-dragging) .stackd-swipe-thumb{transition:transform .26s cubic-bezier(.2,.75,.2,1)}
+.stackd-swipe-hint{min-height:1.2em;color:var(--muted);font-size:.74rem;text-align:center}
+.stackd-preparing{display:grid;justify-items:center;gap:9px;padding:16px 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);text-align:center}
+.stackd-preparing[hidden]{display:none}
+.stackd-preparing strong{font-size:.96rem}
+.stackd-preparing p{max-width:42ch;color:var(--muted);font-size:.82rem;line-height:1.45}
+.stackd-spinner{width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:stackdSpin .8s linear infinite}
+@keyframes stackdSpin{to{transform:rotate(360deg)}}
+
+/* Dialog stacking and solid surfaces */
+dialog[open]{z-index:1000}
+dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;isolation:isolate}
+#drawer>header{position:relative;z-index:1;background:var(--surface)}
+#drawer>footer{background:var(--surface)}
+
+@media(max-width:680px){
+ .stackd-card-actions{justify-content:space-between;flex-wrap:wrap}
+ .stackd-card-actions>.btn{flex:1}
+ .stackd-card-qty{align-self:stretch}
+ .stackd-purchase-guide{margin-inline:14px;padding:12px}
+ .stackd-settings-grid{grid-template-columns:minmax(0,1fr)}
+ .stackd-product-fields{padding:13px}
+ #stackdTranslateAll{margin-left:0}
+ #toasts{bottom:max(14px,env(safe-area-inset-bottom));padding-inline:12px}
+ .stackd-toast{max-width:100%;border-radius:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .stackd-fly-image,.stackd-spinner{animation:none!important;transition:none!important}
+ .stackd-toast{animation:none!important}
+}
