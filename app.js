@@ -734,3 +734,186 @@ $('#pform')?.addEventListener('submit', async e => {
       : await _supabase.from('products').insert(payload).select('id,name,description,category,price,image_url').single();
     if (result.error) throw result.error;
     if (!result.data) throw new Error('База данных не вернула сохранённый товар.');
+        const oldImagePath = getProductStoragePath(previousImageUrl);
+
+    if (oldImagePath && previousImageUrl !== imageUrl) {
+      const cleanup = await _supabase.storage
+        .from(PRODUCT_BUCKET)
+        .remove([oldImagePath]);
+
+      if (cleanup.error) {
+        console.warn('Old image cleanup failed:', cleanup.error);
+      }
+    }
+
+    clearProductPreviewObjectUrl();
+
+    $('#pform')?.reset();
+    S.draft = null;
+
+    if (msg) {
+      msg.textContent = '';
+      msg.style.color = '';
+    }
+
+    await load();
+    renderAdmin();
+    toast(tr('saved'));
+
+  } catch (error) {
+    console.error('Product save failed:', error);
+
+    if (msg) {
+      msg.textContent = error?.message || 'Не удалось сохранить товар.';
+      msg.style.color = 'var(--danger, #b42318)';
+    }
+
+  } finally {
+    const submit = $('#pform button[type="submit"]');
+    if (submit) submit.disabled = false;
+  }
+});
+
+
+// Отправка чека на пополнение
+$('#topupForm')?.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const form = $('#topupForm');
+  const message = $('#topupMsg');
+  const button = form?.querySelector('button[type="submit"]');
+  const amount = Number($('#topupAmount')?.value);
+  const file = $('#topupFile')?.files?.[0];
+
+  const showMessage = text => {
+    if (message) message.textContent = text;
+  };
+
+  if (!S.user) {
+    closeDlg($('#topup'));
+    $('#auth')?.showModal();
+    return;
+  }
+
+  if (!$('#termsCheck')?.checked) {
+    showMessage('Подтвердите правильность данных заявки.');
+    return;
+  }
+
+  if (
+    !Number.isFinite(amount) ||
+    amount < 1 ||
+    amount > 100 ||
+    Math.round(amount * 100) !== amount * 100
+  ) {
+    showMessage('Укажите сумму от 1 до 100 AZN.');
+    return;
+  }
+
+  if (!file) {
+    showMessage('Прикрепите скриншот чека.');
+    return;
+  }
+
+  try {
+    await validateProductImage(file);
+
+    const {
+      data: { session },
+      error: sessionError
+    } = await _supabase.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    if (!session?.access_token || !S.user?.id) {
+      throw new Error('Сессия истекла. Войдите снова.');
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Отправка...';
+    }
+
+    showMessage('Отправка заявки...');
+
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    formData.append('amount', String(amount));
+    formData.append('userId', S.user.id);
+
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/submit-topup`,
+      {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: formData
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || result.ok !== true) {
+      throw new Error(
+        result.error || `Ошибка отправки заявки: ${response.status}`
+      );
+    }
+
+    form.reset();
+
+    showMessage(
+      'Заявка отправлена. Баланс пополнится после проверки платежа.'
+    );
+
+  } catch (error) {
+    console.error('Top-up submission failed:', error);
+    showMessage(error?.message || 'Не удалось отправить заявку.');
+
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = tr('topup_btn');
+    }
+  }
+});
+
+
+// Восстановление языка и темы
+let initialLanguage = 'ru';
+
+try {
+  const storedLanguage = localStorage.getItem('pdd.lang');
+
+  if (
+    storedLanguage &&
+    Object.prototype.hasOwnProperty.call(translations, storedLanguage)
+  ) {
+    initialLanguage = storedLanguage;
+  }
+} catch (error) {
+  console.warn('Language preference unavailable:', error);
+}
+
+applyLanguage(initialLanguage);
+applyTheme();
+
+
+// Обновление состояния авторизации
+_supabase.auth.onAuthStateChange((_event, session) => {
+  setTimeout(() => {
+    S.user = session?.user || null;
+
+    checkAuth().catch(error => {
+      console.error('Authentication refresh failed:', error);
+    });
+  }, 0);
+});
+
+
+// Запуск приложения
+checkAuth().catch(error => {
+  console.error('Stackd initialization failed:', error);
+  toast('Не удалось запустить сайт. Обновите страницу.');
+});
