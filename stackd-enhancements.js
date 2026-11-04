@@ -2,7 +2,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const languageNames = { ru: 'Русский', en: 'English', az: 'Azərbaycan' };
   const copy = {
     ru: {
@@ -899,48 +899,65 @@
     $('#stackdBrandAccent')?.addEventListener('input', event => applyBrandAccent(event.target.value));
   }
 
+  function ensureShowcaseHero() {
+    const showcase = $('.showcase');
+    if (!showcase) return null;
+    let card = $('#stackdShowcaseHero');
+    if (card) return card;
+    card = document.createElement('section');
+    card.id = 'stackdShowcaseHero';
+    card.className = 'stackd-showcase-hero';
+    card.setAttribute('aria-label', 'Stackd');
+    card.innerHTML = `
+      <img class="stackd-showcase-image" alt="" decoding="async">
+      <div class="stackd-showcase-shade" aria-hidden="true"></div>
+      <div class="stackd-showcase-copy">
+        <span class="stackd-showcase-kicker">STACKD / SPECIAL OFFERS</span>
+        <h1 id="stackdShowcaseTitle"></h1>
+        <p id="stackdShowcaseSubtitle"></p>
+        <a class="stackd-showcase-cta" href="#catalog"><span id="stackdShowcaseCta"></span><span aria-hidden="true">↘</span></a>
+      </div>`;
+    showcase.prepend(card);
+    return card;
+  }
+
   function updateHero() {
     const slider = $('#showcaseSlider');
-    if (!slider) return;
-    const height = Math.min(760, Math.max(180, Number(hero.hero_height) || 400));
-    slider.style.height = hero.hero_ratio === 'auto' ? `${height}px` : 'auto';
-    slider.style.aspectRatio = hero.hero_ratio === 'auto' ? 'auto' : hero.hero_ratio;
+    const showcase = slider?.closest('.showcase') || $('.showcase');
+    const card = ensureShowcaseHero();
+    if (!showcase || !card) return;
     const heroVisible = String(hero.hero_enabled) !== 'false';
-    slider.hidden = !heroVisible;
-    const showcase = slider.closest('.showcase');
-    if (showcase) showcase.hidden = !heroVisible;
-    slider.classList.toggle('stackd-hero-no-overlay', String(hero.hero_overlay) === 'false');
-    const slides = $$('.slide', slider);
-    const useCustomCover = Boolean(hero.hero_image_url) && !heroImageRemoved;
-    if (useCustomCover && slides.length) {
-      slides.forEach((slide, index) => {
-        slide.style.display = index === 0 ? 'flex' : 'none';
-        if (index === 0) {
-          slide.classList.add('active');
-          slide.setAttribute('aria-hidden', 'false');
-          slide.style.opacity = '1';
-          slide.style.transform = 'none';
-        } else {
-          slide.setAttribute('aria-hidden', 'true');
-        }
-      });
-    } else {
-      slides.forEach(slide => {
-        slide.style.removeProperty('display');
-        slide.style.removeProperty('opacity');
-        slide.style.removeProperty('transform');
-      });
+    const slideImage = defaultHeroSlide.image || slider?.querySelector('.slide img')?.getAttribute('src') || '';
+    const imageUrl = (hero.hero_image_url && !heroImageRemoved) ? hero.hero_image_url : slideImage;
+    const image = $('.stackd-showcase-image', card);
+    if (image) {
+      const safe = safeImageUrl(imageUrl);
+      if (image.getAttribute('src') !== safe) image.src = safe;
+      image.style.objectFit = hero.hero_fit === 'contain' ? 'contain' : 'cover';
+      image.style.objectPosition = ['top', 'bottom'].includes(hero.hero_position) ? hero.hero_position : 'center';
     }
-    const firstImage = slider.querySelector('.slide img');
-    if (firstImage) {
-      firstImage.src = useCustomCover ? safeImageUrl(hero.hero_image_url) : (defaultHeroSlide.image || firstImage.src);
-      firstImage.style.objectFit = hero.hero_fit || 'cover';
-      firstImage.style.objectPosition = hero.hero_position || 'center';
+    const height = Math.max(210, Math.min(460, Number.parseInt(hero.hero_height || '340', 10) || 340));
+    const ratio = ['16 / 9', '21 / 9', '4 / 3'].includes(hero.hero_ratio) ? hero.hero_ratio : 'auto';
+    card.style.setProperty('--stackd-showcase-height', `${height}px`);
+    card.style.aspectRatio = ratio === 'auto' ? 'auto' : ratio;
+    card.style.height = ratio === 'auto' ? `${height}px` : 'auto';
+    card.style.maxHeight = `${height}px`;
+    const shade = $('.stackd-showcase-shade', card);
+    if (shade) shade.hidden = String(hero.hero_overlay) === 'false';
+    const title = $('#stackdShowcaseTitle');
+    const subtitle = $('#stackdShowcaseSubtitle');
+    const cta = $('#stackdShowcaseCta');
+    if (title) title.textContent = hero.hero_title || defaultHeroSlide.title || (S.lang === 'en' ? 'Discover Stackd offers' : S.lang === 'az' ? 'Stackd təkliflərini kəşf edin' : 'Выгодные предложения Stackd');
+    if (subtitle) {
+      subtitle.textContent = hero.hero_subtitle || defaultHeroSlide.subtitle || (S.lang === 'en' ? 'Selected offers in one place.' : S.lang === 'az' ? 'Seçilmiş təkliflər bir yerdə.' : 'Подборка предложений в одном месте.');
+      subtitle.hidden = !subtitle.textContent.trim();
     }
-    const firstTitle = slider.querySelector('.slide .slide-content h2');
-    const firstSubtitle = slider.querySelector('.slide .slide-content p');
-    if (firstTitle) firstTitle.textContent = hero.hero_title || defaultHeroSlide.title || '';
-    if (firstSubtitle) firstSubtitle.textContent = hero.hero_subtitle || defaultHeroSlide.subtitle || '';
+    if (cta) cta.textContent = S.lang === 'en' ? 'Explore offers' : S.lang === 'az' ? 'Təkliflərə bax' : 'Смотреть предложения';
+    card.hidden = !heroVisible || !imageUrl;
+    showcase.hidden = !heroVisible || !imageUrl;
+    // Keep the custom hero static. The legacy 5-second slider used to switch
+    // to a hidden slide and make the cover disappear on some devices.
+    if (slider) slider.hidden = true;
     applyBrandAccent(hero.brand_accent);
     syncHeroPreview();
   }
@@ -1146,33 +1163,17 @@
     measure(); paint(0);
   }
 
-  function flyToCart(button) {
-    const cardEl = button.closest('.card');
-    const image = cardEl?.querySelector('.card-media img');
+  function pulseCart() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const target = $('.cart-btn');
-    if (!image || !target || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const a = image.getBoundingClientRect(), b = target.getBoundingClientRect();
-    const clone = image.cloneNode(true);
-    clone.className = 'stackd-fly-image';
-    Object.assign(clone.style, { left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px` });
-    document.body.append(clone);
-    const mark = cardEl.querySelector('.stackd-arches');
-    let markClone = null;
-    if (mark) {
-      const m = mark.getBoundingClientRect();
-      markClone = mark.cloneNode(true);
-      markClone.className = 'stackd-fly-mark';
-      Object.assign(markClone.style, { left: `${m.left}px`, top: `${m.top}px`, width: `${m.width}px`, height: `${m.height}px` });
-      document.body.append(markClone);
-    }
-    const dx = b.left + b.width / 2 - (a.left + a.width / 2);
-    const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-    requestAnimationFrame(() => {
-      clone.style.transform = `translate(${dx}px,${dy}px) scale(.12)`;
-      clone.style.opacity = '0.15';
-      if (markClone) { markClone.style.transform = `translate(${dx}px,${dy}px) scale(.35)`; markClone.style.opacity = '0.1'; }
-    });
-    setTimeout(() => { clone.remove(); markClone?.remove(); }, 680);
+    if (!target) return;
+    target.classList.remove('stackd-cart-pulse');
+    const badge = target.querySelector('.badge');
+    badge?.classList.remove('pop');
+    void target.offsetWidth;
+    target.classList.add('stackd-cart-pulse');
+    badge?.classList.add('pop');
+    window.setTimeout(() => target.classList.remove('stackd-cart-pulse'), 520);
   }
 
   function bindFloodProtection() {
@@ -1180,7 +1181,6 @@
     document.addEventListener('click', event => {
       const control = event.target.closest('[data-act]');
       if (!control) return;
-      if (control.dataset.act === 'add') flyToCart(control);
       const action = control.dataset.act;
       if (!['orders', 'auth', 'manage', 'toggle-qr', 'clear'].includes(action)) return;
       const now = Date.now(), last = cooldowns.get(action) || 0;
@@ -1209,6 +1209,7 @@
     const product = find(id);
     if (!product || !isAvailable(product)) return;
     setQty(id, 1);
+    requestAnimationFrame(pulseCart);
   };
 
   const originalCheckoutAction = A.checkout;
@@ -1251,8 +1252,118 @@
     }
   }
 
+  let topupHistoryTimer = null;
+  let topupHistoryBusy = false;
+
+  function makeTopupHistoryUI() {
+    if (!$('#stackdTopupHistory')) {
+      const dialog = document.createElement('dialog');
+      dialog.id = 'stackdTopupHistory';
+      dialog.className = 'modal wide stackd-topup-history';
+      dialog.setAttribute('aria-labelledby', 'stackdTopupHistoryTitle');
+      dialog.innerHTML = `
+        <header class="stackd-history-head">
+          <div><h2 id="stackdTopupHistoryTitle">История пополнений</h2><p id="stackdTopupHistoryNote">Статус каждой заявки обновляется после проверки.</p></div>
+          <button class="icon-btn" type="button" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
+        </header>
+        <div class="stackd-history-toolbar"><span id="stackdTopupHistorySummary"></span><button class="btn btn-ghost sm" type="button" id="stackdTopupHistoryRefresh">Обновить</button></div>
+        <div id="stackdTopupHistoryList" class="stackd-topup-history-list" aria-live="polite"><p class="stackd-history-state">Загрузка…</p></div>`;
+      document.body.append(dialog);
+      dialog.addEventListener('close', () => {
+        if (topupHistoryTimer) clearInterval(topupHistoryTimer);
+        topupHistoryTimer = null;
+      });
+      $('#stackdTopupHistoryRefresh')?.addEventListener('click', loadTopupHistory);
+    }
+    const menu = $('#stackdProfileMenu');
+    if (menu && !$('#stackdTopupHistoryOpen')) {
+      const button = document.createElement('button');
+      button.id = 'stackdTopupHistoryOpen';
+      button.type = 'button';
+      button.className = 'stackd-profile-action';
+      button.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+      button.addEventListener('click', () => {
+        menu.hidden = true;
+        $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
+        openTopupHistory();
+      });
+      const logoutButton = $('#logoutBtn', menu);
+      menu.insertBefore(button, logoutButton || null);
+    }
+  }
+
+  function topupStatusLabel(status) {
+    const labels = {
+      pending: { ru: 'Ожидает проверки', en: 'Under review', az: 'Yoxlanılır' },
+      approved: { ru: 'Зачислено', en: 'Credited', az: 'Balansa əlavə edildi' },
+      rejected: { ru: 'Отклонено', en: 'Rejected', az: 'Rədd edildi' }
+    };
+    return labels[String(status || '').toLowerCase()]?.[lang()] || String(status || '—');
+  }
+
+  async function loadTopupHistory() {
+    const host = $('#stackdTopupHistoryList');
+    if (!host || !S.user || topupHistoryBusy) return;
+    topupHistoryBusy = true;
+    const refresh = $('#stackdTopupHistoryRefresh');
+    if (refresh) refresh.disabled = true;
+    try {
+      const { data, error } = await _supabase.from('topups')
+        .select('id,amount,status,created_at')
+        .eq('user_id', S.user.id)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      const locale = S.lang === 'az' ? 'az-AZ' : S.lang === 'en' ? 'en-US' : 'ru-RU';
+      const summary = $('#stackdTopupHistorySummary');
+      if (summary) summary.textContent = S.lang === 'en' ? `${rows.length} recent requests` : S.lang === 'az' ? `${rows.length} son müraciət` : `${rows.length} последних заявок`;
+      if (!rows.length) {
+        host.innerHTML = `<p class="stackd-history-state">${S.lang === 'en' ? 'No top-ups yet.' : S.lang === 'az' ? 'Hələ balans artırılmayıb.' : 'Заявок на пополнение пока нет.'}</p>`;
+      } else {
+        host.innerHTML = rows.map(row => {
+          const id = String(row.id || '');
+          const date = row.created_at ? new Date(row.created_at) : null;
+          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+          const amount = Number(row.amount);
+          const amountText = Number.isFinite(amount) ? `${amount.toFixed(2)} AZN` : '— AZN';
+          const status = ['pending','approved','rejected'].includes(String(row.status)) ? String(row.status) : 'pending';
+          return `<article class="stackd-topup-item"><div class="stackd-topup-item-main"><strong>${esc(amountText)}</strong><small>${esc(dateText)} · ${esc(id.slice(0, 8).toUpperCase())}</small></div><span class="stackd-topup-status is-${status}">${esc(topupStatusLabel(status))}</span></article>`;
+        }).join('');
+      }
+      // Refresh the displayed wallet balance after an operator approves a request.
+      const { data: profile, error: profileError } = await _supabase.from('profiles').select('balance').eq('id', S.user.id).maybeSingle();
+      if (!profileError && profile && $('#userBalance')) {
+        $('#userBalance').textContent = Number(profile.balance || 0).toFixed(2);
+        if (S.profile) S.profile.balance = profile.balance;
+        const balanceValue = $('#stackdProfileBalanceValue');
+        if (balanceValue) balanceValue.textContent = `${Number(profile.balance || 0).toFixed(2)} AZN`;
+      }
+    } catch (error) {
+      console.error('Top-up history load failed:', error);
+      host.innerHTML = `<p class="stackd-history-state is-error">${S.lang === 'en' ? 'Could not load top-up history. Check your connection and the topups read policy.' : S.lang === 'az' ? 'Balans tarixçəsini yükləmək olmadı. Bağlantını və topups oxuma icazəsini yoxlayın.' : 'Не удалось загрузить историю. Проверьте соединение и политику чтения таблицы topups.'}</p>`;
+    } finally {
+      topupHistoryBusy = false;
+      if (refresh) refresh.disabled = false;
+    }
+  }
+
+  function openTopupHistory() {
+    if (!S.user) { $('#auth')?.showModal(); return; }
+    const dialog = $('#stackdTopupHistory');
+    if (!dialog) return;
+    if (!dialog.open) dialog.showModal();
+    loadTopupHistory();
+    if (topupHistoryTimer) clearInterval(topupHistoryTimer);
+    topupHistoryTimer = setInterval(() => {
+      if (!dialog.open) { clearInterval(topupHistoryTimer); topupHistoryTimer = null; return; }
+      loadTopupHistory();
+    }, 12000);
+  }
+
   function initProfileMenu() {
     buildProfileBalanceRow();
+    makeTopupHistoryUI();
     const trigger = $('#stackdProfileTrigger');
     const menu = $('#stackdProfileMenu');
     if (!trigger || !menu || trigger.dataset.bound === '1') return;
@@ -1281,6 +1392,15 @@
     if ($('#stackdProfileEmail')) $('#stackdProfileEmail').textContent = S.user?.email || '';
     const avatar = $('#userAvatar');
     if (avatar) avatar.alt = 'Profile';
+    const historyButton = $('#stackdTopupHistoryOpen');
+    if (historyButton) historyButton.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+    const historyTitle = $('#stackdTopupHistoryTitle');
+    if (historyTitle) historyTitle.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+    const historyNote = $('#stackdTopupHistoryNote');
+    if (historyNote) historyNote.textContent = S.lang === 'en' ? 'Each request updates after it is reviewed.' : S.lang === 'az' ? 'Hər müraciətin statusu yoxlamadan sonra yenilənir.' : 'Статус каждой заявки обновляется после проверки.';
+    const historyRefresh = $('#stackdTopupHistoryRefresh');
+    if (historyRefresh) historyRefresh.textContent = S.lang === 'en' ? 'Refresh' : S.lang === 'az' ? 'Yenilə' : 'Обновить';
+    placeMobileCartButton();
     refreshPromotionNewsLabels();
   }
   const baseCheckAuth = checkAuth;
@@ -1334,12 +1454,40 @@
     refreshPromotionNewsLabels();
   }
 
-  function placeMobileCartButton() {
+  function ensureAccountShortcuts() {
     const nav = $('.nav');
-    const cart = $('.nav > .cart-btn') || $('.stackd-mobile-cart');
-    if (!nav || !cart) return;
+    if (!nav) return;
+    let orderButton = $('#stackdOrdersShortcut');
+    if (!orderButton) {
+      orderButton = document.createElement('button');
+      orderButton.id = 'stackdOrdersShortcut';
+      orderButton.type = 'button';
+      orderButton.className = 'stackd-orders-shortcut';
+      orderButton.dataset.act = 'orders';
+      orderButton.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.8h10a2 2 0 0 1 2 2v14.4l-7-3.5-7 3.5V5.8a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 11.5h6"/></svg><span id="stackdOrdersShortcutLabel">Мои заказы</span>`;
+    }
+    let dock = $('#stackdMobileActions');
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = 'stackdMobileActions';
+      dock.className = 'stackd-mobile-actions';
+      dock.setAttribute('aria-label', 'Навигация');
+      document.body.append(dock);
+    }
+    return { nav, orderButton, dock };
+  }
+
+  function placeMobileCartButton() {
+    const parts = ensureAccountShortcuts();
+    const cart = $('.cart-btn');
+    if (!parts || !cart) return;
+    const { nav, orderButton, dock } = parts;
     const language = ($('#currentLangLabel')?.textContent || 'RU').trim().toUpperCase();
     cart.dataset.cartLabel = language === 'EN' ? 'Cart' : language === 'AZ' ? 'Səbət' : 'Корзина';
+    const orderLabel = $('#stackdOrdersShortcutLabel');
+    if (orderLabel) orderLabel.textContent = language === 'EN' ? 'My orders' : language === 'AZ' ? 'Sifarişlərim' : 'Мои заказы';
+    // Keep orders discoverable even when logged out; the action opens the sign-in dialog.
+    orderButton.hidden = false;
     const badge = cart.querySelector('.badge');
     if (badge) {
       const syncBadge = () => { badge.hidden = (Number.parseInt(badge.textContent || '0', 10) || 0) <= 0; };
@@ -1350,11 +1498,16 @@
       }
     }
     if (window.matchMedia('(max-width: 680px)').matches) {
-      if (cart.parentElement !== document.body) document.body.append(cart);
+      dock.hidden = false;
+      dock.classList.toggle('has-orders', !orderButton.hidden);
+      dock.append(orderButton, cart);
       cart.classList.add('stackd-mobile-cart');
     } else {
+      dock.hidden = true;
+      dock.classList.remove('has-orders');
       cart.classList.remove('stackd-mobile-cart');
-      if (cart.parentElement !== nav) nav.append(cart);
+      nav.insertBefore(orderButton, cart);
+      nav.append(cart);
     }
   }
 
@@ -1377,6 +1530,7 @@
     makeNewsUI();
     renderNewsRail();
     initProfileMenu();
+    ensureAccountShortcuts();
     refreshAddedLabels();
     refreshPromotionNewsLabels();
     buildCartGuide();
@@ -1410,7 +1564,7 @@
     document.addEventListener('click', event => {
       const langButton = event.target.closest('[data-lang]');
       if (!langButton) return;
-      setTimeout(() => { refreshAddedLabels(); refreshPromotionNewsLabels(); syncThemeButtons(); }, 0);
+      setTimeout(() => { refreshAddedLabels(); refreshPromotionNewsLabels(); syncThemeButtons(); updateHero(); placeMobileCartButton(); }, 0);
     });
     console.info(`Stackd enhancements ${VERSION} loaded`);
   }
