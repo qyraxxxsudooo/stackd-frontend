@@ -305,6 +305,20 @@ button, .btn { touch-action: manipulation; }
 }
 
 
+/* Stackd payment channel CTA */
+.payment-instructions { display:grid; gap:13px; }
+.payment-instructions p { color:var(--muted); }
+.tg-channel-btn {
+  min-height:48px; display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:11px 16px; border-radius:12px; color:#fff !important;
+  background:linear-gradient(135deg,#229ED9,#187bb5); border:1px solid rgba(255,255,255,.12);
+  text-decoration:none; font-weight:700; box-shadow:0 8px 20px rgba(34,158,217,.2);
+  transition:transform .2s var(--ease),filter .2s var(--ease),box-shadow .2s var(--ease);
+}
+.tg-channel-btn:hover { filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 11px 24px rgba(34,158,217,.25); }
+.tg-channel-btn:active { transform:scale(.985); }
+.tg-channel-btn .ic { width:21px;height:21px; }
+
 /* Stackd order cards and Telegram QR reveal */
 .orders-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
 .orders-list{display:grid;gap:14px;max-height:min(68vh,720px);overflow:auto;padding:2px}
@@ -322,17 +336,3 @@ button, .btn { touch-action: manipulation; }
 .order-status-ready{color:#287a46}
 .order-status-cancelled{color:#b42318}
 .order-status-completed{color:var(--muted)}
-.order-note{padding:12px 14px;border-radius:12px;background:var(--bg);color:var(--muted);font-size:.9rem}
-.order-note-expired{color:#b42318}
-.order-cancel{justify-self:start}
-.order-qr-toggle{width:100%;display:grid;justify-items:center;gap:10px;padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--text);cursor:pointer;font:inherit}
-.order-qr-hint{font-size:.88rem;color:var(--muted);font-weight:600}
-.order-qr-image{display:none;width:min(100%,260px);aspect-ratio:1;object-fit:contain;padding:9px;background:#fff;border-radius:10px}
-.order-card.qr-open .order-qr-image{display:block;animation:qrReveal .28s var(--ease)}
-.order-card.qr-open .order-qr-hint{color:var(--accent)}
-.order-qr-expiry{text-align:center;color:var(--muted);font-size:.8rem}
-@keyframes qrReveal{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(max-width:680px){
-  .orders-dialog-header{padding-bottom:14px}
-  .order-card{padding:13px}
-  .order-card-head{flex-wrap:wrap}
