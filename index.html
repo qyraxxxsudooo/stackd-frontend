@@ -6,6 +6,7 @@
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="stackd-enhancements.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -30,7 +31,7 @@
 
 <header class="nav glass">
   <a class="brand" href="#top"><img src="assets/icons/logo.svg" alt="" width="28" height="28"><span>Stackd</span></a>
-  
+
   <div class="search-container">
     <form class="search" role="search" id="searchForm">
       <svg class="ic"><use href="#i-search"/></svg>
@@ -58,7 +59,6 @@
     <button data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
   </div>
 
-  <!-- Строгий профиль и баланс -->
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
     <button class="btn btn-ghost nav-btn" id="myOrdersBtn" data-act="orders" type="button" style="display:none;" data-i18n="orders_btn">Мои заказы</button>
@@ -161,11 +161,10 @@
   </div>
 </dialog>
 
-<!-- Окно пополнения без внешней CAPTCHA -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
-  
+
   <div class="payment-instructions" role="status">
     <p data-i18n="topup_instructions">Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.</p>
     <a class="tg-channel-btn" href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer">
@@ -179,7 +178,7 @@
   <form id="topupForm">
     <label data-i18n="topup_amount">Сумма (AZN)</label>
     <input type="number" id="topupAmount" required min="1" max="100" step="0.01">
-    
+
     <label data-i18n="topup_check">Скриншот чека</label>
     <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
 
@@ -193,16 +192,14 @@
   </form>
 </dialog>
 
-<!-- Админка (С настройками сайта) -->
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
   <header><h2 id="eh" data-i18n="admin_title">Управление</h2><button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button></header>
-  
+
   <div class="admin-tabs">
     <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products">Товары</button>
     <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings">Настройки сайта</button>
   </div>
 
-  <!-- Вкладка Товары -->
   <div class="ed tab-content" id="tab-products">
     <div>
       <div class="row">
@@ -231,7 +228,6 @@
     </form>
   </div>
 
-  <!-- Вкладка Настройки сайта -->
   <div class="tab-content" id="tab-settings" style="display:none; padding: 20px 0;">
     <h3 data-i18n="settings_title">Настройки главной страницы</h3>
     <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
@@ -241,10 +237,10 @@
     <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" data-i18n="settings_save">Сохранить настройки</button>
     <p class="msg" id="settingsMsg"></p>
   </div>
-
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
 <script src="app.js" defer></script>
+<script src="stackd-enhancements.js" defer></script>
 </body>
 </html>
