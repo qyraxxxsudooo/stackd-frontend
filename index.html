@@ -5,8 +5,6 @@
 <title>Stackd — Premium digital deals</title>
 <link rel="icon" href="assets/icons/logo.svg">
 <script>try{var t=localStorage.getItem('pdd.theme')||'system';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):t}catch(e){}</script>
-<!-- Cloudflare Turnstile -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -63,7 +61,7 @@
   <!-- Строгий профиль и баланс -->
   <div id="userProfile" class="user-profile" style="display:none;">
     <img id="userAvatar" src="assets/icons/placeholder.svg" alt="Аватар" class="avatar">
-    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" data-act="orders" type="button" style="display:none;">Мои заказы</button>
+    <button class="btn btn-ghost nav-btn" id="myOrdersBtn" data-act="orders" type="button" style="display:none;" data-i18n="orders_btn">Мои заказы</button>
     <div class="balance-group">
       <div class="balance-display">
         <span class="b-label" data-i18n="balance_label">Баланс</span>
@@ -127,14 +125,13 @@
   </footer>
 </dialog>
 
-<!-- МОИ ЗАКАЗЫ: QR появляется после ответа оператора в Telegram -->
 <dialog id="orders" class="modal wide glass" aria-labelledby="ordersTitle">
   <header class="orders-dialog-header">
-    <h2 id="ordersTitle">Мои заказы</h2>
+    <h2 id="ordersTitle" data-i18n="orders_title">Мои заказы</h2>
     <button class="icon-btn" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   </header>
   <div id="ordersList" class="orders-list" aria-live="polite">
-    <p class="orders-empty">Здесь появятся ваши заказы.</p>
+    <p class="orders-empty">Заказы появятся здесь после оформления.</p>
   </div>
 </dialog>
 
@@ -153,8 +150,8 @@
     </button>
     <div class="divider"><span data-i18n="auth_or">или</span></div>
     <form class="auth-form" id="authForm" novalidate>
-      <input type="email" id="emailInput" placeholder="Email" required>
-      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+      <input type="email" id="emailInput" placeholder="Email" autocomplete="email" required>
+      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password" required minlength="6">
       <p class="msg" id="authMsg"></p>
       <div style="display: flex; gap: 10px;">
         <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
@@ -164,13 +161,18 @@
   </div>
 </dialog>
 
-<!-- Окно Пополнения (С капчей и условиями) -->
+<!-- Окно пополнения без внешней CAPTCHA -->
 <dialog id="topup" class="modal glass">
   <button class="icon-btn close" data-act="close" aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
   
   <div class="payment-instructions" role="status">
-    Реквизиты и способы оплаты появятся после настройки безопасного платёжного процесса. Не отправляйте деньги по реквизитам, полученным из непроверенных сообщений.
+    <p data-i18n="topup_instructions">Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.</p>
+    <a class="tg-channel-btn" href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.96 7.22c.1 0 .32.02.47.14a.5.5 0 0 1 .17.33c.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.13-2.68-1.8-1.19-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.43.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z"/></svg>
+      <span data-i18n="topup_channel">Открыть Telegram-канал</span>
+      <span aria-hidden="true">↗</span>
+    </a>
   </div>
   <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">Отправка заявки не означает автоматическое зачисление. Поступление средств проверяется отдельно.</p>
 
@@ -180,9 +182,6 @@
     
     <label data-i18n="topup_check">Скриншот чека</label>
     <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
-    
-    <!-- Cloudflare Turnstile -->
-    <div class="cf-turnstile" data-sitekey="REPLACE_WITH_REAL_TURNSTILE_SITE_KEY" style="margin-bottom:15px;"></div>
 
     <label class="check terms-check">
       <input type="checkbox" id="termsCheck" required>
