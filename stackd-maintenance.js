@@ -30,7 +30,12 @@
   let owner = false;
   let settings = { ...DEFAULTS };
   let refreshBusy = false;
+  let refreshQueued = false;
+  let saveInProgress = false;
+  let adminFormDirty = false;
+  let settingsRevision = 0;
   let pollTimer = null;
+  let authSubscription = null;
 
   function cleanSettings(row) {
     const source = row || {};
@@ -90,7 +95,8 @@
     return [
       '<section class="stackd-maintenance-admin" id="stackdMaintenanceAdmin">',
       '<div class="stackd-maintenance-admin-head"><div><h3>Режим технического обслуживания</h3>',
-      '<p>Показывает посетителям отдельный экран вместо каталога. Владелец сайта видит сайт и панель управления.</p></div>',
+      '<p>Показывает посетителям отдельный экран вместо каталога. Владелец сайта видит сайт и панель управления.</p>',
+      '<p class="stackd-maintenance-admin-note">Переключатель и оформление сохраняются нижней кнопкой. Верхняя кнопка сохраняет настройки главной страницы и не включает этот режим.</p></div>',
       '<label class="stackd-maintenance-switch"><input id="smEnabled" type="checkbox"><span>Включить режим</span></label></div>',
       '<div class="stackd-maintenance-fields">',
       '<div class="stackd-maintenance-field"><label for="smEyebrow">Надпись над заголовком</label><input id="smEyebrow" maxlength="70" type="text"></div>',
@@ -103,8 +109,8 @@
       '</div>',
       '<div class="stackd-maintenance-preview-wrap"><span class="stackd-maintenance-preview-label">ПРЕДПРОСМОТР</span>',
       '<div class="stackd-maintenance-preview" id="smPreview" data-theme="dark"><span class="stackd-maintenance-preview-eyebrow" id="smPreviewEyebrow">STACKD • BAKU</span><strong id="smPreviewTitle">Скоро вернёмся</strong><p id="smPreviewMessage">Сейчас мы обновляем Stackd. Сайт снова будет доступен совсем скоро.</p></div></div>',
-      '<div class="stackd-maintenance-admin-actions"><button class="btn btn-primary" id="smSave" type="button">Сохранить настройки</button><span class="stackd-maintenance-save-status" id="smSaveStatus" role="status"></span></div>',
-      '<p class="stackd-maintenance-admin-note">Изменения появятся у посетителей после обновления статуса (обычно не позднее 10 секунд).</p></section>'
+      '<div class="stackd-maintenance-admin-actions"><button class="btn btn-primary" id="smSave" type="button">Сохранить режим и оформление</button><span class="stackd-maintenance-save-status" id="smSaveStatus" role="status"></span></div>',
+      '<p class="stackd-maintenance-admin-note">После успешного сохранения новый статус будет виден посетителям при следующей проверке (обычно не позднее 10 секунд).</p></section>'
     ].join("");
   }
 
@@ -139,6 +145,19 @@
     $("#smScaleLabel").textContent = Math.round(value.font_scale * 100) + "%";
   }
 
+  function markAdminFormDirty() {
+    adminFormDirty = true;
+    const status = $("#smSaveStatus");
+    if (status) status.textContent = "Есть несохранённые изменения — нажмите кнопку ниже.";
+    updatePreview();
+  }
+
+  function scheduleQueuedRefresh() {
+    if (!refreshQueued || refreshBusy || saveInProgress) return;
+    refreshQueued = false;
+    window.setTimeout(() => refreshState(), 0);
+  }
+
   function fillAdminForm() {
     if (!owner) return;
 
@@ -155,12 +174,15 @@
         "#smEnabled", "#smEyebrow", "#smTitle", "#smMessage",
         "#smFont", "#smScale", "#smTheme", "#smAccent"
       ].forEach(selector => {
-        $(selector).addEventListener("input", updatePreview);
-        $(selector).addEventListener("change", updatePreview);
+        $(selector).addEventListener("input", markAdminFormDirty);
+        $(selector).addEventListener("change", markAdminFormDirty);
       });
 
       $("#smSave").addEventListener("click", saveSettings);
     }
+
+    // A periodic server refresh must not overwrite values the owner is still editing.
+    if (adminFormDirty) return;
 
     $("#smEnabled").checked = settings.enabled;
     $("#smEyebrow").value = settings.eyebrow;
@@ -174,14 +196,16 @@
   }
 
   async function saveSettings() {
-    if (!owner || !client) return;
+    if (!owner || !client || saveInProgress) return;
 
     const button = $("#smSave");
     const status = $("#smSaveStatus");
     const value = formValues();
 
-    button.disabled = true;
-    status.textContent = "Сохранение…";
+    saveInProgress = true;
+    settingsRevision += 1;
+    if (button) button.disabled = true;
+    if (status) status.textContent = "Сохранение…";
 
     try {
       const payload = { ...value, updated_at: new Date().toISOString() };
@@ -189,20 +213,30 @@
       if (error) throw error;
 
       settings = value;
-      status.textContent = "Сохранено.";
+      adminFormDirty = false;
+      if (status) status.textContent = "Сохранено.";
       showScreen(settings, false);
+      fillAdminForm();
     } catch (error) {
       console.error("Stackd maintenance settings save failed:", error);
-      status.textContent = "Ошибка сохранения: " + (error.message || "проверьте SQL и права доступа");
+      adminFormDirty = true;
+      if (status) status.textContent = "Ошибка сохранения: " + (error.message || "проверьте SQL и права доступа");
     } finally {
-      button.disabled = false;
+      saveInProgress = false;
+      if (button) button.disabled = false;
+      scheduleQueuedRefresh();
     }
   }
 
   async function refreshState(sessionOverride) {
-    if (!client || refreshBusy) return;
+    if (!client) return;
+    if (refreshBusy || saveInProgress) {
+      refreshQueued = true;
+      return;
+    }
 
     refreshBusy = true;
+    const revisionAtStart = settingsRevision;
     try {
       let session = sessionOverride;
 
@@ -225,8 +259,14 @@
         .maybeSingle();
 
       if (error) throw error;
-      if (data) settings = cleanSettings(data);
 
+      // Ignore a response that began before a newer save; immediately refresh from the server again.
+      if (revisionAtStart !== settingsRevision) {
+        refreshQueued = true;
+        return;
+      }
+
+      if (data) settings = cleanSettings(data);
       showScreen(settings, false);
 
       if (owner) {
@@ -234,13 +274,21 @@
       } else {
         const adminPanel = document.getElementById("stackdMaintenanceAdmin");
         if (adminPanel) adminPanel.remove();
+        adminFormDirty = false;
       }
     } catch (error) {
       console.error("Stackd maintenance status check failed:", error);
-      if (!owner) showScreen(DEFAULTS, true);
-      else showScreen(settings, false);
+      if (!owner) {
+        const adminPanel = document.getElementById("stackdMaintenanceAdmin");
+        if (adminPanel) adminPanel.remove();
+        adminFormDirty = false;
+        showScreen(DEFAULTS, true);
+      } else {
+        showScreen(settings, false);
+      }
     } finally {
       refreshBusy = false;
+      scheduleQueuedRefresh();
     }
   }
 
@@ -257,14 +305,16 @@
 
     await refreshState();
 
-    client.auth.onAuthStateChange((_event, session) => {
+    const authResult = client.auth.onAuthStateChange((_event, session) => {
       window.setTimeout(() => refreshState(session), 0);
     });
+    authSubscription = authResult && authResult.data && authResult.data.subscription;
 
     pollTimer = window.setInterval(() => refreshState(), 10000);
 
     window.addEventListener("pagehide", () => {
       if (pollTimer) window.clearInterval(pollTimer);
+      if (authSubscription) authSubscription.unsubscribe();
     }, { once: true });
   }
 
