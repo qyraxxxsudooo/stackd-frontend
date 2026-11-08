@@ -9,9 +9,9 @@
   const DEFAULTS = {
     id: 1,
     enabled: false,
-    eyebrow: "STACKD • BAKU",
+    eyebrow: "STAKED • BAKU",
     title: "Скоро вернёмся",
-    message: "Сейчас мы обновляем Stackd. Сайт снова будет доступен совсем скоро.",
+    message: "Сейчас мы обновляем STAKED. Сайт снова будет доступен совсем скоро.",
     font_family: "manrope",
     font_scale: 1,
     theme: "dark",
@@ -277,7 +277,7 @@
 
         <div class="sm-admin-heading">
           <div>
-            <span class="sm-admin-kicker">STACKD STUDIO</span>
+            <span class="sm-admin-kicker">STAKED STUDIO</span>
             <h3>Страница технических работ</h3>
             <p>Собери отдельную страницу обслуживания. Все изменения видны в предпросмотре до публикации.</p>
           </div>
@@ -463,11 +463,11 @@
               <div class="stackd-maintenance-preview-stage" data-decor-position="right">
 
                 <div class="stackd-maintenance-preview-content">
-                  <img class="sm-preview-logo" src="assets/icons/logo.svg" alt="Stackd">
-                  <span class="stackd-maintenance-preview-eyebrow">STACKD • BAKU</span>
+                  <img class="sm-preview-logo" src="assets/icons/logo.svg" alt="STAKED">
+                  <span class="stackd-maintenance-preview-eyebrow">STAKED • BAKU</span>
                   <strong class="stackd-maintenance-preview-title">Скоро вернёмся</strong>
                   <p class="stackd-maintenance-preview-message">
-                    Сейчас мы обновляем Stackd. Сайт снова будет доступен совсем скоро.
+                    Сейчас мы обновляем STAKED. Сайт снова будет доступен совсем скоро.
                   </p>
                   <span class="sm-preview-line"></span>
                 </div>
@@ -829,7 +829,7 @@
       }
 
     } catch (error) {
-      console.error("Stackd maintenance settings save failed:", error);
+      console.error("STAKED maintenance settings save failed:", error);
 
       if (status) {
         status.textContent = `Ошибка сохранения: ${error.message || "проверьте таблицу и права доступа"}`;
@@ -902,7 +902,7 @@
       }
 
     } catch (error) {
-      console.error("Stackd maintenance status check failed:", error);
+      console.error("STAKED maintenance status check failed:", error);
 
       if (!owner) showScreen(DEFAULTS, true);
       else showScreen(settings, false);
