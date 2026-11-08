@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru" data-theme="light" class="notranslate" translate="no">
 <head>
@@ -6,13 +7,9 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="google" content="notranslate">
 
-<!-- Google Search Console: подтверждение права собственности -->
 <meta name="google-site-verification" content="GDV2VOqrb9JPhwJVt1FR3Aj-8y4NtD6NianS-f2GFi0">
-
-<!-- Индексация поисковыми системами -->
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
-<!-- SEO: Staked Baku -->
 <title>Staked Baku — Food Deals, Discounts &amp; Online Orders</title>
 <meta name="description" content="Staked Baku — платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте онлайн-заказы с QR-кодами.">
 <meta name="application-name" content="Staked">
@@ -22,7 +19,6 @@
 <link rel="canonical" href="https://stackd-frontend.vercel.app/">
 <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
 
-<!-- Превью при публикации ссылки -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Staked">
 <meta property="og:title" content="Staked Baku — Food Deals, Discounts &amp; Online Orders">
@@ -36,7 +32,6 @@
 <meta name="twitter:title" content="Staked Baku — Food Deals, Discounts &amp; Online Orders">
 <meta name="twitter:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды.">
 
-<!-- Структурированные данные: название и назначение сайта -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,24 +57,60 @@ try {
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="stackd-enhancements.css">
 <link rel="stylesheet" href="stackd-maintenance.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="notranslate" translate="no">
+
 <div id="stackdMaintenance" class="stackd-maintenance" hidden role="dialog" aria-modal="true" aria-labelledby="stackdMaintenanceTitle">
-  <div class="stackd-maintenance-card">
-    <div class="stackd-maintenance-mark" aria-hidden="true">
-      <img src="assets/icons/logo.svg" alt="" width="44" height="44">
-    </div>
-    <span class="stackd-maintenance-eyebrow">STACKD STATUS</span>
-    <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">Проверяем статус сайта</h1>
-    <p class="stackd-maintenance-message">Пожалуйста, подождите.</p>
-    <div class="stackd-maintenance-rule" aria-hidden="true"></div>
-    <div class="stackd-maintenance-actions">
-      <button id="stackdMaintenanceOwner" type="button">Войти</button>
-      <button id="stackdMaintenanceRetry" class="secondary" type="button" hidden>Проверить снова</button>
-    </div>
+
+  <div class="stackd-maintenance-background" hidden>
+    <img alt="">
   </div>
+
+  <div class="stackd-maintenance-card" data-template="midnight" data-theme="dark">
+
+    <div class="stackd-maintenance-stage" data-decor-position="right">
+
+      <div class="stackd-maintenance-content">
+
+        <div class="stackd-maintenance-mark" aria-hidden="true">
+          <img src="assets/icons/logo.svg" alt="" width="44" height="44">
+        </div>
+
+        <span class="stackd-maintenance-eyebrow">STACKD • BAKU</span>
+
+        <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">
+          Скоро вернёмся
+        </h1>
+
+        <p class="stackd-maintenance-message">
+          Сейчас мы обновляем Stackd. Сайт снова будет доступен совсем скоро.
+        </p>
+
+        <div class="stackd-maintenance-rule" aria-hidden="true"></div>
+
+        <div class="stackd-maintenance-actions">
+          <button id="stackdMaintenanceRetry" type="button" hidden>
+            Повторить проверку
+          </button>
+        </div>
+
+      </div>
+
+      <div class="stackd-maintenance-decor" hidden>
+        <img alt="">
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
@@ -156,24 +187,14 @@ try {
   </div>
 
   <div id="userProfile" class="user-profile" style="display:none;">
-
     <div class="stackd-profile-anchor">
-
-      <button
-        id="stackdProfileTrigger"
-        class="stackd-profile-trigger"
-        type="button"
-        aria-expanded="false"
-        aria-controls="stackdProfileMenu"
-        title="Настройки профиля"
-      >
+      <button id="stackdProfileTrigger" class="stackd-profile-trigger" type="button" aria-expanded="false" aria-controls="stackdProfileMenu" title="Настройки профиля">
         <img id="userAvatar" src="assets/icons/placeholder.svg" alt="">
         <strong id="stackdProfileHint">Настройки профиля</strong>
         <small id="stackdProfileClick">Нажмите, чтобы открыть</small>
       </button>
 
       <div id="stackdProfileMenu" class="stackd-profile-menu glass" hidden>
-
         <div class="stackd-profile-head">
           <strong id="stackdProfileTitle">Профиль</strong>
           <small>
@@ -186,36 +207,23 @@ try {
           Управляйте аккаунтом и оформлением сайта.
         </p>
 
-        <button
-          id="myOrdersBtn"
-          class="stackd-profile-action"
-          type="button"
-          data-act="orders"
-        >
+        <button id="myOrdersBtn" class="stackd-profile-action" type="button" data-act="orders">
           Мои заказы
         </button>
 
         <div class="stackd-profile-theme">
           <span id="stackdProfileTheme">Тема оформления</span>
-
           <div class="seg" role="group" aria-label="Theme" id="profileThemeSeg">
             <div class="seg-slider" id="themeSlider"></div>
-
             <button type="button" data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
             <button type="button" data-act="theme" data-v="dark" data-i18n="theme_dark">Тёмная</button>
             <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
           </div>
         </div>
 
-        <button
-          id="logoutBtn"
-          class="stackd-profile-action stackd-profile-logout"
-          type="button"
-          data-i18n="logout_btn"
-        >
+        <button id="logoutBtn" class="stackd-profile-action stackd-profile-logout" type="button" data-i18n="logout_btn">
           Выйти из аккаунта
         </button>
-
       </div>
     </div>
 
@@ -226,34 +234,13 @@ try {
           <span id="userBalance">0.00</span> AZN
         </span>
       </div>
-
-      <button
-        class="btn-topup"
-        id="topupBtn"
-        title="Пополнить"
-        aria-label="Пополнить баланс"
-        type="button"
-      >+</button>
+      <button class="btn-topup" id="topupBtn" title="Пополнить" aria-label="Пополнить баланс" type="button">+</button>
     </div>
-
   </div>
 
-  <button
-    class="btn btn-ghost nav-btn"
-    id="loginBtn"
-    data-act="auth"
-    data-i18n="login_btn"
-    type="button"
-  >Войти</button>
+  <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn" type="button">Войти</button>
 
-  <button
-    class="btn btn-ghost nav-btn"
-    id="adminBtn"
-    data-act="manage"
-    style="display:none;"
-    data-i18n="catalog_btn"
-    type="button"
-  >Каталог</button>
+  <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;" data-i18n="catalog_btn" type="button">Каталог</button>
 
   <button class="cart-btn" data-act="cart-open" aria-label="Открыть корзину" type="button">
     <svg class="ic"><use href="#i-cart"/></svg>
@@ -263,36 +250,28 @@ try {
 </header>
 
 <main id="top">
-
   <section class="showcase">
     <div class="showcase-slider" id="showcaseSlider"></div>
   </section>
 
   <section class="wrap" id="catalog" aria-labelledby="ch">
-
     <div class="head">
       <h2 id="ch" data-i18n="menu_title">Меню</h2>
-
       <nav class="chips-wrapper">
         <nav class="chips" id="chips" aria-label="Категории">
           <div class="chips-slider" id="chipsSlider"></div>
         </nav>
       </nav>
     </div>
-
     <div class="grid" id="grid" aria-live="polite"></div>
-
   </section>
-
 </main>
 
 <footer class="foot">
   <div class="wrap">
-
     <div>
       <strong>Stackd</strong>
       <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
-
       <div class="social-links">
         <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
           <svg class="ic"><use href="#i-tg"/></svg>
@@ -314,293 +293,178 @@ try {
       <strong data-i18n="footer_about">О проекте</strong>
       <p data-i18n="footer_about_text">Данные хранятся в облаке Supabase.</p>
     </div>
-
   </div>
 </footer>
 
 <dialog id="drawer" class="drawer glass" aria-labelledby="dh">
-
   <header>
     <h2 id="dh" data-i18n="cart_title">Корзина</h2>
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
   </header>
-
   <ul id="lines" class="lines"></ul>
-
   <footer>
     <div class="total">
       <span data-i18n="cart_total">Итого</span>
       <strong id="total">0.00 AZN</strong>
     </div>
-
-    <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout" type="button">
-      Оформить заказ
-    </button>
-
-    <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear" type="button">
-      Очистить
-    </button>
+    <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout" type="button">Оформить заказ</button>
+    <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear" type="button">Очистить</button>
   </footer>
-
 </dialog>
 
 <dialog id="orders" class="modal wide glass" aria-labelledby="ordersTitle">
-
   <header class="orders-dialog-header">
     <h2 id="ordersTitle" data-i18n="orders_title">Мои заказы</h2>
-
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
   </header>
-
   <div id="ordersList" class="orders-list" aria-live="polite">
     <p class="orders-empty">Заказы появятся здесь после оформления.</p>
   </div>
-
 </dialog>
 
 <dialog id="detail" class="modal glass" aria-labelledby="dtn">
-
   <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
     <svg class="ic"><use href="#i-x"/></svg>
   </button>
-
   <div id="detailBody"></div>
-
 </dialog>
 
 <dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
-
   <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
     <svg class="ic"><use href="#i-x"/></svg>
   </button>
-
   <div class="auth-content">
-
     <h2 id="authTitle" data-i18n="auth_title">Добро пожаловать</h2>
     <p class="auth-sub" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
-
     <button class="btn btn-google" id="googleLoginBtn" type="button">
       <svg class="ic" width="20" height="20"><use href="#i-google"/></svg>
       <span data-i18n="auth_google">Продолжить с Google</span>
     </button>
-
     <div class="divider">
       <span data-i18n="auth_or">или</span>
     </div>
-
     <form class="auth-form" id="authForm" novalidate>
-
-      <input
-        type="email"
-        id="emailInput"
-        placeholder="Email"
-        autocomplete="email"
-        required
-      >
-
-      <input
-        type="password"
-        id="passInput"
-        placeholder="Пароль (мин. 6 символов)"
-        autocomplete="current-password"
-        required
-        minlength="6"
-      >
-
+      <input type="email" id="emailInput" placeholder="Email" autocomplete="email" required>
+      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password" required minlength="6">
       <p class="msg" id="authMsg"></p>
-
       <div style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">
-          Войти
-        </button>
-
-        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">
-          Регистрация
-        </button>
+        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
+        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Регистрация</button>
       </div>
-
     </form>
-
   </div>
-
 </dialog>
 
 <dialog id="topup" class="modal glass">
-
   <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
     <svg class="ic"><use href="#i-x"/></svg>
   </button>
-
   <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
-
   <div class="payment-instructions" role="status">
-
     <p data-i18n="topup_instructions">
       Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.
     </p>
-
     <a class="tg-channel-btn" href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer">
       <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.96 7.22c.1 0 .32.02.47.14a.5.5 0 0 1 .17.33c.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.13-2.68-1.8-1.19-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.43.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z"/>
       </svg>
-
       <span data-i18n="topup_channel">Открыть Telegram-канал</span>
       <span aria-hidden="true">↗</span>
     </a>
-
   </div>
-
   <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">
     Отправка заявки не означает автоматическое зачисление. Поступление средств проверяется отдельно.
   </p>
-
   <form id="topupForm">
-
     <label data-i18n="topup_amount">Сумма (AZN)</label>
     <input type="number" id="topupAmount" required min="1" max="100" step="0.01">
-
     <label data-i18n="topup_check">Скриншот чека</label>
     <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
-
     <label class="check terms-check">
       <input type="checkbox" id="termsCheck" required>
       <span data-i18n="topup_terms">
         Я подтверждаю, что данные заявки верны. Зачисление выполняется только после проверки платежа.
       </span>
     </label>
-
     <p class="msg" id="topupMsg"></p>
-
-    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">
-      Отправить чек
-    </button>
-
+    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Отправить чек</button>
   </form>
-
 </dialog>
 
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
-
   <header>
     <h2 id="eh" data-i18n="admin_title">Управление</h2>
-
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
   </header>
 
   <div class="admin-tabs">
-    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">
-      Товары
-    </button>
-
-    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">
-      Настройки сайта
-    </button>
+    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">Товары</button>
+    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">Настройки сайта</button>
   </div>
 
   <div class="ed tab-content" id="tab-products">
-
     <div>
-
       <div class="row">
         <h3>
           <span data-i18n="admin_products">Товары</span>
           <span class="count" id="adminCount"></span>
         </h3>
-
-        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add" type="button">
-          Добавить
-        </button>
+        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add" type="button">Добавить</button>
       </div>
-
       <div class="admin-filter">
         <input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off">
       </div>
-
       <ul id="adminList" class="alist"></ul>
-
     </div>
 
     <form id="pform" novalidate>
-
       <h3 id="formTitle" data-i18n="form_new">Новый товар</h3>
-
       <label for="pn" data-i18n="form_name">Название</label>
       <input id="pn" required maxlength="60">
-
       <label for="pd" data-i18n="form_desc">Описание</label>
       <textarea id="pd" rows="3" maxlength="200"></textarea>
-
       <div class="two">
-
         <div>
           <label for="pc" data-i18n="form_cat">Категория</label>
           <input id="pc" list="categoryOptions" required maxlength="40" placeholder="Burgers">
           <datalist id="categoryOptions"></datalist>
         </div>
-
         <div>
           <label for="pp" data-i18n="form_price">Цена (AZN)</label>
           <input id="pp" type="number" min="0" step="0.01" inputmode="decimal" required>
         </div>
-
       </div>
-
       <label for="pf" data-i18n="form_image">Картинка (с ПК)</label>
       <input id="pf" type="file" accept="image/jpeg,image/png,image/webp">
-
       <div class="upload-preview" id="productImagePreviewWrap" hidden>
         <img id="productImagePreview" alt="Предпросмотр изображения товара">
-
         <div class="upload-preview-meta">
           <span id="productImagePreviewName"></span>
-          <button type="button" class="btn btn-ghost sm" id="clearProductImage">
-            Убрать фото
-          </button>
+          <button type="button" class="btn btn-ghost sm" id="clearProductImage">Убрать фото</button>
         </div>
       </div>
-
       <p class="msg" id="formMsg" role="alert"></p>
-
       <div class="row">
-        <button type="submit" class="btn btn-primary" data-i18n="form_save">
-          Сохранить
-        </button>
+        <button type="submit" class="btn btn-primary" data-i18n="form_save">Сохранить</button>
       </div>
-
     </form>
-
   </div>
 
   <div class="tab-content" id="tab-settings" style="display:none;padding:20px 0;">
-
     <h3 data-i18n="settings_title">Настройки главной страницы</h3>
-
-    <label for="settingHeroTitle" data-i18n="settings_hero_title">
-      Заголовок на главной
-    </label>
-
+    <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
     <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в Stackd">
-
-    <label for="settingHeroSub" data-i18n="settings_hero_sub">
-      Подзаголовок / Описание
-    </label>
-
+    <label for="settingHeroSub" data-i18n="settings_hero_sub">Подзаголовок / Описание</label>
     <textarea id="settingHeroSub" rows="2" placeholder="Лучшие предложения на еду..."></textarea>
-
-    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">
-      Сохранить настройки
-    </button>
-
+    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Сохранить настройки</button>
     <p class="msg" id="settingsMsg"></p>
-
   </div>
-
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
