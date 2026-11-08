@@ -10,18 +10,18 @@
 <meta name="google-site-verification" content="GDV2VOqrb9JPhwJVt1FR3Aj-8y4NtD6NianS-f2GFi0">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
-<title>Staked Baku — Food Deals, Discounts &amp; Online Orders</title>
-<meta name="description" content="Staked Baku — платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте онлайн-заказы с QR-кодами.">
-<meta name="application-name" content="Staked">
-<meta name="author" content="Staked">
+<title>STAKED Baku — Food Deals, Discounts &amp; Online Orders</title>
+<meta name="description" content="STAKED Baku — платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте онлайн-заказы с QR-кодами.">
+<meta name="application-name" content="STAKED">
+<meta name="author" content="STAKED">
 <meta name="theme-color" content="#f7f3ec">
 
 <link rel="canonical" href="https://stackd-frontend.vercel.app/">
 <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
 
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Staked">
-<meta property="og:title" content="Staked Baku — Food Deals, Discounts &amp; Online Orders">
+<meta property="og:site_name" content="STAKED">
+<meta property="og:title" content="STAKED Baku — Food Deals, Discounts &amp; Online Orders">
 <meta property="og:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды для подтверждённых заказов.">
 <meta property="og:url" content="https://stackd-frontend.vercel.app/">
 <meta property="og:locale" content="ru_RU">
@@ -29,15 +29,15 @@
 <meta property="og:locale:alternate" content="az_AZ">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Staked Baku — Food Deals, Discounts &amp; Online Orders">
+<meta name="twitter:title" content="STAKED Baku — Food Deals, Discounts &amp; Online Orders">
 <meta name="twitter:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды.">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Staked Baku",
-  "alternateName": "Staked",
+  "name": "STAKED Baku",
+  "alternateName": "STAKED",
   "url": "https://stackd-frontend.vercel.app/",
   "description": "Платформа предложений, скидок на еду и онлайн-заказов в Баку, Азербайджан.",
   "inLanguage": ["ru", "en", "az"]
@@ -57,6 +57,23 @@ try {
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="stackd-enhancements.css">
 <link rel="stylesheet" href="stackd-maintenance.css">
+<link rel="stylesheet" href="staked-motion.css">
+<style>
+/* STAKED splash: painted on the first frame; a CSS-only failsafe removes it after 4 s even if JS fails. */
+#stakedSplash{position:fixed;inset:0;z-index:2147483000;background:#f7f3ec;pointer-events:none;animation:stakedSplashSafe .01s linear 4.2s forwards}
+html.staked-dark #stakedSplash{background:#141311}
+html.staked-no-splash #stakedSplash{display:none}
+@keyframes stakedSplashSafe{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#stakedSplash{display:none}}
+</style>
+<script>
+try{
+  var d=document.documentElement,t=localStorage.getItem('pdd.theme')||'system';
+  if(t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('staked-dark');
+  if(sessionStorage.getItem('staked.splash'))d.classList.add('staked-no-splash');
+}catch(e){}
+</script>
+
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,6 +83,7 @@ try {
 </head>
 
 <body class="notranslate" translate="no">
+<div id="stakedSplash" aria-hidden="true"></div>
 
 <div id="stackdMaintenance" class="stackd-maintenance" hidden role="dialog" aria-modal="true" aria-labelledby="stackdMaintenanceTitle">
 
@@ -83,14 +101,14 @@ try {
           <img src="assets/icons/logo.svg" alt="" width="44" height="44">
         </div>
 
-        <span class="stackd-maintenance-eyebrow">STACKD • BAKU</span>
+        <span class="stackd-maintenance-eyebrow">STAKED • BAKU</span>
 
         <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">
           Скоро вернёмся
         </h1>
 
         <p class="stackd-maintenance-message">
-          Сейчас мы обновляем Stackd. Сайт снова будет доступен совсем скоро.
+          Сейчас мы обновляем STAKED. Сайт снова будет доступен совсем скоро.
         </p>
 
         <div class="stackd-maintenance-rule" aria-hidden="true"></div>
@@ -161,14 +179,14 @@ try {
 <header class="nav glass">
 
   <a class="brand" href="#top">
-    <img src="assets/icons/logo.svg" alt="" width="28" height="28">
-    <span>Stackd</span>
+    <staked-logo size="28" intro><img src="assets/icons/logo.svg" alt="" width="28" height="28"></staked-logo>
+    <span>STAKED</span>
   </a>
 
   <div class="search-container">
     <form class="search" role="search" id="searchForm">
       <svg class="ic"><use href="#i-search"/></svg>
-      <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="Поиск в Stackd" autocomplete="off">
+      <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="Поиск в STAKED" autocomplete="off">
     </form>
     <div class="search-suggestions glass" id="searchSuggestions"></div>
   </div>
@@ -265,12 +283,23 @@ try {
     </div>
     <div class="grid" id="grid" aria-live="polite"></div>
   </section>
+
+  <section class="wrap staked-how" id="how" aria-labelledby="howTitle">
+    <div class="staked-how-head">
+      <span class="staked-how-kicker">STAKED</span>
+      <h2 id="howTitle" data-i18n="how_title">Как работает STAKED</h2>
+      <p data-i18n="how_sub">Покупка, сканирование QR-кода, баллы и награда — в одном сценарии.</p>
+    </div>
+    <div class="staked-how-stage">
+      <staked-motion type="full" size="large"></staked-motion>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
   <div class="wrap">
     <div>
-      <strong>Stackd</strong>
+      <strong>STAKED</strong>
       <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
       <div class="social-links">
         <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
@@ -459,7 +488,7 @@ try {
   <div class="tab-content" id="tab-settings" style="display:none;padding:20px 0;">
     <h3 data-i18n="settings_title">Настройки главной страницы</h3>
     <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
-    <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в Stackd">
+    <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в STAKED">
     <label for="settingHeroSub" data-i18n="settings_hero_sub">Подзаголовок / Описание</label>
     <textarea id="settingHeroSub" rows="2" placeholder="Лучшие предложения на еду..."></textarea>
     <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Сохранить настройки</button>
@@ -472,6 +501,7 @@ try {
 <script src="app.js" defer></script>
 <script src="stackd-enhancements.js" defer></script>
 <script src="stackd-maintenance.js" defer></script>
+<script src="staked-motion.js" defer></script>
 
 </body>
 </html>
