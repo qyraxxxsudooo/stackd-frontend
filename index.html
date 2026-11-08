@@ -61,10 +61,24 @@ try {
 
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="stackd-enhancements.css">
+<link rel="stylesheet" href="stackd-maintenance.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="notranslate" translate="no">
+<div id="stackdMaintenance" class="stackd-maintenance" role="dialog" aria-modal="true" aria-labelledby="stackdMaintenanceTitle">
+  <div class="stackd-maintenance-card">
+    <div class="stackd-maintenance-mark" aria-hidden="true">S</div>
+    <span class="stackd-maintenance-eyebrow">STACKD STATUS</span>
+    <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">Проверяем статус сайта</h1>
+    <p class="stackd-maintenance-message">Пожалуйста, подождите.</p>
+    <div class="stackd-maintenance-rule" aria-hidden="true"></div>
+    <div class="stackd-maintenance-actions">
+      <button id="stackdMaintenanceOwner" type="button">Вход владельца</button>
+      <button id="stackdMaintenanceRetry" class="secondary" type="button" hidden>Проверить снова</button>
+    </div>
+  </div>
+</div>
 
 <svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
   <filter id="liquid-lens" x="-20%" y="-20%" width="140%" height="140%">
@@ -591,6 +605,7 @@ try {
 
 <script src="app.js" defer></script>
 <script src="stackd-enhancements.js" defer></script>
+<script src="stackd-maintenance.js" defer></script>
 
 </body>
 </html>
