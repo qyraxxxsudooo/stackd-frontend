@@ -1,4 +1,4 @@
-/* Stackd maintenance screen and owner controls. Selectors are namespaced. */
+/* STAKED maintenance screen and owner controls. Selectors are namespaced. */
 .stackd-maintenance[hidden] { display:none !important; }
 .stackd-maintenance {
   --sm-accent:#d7a85b;
@@ -271,7 +271,7 @@ body.stackd-maintenance-active { overflow:hidden !important; }
 @media(prefers-reduced-motion:reduce) {
   .stackd-maintenance-actions button { transition:none; }
 }
-/* STACKD MAINTENANCE STUDIO — premium page themes, image layers and live editor */
+/* STAKED MAINTENANCE STUDIO — premium page themes, image layers and live editor */
 .stackd-maintenance[hidden] { display:none !important; }
 .stackd-maintenance {
   --sm-accent:#f07a2a;
