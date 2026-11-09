@@ -1,4 +1,4 @@
-/* STAKED enhancements. Loaded after the existing app.js. */
+/* STACKED enhancements. Loaded after the existing app.js. */
 (() => {
   'use strict';
 
@@ -117,7 +117,7 @@
   let heroImageRemoved = false;
   let brandLogoPreviewObjectUrl = null;
   let brandLogoRemoved = false;
-  let brandSettings = { site_name: 'STAKED', site_tagline: '', support_telegram: 'sharkiff', telegram_channel: 'stackdbaku', brand_logo_url: '' };
+  let brandSettings = { site_name: 'STACKED', site_tagline: '', support_telegram: 'sharkiff', telegram_channel: 'stackdbaku', brand_logo_url: '' };
   let defaultHeroSlide = { image: '', title: '', subtitle: '' };
   let promo = { enabled: false, scope: 'all', target: '', percent: 0, label: 'СКИДКА', originalPrices: {} };
   let newsItems = [];
@@ -335,7 +335,7 @@
         if (translated) { await load(); toast(S.lang === 'en' ? 'Product translations are ready.' : S.lang === 'az' ? 'Məhsulun tərcüməsi hazırdır.' : 'Переводы товара готовы.'); }
       }).catch(error => { console.warn('Product translation skipped:', error); toast(t('translateFailed')); });
     } catch (error) {
-      console.error('STAKED product save failed:', error);
+      console.error('STACKED product save failed:', error);
       if (uploadedPath) await _supabase.storage.from(PRODUCT_BUCKET).remove([uploadedPath]);
       if (msg) { msg.textContent = error?.message || 'Не удалось сохранить товар.'; msg.style.color = 'var(--danger, #b42318)'; }
     } finally { if (submit) submit.disabled = false; }
@@ -552,7 +552,7 @@
     let section = $('#stackdNewsRail');
     if (!section) {
       section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
-      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STAKED / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
+      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKED / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
       catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
     }
     const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
@@ -564,7 +564,7 @@
     track.innerHTML = slides.map((item, index) => {
       const image = safeImageUrl(item.image_url);
       const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
-      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'STAKED news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
+      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'STACKED news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
       const href = safeWebLink(item.href);
       return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
     }).join('');
@@ -729,7 +729,7 @@
   }
 
   function syncBrandSettingsForm() {
-    if ($('#stackdSiteName')) $('#stackdSiteName').value = brandSettings.site_name || 'STAKED';
+    if ($('#stackdSiteName')) $('#stackdSiteName').value = brandSettings.site_name || 'STACKED';
     if ($('#stackdSiteTagline')) $('#stackdSiteTagline').value = brandSettings.site_tagline || '';
     if ($('#stackdSupportTelegram')) $('#stackdSupportTelegram').value = brandSettings.support_telegram || 'sharkiff';
     if ($('#stackdChannelTelegram')) $('#stackdChannelTelegram').value = brandSettings.telegram_channel || 'stackdbaku';
@@ -738,7 +738,7 @@
   }
 
   function applyBrandSettings() {
-    const name = String(brandSettings.site_name || '').trim().slice(0, 40) || 'STAKED';
+    const name = String(brandSettings.site_name || '').trim().slice(0, 40) || 'STACKED';
     const tagline = String(brandSettings.site_tagline || '').trim().slice(0, 120) || translations[S.lang]?.footer_desc || translations.ru.footer_desc;
     const support = cleanTelegramUsername(brandSettings.support_telegram, 'sharkiff');
     const channel = cleanTelegramUsername(brandSettings.telegram_channel, 'stackdbaku');
@@ -755,7 +755,7 @@
     if (footerBrand) footerBrand.textContent = name;
     const footerDescription = $('.foot [data-i18n="footer_desc"]');
     if (footerDescription) footerDescription.textContent = tagline;
-    document.title = `${name} — Premium digital deals`;
+    document.title = `${name} - Premium digital deals`;
     const supportUrl = `https://t.me/${support}`;
     const channelUrl = `https://t.me/${channel}`;
     $$('.social-links a').forEach(anchor => {
@@ -783,7 +783,7 @@
       <div class="stackd-section-head"><h3>${esc(t('brandTitle'))}</h3><span>IDENTITY</span></div>
       <p class="stackd-admin-note">${esc(t('brandHelp'))}</p>
       <label for="stackdSiteName">${esc(t('brandName'))}</label>
-      <input id="stackdSiteName" type="text" maxlength="40" autocomplete="off" value="STAKED">
+      <input id="stackdSiteName" type="text" maxlength="40" autocomplete="off" value="STACKED">
       <label for="stackdSiteTagline">${esc(t('brandTagline'))}</label>
       <input id="stackdSiteTagline" type="text" maxlength="120" autocomplete="off">
       <div class="stackd-settings-grid">
@@ -819,7 +819,7 @@
     });
     ['stackdSiteName', 'stackdSiteTagline', 'stackdSupportTelegram', 'stackdChannelTelegram'].forEach(id => {
       $('#' + id)?.addEventListener('input', () => {
-        brandSettings.site_name = $('#stackdSiteName')?.value || 'STAKED';
+        brandSettings.site_name = $('#stackdSiteName')?.value || 'STACKED';
         brandSettings.site_tagline = $('#stackdSiteTagline')?.value || '';
         brandSettings.support_telegram = $('#stackdSupportTelegram')?.value || 'sharkiff';
         brandSettings.telegram_channel = $('#stackdChannelTelegram')?.value || 'stackdbaku';
@@ -907,12 +907,12 @@
     card = document.createElement('section');
     card.id = 'stackdShowcaseHero';
     card.className = 'stackd-showcase-hero';
-    card.setAttribute('aria-label', 'STAKED');
+    card.setAttribute('aria-label', 'STACKED');
     card.innerHTML = `
       <img class="stackd-showcase-image" alt="" decoding="async">
       <div class="stackd-showcase-shade" aria-hidden="true"></div>
       <div class="stackd-showcase-copy">
-        <span class="stackd-showcase-kicker">STAKED / SPECIAL OFFERS</span>
+        <span class="stackd-showcase-kicker">STACKED / SPECIAL OFFERS</span>
         <h1 id="stackdShowcaseTitle"></h1>
         <p id="stackdShowcaseSubtitle"></p>
         <a class="stackd-showcase-cta" href="#catalog"><span id="stackdShowcaseCta"></span><span aria-hidden="true">↘</span></a>
@@ -947,7 +947,7 @@
     const title = $('#stackdShowcaseTitle');
     const subtitle = $('#stackdShowcaseSubtitle');
     const cta = $('#stackdShowcaseCta');
-    if (title) title.textContent = hero.hero_title || defaultHeroSlide.title || (S.lang === 'en' ? 'Discover STAKED offers' : S.lang === 'az' ? 'STAKED təkliflərini kəşf edin' : 'Выгодные предложения STAKED');
+    if (title) title.textContent = hero.hero_title || defaultHeroSlide.title || (S.lang === 'en' ? 'Discover STACKED offers' : S.lang === 'az' ? 'STACKED təkliflərini kəşf edin' : 'Выгодные предложения STACKED');
     if (subtitle) {
       subtitle.textContent = hero.hero_subtitle || defaultHeroSlide.subtitle || (S.lang === 'en' ? 'Selected offers in one place.' : S.lang === 'az' ? 'Seçilmiş təkliflər bir yerdə.' : 'Подборка предложений в одном месте.');
       subtitle.hidden = !subtitle.textContent.trim();
@@ -1023,12 +1023,12 @@
       const allowedRatios = ['16 / 9', '21 / 9', '4 / 3', 'auto'];
       const requestedRatio = $('#stackdHeroRatio')?.value || 'auto';
       const selectedColor = $('#stackdBrandAccent')?.value || '#c2500a';
-      const siteName = String($('#stackdSiteName')?.value || 'STAKED').trim().slice(0, 40) || 'STAKED';
+      const siteName = String($('#stackdSiteName')?.value || 'STACKED').trim().slice(0, 40) || 'STACKED';
       const siteTagline = String($('#stackdSiteTagline')?.value || '').trim().slice(0, 120);
       const supportRaw = String($('#stackdSupportTelegram')?.value || '').trim().replace(/^@+/, '');
       const channelRaw = String($('#stackdChannelTelegram')?.value || '').trim().replace(/^@+/, '');
-      if (!/^[A-Za-z0-9_]{5,32}$/.test(supportRaw)) throw new Error(S.lang === 'en' ? 'Enter a valid Telegram support username (5–32 characters).' : S.lang === 'az' ? 'Düzgün Telegram dəstək istifadəçi adı daxil edin (5–32 simvol).' : 'Укажите корректный username Telegram поддержки (5–32 символа).');
-      if (!/^[A-Za-z0-9_]{5,32}$/.test(channelRaw)) throw new Error(S.lang === 'en' ? 'Enter a valid Telegram channel username (5–32 characters).' : S.lang === 'az' ? 'Düzgün Telegram kanal adı daxil edin (5–32 simvol).' : 'Укажите корректный username Telegram-канала (5–32 символа).');
+      if (!/^[A-Za-z0-9_]{5,32}$/.test(supportRaw)) throw new Error(S.lang === 'en' ? 'Enter a valid Telegram support username (5-32 characters).' : S.lang === 'az' ? 'Düzgün Telegram dəstək istifadəçi adı daxil edin (5-32 simvol).' : 'Укажите корректный username Telegram поддержки (5-32 символа).');
+      if (!/^[A-Za-z0-9_]{5,32}$/.test(channelRaw)) throw new Error(S.lang === 'en' ? 'Enter a valid Telegram channel username (5-32 characters).' : S.lang === 'az' ? 'Düzgün Telegram kanal adı daxil edin (5-32 simvol).' : 'Укажите корректный username Telegram-канала (5-32 символа).');
       const supportTelegram = supportRaw;
       const channelTelegram = channelRaw;
       const rows = [
@@ -1298,7 +1298,7 @@
       approved: { ru: 'Зачислено', en: 'Credited', az: 'Balansa əlavə edildi' },
       rejected: { ru: 'Отклонено', en: 'Rejected', az: 'Rədd edildi' }
     };
-    return labels[String(status || '').toLowerCase()]?.[lang()] || String(status || '—');
+    return labels[String(status || '').toLowerCase()]?.[lang()] || String(status || '-');
   }
 
   async function loadTopupHistory() {
@@ -1324,9 +1324,9 @@
         host.innerHTML = rows.map(row => {
           const id = String(row.id || '');
           const date = row.created_at ? new Date(row.created_at) : null;
-          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '-';
           const amount = Number(row.amount);
-          const amountText = Number.isFinite(amount) ? `${amount.toFixed(2)} AZN` : '— AZN';
+          const amountText = Number.isFinite(amount) ? `${amount.toFixed(2)} AZN` : '- AZN';
           const status = ['pending','approved','rejected'].includes(String(row.status)) ? String(row.status) : 'pending';
           return `<article class="stackd-topup-item"><div class="stackd-topup-item-main"><strong>${esc(amountText)}</strong><small>${esc(dateText)} · ${esc(id.slice(0, 8).toUpperCase())}</small></div><span class="stackd-topup-status is-${status}">${esc(topupStatusLabel(status))}</span></article>`;
         }).join('');
@@ -1550,8 +1550,8 @@
     productForm?.addEventListener('submit', saveProductWithExtras, true);
     $('#saveSettingsBtn')?.addEventListener('click', saveHeroSettings, true);
     // Reload once after the original deferred app.js initialization so fields omitted by its old query are restored.
-    load().catch(error => console.error('STAKED enhanced catalog load failed:', error));
-    loadSettings().catch(error => console.error('STAKED settings load failed:', error));
+    load().catch(error => console.error('STACKED enhanced catalog load failed:', error));
+    loadSettings().catch(error => console.error('STACKED settings load failed:', error));
     const grid = $('#grid');
     if (grid) new MutationObserver(() => requestAnimationFrame(updateChipsSlider)).observe(grid, { childList: true, subtree: true });
     searchInput?.addEventListener('input', () => setTimeout(() => {
@@ -1566,7 +1566,7 @@
       if (!langButton) return;
       setTimeout(() => { refreshAddedLabels(); refreshPromotionNewsLabels(); syncThemeButtons(); updateHero(); placeMobileCartButton(); }, 0);
     });
-    console.info(`STAKED enhancements ${VERSION} loaded`);
+    console.info(`STACKED enhancements ${VERSION} loaded`);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialise, { once: true });
