@@ -38,7 +38,7 @@ function safeImageUrl(value) {
 
 const translations = {
   ru: {
-    search_placeholder: 'Поиск в STAKED', how_title: 'Как работает STAKED', how_sub: 'Покупка, сканирование QR-кода, баллы и награда — в одном сценарии.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
+    search_placeholder: 'Поиск в STACKED', how_title: 'Как работает STACKED', how_sub: 'Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
     login_btn: 'Войти', logout_btn: 'Выйти', catalog_btn: 'Каталог', orders_btn: 'Мои заказы', menu_title: 'Меню', balance_label: 'Баланс',
     footer_desc: 'Лучшие предложения на еду в Баку.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'Данные хранятся в облаке Supabase.',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
@@ -54,7 +54,7 @@ const translations = {
     search_empty: 'Ничего не найдено.'
   },
   en: {
-    search_placeholder: 'Search STAKED', how_title: 'How STAKED works', how_sub: 'Purchase, QR scan, points and reward — one seamless flow.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
+    search_placeholder: 'Search STACKED', how_title: 'How STACKED works', how_sub: 'Choose an offer, place an order, wait for processing and pick it up at the restaurant.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
     login_btn: 'Log in', logout_btn: 'Log out', catalog_btn: 'Admin panel', orders_btn: 'My orders', menu_title: 'Catalog', balance_label: 'Balance',
     footer_desc: 'The best food deals in Baku.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'Data is stored in Supabase cloud.',
     cart_title: 'Cart', cart_total: 'Total', cart_checkout: 'Checkout', cart_clear: 'Clear', cart_empty: 'Your cart is empty', cart_remove: 'Remove',
@@ -70,7 +70,7 @@ const translations = {
     search_empty: 'No results found.'
   },
   az: {
-    search_placeholder: 'STAKED-də axtar', how_title: 'STAKED necə işləyir', how_sub: 'Alış, QR skanı, xallar və mükafat — vahid ssenaridə.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
+    search_placeholder: 'STACKED-də axtar', how_title: 'STACKED necə işləyir', how_sub: 'Təklifi seçin, sifariş verin, emalı gözləyin və restoranda götürün.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
     login_btn: 'Daxil ol', logout_btn: 'Çıxış', catalog_btn: 'İdarəetmə', orders_btn: 'Sifarişlərim', menu_title: 'Kataloq', balance_label: 'Balans',
     footer_desc: 'Bakıda ən yaxşı yemək təklifləri.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'Məlumatlar Supabase buludunda saxlanılır.',
     cart_title: 'Səbət', cart_total: 'Cəmi', cart_checkout: 'Sifarişi rəsmiləşdir', cart_clear: 'Təmizlə', cart_empty: 'Səbət boşdur', cart_remove: 'Sil',
@@ -341,7 +341,7 @@ function initSlider(slides) {
   if (sliderTimer) { clearInterval(sliderTimer); sliderTimer = null; }
   const validSlides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
   const source = validSlides.length ? validSlides : [{
-    title: 'Добро пожаловать в STAKED', description: 'Подборка предложений',
+    title: 'Добро пожаловать в STACKED', description: 'Подборка предложений',
     image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
   }];
   container.innerHTML = source.map((slide, index) => `
@@ -759,6 +759,6 @@ _supabase.auth.onAuthStateChange((_event, session) => {
 
 // Start the application.
 checkAuth().catch(error => {
-  console.error('STAKED initialization failed:', error);
+  console.error('STACKED initialization failed:', error);
   toast('Не удалось запустить сайт. Обновите страницу.');
 });
