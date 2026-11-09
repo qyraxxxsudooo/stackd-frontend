@@ -1,4 +1,4 @@
-/* STAKED refinements. Loaded after styles.css. */
+/* STACKED refinements. Loaded after styles.css. */
 .search-container,.search{min-width:0}
 .search{height:44px;align-items:center;isolation:isolate}
 .search .ic{top:50%;transform:translateY(-50%);left:15px}
@@ -197,7 +197,7 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
     let section = $('#stackdNewsRail');
     if (!section) {
       section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
-      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STAKED / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
+      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKED / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
       catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
     }
     const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
@@ -209,7 +209,7 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
     track.innerHTML = slides.map((item, index) => {
       const image = safeImageUrl(item.image_url);
       const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
-      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'STAKED news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
+      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'STACKED news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
       const href = safeWebLink(item.href);
       return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
     }).join('');
@@ -306,7 +306,7 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
   }
 
 
-/* STAKED desktop/mobile QA: stable profile, complete admin settings and predictable dialogs. */
+/* STACKED desktop/mobile QA: stable profile, complete admin settings and predictable dialogs. */
 :root { --stackd-custom-accent: #c2500a; --accent: var(--stackd-custom-accent, #c2500a); }
 [data-theme="dark"] { --accent: var(--stackd-custom-accent, #f07a2a); }
 .nav.glass { background:color-mix(in srgb,var(--surface) 94%,transparent); border-bottom-color:color-mix(in srgb,var(--text) 10%,transparent); box-shadow:0 5px 22px rgba(30,24,16,.055); -webkit-backdrop-filter:blur(22px) saturate(155%); backdrop-filter:blur(22px) saturate(155%); }
@@ -447,7 +447,7 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
   #orders.modal.wide,#editor.modal.wide { inset:0; width:100vw; max-width:100vw; height:100dvh; max-height:100dvh; border-radius:0; }
 }
 
-/* STAKED v1.2: predictable account navigation, cart controls and storefront hero. */
+/* STACKED v1.2: predictable account navigation, cart controls and storefront hero. */
 .stackd-orders-shortcut {
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   min-height:42px; padding:0 14px; flex:0 0 auto;
