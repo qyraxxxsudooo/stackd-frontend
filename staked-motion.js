@@ -1,16 +1,16 @@
 /*
- * STAKED MOTION — brand motion system (dependency-free: no libraries, fonts, images, network).
+ * STACKED MOTION, brand motion system (dependency-free: no libraries, fonts, images, network).
  *
- *   <staked-logo size="28"></staked-logo>                       brand mark: intro + hover micro-motion
- *   <staked-motion type="full"></staked-motion>                 PURCHASE → SCAN → POINTS → REWARD story (loop)
- *   <staked-motion type="intro"></staked-motion>                logo lock-up reveal (once)
- *   <staked-motion type="loader"></staked-motion>               compact logo loader (loop)
- *   <staked-motion type="purchase|scan|points|reward"></...>    single-scene phone clips (once; add `loop` to repeat)
- *   <staked-motion type="success"></staked-motion>              short confirmation (once)
+ *   <stacked-logo size="28"></stacked-logo>                       brand mark: intro + hover micro-motion
+ *   <stacked-motion type="full"></stacked-motion>                 Choose, Order, Processing, Pickup story (loop)
+ *   <stacked-motion type="intro"></stacked-motion>                logo lock-up reveal (once)
+ *   <stacked-motion type="loader"></stacked-motion>               compact logo loader (loop)
+ *   <stacked-motion type="choose|order|processing|pickup"></...>    single-scene phone clips (once; add `loop` to repeat)
+ *   <stacked-motion type="success"></stacked-motion>              short confirmation (once)
  *
  * Attributes: locale (ru|en|az, default = <html lang>), theme (light|dark, default = <html data-theme>),
- *             speed (0.5–2.5), size (small|medium|large), loop, paused.
- * JS: el.play() el.pause() el.replay() el.seek(seconds)  ·  event "staked-ended" (non-looping types).
+ *             speed (0.5 to 2.5), size (small|medium|large), loop, paused.
+ * JS: el.play() el.pause() el.replay() el.seek(seconds)  ·  event "stacked-ended" (non-looping types).
  *
  * Architecture: one deterministic timeline per scene, draw(t) → SVG attributes. No CSS keyframes, so every
  * frame can be rendered, paused and tested exactly; the loop restarts from a state identical to its end.
@@ -20,7 +20,7 @@
 (() => {
   'use strict';
   const G = typeof window !== 'undefined' ? window : globalThis;
-  if (G.StakedMotion) return;
+  if (G.StackedMotion) return;
   let UID = 0;
 
   /* ───────────── math & easing ───────────── */
@@ -48,31 +48,31 @@
 
   const I18N = {
     ru: {
-      aria: 'Как работает STAKED: покупка, сканирование QR-кода, баллы и награда',
-      rail: ['ПОКУПКА', 'СКАНИРОВАНИЕ', 'БАЛЛЫ', 'НАГРАДА'],
-      cap: [['Покупка', 'Выберите предложение', 'и подтвердите покупку.'], ['Сканирование', 'QR-код подтверждает', 'покупку на месте.'], ['Баллы', 'Баллы STAKED', 'начисляются сразу.'], ['Награда', 'Обменяйте баллы', 'на еду и бонусы.']],
-      choose: 'ВЫБЕРИТЕ ПРЕДЛОЖЕНИЕ', item: 'Бургер-комбо', itemSub: 'STAKED · Баку', buy: 'Купить', fore: '+120 баллов STAKED',
-      scan: 'ОТСКАНИРУЙТЕ QR-КОД', verified: 'Покупка подтверждена', bal: 'БАЛЛЫ', pts: 'БАЛЛОВ', left: 'До награды ещё 640',
-      pick: 'ВЫБЕРИТЕ НАГРАДУ', rA: 'Бесплатный кофе', rB: 'Десерт дня', rC: 'Бургер-комбо', got: 'ПОЛУЧЕНО',
-      doneT: 'НАГРАДА ПОЛУЧЕНА', doneS: 'Приятного аппетита', ok: 'Готово'
+      aria: 'Как работает STACKED: выбор предложения, заказ, обработка и получение',
+      rail: ['ВЫБОР', 'ЗАКАЗ', 'ОБРАБОТКА', 'ПОЛУЧЕНИЕ'],
+      cap: [['Выбор', 'Выберите предложение', 'дешевле обычной цены.'], ['Заказ', 'Оформите заказ', 'по сниженной цене.'], ['Обработка', 'Администратор берёт', 'заказ в работу.'], ['Получение', 'Покажите подтверждение', 'в ресторане и заберите.']],
+      choose: 'ВЫБЕРИТЕ ПРЕДЛОЖЕНИЕ', item: 'Бургер', itemSub: 'Предложение дня', add: 'В корзину',
+      orderT: 'ВАШ ЗАКАЗ', total: 'Итого', save: 'Экономия 4.00 AZN', place: 'Оформить заказ', sent: 'Заказ отправлен',
+      status: 'СТАТУС ЗАКАЗА', st1: 'Заказ отправлен', st2: 'Обрабатывается', st3: 'Подтверждение',
+      pickT: 'ПОЛУЧЕНИЕ', ready: 'Подтверждение готово', show: 'Покажите в ресторане', ok: 'Готово'
     },
     en: {
-      aria: 'How STAKED works: purchase, QR scan, points and reward',
-      rail: ['PURCHASE', 'SCAN', 'POINTS', 'REWARD'],
-      cap: [['Purchase', 'Pick an offer and', 'confirm in seconds.'], ['Scan', 'A QR code verifies', 'the purchase on site.'], ['Points', 'STAKED points are', 'credited instantly.'], ['Reward', 'Redeem points for', 'food and extras.']],
-      choose: 'CHOOSE AN OFFER', item: 'Burger combo', itemSub: 'STAKED · Baku', buy: 'Buy', fore: '+120 STAKED points',
-      scan: 'SCAN THE QR CODE', verified: 'Purchase verified', bal: 'POINTS', pts: 'POINTS', left: '640 to your next reward',
-      pick: 'CHOOSE A REWARD', rA: 'Free coffee', rB: 'Dessert of the day', rC: 'Burger combo', got: 'CLAIMED',
-      doneT: 'REWARD UNLOCKED', doneS: 'Enjoy your meal', ok: 'Done'
+      aria: 'How STACKED works: choose an offer, order, processing and pickup',
+      rail: ['CHOOSE', 'ORDER', 'PROCESSING', 'PICKUP'],
+      cap: [['Choose', 'Pick an offer cheaper', 'than the usual price.'], ['Order', 'Place your order', 'at the lower price.'], ['Processing', 'Our admin takes', 'your order in work.'], ['Pickup', 'Show the confirmation', 'at the restaurant.']],
+      choose: 'CHOOSE AN OFFER', item: 'Burger', itemSub: 'Offer of the day', add: 'Add to cart',
+      orderT: 'YOUR ORDER', total: 'Total', save: 'You save 4.00 AZN', place: 'Place order', sent: 'Order sent',
+      status: 'ORDER STATUS', st1: 'Order sent', st2: 'Being processed', st3: 'Confirmation',
+      pickT: 'PICKUP', ready: 'Confirmation ready', show: 'Show it at the restaurant', ok: 'Done'
     },
     az: {
-      aria: 'STAKED necə işləyir: alış, QR skanı, xallar və mükafat',
-      rail: ['ALIŞ', 'SKAN', 'XALLAR', 'MÜKAFAT'],
-      cap: [['Alış', 'Təklif seçin və', 'alışı təsdiqləyin.'], ['Skan', 'QR kod alışı', 'yerində təsdiqləyir.'], ['Xallar', 'STAKED xalları', 'dərhal əlavə olunur.'], ['Mükafat', 'Xalları yeməyə və', 'bonuslara dəyişin.']],
-      choose: 'TƏKLİF SEÇİN', item: 'Burger kombo', itemSub: 'STAKED · Bakı', buy: 'Al', fore: '+120 STAKED xalı',
-      scan: 'QR KODU SKAN EDİN', verified: 'Alış təsdiqləndi', bal: 'XALLAR', pts: 'XAL', left: 'Mükafata 640 xal qalıb',
-      pick: 'MÜKAFAT SEÇİN', rA: 'Pulsuz kofe', rB: 'Günün deserti', rC: 'Burger kombo', got: 'ƏLDƏ EDİLDİ',
-      doneT: 'MÜKAFAT ƏLDƏ EDİLDİ', doneS: 'Nuş olsun', ok: 'Hazırdır'
+      aria: 'STACKED necə işləyir: təklif seçimi, sifariş, emal və təhvil',
+      rail: ['SEÇİM', 'SİFARİŞ', 'EMAL', 'TƏHVİL'],
+      cap: [['Seçim', 'Adi qiymətdən ucuz', 'təklifi seçin.'], ['Sifariş', 'Sifarişi aşağı', 'qiymətlə verin.'], ['Emal', 'Administrator sifarişi', 'işə götürür.'], ['Təhvil', 'Restoranda təsdiqi', 'göstərin və götürün.']],
+      choose: 'TƏKLİF SEÇİN', item: 'Burger', itemSub: 'Günün təklifi', add: 'Səbətə at',
+      orderT: 'SİFARİŞİNİZ', total: 'Cəmi', save: 'Qənaət 4.00 AZN', place: 'Sifarişi ver', sent: 'Sifariş göndərildi',
+      status: 'SİFARİŞ STATUSU', st1: 'Sifariş göndərildi', st2: 'Emal olunur', st3: 'Təsdiq',
+      pickT: 'TƏHVİL', ready: 'Təsdiq hazırdır', show: 'Restoranda göstərin', ok: 'Hazırdır'
     }
   };
 
@@ -192,6 +192,7 @@
 
   /* ───────────── shared markup parts ───────────── */
   const T = (x, y, s, o) => {
+    if (s === '') return '';
     o = o || {};
     return `<text${o.k ? ` data-k="${o.k}"` : ''} x="${x}" y="${y}" font-size="${o.sz || 10}" font-weight="${o.w || 700}" fill="${o.f}"${o.a ? ` text-anchor="${o.a}"` : ''}${o.ls ? ` letter-spacing="${o.ls}"` : ''}>${esc(s)}</text>`;
   };
@@ -200,11 +201,13 @@
     `<g fill="none" stroke="${fill}" stroke-width="2.2" stroke-linecap="round"><path d="M-9 -.5a9 7 0 0 1 18 0z" fill="${fill}"/><path d="M-9 3.5h18M-7 7.5h14"/></g>`;
   const SHELL = () => `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"`;
 
-  /* ═════════════ STORY (full + single-scene phone clips) ═════════════ */
-  const K = { L: 2.0, cut0: 2.0, cut1: 3.0, sc: [3.0, 5.2, 7.8, 9.9, 12.3], end: [5.2, 7.8, 9.9, 12.3, 13.7], exit0: 13.7, T: 14.7 };
+  /* ═════════════ STORY (full + single-scene phone clips) ═════════════
+   * Choose → Order → Processing → Pickup. Prices are an illustration (7.00 retail → 3.00 on STACKED).
+   * No QR code and no "success" is drawn: the last scene shows a confirmation ticket, not a scannable code. */
+  const K = { L: 2.0, cut0: 2.0, cut1: 3.0, sc: [3.0, 5.4, 7.8, 10.2], end: [5.4, 7.8, 10.2, 13.0], exit0: 13.0, T: 14.0 };
 
   function makeStory(cfg) {
-    const SL = { purchase: 0, scan: 1, points: 2, reward: 3 }[cfg.type];
+    const SL = { choose: 0, order: 1, processing: 2, pickup: 3 }[cfg.type];
     const isSlice = SL !== undefined;
     const narrow = !isSlice && cfg.layout === 'narrow';
     const c = PAL[cfg.theme] || PAL.light;
@@ -213,72 +216,53 @@
     const Lay = isSlice ? { W: 240, H: 420, px: 120, py: 210, ps: 1, lx: 120, ly: 210, wy: 0 }
       : narrow ? { W: 300, H: 478, px: 150, py: 212, ps: 1, lx: 150, ly: 186, wy: 256 }
         : { W: 720, H: 440, px: 360, py: 220, ps: 1, lx: 360, ly: 198, wy: 268 };
-
-    /* — phone — */
-    const bandsMk = QR.bands.map((d, i) => (d ? `<g data-k="q.d${i}"><path d="${d}" fill="${c.qrInk}"/></g>` : '')).join('');
-    const pill = (k, w, h, fill) => `<rect data-k="${k}" x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}"/>`;
-    const card = (cy, k, title, cost, tileFill, strokeC) =>
-      `<g data-k="${k}"><g data-k="${k}.base"><rect x="-80" y="-28" width="160" height="56" rx="14" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/>` +
-      `<rect x="-72" y="-17" width="34" height="34" rx="9" fill="${c.tint}"/><g transform="translate(-55 0)">${glyph(c.accent)}</g>` +
-      T(-32, -2, title, { sz: 8.8, w: 700, f: c.ink }) + T(-32, 11, cost[1], { sz: 7.5, w: 600, f: c.muted }) +
-      T(72, 4, cost[0], { sz: 11, w: 800, f: c.accent, a: 'end' }) + '</g>' +
-      `<rect data-k="${k}.sel" x="-80" y="-28" width="160" height="56" rx="14" fill="none" stroke="${c.accent}" stroke-width="1.8" display="none"/>` +
-      (k === 'r.a' ? ticket() : '') + '</g>';
-    const ticket = () =>
-      `<g data-k="r.tk"><rect x="-80" y="-28" width="160" height="56" rx="14" fill="${c.accent}"/>` +
-      `<rect x="-72" y="-17" width="34" height="34" rx="9" fill="#000" fill-opacity=".16"/><g transform="translate(-55 0)">${glyph(c.onAccent)}</g>` +
-      T(-32, -2, L.rA, { sz: 9, w: 800, f: c.onAccent }) + T(-32, 11, L.got, { sz: 7, w: 800, f: c.onAccent, ls: 1 }) +
-      `<line x1="52" y1="-18" x2="52" y2="18" stroke="${c.onAccent}" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2.5 3.5"/>` +
-      `<circle cx="-80" cy="0" r="6" fill="${c.screen}"/><circle cx="80" cy="0" r="6" fill="${c.screen}"/>` +
-      CHECK('r.tkc', c.onAccent, 2.2, 14, 'M58.5 0.5l3.6 3.6L69 -3.6').replace('stroke-dashoffset="14"', 'stroke-dashoffset="0"') + '</g>';
+    const touch = (k) => `<g data-k="${k}"><circle r="11" fill="${c.ink}" fill-opacity=".12" stroke="${c.ink}" stroke-opacity=".4" stroke-width="1.2"/><circle r="3" fill="${c.ink}" fill-opacity=".5"/></g>`;
+    const row = (i, label) => { const y = -92 + i * 42; return `<g data-k="tl.r${i}"><circle data-k="tl.d${i}" cx="-62" cy="${y}" r="10" fill="${c.paper}" stroke="${c.line}" stroke-width="1.5"/>${T(-36, y + 3.4, label, { sz: 10, w: 700, f: c.ink })}</g>`; };
 
     const screen =
       `<g data-k="scr">` +
-      /* header (always) */
-      `<g data-k="hd">` + T(-58, -142.5, 'STAKED', { sz: 9.5, w: 800, f: c.ink, ls: 1.6 }) +
-      `<rect x="14" y="-157" width="68" height="22" rx="11" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/><circle cx="26" cy="-146" r="3.2" fill="${c.accent}"/>` +
-      T(74, -142.6, '1 240', { k: 'hd.n', sz: 9.5, w: 800, f: c.ink, a: 'end' }) + '</g>' +
-      /* S0 purchase */
-      `<g data-k="s0">` + `<g data-k="b.lbl">${T(-80, -112, L.choose, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
+      /* header */
+      `<g data-k="hd">` + T(-58, -142.5, 'STACKED', { sz: 9.5, w: 800, f: c.ink, ls: 1.6 }) +
+      `<rect x="44" y="-157" width="38" height="22" rx="11" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/><path d="M52 -148.5h2.2l1.4 6.4h5.6l1.3-4.6h-8.4" fill="none" stroke="${c.ink}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<g data-k="hd.cn"><circle cx="75" cy="-153" r="5" fill="${c.accent}"/>${T(75, -150.2, '1', { sz: 6.5, w: 800, f: c.onAccent, a: 'middle' })}</g></g>` +
+      /* S0 choose */
+      `<g data-k="s0"><g data-k="b.lbl">${T(-80, -112, L.choose, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
       `<g data-k="b.card"><rect x="-80" y="-98" width="160" height="148" rx="16" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/>` +
       `<rect x="-72" y="-90" width="144" height="66" rx="11" fill="${c.tint}"/><g transform="translate(0 -57) scale(2.5)">${glyph(c.accent)}</g>` +
-      `<rect x="38" y="-84" width="30" height="14" rx="7" fill="${c.accent}"/>` + T(53, -74, '−20%', { sz: 7.5, w: 800, f: c.onAccent, a: 'middle' }) +
+      `<rect x="38" y="-84" width="30" height="14" rx="7" fill="${c.accent}"/>` + T(53, -74, '-57%', { sz: 7.5, w: 800, f: c.onAccent, a: 'middle' }) +
       T(-72, -6, L.item, { sz: 11.5, w: 700, f: c.ink }) + T(-72, 7, L.itemSub, { sz: 8, w: 600, f: c.muted }) +
-      T(-72, 38, '12.90 AZN', { sz: 14, w: 800, f: c.ink }) + T(72, 37, '16.10', { sz: 8, w: 600, f: c.muted, a: 'end' }) +
-      `<rect x="54" y="34.2" width="18" height="1" fill="${c.muted}"/></g>` +
+      T(-72, 38, '3.00 AZN', { sz: 15, w: 800, f: c.ink }) + T(72, 37, '7.00 AZN', { sz: 8.5, w: 600, f: c.muted, a: 'end' }) +
+      `<rect x="40" y="34.2" width="32" height="1" fill="${c.muted}"/></g>` +
       `<g data-k="b.btn"><clipPath id="${id}-b"><rect x="-80" y="-16" width="160" height="32" rx="11"/></clipPath>` +
-      `<rect x="-80" y="-16" width="160" height="32" rx="11" fill="${c.accent}"/>` + `<g clip-path="url(#${id}-b)"><circle data-k="b.rip" cx="0" cy="0" r="0" fill="${c.onAccent}" opacity="0"/></g>` +
-      `<g data-k="b.lab">${T(0, 3.8, L.buy, { sz: 10.5, w: 800, f: c.onAccent, a: 'middle' })}</g>` +
-      `<g data-k="b.chk">${CHECK('b.chkp', c.onAccent, 2.4, 20, 'M-7 0l4.5 4.5L7 -5')}</g></g>` +
-      `<g data-k="b.fore"><circle cx="-80" cy="112" r="3" fill="${c.accent}"/>${T(-72, 115, L.fore, { sz: 8.5, w: 700, f: c.muted })}</g>` +
-      `<g data-k="b.touch"><circle r="11" fill="${c.ink}" fill-opacity=".12" stroke="${c.ink}" stroke-opacity=".4" stroke-width="1.2"/><circle r="3" fill="${c.ink}" fill-opacity=".5"/></g>` + '</g>' +
-      /* S1 scan */
-      `<g data-k="s1">` + `<g data-k="q.lbl">${T(-80, -112, L.scan, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
-      `<g data-k="q.p" transform="translate(0 -40)"><rect x="-62" y="-62" width="124" height="124" rx="14" fill="${c.qr}" stroke="${c.line}" stroke-width="1"/><g data-k="q.m">${bandsMk}</g></g>` +
-      `<g data-k="q.br"><path d="M-70 -56V-70H-56M56 -70H70V-56M70 56V70H56M-56 70H-70V56" fill="none" stroke="${c.accent}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>` +
-      `<g data-k="q.sc"><rect x="-48" y="-24" width="96" height="24" fill="url(#${id}-g)"/><rect x="-48" y="-1.2" width="96" height="1.6" rx=".8" fill="${c.accent}"/></g>` +
-      `<g data-k="q.ver">${T(0, 50, L.verified, { sz: 9.5, w: 700, f: c.ink, a: 'middle' })}</g>` + '</g>' +
-      /* S2 points */
-      `<g data-k="s2">` + `<g data-k="p.lbl">${T(-80, -112, L.bal, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
-      `<g data-k="p.ring"><circle r="46" fill="none" stroke="${c.line}" stroke-width="5"/>` +
-      `<circle data-k="p.arc" r="46" fill="none" stroke="${c.accent}" stroke-width="5" stroke-linecap="round" transform="rotate(-90)" stroke-dasharray="289.03" stroke-dashoffset="109.8"/>` +
-      `<g data-k="p.ng">${T(0, 8, '1 240', { k: 'p.num', sz: 27, w: 800, f: c.ink, a: 'middle', ls: -0.5 })}${T(0, 24, L.pts, { sz: 7, w: 800, f: c.muted, a: 'middle', ls: 1.2 })}</g></g>` +
-      `<g data-k="p.row"><rect x="-80" y="48" width="160" height="40" rx="12" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/><rect x="-72" y="55" width="26" height="26" rx="8" fill="${c.tint}"/><g transform="translate(-59 68) scale(.8)">${glyph(c.accent)}</g>` +
-      T(-38, 65, L.item, { sz: 9.5, w: 700, f: c.ink }) + T(-38, 77, L.itemSub, { sz: 7.5, w: 600, f: c.muted }) + T(72, 72.5, '+120', { sz: 12, w: 800, f: c.accent, a: 'end' }) + '</g>' +
-      `<g data-k="p.left">${T(0, 112, L.left, { sz: 8.5, w: 700, f: c.muted, a: 'middle' })}</g>` + '</g>' +
-      /* S3 reward */
-      `<g data-k="s3">` + `<g data-k="w.lbl">${T(-80, -112, L.pick, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
-      card(0, 'r.a', L.rA, ['300', L.pts.toLowerCase()]) + card(0, 'r.b', L.rB, ['450', L.pts.toLowerCase()]) + card(0, 'r.c', L.rC, ['1500', L.pts.toLowerCase()]) +
-      `<g data-k="r.touch"><circle r="11" fill="${c.ink}" fill-opacity=".12" stroke="${c.ink}" stroke-opacity=".4" stroke-width="1.2"/><circle r="3" fill="${c.ink}" fill-opacity=".5"/></g>` +
-      `<g data-k="r.pill">${pill('r.pillr', 40, 17, c.accent)}${T(0, 3.4, '−300', { sz: 9.5, w: 800, f: c.onAccent, a: 'middle' })}</g>` + '</g>' +
-      /* S4 done */
-      `<g data-k="s4"><circle data-k="d.fill" cx="0" cy="-22" r="30" fill="${c.accent}" fill-opacity=".1"/>` +
-      `<circle data-k="d.ring" cx="0" cy="-22" r="30" fill="none" stroke="${c.accent}" stroke-width="3" stroke-linecap="round" transform="rotate(-90 0 -22)" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>` +
-      `<g transform="translate(0 -22)">${CHECK('d.chk', c.accent, 3.4, 35, 'M-11 1l8 8L12 -8')}</g>` +
-      `<g data-k="d.t1">${T(0, 44, L.doneT, { sz: 8.5, w: 800, f: c.accent, a: 'middle', ls: 1.2 })}</g><g data-k="d.t2">${T(0, 64, L.doneS, { sz: 13, w: 700, f: c.ink, a: 'middle' })}</g></g>` +
-      /* badge: check → "+120" chip → absorbed into balance */
-      `<g data-k="bd"><rect data-k="bd.r" x="-13" y="-13" width="26" height="26" rx="13" fill="${c.accent}"/><g data-k="bd.c">${CHECK('bd.cp', c.onAccent, 2.6, 19, 'M-6 .5l4.2 4.2L6.5 -4.6')}</g>` +
-      `<g data-k="bd.tg">${T(0, 3.6, '+120', { sz: 10, w: 800, f: c.onAccent, a: 'middle' })}</g></g>` +
+      `<rect x="-80" y="-16" width="160" height="32" rx="11" fill="${c.accent}"/><g clip-path="url(#${id}-b)"><circle data-k="b.rip" cx="0" cy="0" r="0" fill="${c.onAccent}" opacity="0"/></g>` +
+      `<g data-k="b.lab">${T(0, 3.8, L.add, { sz: 10.5, w: 800, f: c.onAccent, a: 'middle' })}</g><g data-k="b.chk">${CHECK('b.chkp', c.onAccent, 2.4, 20, 'M-7 0l4.5 4.5L7 -5')}</g></g>` +
+      touch('b.touch') + '</g>' +
+      /* S1 order */
+      `<g data-k="s1"><g data-k="o.lbl">${T(-80, -112, L.orderT, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
+      `<g data-k="o.card"><rect x="-80" y="-98" width="160" height="132" rx="16" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/>` +
+      `<rect x="-70" y="-88" width="40" height="40" rx="10" fill="${c.tint}"/><g transform="translate(-50 -68)">${glyph(c.accent)}</g>` +
+      T(-22, -72, L.item, { sz: 10.5, w: 700, f: c.ink }) + T(-22, -59, '1 x 3.00 AZN', { sz: 8.5, w: 600, f: c.muted }) +
+      `<line x1="-70" y1="-36" x2="70" y2="-36" stroke="${c.line}" stroke-width="1"/>` +
+      T(-70, -16, L.total, { sz: 9.5, w: 600, f: c.muted }) + T(70, -16, '3.00 AZN', { sz: 15, w: 800, f: c.ink, a: 'end' }) +
+      `<rect x="-70" y="-2" width="140" height="22" rx="8" fill="${c.accent}" fill-opacity=".1"/>` + T(0, 13, L.save, { sz: 8.5, w: 800, f: c.accent, a: 'middle' }) + '</g>' +
+      `<g data-k="o.btn"><clipPath id="${id}-o"><rect x="-80" y="-16" width="160" height="32" rx="11"/></clipPath>` +
+      `<rect x="-80" y="-16" width="160" height="32" rx="11" fill="${c.accent}"/><g clip-path="url(#${id}-o)"><circle data-k="o.rip" cx="0" cy="0" r="0" fill="${c.onAccent}" opacity="0"/></g>` +
+      `<g data-k="o.lab">${T(0, 3.8, L.place, { sz: 10.5, w: 800, f: c.onAccent, a: 'middle' })}</g><g data-k="o.chk">${CHECK('o.chkp', c.onAccent, 2.4, 20, 'M-7 0l4.5 4.5L7 -5')}</g></g>` +
+      `<g data-k="o.sent">${T(0, 98, L.sent, { sz: 9.5, w: 700, f: c.ink, a: 'middle' })}</g>` + touch('o.touch') + '</g>' +
+      /* S2+S3 shared timeline */
+      `<g data-k="tl"><g data-k="tl.lbl">${T(-80, -112, L.status, { sz: 7.5, w: 800, f: c.muted, ls: 1.1 })}</g>` +
+      `<line x1="-62" y1="-92" x2="-62" y2="-8" stroke="${c.line}" stroke-width="1.5"/><line data-k="tl.l" x1="-62" y1="-92" x2="-62" y2="-92" stroke="${c.accent}" stroke-width="1.5"/>` +
+      row(0, L.st1) + row(1, L.st2) + row(2, L.st3) +
+      `<circle data-k="tl.arc" cx="-62" cy="-50" r="10" fill="none" stroke="${c.accent}" stroke-width="2" stroke-linecap="round" transform="rotate(-90 -62 -50)" stroke-dasharray="62.83" stroke-dashoffset="62.83"/>` +
+      [0, 1, 2].map((i) => `<g data-k="tl.c${i}" transform="translate(-62 ${-92 + i * 42})"><circle r="10" fill="${c.accent}"/>${CHECK('tl.cp' + i, c.onAccent, 2, 12, 'M-4 .3l2.7 2.7L4.4 -2.6')}</g>`).join('') + '</g>' +
+      /* S3 pickup ticket */
+      `<g data-k="s3"><g data-k="k.t"><rect x="-80" y="-38" width="160" height="76" rx="14" fill="${c.accent}"/>` +
+      `<rect x="-70" y="-26" width="40" height="40" rx="10" fill="#000" fill-opacity=".16"/><g transform="translate(-50 -6) scale(1.1)">${glyph(c.onAccent)}</g>` +
+      T(-22, -8, L.item, { sz: 11, w: 800, f: c.onAccent }) + T(-22, 8, L.ready, { sz: 7.5, w: 700, f: c.onAccent }) +
+      `<line x1="-80" y1="26" x2="80" y2="26" stroke="${c.onAccent}" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="3 4"/>` +
+      `<circle cx="-80" cy="26" r="6" fill="${c.screen}"/><circle cx="80" cy="26" r="6" fill="${c.screen}"/>` +
+      '</g>' +
+      `<g data-k="k.f">${T(0, 122, L.show, { sz: 10, w: 700, f: c.ink, a: 'middle' })}</g></g>` +
       '</g>';
 
     const phone =
@@ -289,7 +273,7 @@
       `<g clip-path="url(#${id}-s)">${screen}</g>` +
       `<rect x="-27" y="-180" width="54" height="15" rx="7.5" fill="#000"/><rect x="-26" y="176" width="52" height="3" rx="1.5" fill="${c.ink}" fill-opacity=".28"/></g>`;
 
-    /* — stage chrome (full only) — */
+    /* stage chrome (full only) */
     let chrome = '';
     if (!isSlice && !narrow) {
       const ys = [133, 191, 249, 307];
@@ -313,78 +297,54 @@
     }
 
     const lockup = isSlice ? '' :
-      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STAKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>`;
-
+      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STACKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>`;
     const defs =
       `<defs><clipPath id="${id}-s"><rect x="-92" y="-186" width="184" height="372" rx="28"/></clipPath>` +
-      `<clipPath id="${id}-w"><rect data-k="wmclip" x="-120" y="-34" width="0" height="50"/></clipPath>` +
-      `<linearGradient id="${id}-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.accent}" stop-opacity="0"/><stop offset="1" stop-color="${c.accent}" stop-opacity=".34"/></linearGradient>` +
+      `<clipPath id="${id}-w"><rect data-k="wmclip" x="-130" y="-34" width="0" height="50"/></clipPath>` +
       `<radialGradient id="${id}-sh"><stop offset="0" stop-color="#2a1c10" stop-opacity=".22"/><stop offset="1" stop-color="#2a1c10" stop-opacity="0"/></radialGradient></defs>`;
-
     const markup = `${SHELL()} viewBox="0 0 ${Lay.W} ${Lay.H}" role="img" aria-label="${esc(L.aria)}">${defs}${chrome}${lockup}${phone}${logoMk('L')}</svg>`;
-
-    /* — timeline — */
-    const bal = (t) => {
-      if (t < 8.95) return 1240;
-      if (t < 9.55) return lerp(1240, 1360, E.out(P(t, 8.95, 9.55)));
-      const r0 = K.sc[3] + 1.7;
-      if (t < r0) return 1360;
-      return lerp(1360, 1060, E.io(P(t, r0, r0 + 0.4)));
-    };
 
     const mount = (svg) => {
       const R = rig(svg);
       return (t) => {
         const tg = isSlice ? K.sc[SL] + t : t;
-        const vis = (i) => !isSlice || i === SL || (SL === 3 && i === 4);
-        const pe = isSlice ? 1 : P(tg, 2.35, 3.1, E.out4) * (1 - P(tg, K.exit0, 14.4, E.io));
-        const hd = isSlice ? 1 : P(tg, 2.75, 3.1, E.out) * (1 - P(tg, K.exit0, 13.95, E.io));
-        const cc = isSlice ? 1 : P(tg, K.cut0, K.cut1, E.io) * (1 - P(tg, 13.9, 14.7, E.io));
+        const vis = (i) => !isSlice || i === SL;
+        const pe = isSlice ? 1 : P(tg, 2.35, 3.1, E.out4) * (1 - P(tg, K.exit0, 13.7, E.io));
+        const hd = isSlice ? 1 : P(tg, 2.75, 3.1, E.out) * (1 - P(tg, K.exit0, 13.25, E.io));
+        const cc = isSlice ? 1 : P(tg, K.cut0, K.cut1, E.io) * (1 - P(tg, 13.2, 14.0, E.io));
         const pyOff = 18 * (1 - pe), ps = Lay.ps * (0.94 + 0.06 * pe);
-
         R.put('ph', { x: Lay.px, y: Lay.py + pyOff, s: ps, o: Math.min(1, pe * 1.6) });
         R.put('scr', { o: isSlice ? P(t, 0, 0.3, E.out) : 1 });
         R.put('hd', { o: hd });
-        const bv = fmt(bal(tg));
-        R.txt('hd.n', bv);
-
-        /* logo: lock-up → docks into the app header (match cut) → back */
+        R.put('hd.cn', { s: 1 + 0.25 * Math.sin(Math.PI * P(tg, 4.45, 4.75, E.lin)), o: P(tg, 4.45, 4.55, E.lin) });
         const dx = Lay.px + ps * -72, dy = Lay.py + pyOff + ps * -146;
-        const sz = lerp(2.25, 0.5625 * ps, cc);
-        R.put('L', { x: lerp(Lay.lx, dx, cc) - 16 * Math.sin(Math.PI * cc), y: lerp(Lay.ly, dy, cc), s: sz });
+        R.put('L', { x: lerp(Lay.lx, dx, cc) - 16 * Math.sin(Math.PI * cc), y: lerp(Lay.ly, dy, cc), s: lerp(2.25, 0.5625 * ps, cc) });
         logoIntro(R, 'L', tg);
         if (!isSlice) {
           const wmA = 1 - clamp(cc * 5);
           R.put('wm', { x: Lay.lx, y: Lay.wy + 6 * clamp(cc * 5), o: wmA * clamp((tg - 0.8) / 0.15) });
-          R.a('wmclip', 'width', 240 * P(tg, 0.8, 1.45, E.out4));
+          R.a('wmclip', 'width', 260 * P(tg, 0.8, 1.5, E.out4));
         }
-
-        /* scenes */
-        for (let i = 0; i < 5; i++) {
-          const al = vis(i) ? P(tg, K.sc[i], K.sc[i] + 0.4, E.out) * (1 - (i < 4 ? P(tg, K.end[i], K.end[i] + 0.4, E.io) : 0)) : 0;
+        for (let i = 0; i < 4; i++) {
+          const inn = P(tg, K.sc[i], K.sc[i] + 0.4, E.out);
+          const al = vis(i) ? inn * (1 - (i < 3 ? P(tg, K.end[i], K.end[i] + 0.4, E.io) : 0)) : 0;
+          if (i === 2) continue; // scene 2 has no own group: it is the shared timeline
           R.put('s' + i, { o: al });
           if (al < 0.003) continue;
-          const r = tg - K.sc[i];
-          const e = (a0, d) => P(r, a0, a0 + (d || 0.5), E.out4);
-          if (i === 0) drawBuy(R, r, e);
-          else if (i === 1) drawScan(R, r, e);
-          else if (i === 2) drawPoints(R, r, e, tg, bv);
-          else if (i === 3) drawReward(R, r, e);
-          else drawDone(R, r, e);
+          const r = tg - K.sc[i], e = (a0, d) => P(r, a0, a0 + (d || 0.5), E.out4);
+          if (i === 0) drawChoose(R, r, e); else if (i === 1) drawOrder(R, r, e); else drawPickup(R, r, e);
         }
-        drawBadge(R, tg, isSlice);
+        const tlA = (!isSlice || SL >= 2) ? P(tg, K.sc[2], K.sc[2] + 0.4, E.out) : 0;
+        R.put('tl', { o: tlA });
+        if (tlA > 0.003) drawTimeline(R, tg, tlA);
 
-        /* stage chrome */
         if (!isSlice) {
-          const dn = [0, 1, 2, 3].map((i) => P(tg, i < 3 ? K.sc[i + 1] : 12.9, (i < 3 ? K.sc[i + 1] : 12.9) + 0.45, E.out));
+          const dn = [0, 1, 2, 3].map((i) => P(tg, i < 3 ? K.sc[i + 1] : 12.6, (i < 3 ? K.sc[i + 1] : 12.6) + 0.45, E.out));
           const cur = [0, 1, 2, 3].map((i) => P(tg, K.sc[i], K.sc[i] + 0.45, E.out) * (1 - dn[i]));
           R.put('rail', { o: pe });
           if (!narrow) {
-            for (let i = 0; i < 4; i++) {
-              R.put(`r${i}.on`, { o: cur[i] }); R.put(`r${i}.dn`, { o: dn[i] });
-              R.put(`r${i}.off`, { o: 1 - Math.max(cur[i], dn[i]) });
-            }
-            R.a('rail.p', 'y2', 133 + 174 * clamp((dn[0] + dn[1] + dn[2]) / 3 + cur[1] / 6 + cur[2] / 6 + cur[3] / 6 - (dn[0] + dn[1] + dn[2]) / 18));
+            for (let i = 0; i < 4; i++) { R.put(`r${i}.on`, { o: cur[i] }); R.put(`r${i}.dn`, { o: dn[i] }); R.put(`r${i}.off`, { o: 1 - Math.max(cur[i], dn[i]) }); }
+            R.a('rail.p', 'y2', 133 + 58 * clamp((dn[0] + dn[1] + dn[2]) / 3) * 3);
             R.put('capc', { o: pe });
           }
           for (let i = 0; i < 4; i++) {
@@ -397,91 +357,66 @@
       };
     };
 
-    /* — scene drawing — */
-    function drawBuy(R, r, e) {
+    function press(R, k, r, t0) { return P(r, t0, t0 + 0.12, E.io) * (1 - P(r, t0 + 0.12, t0 + 0.32, E.out)); }
+    function drawChoose(R, r, e) {
       let k = e(0.12, 0.4); R.put('b.lbl', { y: 6 * (1 - k), o: k });
       k = e(0.18, 0.55); R.put('b.card', { y: 12 * (1 - k), o: k });
-      const pr = P(r, 1.3, 1.42, E.io) * (1 - P(r, 1.42, 1.62, E.out));
+      const pr = press(R, 'b', r, 1.3);
       k = e(0.4, 0.5);
       R.put('b.btn', { y: 78 + 8 * (1 - k), s: 1 - 0.035 * pr, o: k });
-      R.put('b.lab', { o: 1 - P(r, 1.42, 1.6, E.out) });
-      R.put('b.chk', { o: P(r, 1.45, 1.55, E.lin) });
+      R.put('b.lab', { o: 1 - P(r, 1.42, 1.6, E.out) }); R.put('b.chk', { o: P(r, 1.45, 1.55, E.lin) });
       R.a('b.chkp', 'stroke-dashoffset', 20 * (1 - P(r, 1.5, 1.8, E.out)));
       const rp = P(r, 1.35, 1.95, E.out4);
       R.a('b.rip', 'r', lerp(4, 110, rp).toFixed(2)); R.a('b.rip', 'opacity', (0.38 * (1 - rp)).toFixed(3));
-      k = e(1.75, 0.45); R.put('b.fore', { y: 6 * (1 - k), o: k });
       const tp = P(r, 0.85, 1.3, E.io), tq = P(r, 1.65, 2.1, E.io);
-      const x = r < 1.5 ? lerp(66, 6, tp) : lerp(6, 52, tq), y = r < 1.5 ? lerp(150, 84, tp) : lerp(84, 132, tq);
-      R.put('b.touch', { x, y, s: 1 - 0.22 * pr, o: P(r, 0.8, 0.95, E.lin) * (1 - P(r, 1.75, 2.0, E.lin)) });
+      R.put('b.touch', { x: r < 1.5 ? lerp(66, 6, tp) : lerp(6, 52, tq), y: r < 1.5 ? lerp(150, 84, tp) : lerp(84, 132, tq), s: 1 - 0.22 * pr, o: P(r, 0.8, 0.95, E.lin) * (1 - P(r, 1.75, 2.0, E.lin)) });
     }
-    function drawScan(R, r, e) {
-      let k = e(0.25, 0.4); R.put('q.lbl', { y: 6 * (1 - k), o: k });
-      k = e(0.3, 0.55); R.put('q.p', { y: -40 + 10 * (1 - k), s: 0.97 + 0.03 * k, o: k });
-      for (let d = 0; d < QR.bands.length; d++) if (QR.bands[d]) {
-        const s0 = 0.45 + (d / 40) * 0.5;
-        const q = P(r, s0, s0 + 0.22, E.out4);
-        R.put('q.d' + d, { y: 2.5 * (1 - q), o: q });
-      }
-      R.put('q.m', { o: 1 - 0.86 * P(r, 1.95, 2.25, E.io) });
-      R.put('q.br', { y: -40, s: lerp(1.4, 1, P(r, 0.75, 1.25, E.expo)), o: P(r, 0.7, 0.9, E.lin) * (1 - P(r, 1.95, 2.2, E.lin)) });
-      R.put('q.sc', { y: lerp(-84, 8, P(r, 1.3, 1.95, E.io)), o: P(r, 1.25, 1.35, E.lin) * (1 - P(r, 1.9, 2.0, E.lin)) });
-      k = e(2.05, 0.4); R.put('q.ver', { y: 6 * (1 - k), o: k });
+    function drawOrder(R, r, e) {
+      let k = e(0.12, 0.4); R.put('o.lbl', { y: 6 * (1 - k), o: k });
+      k = e(0.2, 0.55); R.put('o.card', { y: 12 * (1 - k), o: k });
+      const pr = press(R, 'o', r, 1.4);
+      k = e(0.5, 0.5);
+      R.put('o.btn', { y: 66 + 8 * (1 - k), s: 1 - 0.035 * pr, o: k });
+      R.put('o.lab', { o: 1 - P(r, 1.52, 1.7, E.out) }); R.put('o.chk', { o: P(r, 1.55, 1.65, E.lin) });
+      R.a('o.chkp', 'stroke-dashoffset', 20 * (1 - P(r, 1.6, 1.9, E.out)));
+      const rp = P(r, 1.45, 2.05, E.out4);
+      R.a('o.rip', 'r', lerp(4, 110, rp).toFixed(2)); R.a('o.rip', 'opacity', (0.38 * (1 - rp)).toFixed(3));
+      k = e(1.85, 0.45); R.put('o.sent', { y: 6 * (1 - k), o: k });
+      const tp = P(r, 0.95, 1.4, E.io), tq = P(r, 1.75, 2.2, E.io);
+      R.put('o.touch', { x: r < 1.6 ? lerp(66, 6, tp) : lerp(6, 52, tq), y: r < 1.6 ? lerp(150, 72, tp) : lerp(72, 120, tq), s: 1 - 0.22 * pr, o: P(r, 0.9, 1.05, E.lin) * (1 - P(r, 1.85, 2.1, E.lin)) });
     }
-    function drawPoints(R, r, e, tg, bv) {
-      let k = e(0.3, 0.4); R.put('p.lbl', { y: 6 * (1 - k), o: k });
-      k = e(0.35, 0.55); R.put('p.ring', { y: -22 + 6 * (1 - k), s: 0.92 + 0.08 * k, o: k });
-      const prog = lerp(0.62, 0.68, E.out(P(tg, 8.95, 9.55)));
-      R.a('p.arc', 'stroke-dashoffset', (289.03 * (1 - prog)).toFixed(2));
-      R.txt('p.num', bv);
-      R.put('p.ng', { s: 1 + 0.05 * Math.sin(Math.PI * P(tg, 8.95, 9.4, E.lin)) });
-      k = e(0.7, 0.5); R.put('p.row', { y: 10 * (1 - k), o: k });
-      k = e(1.1, 0.4); R.put('p.left', { y: 6 * (1 - k), o: k });
+    function drawTimeline(R, tg, a) {
+      const r2 = tg - K.sc[2], r3 = tg - K.sc[3];
+      R.put('tl.lbl', { o: 1 });
+      const s0 = P(r2, 0.15, 0.55, E.out4), s1 = P(r2, 0.7, 1.0, E.out4);
+      const done1 = P(r3, 0.25, 0.6, E.out4), done2 = P(r3, 0.8, 1.1, E.out4);
+      R.put('tl.r0', { y: 6 * (1 - s0), o: s0 }); R.put('tl.r1', { y: 6 * (1 - s1), o: s1 });
+      const s2 = P(r2, 1.1, 1.5, E.out4); R.put('tl.r2', { y: 6 * (1 - s2), o: s2 * (0.45 + 0.55 * done2) });
+      R.put('tl.c0', { x: -62, y: -92, s: lerp(0.4, 1, P(r2, 0.2, 0.55, E.back)), o: P(r2, 0.2, 0.3, E.lin) });
+      R.a('tl.cp0', 'stroke-dashoffset', (12 * (1 - P(r2, 0.3, 0.6, E.out))).toFixed(2));
+      const fill1 = 42 * P(r2, 0.55, 1.0, E.io) + 42 * P(r3, 0.7, 1.1, E.io);
+      R.a('tl.l', 'y2', (-92 + clamp(fill1, 0, 84)).toFixed(2));
+      R.a('tl.arc', 'stroke-dashoffset', (62.83 * (1 - P(r2, 1.0, 2.3, E.io))).toFixed(2));
+      R.a('tl.arc', 'opacity', (P(r2, 0.95, 1.1, E.lin) * (1 - done1)).toFixed(3));
+      R.put('tl.c1', { x: -62, y: -50, s: lerp(0.4, 1, P(r3, 0.3, 0.65, E.back)), o: P(r3, 0.3, 0.4, E.lin) });
+      R.a('tl.cp1', 'stroke-dashoffset', (12 * (1 - P(r3, 0.4, 0.7, E.out))).toFixed(2));
+      R.put('tl.c2', { x: -62, y: -8, s: lerp(0.4, 1, P(r3, 0.85, 1.2, E.back)), o: P(r3, 0.85, 0.95, E.lin) });
+      R.a('tl.cp2', 'stroke-dashoffset', (12 * (1 - P(r3, 0.95, 1.25, E.out))).toFixed(2));
     }
-    function drawReward(R, r, e) {
-      let k = e(0.3, 0.4); R.put('w.lbl', { y: 6 * (1 - k), o: k });
-      const sel = P(r, 1.35, 1.6, E.out), tk = P(r, 1.95, 2.35, E.out4);
-      const ka = e(0.35), kb = e(0.5), kc = e(0.65);
-      R.put('r.a', { y: -62 + 10 * (1 - ka), s: 1 + 0.015 * sel, o: ka });
-      R.put('r.a.base', { o: 1 - tk }); R.put('r.a.sel', { o: sel * (1 - tk) }); R.put('r.tk', { s: 0.985 + 0.015 * tk, o: tk });
-      R.put('r.b', { y: 6 + 10 * (1 - kb), o: kb * (1 - 0.4 * sel) });
-      R.put('r.c', { y: 74 + 10 * (1 - kc), o: kc * (1 - 0.55 * sel) });
-      R.a('r.tkc', 'stroke-dashoffset', 14 * (1 - P(r, 2.1, 2.4, E.out)));
-      const tp = P(r, 0.85, 1.3, E.io), tq = P(r, 1.65, 2.1, E.io);
-      const pr = P(r, 1.3, 1.45, E.io) * (1 - P(r, 1.45, 1.65, E.out));
-      R.put('r.touch', { x: r < 1.5 ? lerp(70, 40, tp) : lerp(40, 56, tq), y: r < 1.5 ? lerp(130, -48, E.out(tp)) : lerp(-48, 10, tq), s: 1 - 0.22 * pr, o: P(r, 0.8, 0.95, E.lin) * (1 - P(r, 1.7, 1.95, E.lin)) });
-      const pt = P(r, 1.55, 2.1, E.io);
-      R.put('r.pill', { x: lerp(48, 52, pt), y: lerp(-146, -62, pt), s: lerp(1, 0.6, P(r, 1.95, 2.2)), o: P(r, 1.5, 1.62, E.lin) * (1 - P(r, 2.0, 2.25, E.lin)) });
-    }
-    function drawDone(R, r, e) {
-      R.a('d.ring', 'stroke-dashoffset', (188.5 * (1 - P(r, 0.15, 0.75, E.out4))).toFixed(2));
-      R.a('d.fill', 'fill-opacity', (0.1 * P(r, 0.3, 0.8, E.out)).toFixed(3));
-      R.a('d.chk', 'stroke-dashoffset', (35 * (1 - P(r, 0.65, 1.0, E.out))).toFixed(2));
-      let k = e(0.85, 0.4); R.put('d.t1', { y: 6 * (1 - k), o: k });
-      k = e(0.95, 0.4); R.put('d.t2', { y: 6 * (1 - k), o: k });
-    }
-    function drawBadge(R, tg, slice) {
-      const t0 = 7.15, p0 = K.sc[2];
-      const born = P(tg, t0, t0 + 0.35, E.back);
-      const rise = P(tg, p0, p0 + 0.65, E.io);
-      const w = lerp(26, 58, P(tg, p0 + 0.15, p0 + 0.55)), h = lerp(26, 20, P(tg, p0 + 0.15, p0 + 0.55));
-      const drop = P(tg, 8.7, 9.15, E.io);
-      const y = tg < p0 + 0.65 ? lerp(-40, -96, rise) : lerp(-96, -22, drop);
-      const o = clamp((tg - t0) / 0.15) * (1 - clamp((drop - 0.55) / 0.45));
-      R.put('bd', { y, s: lerp(0.4, 1, born) * lerp(1, 0.7, drop), o: slice && tg < K.sc[2] && tg > K.end[1] ? 0 : o });
-      R.a('bd.r', 'x', (-w / 2).toFixed(2)); R.a('bd.r', 'y', (-h / 2).toFixed(2)); R.a('bd.r', 'width', w.toFixed(2)); R.a('bd.r', 'height', h.toFixed(2)); R.a('bd.r', 'rx', (h / 2).toFixed(2));
-      R.put('bd.c', { o: 1 - P(tg, p0 + 0.1, p0 + 0.3, E.lin) });
-      R.a('bd.cp', 'stroke-dashoffset', (19 * (1 - P(tg, t0 + 0.1, t0 + 0.45, E.out))).toFixed(2));
-      R.put('bd.tg', { o: P(tg, p0 + 0.35, p0 + 0.6, E.lin) });
+    function drawPickup(R, r, e) {
+      const k = P(r, 1.25, 1.95, E.out4);
+      R.put('k.t', { y: 66 + 40 * (1 - k), s: 0.96 + 0.04 * k, o: k });
+      const f = e(1.95, 0.5); R.put('k.f', { y: 6 * (1 - f), o: f });
     }
 
-    return { markup, vb: [Lay.W, Lay.H], T: isSlice ? (SL === 3 ? K.end[4] - K.sc[3] : K.end[SL] - K.sc[SL]) + 0.3 : K.T, loopStart: isSlice ? 0 : K.L, loop: !isSlice, still: isSlice ? (SL === 3 ? K.end[4] - K.sc[3] : K.end[SL] - K.sc[SL]) - 0.2 : 12.9, mount };
+    return { markup, vb: [Lay.W, Lay.H], T: isSlice ? K.end[SL] - K.sc[SL] + 0.3 : K.T, loopStart: isSlice ? 0 : K.L, loop: !isSlice, still: isSlice ? K.end[SL] - K.sc[SL] - 0.1 : 12.0, mount };
   }
 
   /* ═════════════ INTRO lock-up ═════════════ */
   function makeIntro(cfg) {
     const c = PAL[cfg.theme] || PAL.light, id = 'sm' + ++UID;
-    const markup = `${SHELL()} viewBox="0 0 320 200" role="img" aria-label="STAKED"><defs><clipPath id="${id}-w"><rect data-k="wmclip" x="-120" y="-34" width="0" height="50"/></clipPath></defs>` +
-      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STAKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>${logoMk('L')}</svg>`;
+    const markup = `${SHELL()} viewBox="0 0 320 200" role="img" aria-label="STACKED"><defs><clipPath id="${id}-w"><rect data-k="wmclip" x="-120" y="-34" width="0" height="50"/></clipPath></defs>` +
+      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STACKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>${logoMk('L')}</svg>`;
     const mount = (svg) => {
       const R = rig(svg);
       return (t) => {
@@ -496,7 +431,7 @@
 
   /* ═════════════ LOADER ═════════════ */
   function makeLoader() {
-    const markup = `${SHELL()} viewBox="0 0 64 64" role="img" aria-label="STAKED"><g transform="translate(32 32) scale(1.5)">${logoMk('L')}</g></svg>`;
+    const markup = `${SHELL()} viewBox="0 0 64 64" role="img" aria-label="STACKED"><g transform="translate(32 32) scale(1.5)">${logoMk('L')}</g></svg>`;
     const mount = (svg) => { const R = rig(svg); return (t) => { R.put('L', {}); logoLoader(R, 'L', t); }; };
     return { markup, vb: [64, 64], T: 1.8, loopStart: 0, loop: true, still: -1, mount, stillStatic: true };
   }
@@ -550,11 +485,11 @@
 
   const CSS = ':host{display:block;width:100%;min-width:0;contain:layout paint style;line-height:0}' +
     ':host([size="small"]){max-width:300px}:host([size="medium"]){max-width:520px}:host([size="large"]){max-width:760px}' +
-    ':host([type="loader"]){width:var(--staked-size,40px);height:var(--staked-size,40px)}' +
-    ':host([type="success"]){width:var(--staked-size,96px)}' +
+    ':host([type="loader"]){width:var(--stacked-size,40px);height:var(--stacked-size,40px)}' +
+    ':host([type="success"]){width:var(--stacked-size,96px)}' +
     ':host([hidden]){display:none}svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--font,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);font-variant-numeric:tabular-nums}';
 
-  class StakedMotion extends HTMLElement {
+  class StackedMotion extends HTMLElement {
     static get observedAttributes() { return ['type', 'locale', 'theme', 'speed', 'paused', 'loop']; }
     constructor() { super(); this._r = this.attachShadow({ mode: 'open' }); this._t = 0; this._first = true; this._inView = false; this._ended = false; }
     connectedCallback() {
@@ -602,7 +537,7 @@
       this._t += dt * sp;
       if (this._t >= s.T) {
         if (s.loop || this.hasAttribute('loop')) { this._t = s.loopStart + (this._t - s.T) % Math.max(0.01, s.T - s.loopStart); this._first = false; }
-        else { this._t = s.T; this._ended = true; this._draw(this._t); ACTIVE.delete(this); this.dispatchEvent(new CustomEvent('staked-ended')); return; }
+        else { this._t = s.T; this._ended = true; this._draw(this._t); ACTIVE.delete(this); this.dispatchEvent(new CustomEvent('stacked-ended')); return; }
       }
       this._draw(this._t);
     }
@@ -612,8 +547,8 @@
     seek(t) { this._t = clamp(t, 0, this._scene.T); this._draw(this._t); }
   }
 
-  /* ───────────── <staked-logo>: brand mark with intro + hover ───────────── */
-  class StakedLogo extends HTMLElement {
+  /* ───────────── <stacked-logo>: brand mark with intro + hover ───────────── */
+  class StackedLogo extends HTMLElement {
     constructor() { super(); this._r = this.attachShadow({ mode: 'open' }); this._busy = false; }
     connectedCallback() {
       const size = this.getAttribute('size'); if (size) this.style.setProperty('--s', size + 'px');
@@ -625,13 +560,13 @@
       this._host = this.closest('a,button') || this;
       this._host.addEventListener('pointerenter', this._on); this._host.addEventListener('focus', this._on);
       if (this.hasAttribute('intro') && !reducedMQ.matches) {
-        const splash = document.getElementById('stakedSplash');
+        const splash = document.getElementById('stackedSplash');
         const go = () => this._anim((u) => logoIntro(this._R, 'L', u), 1.15, 1.2);
         if (splash && document.body.contains(splash)) {
           this._R.put('L.t', { o: 0 }); ['a', 'b', 'd'].forEach((p) => this._R.put('L.' + p, { o: 0 }));
-          const once = () => { document.removeEventListener('staked:splash-end', once); clearTimeout(tm); go(); };
+          const once = () => { document.removeEventListener('stacked:splash-end', once); clearTimeout(tm); go(); };
           const tm = setTimeout(once, 5000);
-          document.addEventListener('staked:splash-end', once);
+          document.addEventListener('stacked:splash-end', once);
         } else go();
       }
     }
@@ -650,18 +585,18 @@
   }
 
   if (G.customElements) {
-    if (!customElements.get('staked-motion')) customElements.define('staked-motion', StakedMotion);
-    if (!customElements.get('staked-logo')) customElements.define('staked-logo', StakedLogo);
+    if (!customElements.get('stacked-motion')) customElements.define('stacked-motion', StackedMotion);
+    if (!customElements.get('stacked-logo')) customElements.define('stacked-logo', StackedLogo);
   }
 
   /* ───────────── brand splash (first visit per session) ───────────── */
   function initSplash() {
-    const el = document.getElementById('stakedSplash');
+    const el = document.getElementById('stackedSplash');
     if (!el) return;
-    const finish = () => { el.remove(); document.dispatchEvent(new CustomEvent('staked:splash-end')); };
-    if (reducedMQ.matches || document.documentElement.classList.contains('staked-no-splash')) { finish(); return; }
-    try { sessionStorage.setItem('staked.splash', '1'); } catch (e) { /* storage blocked: splash simply plays every visit */ }
-    const m = document.createElement('staked-motion');
+    const finish = () => { el.remove(); document.dispatchEvent(new CustomEvent('stacked:splash-end')); };
+    if (reducedMQ.matches || document.documentElement.classList.contains('stacked-no-splash')) { finish(); return; }
+    try { sessionStorage.setItem('stacked.splash', '1'); } catch (e) { /* storage blocked: splash simply plays every visit */ }
+    const m = document.createElement('stacked-motion');
     m.setAttribute('type', 'intro'); m.setAttribute('aria-hidden', 'true');
     el.appendChild(m);
     let left = false;
@@ -670,12 +605,12 @@
       el.style.transition = 'opacity .45s cubic-bezier(.22,.72,.18,1)'; el.style.opacity = '0';
       setTimeout(finish, 470);
     };
-    m.addEventListener('staked-ended', () => setTimeout(leave, 320));
+    m.addEventListener('stacked-ended', () => setTimeout(leave, 320));
     ['pointerdown', 'keydown'].forEach((ev) => G.addEventListener(ev, leave, { once: true, passive: true }));
     setTimeout(leave, 4200);
   }
 
-  G.StakedMotion = { create, easing: E, version: '1.0.0' };
+  G.StackedMotion = { create, easing: E, version: '1.0.0' };
   if (typeof document !== 'undefined' && document.getElementById) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSplash); else initSplash();
   }
