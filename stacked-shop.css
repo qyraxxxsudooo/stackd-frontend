@@ -1,0 +1,93 @@
+/* STACKED shop layer: cards, quantity stepper, cart stack dock, footer socials, news, admin icon field. Loaded last. */
+
+/* ── text that must survive RU / EN / AZ without growing the layout ── */
+.card-body{min-width:0}
+.card h3{overflow-wrap:break-word;hyphens:auto;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;line-height:1.25}
+.card-body>p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;overflow-wrap:break-word}
+.card .tag{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card-foot>strong,.stackd-price-stack{flex:none;font-variant-numeric:tabular-nums}
+.stackd-card-actions{flex:1 1 auto;min-width:0;justify-content:flex-end}
+.stackd-card-actions>.btn{white-space:normal;line-height:1.15;min-height:40px;text-wrap:balance}
+.btn,.chips button,.nav-btn{overflow-wrap:break-word}
+
+/* ── product card ── */
+.card-media{position:relative}
+.stacked-mark{position:absolute;left:10px;bottom:10px;z-index:2;width:38px;height:38px;display:grid;place-items:center;padding:4px;border-radius:11px;background:var(--surface);border:1px solid var(--line);box-shadow:0 2px 8px rgba(30,20,10,.12);pointer-events:none}
+.stacked-mark img{width:100%;height:100%;object-fit:contain;border-radius:7px}
+.card.is-out .stacked-mark{opacity:.6}
+
+/* ── quantity stepper: replaces the add button, no duplicate "add one" ── */
+.stackd-card-qty{height:40px;min-width:112px;padding:3px;gap:2px;justify-content:space-between;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 7%,var(--raised))}
+.stackd-card-qty button{width:34px;height:34px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:18px;line-height:1;transition:transform .16s var(--ease),filter .16s}
+.stackd-card-qty button:hover{filter:brightness(1.08);background:var(--accent)}
+.stackd-card-qty button:active{transform:scale(.9)}
+.stackd-card-qty button:disabled{opacity:.35;cursor:not-allowed}
+.stackd-card-qty span{min-width:28px;text-align:center;font-size:1rem}
+.stackd-card-qty.is-in{animation:stackedStepIn .28s var(--ease) both}
+@keyframes stackedStepIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+@media(hover:hover){.card{transition:transform .22s var(--ease),box-shadow .22s var(--ease)}.card:hover{transform:translateY(-3px)}}
+
+/* ── cart dock (the stack) ── */
+body.has-dock{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+body.has-dock .toasts{bottom:calc(96px + env(safe-area-inset-bottom))}
+.stacked-dock{position:fixed;z-index:60;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));margin-inline:auto;width:min(440px,calc(100vw - 28px));animation:stackedDockIn .36s var(--ease) both}
+.stacked-dock[hidden]{display:none}
+@keyframes stackedDockIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.stacked-dock-main{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:8px 12px 8px 10px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text);font:inherit;text-align:left;cursor:pointer;box-shadow:var(--shadow);transition:border-color .2s,transform .2s var(--ease)}
+.stacked-dock-main:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.stacked-dock-main:active{transform:scale(.99)}
+.stacked-stack{position:relative;flex:none;width:62px;height:52px}
+.stacked-mini{position:absolute;right:4px;bottom:0;width:38px;height:50px;border-radius:8px;overflow:hidden;background:var(--raised);border:1px solid var(--line);box-shadow:0 2px 6px rgba(30,20,10,.16);transform-origin:50% 100%;transform:translateX(calc(var(--o) * 9px)) rotate(calc(var(--o) * -4deg));z-index:var(--z)}
+.stacked-mini img{width:100%;height:100%;object-fit:cover;display:block}
+.stacked-mini b{position:absolute;right:2px;bottom:2px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font:700 10px/16px inherit;text-align:center}
+.stacked-mini.is-pending{visibility:hidden}
+.stacked-mini.is-settle{animation:stackedSettle .34s var(--ease)}
+@keyframes stackedSettle{0%{transform:translateX(calc(var(--o) * 9px)) rotate(calc(var(--o) * -4deg)) translateY(-4px) scale(1.1)}100%{transform:translateX(calc(var(--o) * 9px)) rotate(calc(var(--o) * -4deg))}}
+.stacked-dock-info{display:grid;gap:1px;min-width:0;flex:1}
+.stacked-dock-info strong{font-size:.95rem;line-height:1.2}
+.stacked-dock-info small{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stacked-dock-cta{flex:none;max-width:44%;padding:10px 16px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.88rem;line-height:1.15;text-align:center;overflow-wrap:break-word}
+.stacked-fly-layer{position:fixed;inset:0;z-index:1200;pointer-events:none;perspective:900px;overflow:hidden}
+.stacked-fly{position:fixed;margin:0;transform-origin:50% 50%;will-change:transform;border-radius:var(--r);overflow:hidden;box-shadow:0 14px 34px rgba(30,20,10,.28);backface-visibility:hidden}
+.stacked-fly .card{transform:none!important;transition:none!important}
+@media(max-width:640px){
+  .stacked-dock{bottom:0;width:100%;animation-name:stackedDockInM}
+  .stacked-dock-main{border-radius:18px 18px 0 0;border-width:1px 0 0;min-height:72px;padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+  .stacked-dock-cta{padding:12px 14px;min-height:44px;display:grid;place-items:center}
+  body.has-dock{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+  body.has-dock .toasts{bottom:calc(92px + env(safe-area-inset-bottom))}
+}
+@keyframes stackedDockInM{from{transform:translateY(100%)}to{transform:none}}
+
+/* ── footer socials ── */
+.stacked-socials{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.stacked-socials[hidden]{display:none}
+.stacked-social{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);transition:transform .2s var(--ease),color .2s,border-color .2s,background .2s}
+.stacked-social svg{width:20px;height:20px}
+.stacked-social:hover,.stacked-social:focus-visible{transform:translateY(-2px);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.stacked-social:active{transform:scale(.94)}
+
+/* ── news: cross-fade carousel ── */
+.has-stacked-news .stackd-news-viewport{display:none}
+.stacked-news{position:relative;aspect-ratio:21/8;max-height:340px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--raised)}
+.stacked-news-slide{position:absolute;inset:0;display:block;opacity:0;visibility:hidden;transition:opacity .6s var(--ease),visibility 0s .6s;color:#fff;text-decoration:none}
+.stacked-news-slide.is-on{opacity:1;visibility:visible;transition:opacity .6s var(--ease),visibility 0s}
+.stacked-news-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.stacked-news-cap{position:absolute;left:0;right:0;bottom:0;padding:34px clamp(14px,3vw,24px) clamp(14px,2.4vw,20px);background:linear-gradient(transparent,rgba(0,0,0,.62));font-weight:700;font-size:clamp(.92rem,1.6vw,1.15rem);line-height:1.3;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;padding-right:84px}
+.stacked-news-dots{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;z-index:3}
+.stacked-news-dots button{width:8px;height:8px;padding:0;border:0;border-radius:4px;background:rgba(255,255,255,.55);cursor:pointer;transition:width .25s var(--ease),background .25s;position:relative}
+.stacked-news-dots button::after{content:"";position:absolute;inset:-9px -4px}
+.stacked-news-dots button[aria-current="true"]{width:20px;background:#fff}
+@media(max-width:640px){.stacked-news{aspect-ratio:16/10;border-radius:14px}.stacked-news-cap{padding-right:70px}}
+
+/* ── admin: product icon field ── */
+.stacked-icon-field{margin:14px 0 4px;padding:12px;border:1px solid var(--line);border-radius:12px;display:grid;gap:8px;min-width:0}
+.stacked-icon-field legend{padding:0 6px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.stacked-icon-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.stacked-icon-prev{flex:none;width:52px;height:52px;display:grid;place-items:center;border:1px dashed var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.stacked-icon-prev img{width:100%;height:100%;object-fit:contain;padding:4px}
+.stacked-icon-ctl{display:flex;gap:8px;flex-wrap:wrap;min-width:0}
+.stacked-icon-note{color:var(--muted);font-size:.78rem}
+
+@media(prefers-reduced-motion:reduce){.stacked-dock,.stackd-card-qty.is-in,.stacked-mini.is-settle{animation:none}.stacked-news-slide,.stacked-social,.card{transition:none}.stacked-fly{display:none}}
