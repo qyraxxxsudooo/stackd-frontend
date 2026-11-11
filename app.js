@@ -49,7 +49,7 @@ const translations = {
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
     added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.',
-    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'QR-код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия QR истёк', orders_show_qr: 'Нажмите, чтобы открыть QR-код', orders_pending_note: 'Оператор проверяет заказ. QR-код появится здесь после ответа в Telegram.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок QR-кода истёк. Обратитесь в поддержку.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.',
+    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'QR-код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия QR истёк', orders_show_qr: 'Нажмите, чтобы открыть QR-код', orders_pending_note: 'Оператор проверяет заказ. QR-код появится здесь после ответа в Telegram.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок QR-кода истёк. Обратитесь в поддержку.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть QR-код', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Как только он подтвердит, ваш QR-код появится в разделе «Мои заказы». Откройте его и покажите на выдаче.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть',
     cancel_confirm: 'Отменить заказ? Возврат средств выполняется сервером.', checkout_busy: 'Оформляем заказ…', checkout_success: 'Заказ создан. QR-код появится здесь после ответа оператора в Telegram.', checkout_notify_error: 'Заказ создан, но уведомление Telegram не отправлено. Обратитесь в поддержку.',
     search_empty: 'Ничего не найдено.'
   },
@@ -65,7 +65,7 @@ const translations = {
     settings_title: 'Homepage settings', settings_hero_title: 'Homepage title', settings_hero_sub: 'Subtitle / description', settings_save: 'Save settings',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from device)', form_save: 'Save',
     added_to_cart: 'added to cart', cart_cleared: 'Cart cleared', checkout_msg: 'Order created!', product_deleted: 'Deleted', saved: 'Saved', out_of_stock: 'Out of stock', add_to_cart: 'Add to cart', no_results: 'No results found.', empty_catalog: 'No products yet.',
-    orders_title: 'My orders', orders_empty: 'You have no orders yet.', orders_pending: 'Awaiting confirmation', orders_ready: 'QR code ready', orders_cancelled: 'Cancelled', orders_completed: 'Completed', orders_expired: 'QR code expired', orders_show_qr: 'Tap to reveal the QR code', orders_pending_note: 'The operator is reviewing your order. The QR will appear here after a Telegram reply.', orders_cancel: 'Cancel order', orders_time_left: 'Remaining', orders_expired_note: 'The QR code expired. Contact support.', orders_load_error: 'Could not load orders. Please try again.',
+    orders_title: 'My orders', orders_empty: 'You have no orders yet.', orders_pending: 'Awaiting confirmation', orders_ready: 'QR code ready', orders_cancelled: 'Cancelled', orders_completed: 'Completed', orders_expired: 'QR code expired', orders_show_qr: 'Tap to reveal the QR code', orders_pending_note: 'The operator is reviewing your order. The QR will appear here after a Telegram reply.', orders_cancel: 'Cancel order', orders_time_left: 'Remaining', orders_expired_note: 'The QR code expired. Contact support.', orders_load_error: 'Could not load orders. Please try again.', orders_hide_qr: 'Hide QR code', wave_title: 'Order sent', wave_text: 'The operator is reviewing your order. Once confirmed, your QR code will appear in "My orders". Open it and show it at pickup.', wave_open: 'Open my orders', wave_close: 'Close',
     cancel_confirm: 'Cancel this order? Any refund is processed by the server.', checkout_busy: 'Placing order…', checkout_success: 'Order created. The QR will appear here after the operator replies in Telegram.', checkout_notify_error: 'Order created, but Telegram notification failed. Contact support.',
     search_empty: 'No results found.'
   },
@@ -81,7 +81,7 @@ const translations = {
     settings_title: 'Ana səhifə ayarları', settings_hero_title: 'Ana səhifə başlığı', settings_hero_sub: 'Alt başlıq / təsvir', settings_save: 'Ayarları saxla',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (cihazdan)', form_save: 'Saxla',
     added_to_cart: 'səbətə əlavə edildi', cart_cleared: 'Səbət təmizləndi', checkout_msg: 'Sifariş yaradıldı!', product_deleted: 'Silindi', saved: 'Saxlanıldı', out_of_stock: 'Stokda yoxdur', add_to_cart: 'Səbətə əlavə et', no_results: 'Nəticə tapılmadı.', empty_catalog: 'Hələ məhsul yoxdur.',
-    orders_title: 'Sifarişlərim', orders_empty: 'Hələ sifarişiniz yoxdur.', orders_pending: 'Təsdiq gözləyir', orders_ready: 'QR kod hazırdır', orders_cancelled: 'Ləğv edildi', orders_completed: 'Tamamlandı', orders_expired: 'QR kodun müddəti bitib', orders_show_qr: 'QR kodu açmaq üçün toxunun', orders_pending_note: 'Operator sifarişi yoxlayır. Telegram cavabından sonra QR burada görünəcək.', orders_cancel: 'Sifarişi ləğv et', orders_time_left: 'Qalıb', orders_expired_note: 'QR kodun müddəti bitib. Dəstəyə müraciət edin.', orders_load_error: 'Sifarişləri yükləmək mümkün olmadı. Yenidən cəhd edin.',
+    orders_title: 'Sifarişlərim', orders_empty: 'Hələ sifarişiniz yoxdur.', orders_pending: 'Təsdiq gözləyir', orders_ready: 'QR kod hazırdır', orders_cancelled: 'Ləğv edildi', orders_completed: 'Tamamlandı', orders_expired: 'QR kodun müddəti bitib', orders_show_qr: 'QR kodu açmaq üçün toxunun', orders_pending_note: 'Operator sifarişi yoxlayır. Telegram cavabından sonra QR burada görünəcək.', orders_cancel: 'Sifarişi ləğv et', orders_time_left: 'Qalıb', orders_expired_note: 'QR kodun müddəti bitib. Dəstəyə müraciət edin.', orders_load_error: 'Sifarişləri yükləmək mümkün olmadı. Yenidən cəhd edin.', orders_hide_qr: 'QR kodu gizlət', wave_title: 'Sifariş göndərildi', wave_text: 'Operator sifarişi yoxlayır. Təsdiqləndikdən sonra QR kodunuz "Sifarişlərim" bölməsində görünəcək. Onu açıb təhvil zamanı göstərin.', wave_open: 'Sifarişlərimi aç', wave_close: 'Bağla',
     cancel_confirm: 'Sifarişi ləğv etmək istəyirsiniz? Geri ödənişi server həyata keçirir.', checkout_busy: 'Sifariş hazırlanır…', checkout_success: 'Sifariş yaradıldı. Operator Telegram-da cavab verdikdən sonra QR burada görünəcək.', checkout_notify_error: 'Sifariş yaradıldı, lakin Telegram bildirişi göndərilmədi. Dəstəklə əlaqə saxlayın.',
     search_empty: 'Nəticə tapılmadı.'
   }
@@ -239,6 +239,17 @@ function renderAll() {
   const q = normalizeSearch(S.q);
   const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || normalizeSearch([p.name, p.description, p.category].join(' ')).includes(q)));
   if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
+  // Fade cards in only when the visible set changed (first load, category, search), never on stock or cart updates.
+  const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
+  if ($('#grid') && S.gridKey !== gridKey && list.length && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
+    $('#grid').querySelectorAll(':scope > .card').forEach((node, i) => {
+      if (i > 11) return;
+      node.style.setProperty('--i', i);
+      node.classList.add('is-enter');
+      node.addEventListener('animationend', () => { node.classList.remove('is-enter'); node.style.removeProperty('--i'); }, { once: true });
+    });
+  }
+  S.gridKey = gridKey;
   renderCart();
   if ($('#editor')?.open) renderAdmin();
 }
@@ -508,37 +519,102 @@ async function resolveOrderQr(order) {
   if (url) S.qrCache.set(cacheKey, { url, until: Date.now() + Math.max(30000, Math.min(ttl * 1000 - 30000, 10 * 60 * 1000)) });
   return url;
 }
+const QR_ICON = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m4 0v4h-4m0-4h-3v4"/></svg>';
+function orderItemsHtml(items) {
+  if (!Array.isArray(items)) return '';
+  const rows = items.map(item => {
+    const name = String(item?.name || item?.title || find(item?.id)?.name || '').trim();
+    const qty = Math.max(0, Number(item?.qty) || 0);
+    return name && qty ? `<li><span class="order-item-name">${esc(name)}</span><span class="order-item-qty">× ${qty}</span></li>` : '';
+  }).filter(Boolean);
+  return rows.length ? `<ul class="order-items">${rows.join('')}</ul>` : '';
+}
+function describeOrder(order) {
+  const id = String(order.id || ''), status = ['pending', 'ready', 'cancelled', 'completed'].includes(order.status) ? order.status : 'pending';
+  const created = order.created_at ? new Date(order.created_at) : null;
+  const createdOk = created && !Number.isNaN(created.getTime());
+  const expiry = order.qr_expires_at ? new Date(order.qr_expires_at).getTime() : 0;
+  const qrIsExpired = Boolean(order.qr_code_url && expiry && expiry <= Date.now());
+  const qrIsReady = Boolean(order.qr_code_url) && status === 'ready' && !qrIsExpired;
+  const canCancel = status === 'pending' && createdOk && Date.now() - created.getTime() < 120000;
+  return { id, status, created: createdOk ? created : null, qrIsExpired, qrIsReady, canCancel };
+}
+function orderCardHtml(order, d, qr) {
+  const short = esc(d.id.slice(0, 8).toUpperCase());
+  const createdText = d.created ? d.created.toLocaleString(S.lang === 'az' ? 'az-AZ' : S.lang === 'en' ? 'en-US' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const itemCount = Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + Math.max(0, Number(item.qty) || 0), 0) : 0;
+  const unit = S.lang === 'en' ? 'items' : S.lang === 'az' ? 'ədəd' : 'поз.';
+  let body = '';
+  if (d.qrIsReady && qr) {
+    body = `<div class="order-qr"><button type="button" class="order-qr-toggle" data-act="toggle-qr" aria-expanded="false">${QR_ICON}<span class="order-qr-label order-qr-label-show">${esc(tr('orders_show_qr'))}</span><span class="order-qr-label order-qr-label-hide">${esc(tr('orders_hide_qr'))}</span><svg class="ic order-qr-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="order-qr-panel"><div class="order-qr-inner"><div class="order-qr-frame"><img class="order-qr-image" src="${esc(qr)}" alt="QR ${short}" decoding="async"></div><div class="order-qr-expiry" data-expiry="${esc(order.qr_expires_at || '')}">${esc(order.qr_expires_at ? remainingText(order.qr_expires_at) : '')}</div></div></div></div>`;
+  } else if (d.qrIsExpired) {
+    body = `<p class="order-note order-note-expired">${esc(tr('orders_expired_note'))}</p>`;
+  } else if (d.status === 'pending') {
+    body = `<p class="order-note">${esc(tr('orders_pending_note'))}</p>${d.canCancel ? `<button type="button" class="btn btn-ghost order-cancel" data-act="cancel-order" data-id="${esc(d.id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
+  } else if (d.status !== 'completed' && d.status !== 'cancelled') {
+    body = `<p class="order-note">${esc(statusText(d.status))}</p>`;
+  }
+  return `<div class="order-card-head"><div class="order-id"><strong>№ ${short}</strong>${createdText ? `<small>${esc(createdText)}</small>` : ''}</div><span class="order-status order-status-${esc(d.status)}">${esc(statusText(d.status))}</span></div>${orderItemsHtml(order.items)}<div class="order-card-total"><span>${itemCount ? `${itemCount} ${unit}` : ''}</span><strong>${fmt(order.total)}</strong></div>${body ? `<div class="order-card-body">${body}</div>` : ''}`;
+}
+// Keyed update: untouched cards stay in the DOM, so scroll position, an open QR and running animations survive each poll.
 async function renderOrders(rows) {
   const host = $('#ordersList');
   if (!host) return;
-  if (!rows.length) { host.innerHTML = `<div class="orders-empty">${esc(tr('orders_empty'))}</div>`; return; }
-  const cards = await Promise.all(rows.map(async order => {
-    const id = String(order.id || ''), short = esc(id.slice(0, 8).toUpperCase()), status = String(order.status || 'pending');
-    const created = order.created_at ? new Date(order.created_at) : null;
-    const createdText = created && !Number.isNaN(created.getTime()) ? created.toLocaleString(S.lang === 'az' ? 'az-AZ' : S.lang === 'en' ? 'en-US' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : '';
-    const expiry = order.qr_expires_at ? new Date(order.qr_expires_at).getTime() : 0;
-    const qrIsExpired = Boolean(order.qr_code_url && expiry && expiry <= Date.now());
-    const qrIsReady = Boolean(order.qr_code_url) && status === 'ready' && !qrIsExpired;
-    const canCancel = status === 'pending' && created && !Number.isNaN(created.getTime()) && Date.now() - created.getTime() < 120000;
-    const itemCount = Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + Math.max(0, Number(item.qty) || 0), 0) : 0;
+  const owner = S.user?.id || '';
+  if (host.dataset.owner !== owner) { host.innerHTML = ''; host.dataset.ready = ''; host.dataset.owner = owner; }
+  if (!rows.length) { host.innerHTML = `<div class="orders-empty">${esc(tr('orders_empty'))}</div>`; host.dataset.ready = '1'; return; }
+  const prepared = await Promise.all(rows.map(async order => {
+    const d = describeOrder(order);
     let qr = '';
-    if (qrIsReady) {
-      try { qr = await resolveOrderQr(order); } catch (error) { console.error('QR signed URL failed:', error); }
-    }
-    let body = '';
-    if (qrIsReady && qr) {
-      body = `<button type="button" class="order-qr-toggle" data-act="toggle-qr" aria-expanded="false"><span class="order-qr-hint">${esc(tr('orders_show_qr'))}</span><img class="order-qr-image" src="${esc(qr)}" alt="QR ${short}" loading="lazy"></button><div class="order-qr-expiry" data-expiry="${esc(order.qr_expires_at || '')}">${esc(order.qr_expires_at ? remainingText(order.qr_expires_at) : '')}</div>`;
-    } else if (qrIsExpired) {
-      body = `<p class="order-note order-note-expired">${esc(tr('orders_expired_note'))}</p>`;
-    } else if (status === 'pending') {
-      body = `<p class="order-note">${esc(tr('orders_pending_note'))}</p>${canCancel ? `<button type="button" class="btn btn-ghost sm order-cancel" data-act="cancel-order" data-id="${esc(id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
-    } else body = `<p class="order-note">${esc(statusText(status))}</p>`;
-    return `<article class="order-card" data-order="${esc(id)}"><div class="order-card-head"><div><strong>№ ${short}</strong>${createdText ? `<small>${esc(createdText)}</small>` : ''}</div><span class="order-status order-status-${esc(status)}">${esc(statusText(status))}</span></div><div class="order-card-meta"><span>${itemCount ? `${itemCount} ${S.lang === 'en' ? 'items' : S.lang === 'az' ? 'ədəd' : 'поз.'}` : ''}</span><strong>${fmt(order.total)}</strong></div>${body}</article>`;
+    if (d.qrIsReady) { try { qr = await resolveOrderQr(order); } catch (error) { console.error('QR signed URL failed:', error); } }
+    const sig = [S.lang, d.status, order.total, order.qr_code_url || '', order.qr_expires_at || '', d.qrIsReady && qr ? 'qr' : '', d.qrIsExpired ? 'x' : '', d.canCancel ? 'c' : '', JSON.stringify(order.items || [])].join('|');
+    return { order, d, qr, sig };
   }));
-  host.innerHTML = cards.join('');
+  if (host.dataset.owner !== (S.user?.id || '')) return;
+  host.querySelectorAll(':scope > .orders-empty, :scope > .orders-error').forEach(node => node.remove());
+  const firstRender = host.dataset.ready !== '1';
+  const scrollTop = host.scrollTop;
+  const existing = new Map(Array.from(host.querySelectorAll(':scope > .order-card')).map(node => [node.dataset.order, node]));
+  let prev = null;
+  prepared.forEach(({ order, d, qr, sig }) => {
+    let node = existing.get(d.id);
+    existing.delete(d.id);
+    if (!node) {
+      node = document.createElement('article');
+      node.className = 'order-card';
+      node.dataset.order = d.id;
+      if (!firstRender) { node.classList.add('is-new'); node.addEventListener('animationend', () => node.classList.remove('is-new'), { once: true }); }
+      node.innerHTML = orderCardHtml(order, d, qr);
+      node.dataset.sig = sig;
+    } else if (node.dataset.sig !== sig) {
+      const wasOpen = node.classList.contains('qr-open');
+      node.innerHTML = orderCardHtml(order, d, qr);
+      node.dataset.sig = sig;
+      const toggle = node.querySelector('.order-qr-toggle');
+      node.classList.toggle('qr-open', Boolean(wasOpen && toggle));
+      if (toggle && wasOpen) toggle.setAttribute('aria-expanded', 'true');
+    }
+    node.dataset.status = d.status;
+    const ref = prev ? prev.nextSibling : host.firstChild;
+    if (node !== ref) host.insertBefore(node, ref);
+    prev = node;
+  });
+  existing.forEach(node => node.remove());
+  host.dataset.ready = '1';
+  host.scrollTop = scrollTop;
+  tickOrderTimers();
+}
+function tickOrderTimers() {
+  document.querySelectorAll('#ordersList .order-qr-expiry[data-expiry]').forEach(node => {
+    const value = node.dataset.expiry;
+    if (!value) return;
+    node.textContent = remainingText(value);
+    if (new Date(value).getTime() <= Date.now() && !node.dataset.expired) { node.dataset.expired = '1'; loadOrders(); }
+  });
 }
 async function loadOrders() {
-  if (!S.user || S.ordersBusy) return;
+  if (!S.user) return;
+  if (S.ordersBusy) { S.ordersQueued = true; return; }
   S.ordersBusy = true;
   const host = $('#ordersList');
   try {
@@ -547,22 +623,52 @@ async function loadOrders() {
     await renderOrders(Array.isArray(data) ? data : []);
   } catch (error) {
     console.error('Orders load failed:', error);
-    if (host) host.innerHTML = `<p class="orders-error">${esc(tr('orders_load_error'))} ${esc(error.message || '')}</p>`;
-  } finally { S.ordersBusy = false; }
+    // A failed background refresh must not wipe cards the user is looking at.
+    if (host && !host.querySelector('.order-card')) host.innerHTML = `<p class="orders-error">${esc(tr('orders_load_error'))} ${esc(error.message || '')}</p>`;
+  } finally {
+    S.ordersBusy = false;
+    if (S.ordersQueued) { S.ordersQueued = false; loadOrders(); }
+  }
+}
+function stopOrdersTimers() {
+  if (S.ordersTimer) clearInterval(S.ordersTimer);
+  if (S.ordersTick) clearInterval(S.ordersTick);
+  S.ordersTimer = S.ordersTick = null;
 }
 function openOrders() {
   if (!S.user) { $('#auth')?.showModal(); return; }
   const dialog = $('#orders');
   if (!dialog) return;
   if (!dialog.open) dialog.showModal();
-  if (S.ordersTimer) clearInterval(S.ordersTimer);
+  stopOrdersTimers();
   loadOrders();
   S.ordersTimer = setInterval(() => {
-    if (!dialog.open) { clearInterval(S.ordersTimer); S.ordersTimer = null; return; }
-    loadOrders();
+    if (!dialog.open) { stopOrdersTimers(); return; }
+    if (!document.hidden) loadOrders();
   }, 4000);
+  S.ordersTick = setInterval(tickOrderTimers, 1000);
 }
-$('#orders')?.addEventListener('close', () => { if (S.ordersTimer) clearInterval(S.ordersTimer); S.ordersTimer = null; });
+$('#orders')?.addEventListener('close', stopOrdersTimers);
+// Full-width confirmation that rises from the bottom after an order is placed.
+function showOrderWave(withWarning) {
+  let d = $('#orderWave');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.id = 'orderWave';
+    d.className = 'order-wave';
+    d.setAttribute('aria-labelledby', 'orderWaveTitle');
+    document.body.appendChild(d);
+    d.addEventListener('click', e => {
+      const button = e.target.closest('[data-wave]');
+      if (!button) { if (e.target === d) closeDlg(d); return; }
+      closeDlg(d);
+      if (button.dataset.wave === 'open') openOrders();
+    });
+  }
+  d.innerHTML = `<div class="order-wave-sheet"><svg class="order-wave-edge" viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C100 6 200 6 300 26S500 46 600 26S800 6 900 26S1100 46 1200 26V48H0Z" fill="currentColor"/></svg><div class="order-wave-body"><span class="order-wave-icon">${QR_ICON}</span><h2 id="orderWaveTitle">${esc(tr('wave_title'))}</h2><p>${esc(tr('wave_text'))}</p>${withWarning ? `<p class="order-wave-warn">${esc(tr('checkout_notify_error'))}</p>` : ''}<div class="order-wave-actions"><button type="button" class="btn order-wave-primary" data-wave="open">${esc(tr('wave_open'))}</button><button type="button" class="btn order-wave-secondary" data-wave="close">${esc(tr('wave_close'))}</button></div></div></div>`;
+  if (!d.open) d.showModal();
+  d.querySelector('[data-wave="open"]')?.focus({ preventScroll: true });
+}
 async function cancelOrder(id) {
   if (!S.user || !id) return;
   if (!confirm(tr('cancel_confirm'))) return;
@@ -595,9 +701,8 @@ async function checkout() {
       if (notifyError) console.error('notify-telegram failed:', notifyError);
       if (notifyData && notifyData.ok === false) console.error('notify-telegram failed:', notifyData);
     } catch (error) { console.error('notify-telegram invocation failed:', error); }
-    openOrders();
-    toast(telegramOk ? tr('checkout_success') : tr('checkout_notify_error'));
-    await loadOrders();
+    showOrderWave(!telegramOk);
+    loadOrders();
   } catch (error) {
     console.error('Checkout failed:', error);
     toast('Не удалось оформить заказ: ' + (error.message || 'ошибка сервера'));
