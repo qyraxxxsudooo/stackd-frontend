@@ -445,6 +445,9 @@ dialog.glass,.modal.glass,.drawer.glass{background:var(--surface);-webkit-backdr
 @media (max-width:680px) {
   .modal,.modal.wide { position:fixed; inset:auto 0 0; width:100vw; max-width:100vw; max-height:92dvh; height:auto; margin:0; border-radius:22px 22px 0 0; padding:18px 16px max(18px,env(safe-area-inset-bottom)); overflow-y:auto; }
   #orders.modal.wide,#editor.modal.wide { inset:0; width:100vw; max-width:100vw; height:100dvh; max-height:100dvh; border-radius:0; }
+  #orders.modal.wide[open] { display:flex; flex-direction:column; overflow:hidden; width:100%; max-width:100%; }
+  #orders .orders-dialog-header { flex:none; }
+  #orders .orders-list { flex:1 1 auto; min-height:0; max-height:none; }
 }
 
 /* STACKED v1.2: predictable account navigation, cart controls and storefront hero. */
