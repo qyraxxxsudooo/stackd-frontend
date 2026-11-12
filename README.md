@@ -53,6 +53,18 @@ QR code orders, скидки на еду Баку, Stackd Азербайджан
 
 https://stackd-frontend.vercel.app/
 
+## Frontend structure
+
+The site is static (no build step); `index.html` loads everything.
+
+- `styles.css` — the one storefront stylesheet: design tokens (colour, type, spacing, radius, elevation, motion), controls, page sections, overlays and animations. Phones ≤ 680 px get the tab bar and bottom sheets.
+- `admin.css` — admin panel styles; `app.js` requests it only after the owner signs in.
+- `stackd-maintenance.css` / `stackd-maintenance.js` — the maintenance screen and its editor.
+- `app.js` — state, catalog, cart, overlay manager, orders and checkout. Other modules receive data through its events (`stackd:settings`, `stackd:catalog`, `stackd:cart-rendered`, `stackd:lang`, `stackd:auth`).
+- `stackd-enhancements.js` — hero, news, translations, discounts, top-up history, admin settings.
+- `stacked-shop.js` — cart dock, photo flight to the cart, promo codes, Telegram link, admin promo tab.
+- `stacked-motion.js` — the animated logo and the “How it works” scene.
+
 ## Promo codes and Telegram QR notifications (setup)
 
 Server code lives in `supabase/`; nothing there is applied automatically.

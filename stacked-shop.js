@@ -19,16 +19,11 @@
   const t = (k) => (TX[lang()] || TX.ru)[k] || TX.ru[k] || k;
   const settings = { product_icons: {}, social_instagram: '', social_tiktok: '', telegram_channel: 'stackdbaku' };
 
-  /* ───────── settings (site_settings key/value) ───────── */
-  async function loadShopSettings() {
-    try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['product_icons', 'social_instagram', 'social_tiktok', 'telegram_channel']);
-      if (error) throw error;
-      (data || []).forEach((row) => {
-        if (row.key === 'product_icons') { try { const v = JSON.parse(row.value || '{}'); settings.product_icons = v && typeof v === 'object' ? v : {}; } catch { settings.product_icons = {}; } }
-        else if (row.key in settings) settings[row.key] = String(row.value || '').trim();
-      });
-    } catch (e) { console.warn('STACKED shop settings not loaded:', e.message || e); }
+  /* ───────── settings: delivered once by app.js (shared site_settings read) ───────── */
+  const refreshAllCards = () => { S.icons = settings.product_icons; if (S.catalogReady) renderAll(); };
+  function applyShopSettings({ values }) {
+    try { const v = JSON.parse(values.get('product_icons') || '{}'); settings.product_icons = v && typeof v === 'object' ? v : {}; } catch { settings.product_icons = {}; }
+    ['social_instagram', 'social_tiktok', 'telegram_channel'].forEach((key) => { if (values.has(key)) settings[key] = String(values.get(key) || '').trim(); });
     renderFooterSocials(); refreshAllCards();
   }
   const httpsUrl = (v, host) => {
@@ -36,48 +31,17 @@
     try { const u = new URL(v); if (u.protocol !== 'https:') return null; if (host && !u.hostname.replace(/^www\./, '').endsWith(host)) return null; return u.href; } catch { return null; }
   };
 
-  /* ───────── cards: stepper only, per-product icon, no hard-coded restaurant logo ───────── */
-  const prevCard = card;
-  card = function stackedCard(p) {
-    const tpl = document.createElement('template');
-    tpl.innerHTML = prevCard(p).trim();
-    const root = tpl.content.firstElementChild;
-    if (!root) return prevCard(p);
-    root.querySelector('.stackd-arches')?.remove(); // the old build stamped McDonald's arches on every card
-    const icon = settings.product_icons[String(p.id)];
-    const media = root.querySelector('.card-media');
-    const safe = icon ? safeImageUrl(icon) : '';
-    if (media && safe) {
-      const m = document.createElement('span'); m.className = 'stacked-mark';
-      const img = document.createElement('img'); img.src = safe; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
-      m.append(img); media.append(m);
-    }
-    const actions = root.querySelector('.stackd-card-actions');
-    if (actions && actions.querySelector('.stackd-card-qty')) actions.querySelector('[data-act="add"]')?.remove();
-    return root.outerHTML;
-  };
-  function refreshCard(id) {
-    const old = document.querySelector(`.card[data-id="${CSS.escape(String(id))}"]`), p = find(id);
-    if (!old || !p) return;
-    const tpl = document.createElement('template'); tpl.innerHTML = card(p).trim();
-    const next = tpl.content.firstElementChild; if (!next) return;
-    const had = !!old.querySelector('.stackd-card-qty'), has = !!next.querySelector('.stackd-card-qty');
-    next.querySelector('.stackd-card-qty')?.classList.add(had ? 'is-steady' : 'is-in');
-    old.replaceWith(next);
-  }
-  function refreshAllCards() { try { renderAll(); } catch { /* catalog not ready yet */ } }
-
   /* ───────── cart dock: a compact stack of mini cards ───────── */
   const dock = document.createElement('div');
   dock.id = 'stackedDock'; dock.className = 'stacked-dock'; dock.hidden = true; dock.setAttribute('role', 'region');
-  dock.innerHTML = '<button type="button" class="stacked-dock-main" data-act="cart-open"><span class="stacked-stack" aria-hidden="true"></span><span class="stacked-dock-info"><strong></strong><small></small></span><span class="stacked-dock-cta"></span></button>';
+  dock.innerHTML = '<button type="button" class="stacked-dock-main" data-act="cart-open"><span class="stacked-stack" aria-hidden="true"></span><span class="stacked-dock-info"><strong></strong><small data-cart-total></small></span><span class="stacked-dock-cta"></span></button>';
   document.body.append(dock);
   const layer = document.createElement('div'); layer.className = 'stacked-fly-layer'; layer.setAttribute('aria-hidden', 'true'); document.body.append(layer);
   const stackEl = dock.querySelector('.stacked-stack');
   const pending = new Map();
   function renderDock() {
     const L = lines(), n = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.p.price, 0);
-    dock.hidden = !n; document.body.classList.toggle('has-dock', n > 0);
+    dock.hidden = !n;
     dock.setAttribute('aria-label', t('cart'));
     dock.querySelector('.stacked-dock-info strong').textContent = `${n} ${t('items')}`;
     dock.querySelector('.stacked-dock-info small').textContent = fmt(total);
@@ -88,16 +52,13 @@
       return `<span class="stacked-mini${pending.has(String(p.id)) ? ' is-pending' : ''}" data-dock-id="${esc(p.id)}" style="--o:${off};--z:${i}"><img src="${esc(imgSrc(p))}" alt="">${qty > 1 ? `<b>${qty}</b>` : ''}</span>`;
     }).join('');
   }
-  const prevRenderCart = renderCart;
-  renderCart = function stackedRenderCart() { const r = prevRenderCart.apply(this, arguments); renderDock(); return r; };
+  subscribe('stackd:cart-rendered', renderDock);
 
   // Flies a copy of the product photo (never the card) along an arc into the visible cart target.
-  const motionOff = () => reduced() || document.documentElement.classList.contains('stk-motion-off');
   function flyTarget(id) {
     const list = [
       stackEl.querySelector(`[data-dock-id="${CSS.escape(String(id))}"]`),
-      document.querySelector('.stackd-mobile-actions .cart-btn'),
-      document.querySelector('.stackd-mobile-cart'),
+      document.querySelector('.tabbar .tab-cart .tab-icon'),
       document.querySelector('.nav .cart-btn')
     ];
     for (const el of list) {
@@ -109,15 +70,15 @@
   }
   function bumpTarget(el) {
     if (!el) return;
-    const k = el.classList.contains('stacked-mini') ? 'is-settle' : 'stk-bump';
-    el.classList.remove(k); void el.offsetWidth; el.classList.add(k);
-    setTimeout(() => el.classList.remove(k), 450);
+    const k = el.classList.contains('stacked-mini') ? 'is-settle' : 'is-bump';
+    replay(el, k);
+    el.addEventListener('animationend', () => el.classList.remove(k), { once: true });
   }
   function fly(a, src, id) {
     const key = String(id);
     const target = flyTarget(id);
     if (!target) return;
-    if (!a || !src || motionOff() || !a.width || a.bottom < 0 || a.top > innerHeight) { bumpTarget(target.el); return; }
+    if (!a || !src || reduced() || !a.width || a.bottom < 0 || a.top > innerHeight) { bumpTarget(target.el); return; }
     const isSlot = target.el.classList.contains('stacked-mini');
     if (isSlot) { pending.set(key, (pending.get(key) || 0) + 1); target.el.classList.add('is-pending'); }
     const b = target.r;
@@ -158,31 +119,16 @@
     setTimeout(done, 1200); // never leave a stray copy on screen
   }
 
-  /* ───────── actions: race guard + fly + card refresh ───────── */
-  const qtyOf = (id) => Number(S.cart.find((x) => String(x.id) === String(id))?.qty || 0);
-  const busy = new Set();
-  ['add', 'inc', 'dec'].forEach((name) => {
-    const orig = A[name]; if (typeof orig !== 'function') return;
-    A[name] = (id, btn) => {
-      if (id === undefined || busy.has(id + name)) return;
-      busy.add(id + name); setTimeout(() => busy.delete(id + name), 160);
-      const before = qtyOf(id);
-      const img = btn?.closest('.card')?.querySelector('.card-media img') || btn?.closest('dialog')?.querySelector('img');
-      // measured before the card re-renders; only the photo URL is copied, the card itself is untouched
-      const rect = img ? img.getBoundingClientRect() : null, photo = img ? (img.currentSrc || img.src) : '';
-      const r = orig(id, btn);
-      if (qtyOf(id) > before && name !== 'dec') requestAnimationFrame(() => fly(rect, photo, id));
-      refreshCard(id);
-      return r;
-    };
+  /* ───────── add-to-cart flight ─────────
+   * Triggered by the cart event from app.js, and only when the item was added from a product card in the grid:
+   * the photo (never the card) flies to the cart; the card itself is patched in place and never replaced. */
+  document.addEventListener('stackd:cart', (e) => {
+    const { id, delta, card } = e.detail || {};
+    const img = delta > 0 && card instanceof Element ? card.querySelector('.card-media > img') : null;
+    if (!img) return;
+    const rect = img.getBoundingClientRect(), photo = img.currentSrc || img.src;
+    requestAnimationFrame(() => fly(rect, photo, id));
   });
-  // quantity changes made from inside the cart drawer must also refresh the card on the page
-  document.addEventListener('click', (e) => {
-    const b = e.target.closest('#lines [data-act]'); if (!b) return;
-    const id = b.closest('[data-id]')?.dataset.id; if (id) setTimeout(() => refreshCard(id), 0);
-  });
-  document.getElementById('clearBtn')?.addEventListener('click', () => setTimeout(refreshAllCards, 0));
-
   /* ───────── footer socials ───────── */
   const ICON = {
     telegram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>',
@@ -285,47 +231,13 @@
     });
     s._fill = fill;
   }
-  // Admin tabs are built lazily by the older scripts, so wait for the elements instead of racing them.
-  new MutationObserver(() => { buildIconField(); buildSocialSettings(); }).observe(document.body, { childList: true, subtree: true });
   document.addEventListener('click', (e) => { if (e.target.closest('#adminList,[data-act="new"],[data-act="edit"],#adminAdd')) setTimeout(syncIconUI, 60); });
 
-  /* ───────── news: calm cross-fade carousel built from the existing news data ───────── */
-  let newsTimer = null, newsI = 0;
-  function buildNews() {
-    const sec = document.getElementById('stackdNewsRail'); if (!sec) return;
-    const cards = Array.from(sec.querySelectorAll('#stackdNewsTrack > .stackd-news-card'));
-    let items = cards.map((c) => ({ img: c.querySelector('img')?.getAttribute('src') || '', cap: c.querySelector('.stackd-news-caption')?.textContent || '', href: c.tagName === 'A' ? c.getAttribute('href') : '' }));
-    if (items.length > 1 && items[0].img === items[items.length - 1].img) items.pop();
-    clearInterval(newsTimer);
-    let stage = sec.querySelector('.stacked-news'); stage?.remove();
-    if (!items.length || sec.hidden) return;
-    sec.classList.add('has-stacked-news');
-    stage = document.createElement('div'); stage.className = 'stacked-news'; stage.setAttribute('role', 'region'); stage.setAttribute('aria-roledescription', 'carousel');
-    stage.innerHTML = `<div class="stacked-news-slides">${items.map((it, i) => {
-      const inner = `<img src="${esc(it.img)}" alt="${esc(it.cap)}" ${i ? 'loading="lazy"' : ''} decoding="async">${it.cap ? `<span class="stacked-news-cap">${esc(it.cap)}</span>` : ''}`;
-      return it.href ? `<a class="stacked-news-slide" href="${esc(it.href)}" target="_blank" rel="noopener noreferrer" data-i="${i}">${inner}</a>` : `<div class="stacked-news-slide" data-i="${i}">${inner}</div>`;
-    }).join('')}</div>${items.length > 1 ? `<div class="stacked-news-dots">${items.map((_, i) => `<button type="button" data-go="${i}" aria-label="${esc(t('newsGo'))} ${i + 1}"></button>`).join('')}</div>` : ''}`;
-    sec.append(stage);
-    const slides = Array.from(stage.querySelectorAll('.stacked-news-slide')), dots = Array.from(stage.querySelectorAll('.stacked-news-dots button'));
-    const show = (i) => { newsI = (i + items.length) % items.length; slides.forEach((s, k) => { const on = k === newsI; s.classList.toggle('is-on', on); s.setAttribute('aria-hidden', on ? 'false' : 'true'); s.tabIndex = on ? 0 : -1; }); dots.forEach((d, k) => d.setAttribute('aria-current', k === newsI ? 'true' : 'false')); };
-    show(0);
-    if (items.length < 2) return;
-    const start = () => { clearInterval(newsTimer); if (!reduced()) newsTimer = setInterval(() => { if (!document.hidden) show(newsI + 1); }, 6000); };
-    stage.addEventListener('click', (e) => { const d = e.target.closest('[data-go]'); if (d) { show(+d.dataset.go); start(); } });
-    stage.addEventListener('pointerenter', () => clearInterval(newsTimer)); stage.addEventListener('pointerleave', start);
-    let x0 = null;
-    stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; }); stage.addEventListener('pointerup', (e) => { if (x0 !== null && Math.abs(e.clientX - x0) > 40) { show(newsI + (e.clientX < x0 ? 1 : -1)); start(); } x0 = null; });
-    start();
-  }
-  let newsRaf = 0;
-  new MutationObserver(() => { cancelAnimationFrame(newsRaf); newsRaf = requestAnimationFrame(() => { const sec = document.getElementById('stackdNewsRail'); if (sec && !sec.dataset.stackedBusy) { buildNews(); } }); }).observe(document.getElementById('catalog') || document.body, { childList: true, subtree: false });
-  const watchTrack = () => { const tr = document.getElementById('stackdNewsTrack'); if (!tr || tr._watched) return; tr._watched = true; new MutationObserver(() => { cancelAnimationFrame(newsRaf); newsRaf = requestAnimationFrame(buildNews); }).observe(tr, { childList: true }); buildNews(); };
-  new MutationObserver(watchTrack).observe(document.body, { childList: true, subtree: true }); watchTrack();
-
   /* ───────── boot ───────── */
-  document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(() => { renderDock(); refreshAllCards(); }, 60); });
-  renderDock(); renderFooterSocials(); buildIconField(); buildSocialSettings();
-  loadShopSettings();
+  // Both events are sticky: the handlers run right here with the latest value and again on every change.
+  // Admin fields carry translated labels, so they are (re)built with the current language.
+  subscribe('stackd:lang', () => { buildIconField(); buildSocialSettings(); renderFooterSocials(); });
+  subscribe('stackd:settings', applyShopSettings);
 })();
 
 /* ═══════════ STACKED pass 2: settings panel, promo codes (customer + admin), Telegram link, first reveal ═══════════
@@ -338,7 +250,7 @@
   const q = (s, r = document) => r.querySelector(s);
   const qa = (s, r = document) => Array.from(r.querySelectorAll(s));
   const lang = () => (['ru', 'en', 'az'].includes(S.lang) ? S.lang : 'ru');
-  const motionOff = () => root.classList.contains('stk-motion-off') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionOff = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const money = (n) => `${(Math.round((Number(n) || 0) * 100) / 100).toFixed(2)} AZN`;
   const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
   const h = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -400,73 +312,10 @@
     return Number.isFinite(d.getTime()) ? d.toLocaleString(lang() === 'en' ? 'en-GB' : lang() === 'az' ? 'az-Latn-AZ' : 'ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
   };
 
-  /* ───────── settings panel ───────── */
-  const wrap = q('#stkSettingsWrap'), gear = q('#stkGear'), panel = q('#stkSettings');
-  const scrim = document.createElement('div'); scrim.className = 'stk-scrim'; scrim.hidden = true; document.body.append(scrim);
-  // The nav has backdrop-filter, which would trap a fixed panel inside it: the panel lives in <body> instead.
-  if (panel) document.body.append(panel);
-  const sheet = () => matchMedia('(max-width: 680px)').matches;
-  function placePanel() {
-    if (!panel || !gear) return;
-    if (sheet()) { panel.style.top = ''; panel.style.right = ''; return; }
-    const g = gear.getBoundingClientRect();
-    panel.style.top = `${Math.round(g.bottom + 10)}px`;
-    panel.style.right = `${Math.max(8, Math.round(document.documentElement.clientWidth - g.right))}px`;
-  }
-  addEventListener('resize', () => { if (panel?.classList.contains('is-open')) placePanel(); });
-  let closeTimer = 0;
-  const isOpen = () => panel?.classList.contains('is-open');
-  function openPanel(open) {
-    if (!panel || !gear || open === isOpen()) return;
-    clearTimeout(closeTimer);
-    gear.setAttribute('aria-expanded', String(open));
-    gear.classList.toggle('is-open', open);
-    if (open) {
-      panel.hidden = false; scrim.hidden = false;
-      syncSettings(); renderPromoBox(); placePanel();
-      requestAnimationFrame(() => { panel.classList.add('is-open'); scrim.classList.add('is-open'); });
-      setTimeout(() => (q('button[aria-pressed="true"]', panel) || q('button', panel))?.focus({ preventScroll: true }), 60);
-    } else {
-      panel.classList.remove('is-open'); scrim.classList.remove('is-open');
-      closeTimer = setTimeout(() => { if (!isOpen()) { panel.hidden = true; scrim.hidden = true; } }, motionOff() ? 0 : 240);
-    }
-  }
-  gear?.addEventListener('click', () => openPanel(!isOpen()));
-  q('[data-stk-close]', panel || document)?.addEventListener('click', () => { openPanel(false); gear?.focus(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) { e.preventDefault(); openPanel(false); gear?.focus(); } });
-  document.addEventListener('pointerdown', (e) => { if (isOpen() && !wrap?.contains(e.target) && !panel.contains(e.target)) openPanel(false); });
-
-  function syncSettings() {
-    if (!panel) return;
-    qa('[data-stk]', panel).forEach((el) => { el.textContent = t(el.dataset.stk); });
-    gear?.setAttribute('aria-label', t('settings'));
-    q('[data-stk-close]', panel)?.setAttribute('aria-label', t('close'));
-    const input = q('#stkPromoInput'); if (input) input.placeholder = t('promoPh');
-    let theme = 'system'; try { theme = localStorage.getItem('pdd.theme') || 'system'; } catch { /* storage blocked */ }
-    qa('#stkTheme button', panel).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === theme)));
-    qa('#stkLang button', panel).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.stkLang === lang())));
-    q('#stkMotion')?.setAttribute('aria-checked', String(!root.classList.contains('stk-motion-off')));
-  }
-  // Theme: the existing A.theme does the work; this only adds a short colour cross-fade.
-  q('#stkTheme')?.addEventListener('click', (e) => {
-    if (!e.target.closest('button[data-v]')) return;
-    if (!motionOff()) { root.classList.add('stk-theme-shift'); setTimeout(() => root.classList.remove('stk-theme-shift'), 450); }
-    setTimeout(syncSettings, 0);
-  });
-  // Language: reuse the existing switcher so every translation layer updates exactly as before.
-  q('#stkLang')?.addEventListener('click', (e) => {
-    const b = e.target.closest('button[data-stk-lang]'); if (!b) return;
-    q(`#langDropdown button[data-lang="${b.dataset.stkLang}"]`)?.click();
-    setTimeout(() => { syncSettings(); renderPromoBox(); renderCartPromo(); syncTelegramButton(); renderAdminPromos(); }, 0);
-  });
-  q('.lang-dropdown')?.addEventListener('click', () => setTimeout(() => { syncSettings(); renderCartPromo(); syncTelegramButton(); }, 0));
-  q('#stkMotion')?.addEventListener('click', () => {
-    const off = !root.classList.contains('stk-motion-off');
-    root.classList.toggle('stk-motion-off', off);
-    try { if (off) localStorage.setItem('stk.motion', 'off'); else localStorage.removeItem('stk.motion'); } catch { /* storage blocked */ }
-    window.dispatchEvent(new Event('stacked:motion'));
-    syncSettings();
-  });
+  /* ───────── settings panel ─────────
+   * Opening, closing, Escape and outside clicks belong to the overlay manager in app.js (A.settings);
+   * theme and language are plain data-act buttons. Only the promo box inside the panel needs code here. */
+  q('#stkSettings')?.addEventListener('overlay:open', () => renderPromoBox());
 
   /* ───────── promo: customer state ───────── */
   const PKEY = 'stk.promo';
@@ -566,22 +415,19 @@
       const li = q(`#lines li[data-id="${CSS.escape(est.freeId)}"]`);
       if (li) { li.classList.add('is-free'); const name = q('strong', li); name?.insertAdjacentHTML('afterend', `<span class="stk-free-tag">${h(t('freeTag'))}</span>`); }
     }
-    const total = q('#total');
     if (promo && hasLines) {
       const open = box.classList.contains('is-applied-now');
       box.innerHTML = `${promoCard(true)}
         <div class="stk-sum"><span>${h(t('subtotal'))}</span><span>${money(est.subtotal)}</span></div>
         ${est.discount > 0 ? `<div class="stk-sum is-discount"><span>${h(t('discount'))}</span><span>−${money(est.discount)}</span></div>` : ''}`;
       box.classList.toggle('is-applied-now', open);
-      if (total) total.textContent = money(est.total);
+      qa('[data-cart-total]').forEach((node) => { node.textContent = money(est.total); });   // drawer, tab bar and dock show the discounted estimate
     } else if (hasLines) {
       const expanded = box.dataset.expanded === '1';
       box.innerHTML = expanded
         ? `<form class="stk-cart-promo-form" novalidate><input type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="${h(t('promoPh'))}" aria-label="${h(t('promo'))}"><button type="submit" class="btn btn-ghost">${h(t('apply'))}</button></form>${promoMsg ? `<p class="stk-msg is-${promoMsg.kind}">${h(promoMsg.text)}</p>` : ''}`
         : `<button type="button" class="stk-link stk-cart-promo-add">${h(t('havePromo'))}</button>`;
     } else box.innerHTML = '';
-    const dockTotal = q('#stackedDock .stacked-dock-info small');
-    if (dockTotal && est && hasLines) dockTotal.textContent = money(est.total);
   }
   q('#drawer')?.addEventListener('click', (e) => {
     const add = e.target.closest('.stk-cart-promo-add');
@@ -592,8 +438,7 @@
     e.preventDefault(); applyPromo(q('input', form)?.value, 'cart');
   });
   function renderPromoUI() { renderPromoBox(); renderCartPromo(); }
-  const prevRender = renderCart;
-  renderCart = function stkRenderCart() { const r = prevRender.apply(this, arguments); try { renderCartPromo(); } catch (e) { console.error(e); } return r; };
+  subscribe('stackd:cart-rendered', () => { try { renderCartPromo(); } catch (e) { console.error(e); } });
 
   /* ───────── checkout bridge used by app.js checkout() ───────── */
   let pendingRequest = null; // reused only for retries of the very same cart after a network failure
@@ -616,11 +461,11 @@
 
   /* ───────── Telegram link (profile menu) ───────── */
   let tgBot = '', tgLinked = false, tgAvailable = true;
-  async function loadTelegramSettings() {
-    try { const { data } = await _supabase.from('site_settings').select('value').eq('key', 'telegram_bot').maybeSingle(); tgBot = String(data?.value || '').replace(/^@/, '').trim(); } catch { tgBot = ''; }
+  subscribe('stackd:settings', ({ values }) => {
+    tgBot = String(values.get('telegram_bot') || '').replace(/^@/, '').trim();
     const input = q('#stkTgBot'); if (input) input.value = tgBot;
     syncTelegramButton();
-  }
+  });
   async function refreshTelegram() {
     tgLinked = false;
     if (S.user) {
@@ -632,7 +477,7 @@
   function syncTelegramButton() {
     const b = q('#stackdTelegramLink'); if (!b) return;
     b.hidden = !S.user || !tgAvailable || !tgBot;
-    b.textContent = tgLinked ? t('tgLinked') : t('tgLink');
+    (b.querySelector('span') || b).textContent = tgLinked ? t('tgLinked') : t('tgLink');
     b.classList.toggle('is-linked', tgLinked);
   }
   A['tg-link'] = async () => {
@@ -644,25 +489,7 @@
     const url = `https://t.me/${tgBot}?start=link_${data}`;
     if (win) { win.opener = null; win.location.href = url; } else location.href = url;
   };
-  _supabase.auth.onAuthStateChange(() => setTimeout(() => { refreshTelegram(); renderPromoUI(); }, 0));
-  loadTelegramSettings(); refreshTelegram();
-
-  /* ───────── first catalog reveal + category switch ───────── */
-  const grid = q('#grid');
-  if (grid) {
-    const cascade = () => {
-      if (!grid.querySelector('.card')) return false;
-      if (q('#stackedSplash') || root.classList.contains('stk-reveal') || motionOff()) return true; // the page reveal covers it
-      grid.classList.add('stk-cards-in'); setTimeout(() => grid.classList.remove('stk-cards-in'), 1100);
-      return true;
-    };
-    if (!cascade()) { const mo = new MutationObserver(() => { if (cascade()) mo.disconnect(); }); mo.observe(grid, { childList: true }); setTimeout(() => mo.disconnect(), 15000); }
-    q('#chips')?.addEventListener('click', (e) => {
-      if (!e.target.closest('[data-act="cat"]') || motionOff()) return;
-      grid.classList.remove('stk-swap'); void grid.offsetWidth; grid.classList.add('stk-swap');
-      setTimeout(() => grid.classList.remove('stk-swap'), 600);
-    });
-  }
+  subscribe('stackd:auth', () => { refreshTelegram(); renderPromoUI(); });
 
   /* ───────── admin: promo codes tab ───────── */
   const AT = {
@@ -700,7 +527,7 @@
     const products = (S.products || []).map((p) => `<option value="${h(p.id)}"${String(p.id) === String(r?.product_id) ? ' selected' : ''}>${h(p.name)} · ${money(p.price)}</option>`).join('');
     return `<form class="stk-pform" data-type="${h(type)}" data-scope="${h(scope)}" novalidate>
       <div class="stk-pform-head"><strong>${h(r?.id ? at('edit') : at('create'))}</strong></div>
-      <div class="stk-pgrid">
+      <div class="stk-pgrid is-pair">
         <label>${h(at('code'))}<input name="code" required maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${h(r?.code || '')}" placeholder="STACKED!"></label>
         <label>${h(at('name'))}<input name="title" required maxlength="80" value="${h(r?.title || '')}" placeholder="STACKED Special Offer"></label>
         <label class="is-wide">${h(at('desc'))}<input name="description" maxlength="200" value="${h(r?.description || '')}"></label>
@@ -823,7 +650,7 @@
     box.innerHTML = `<label for="stkTgBot" data-stk-a="tgBot"></label><p class="stk-hint" data-stk-a="tgBotHelp"></p><div class="stk-tgbot-row"><input id="stkTgBot" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="stackd_bot"><button type="button" class="btn btn-ghost" id="stkTgBotSave" data-stk-a="save"></button></div><p class="stk-msg" id="stkTgBotMsg" aria-live="polite"></p>`;
     settingsTab.append(box);
     const label = () => qa('[data-stk-a]', box).forEach((n) => { n.textContent = t(n.dataset.stkA); });
-    label(); q('.lang-dropdown')?.addEventListener('click', () => setTimeout(label, 0)); q('#stkLang')?.addEventListener('click', () => setTimeout(label, 0));
+    subscribe('stackd:lang', label);   // sticky: also labels the fields right now
     q('#stkTgBotSave')?.addEventListener('click', async () => {
       const v = String(q('#stkTgBot').value || '').replace(/^@/, '').trim(), m = q('#stkTgBotMsg');
       if (v && !/^[A-Za-z0-9_]{5,32}$/.test(v)) { m.textContent = 'Username: 5–32 [A-Za-z0-9_]'; return; }
@@ -832,5 +659,6 @@
     });
   }
 
-  syncSettings(); renderPromoUI();
+  renderPromoUI();
+  subscribe('stackd:lang', () => { renderPromoUI(); syncTelegramButton(); renderAdminPromos(); });
 })();

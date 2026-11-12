@@ -13,9 +13,15 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const fmt = n => (Number(n) || 0).toFixed(2) + ' AZN';
 const PH = 'assets/icons/placeholder.svg';
 const CATS = ['Burgers', 'Sides', 'Drinks', 'Desserts'];
+// Sticky events connect the modules: a subscriber that registers late (the other scripts are deferred and
+// load after app.js has already started fetching) immediately receives the latest value.
+const stickyEvents = new Map();
+function publish(name, detail = {}) { stickyEvents.set(name, detail); document.dispatchEvent(new CustomEvent(name, { detail })); }
+function subscribe(name, handler) { document.addEventListener(name, event => handler(event.detail)); if (stickyEvents.has(name)) handler(stickyEvents.get(name)); }
 const S = {
   products: [], cart: [], cat: 'All', q: '', adminQ: '', user: null, profile: null,
-  draft: null, lang: 'ru', catalogError: null, ordersTimer: null, ordersBusy: false,
+  draft: null, lang: 'ru', catalogError: null, catalogReady: false, catalogSig: '', catalogAt: 0,
+  slides: [], icons: {}, ordersTimer: null, ordersBusy: false,
   checkoutBusy: false, topupRequestId: crypto.randomUUID(), qrCache: new Map()
 };
 
@@ -48,7 +54,7 @@ const translations = {
     admin_title: 'Управление', admin_tab_products: 'Товары', admin_tab_settings: 'Настройки сайта', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
-    added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.',
+    added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', add_short: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.',
     orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'QR-код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия QR истёк', orders_show_qr: 'Нажмите, чтобы открыть QR-код', orders_pending_note: 'Оператор проверяет заказ. QR-код появится здесь после ответа в Telegram.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок QR-кода истёк. Обратитесь в поддержку.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть QR-код', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Как только он подтвердит, ваш QR-код появится в разделе «Мои заказы». Откройте его и покажите на выдаче.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть',
     cancel_confirm: 'Отменить заказ? Возврат средств выполняется сервером.', checkout_busy: 'Оформляем заказ…', checkout_success: 'Заказ создан. QR-код появится здесь после ответа оператора в Telegram.', checkout_notify_error: 'Заказ создан, но уведомление Telegram не отправлено. Обратитесь в поддержку.',
     search_empty: 'Ничего не найдено.'
@@ -64,7 +70,7 @@ const translations = {
     admin_title: 'Management', admin_tab_products: 'Products', admin_tab_settings: 'Site settings', admin_products: 'Products', admin_add: 'Add product', admin_search: 'Search products',
     settings_title: 'Homepage settings', settings_hero_title: 'Homepage title', settings_hero_sub: 'Subtitle / description', settings_save: 'Save settings',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from device)', form_save: 'Save',
-    added_to_cart: 'added to cart', cart_cleared: 'Cart cleared', checkout_msg: 'Order created!', product_deleted: 'Deleted', saved: 'Saved', out_of_stock: 'Out of stock', add_to_cart: 'Add to cart', no_results: 'No results found.', empty_catalog: 'No products yet.',
+    added_to_cart: 'added to cart', cart_cleared: 'Cart cleared', checkout_msg: 'Order created!', product_deleted: 'Deleted', saved: 'Saved', out_of_stock: 'Out of stock', add_to_cart: 'Add to cart', add_short: 'Add', no_results: 'No results found.', empty_catalog: 'No products yet.',
     orders_title: 'My orders', orders_empty: 'You have no orders yet.', orders_pending: 'Awaiting confirmation', orders_ready: 'QR code ready', orders_cancelled: 'Cancelled', orders_completed: 'Completed', orders_expired: 'QR code expired', orders_show_qr: 'Tap to reveal the QR code', orders_pending_note: 'The operator is reviewing your order. The QR will appear here after a Telegram reply.', orders_cancel: 'Cancel order', orders_time_left: 'Remaining', orders_expired_note: 'The QR code expired. Contact support.', orders_load_error: 'Could not load orders. Please try again.', orders_hide_qr: 'Hide QR code', wave_title: 'Order sent', wave_text: 'The operator is reviewing your order. Once confirmed, your QR code will appear in "My orders". Open it and show it at pickup.', wave_open: 'Open my orders', wave_close: 'Close',
     cancel_confirm: 'Cancel this order? Any refund is processed by the server.', checkout_busy: 'Placing order…', checkout_success: 'Order created. The QR will appear here after the operator replies in Telegram.', checkout_notify_error: 'Order created, but Telegram notification failed. Contact support.',
     search_empty: 'No results found.'
@@ -80,19 +86,50 @@ const translations = {
     admin_title: 'İdarəetmə', admin_tab_products: 'Məhsullar', admin_tab_settings: 'Sayt ayarları', admin_products: 'Məhsullar', admin_add: 'Məhsul əlavə et', admin_search: 'Məhsul axtar',
     settings_title: 'Ana səhifə ayarları', settings_hero_title: 'Ana səhifə başlığı', settings_hero_sub: 'Alt başlıq / təsvir', settings_save: 'Ayarları saxla',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (cihazdan)', form_save: 'Saxla',
-    added_to_cart: 'səbətə əlavə edildi', cart_cleared: 'Səbət təmizləndi', checkout_msg: 'Sifariş yaradıldı!', product_deleted: 'Silindi', saved: 'Saxlanıldı', out_of_stock: 'Stokda yoxdur', add_to_cart: 'Səbətə əlavə et', no_results: 'Nəticə tapılmadı.', empty_catalog: 'Hələ məhsul yoxdur.',
+    added_to_cart: 'səbətə əlavə edildi', cart_cleared: 'Səbət təmizləndi', checkout_msg: 'Sifariş yaradıldı!', product_deleted: 'Silindi', saved: 'Saxlanıldı', out_of_stock: 'Stokda yoxdur', add_to_cart: 'Səbətə əlavə et', add_short: 'Səbətə', no_results: 'Nəticə tapılmadı.', empty_catalog: 'Hələ məhsul yoxdur.',
     orders_title: 'Sifarişlərim', orders_empty: 'Hələ sifarişiniz yoxdur.', orders_pending: 'Təsdiq gözləyir', orders_ready: 'QR kod hazırdır', orders_cancelled: 'Ləğv edildi', orders_completed: 'Tamamlandı', orders_expired: 'QR kodun müddəti bitib', orders_show_qr: 'QR kodu açmaq üçün toxunun', orders_pending_note: 'Operator sifarişi yoxlayır. Telegram cavabından sonra QR burada görünəcək.', orders_cancel: 'Sifarişi ləğv et', orders_time_left: 'Qalıb', orders_expired_note: 'QR kodun müddəti bitib. Dəstəyə müraciət edin.', orders_load_error: 'Sifarişləri yükləmək mümkün olmadı. Yenidən cəhd edin.', orders_hide_qr: 'QR kodu gizlət', wave_title: 'Sifariş göndərildi', wave_text: 'Operator sifarişi yoxlayır. Təsdiqləndikdən sonra QR kodunuz "Sifarişlərim" bölməsində görünəcək. Onu açıb təhvil zamanı göstərin.', wave_open: 'Sifarişlərimi aç', wave_close: 'Bağla',
     cancel_confirm: 'Sifarişi ləğv etmək istəyirsiniz? Geri ödənişi server həyata keçirir.', checkout_busy: 'Sifariş hazırlanır…', checkout_success: 'Sifariş yaradıldı. Operator Telegram-da cavab verdikdən sonra QR burada görünəcək.', checkout_notify_error: 'Sifariş yaradıldı, lakin Telegram bildirişi göndərilmədi. Dəstəklə əlaqə saxlayın.',
     search_empty: 'Nəticə tapılmadı.'
   }
 };
 const tr = key => translations[S.lang]?.[key] || translations.ru[key] || key;
+// Strings used by the unified catalog renderer, the tab bar and overlay labels.
+Object.assign(translations.ru, {
+  popular: 'Популярное', qty_label: 'Количество', qty_less: 'Уменьшить количество', qty_more: 'Увеличить количество',
+  stock_left: 'Осталось {n} шт.', sold_out: 'Нет в наличии', all_categories: 'Все',
+  cart_empty_hint: 'Добавьте блюда из меню — они появятся здесь.', cart_go_menu: 'Перейти в меню',
+  cart_dropped: 'Часть товаров больше недоступна — корзина обновлена.', line_remove: 'Убрать из корзины',
+  catalog_retry: 'Повторить', catalog_error: 'Не удалось загрузить каталог. Проверьте подключение и попробуйте ещё раз.',
+  delete_failed: 'Товар не был удалён: нет прав или он уже удалён.',
+  tab_menu: 'Меню', tab_orders: 'Заказы', tab_cart: 'Корзина', tab_profile: 'Профиль',
+  orders_btn: 'Мои заказы', topup_short: 'Пополнить', settings_appearance: 'Оформление', settings_language: 'Язык', settings_promo: 'Промокод', promo_apply: 'Применить', promo_placeholder: 'Введите код', history_btn: 'История пополнений', tg_connect: 'Подключить Telegram', signed_in_as: 'Вы вошли как', nav_settings: 'Настройки', nav_profile: 'Профиль', nav_cart: 'Корзина', close: 'Закрыть'
+});
+Object.assign(translations.en, {
+  popular: 'Popular', qty_label: 'Quantity', qty_less: 'Decrease quantity', qty_more: 'Increase quantity',
+  stock_left: '{n} left', sold_out: 'Sold out', all_categories: 'All',
+  cart_empty_hint: 'Add dishes from the menu and they will show up here.', cart_go_menu: 'Browse the menu',
+  cart_dropped: 'Some items are no longer available — your cart was updated.', line_remove: 'Remove from cart',
+  catalog_retry: 'Try again', catalog_error: 'Could not load the catalog. Check your connection and try again.',
+  delete_failed: 'The product was not deleted: no permission or it is already gone.',
+  tab_menu: 'Menu', tab_orders: 'Orders', tab_cart: 'Cart', tab_profile: 'Profile',
+  orders_btn: 'My orders', topup_short: 'Top up', settings_appearance: 'Appearance', settings_language: 'Language', settings_promo: 'Promo code', promo_apply: 'Apply', promo_placeholder: 'Enter code', history_btn: 'Top-up history', tg_connect: 'Connect Telegram', signed_in_as: 'Signed in as', nav_settings: 'Settings', nav_profile: 'Profile', nav_cart: 'Cart', close: 'Close'
+});
+Object.assign(translations.az, {
+  popular: 'Populyar', qty_label: 'Miqdar', qty_less: 'Miqdarı azalt', qty_more: 'Miqdarı artır',
+  stock_left: '{n} ədəd qalıb', sold_out: 'Stokda yoxdur', all_categories: 'Hamısı',
+  cart_empty_hint: 'Menyudan məhsul əlavə edin — onlar burada görünəcək.', cart_go_menu: 'Menyuya keç',
+  cart_dropped: 'Bəzi məhsullar artıq mövcud deyil — səbət yeniləndi.', line_remove: 'Səbətdən sil',
+  catalog_retry: 'Yenidən cəhd et', catalog_error: 'Kataloqu yükləmək mümkün olmadı. Bağlantını yoxlayıb yenidən cəhd edin.',
+  delete_failed: 'Məhsul silinmədi: icazə yoxdur və ya artıq silinib.',
+  tab_menu: 'Menyu', tab_orders: 'Sifarişlər', tab_cart: 'Səbət', tab_profile: 'Profil',
+  orders_btn: 'Sifarişlərim', topup_short: 'Artır', settings_appearance: 'Görünüş', settings_language: 'Dil', settings_promo: 'Promokod', promo_apply: 'Tətbiq et', promo_placeholder: 'Kodu daxil edin', history_btn: 'Balans tarixçəsi', tg_connect: 'Telegram qoş', signed_in_as: 'Daxil olmusunuz:', nav_settings: 'Ayarlar', nav_profile: 'Profil', nav_cart: 'Səbət', close: 'Bağla'
+});
+const trf = (key, vars) => Object.entries(vars).reduce((text, [name, value]) => text.split(`{${name}}`).join(String(value)), tr(key));
 function applyLanguage(lang) {
   const selected = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'ru';
   S.lang = selected;
   try { localStorage.setItem('pdd.lang', selected); } catch {}
   document.documentElement.lang = selected;
-  if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
   $$('[data-i18n]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18n] ?? translations.ru[element.dataset.i18n];
     if (value !== undefined) element.textContent = value;
@@ -101,49 +138,82 @@ function applyLanguage(lang) {
     const value = translations[selected]?.[element.dataset.i18nPlaceholder] ?? translations.ru[element.dataset.i18nPlaceholder];
     if (value !== undefined) element.placeholder = value;
   });
+  $$('[data-i18n-aria]').forEach(element => {
+    const value = translations[selected]?.[element.dataset.i18nAria] ?? translations.ru[element.dataset.i18nAria];
+    if (value !== undefined) element.setAttribute('aria-label', value);
+  });
+  $$('[data-act="lang"]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === selected)));
   renderAll();
   if ($('#editor')?.open) renderAdmin();
   if ($('#orders')?.open) loadOrders();
+  // Other modules translate their own UI from this event instead of watching the DOM for label changes.
+  publish('stackd:lang', { lang: selected });
 }
 
-async function checkAuth() {
-  try {
-    const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
-    if (sessionError) throw sessionError;
-    S.user = session?.user || null;
-    S.profile = null;
-    const loginBtn = $('#loginBtn'), userProfile = $('#userProfile'), adminBtn = $('#adminBtn');
-    if (S.user) {
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (userProfile) userProfile.style.display = 'flex';
-      if ($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'inline-flex';
-      if (adminBtn) adminBtn.style.display = isAdmin() ? 'inline-flex' : 'none';
-      const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
-      if ($('#userAvatar')) $('#userAvatar').src = safeImageUrl(avatarUrl);
-      const { data, error } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
-      if (error) throw error;
-      S.profile = data || null;
-      if ($('#userBalance')) $('#userBalance').textContent = Number(data?.balance || 0).toFixed(2);
-    } else {
-      if (loginBtn) loginBtn.style.display = 'block';
-      if (userProfile) userProfile.style.display = 'none';
-      if ($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'none';
-      if (adminBtn) adminBtn.style.display = 'none';
-      if ($('#userBalance')) $('#userBalance').textContent = '0.00';
-    }
-  } catch (error) {
-    console.error('Authentication/profile loading failed:', error);
-    toast('Не удалось загрузить профиль. Обновите страницу.');
+// Auth state is published on <html>; CSS decides what is shown ([data-show="user|guest|admin"]).
+function syncAuthUi() {
+  const root = document.documentElement;
+  root.dataset.auth = S.user ? 'user' : 'guest';
+  root.toggleAttribute('data-admin', Boolean(S.user) && isAdmin());
+  // The admin panel has its own stylesheet, requested only for the owner.
+  if (root.hasAttribute('data-admin') && !$('#adminStyles')) {
+    const link = document.createElement('link');
+    link.id = 'adminStyles'; link.rel = 'stylesheet'; link.href = 'admin.css';
+    document.head.append(link);
   }
-  await Promise.allSettled([load(), loadSettings()]);
+  const avatarUrl = S.user?.user_metadata?.avatar_url || S.user?.user_metadata?.picture;
+  if ($('#userAvatar')) $('#userAvatar').src = safeImageUrl(avatarUrl);
+}
+function setBalance(value) {
+  const text = Number(value || 0).toFixed(2);
+  $$('[data-balance]').forEach(node => { node.textContent = text; });
+}
+async function refreshProfile() {
+  if (!S.user) { S.profile = null; setBalance(0); return; }
+  const { data, error } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
+  if (error) throw error;
+  S.profile = data || null;
+  setBalance(data?.balance);
+}
+let authInflight = null;
+function checkAuth() {
+  // Boot, auth events and sign-in handlers may all ask at once: they share one round trip.
+  authInflight ||= (async () => {
+    try {
+      const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      S.user = session?.user || null;
+      syncAuthUi();
+      await refreshProfile();
+    } catch (error) {
+      console.error('Authentication/profile loading failed:', error);
+      toast('Не удалось загрузить профиль. Обновите страницу.');
+    } finally {
+      authInflight = null;
+      publish('stackd:auth');
+    }
+  })();
+  return authInflight;
+}
+// One shared read of site_settings for every module (hero, brand, discounts, icons, socials, bot).
+// Concurrent callers reuse the same request; after 15 s the next caller reads fresh data.
+let settingsRequest = null, settingsAt = 0;
+function siteSettings() {
+  if (!settingsRequest || Date.now() - settingsAt > 15000) {
+    settingsAt = Date.now();
+    settingsRequest = _supabase.from('site_settings').select('key,value').then(({ data, error }) => {
+      if (error) { settingsRequest = null; throw error; }
+      return new Map((data || []).map(row => [row.key, row.value]));
+    });
+  }
+  return settingsRequest;
 }
 async function loadSettings() {
-  const { data, error } = await _supabase.from('site_settings').select('key,value');
-  if (error) { console.error('Settings load failed:', error); return; }
-  (data || []).forEach(item => {
-    if (item.key === 'hero_title' && $('#settingHeroTitle')) $('#settingHeroTitle').value = item.value || '';
-    if (item.key === 'hero_subtitle' && $('#settingHeroSub')) $('#settingHeroSub').value = item.value || '';
-  });
+  let values;
+  try { values = await siteSettings(); } catch (error) { console.error('Settings load failed:', error); return; }
+  if ($('#settingHeroTitle')) $('#settingHeroTitle').value = values.get('hero_title') || '';
+  if ($('#settingHeroSub')) $('#settingHeroSub').value = values.get('hero_subtitle') || '';
+  publish('stackd:settings', { values });
 }
 
 $('#authForm')?.addEventListener('submit', async e => {
@@ -153,7 +223,7 @@ $('#authForm')?.addEventListener('submit', async e => {
   if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
   const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
   if (error) return $('#authMsg').textContent = 'Не удалось войти. Проверьте данные и настройки подтверждения email.';
-  closeDlg($('#auth')); toast('Вы вошли!'); await checkAuth();
+  closeDlg($('#auth')); toast('Вы вошли!'); await checkAuth(); load();
 });
 $('#signUpBtn')?.addEventListener('click', async () => {
   $('#authMsg').textContent = 'Загрузка...';
@@ -164,7 +234,7 @@ $('#signUpBtn')?.addEventListener('click', async () => {
   if (error) return $('#authMsg').textContent = 'Ошибка: ' + error.message;
   if (data.user) {
     if (!data.session) { $('#authMsg').textContent = 'Проверьте почту и подтвердите адрес, затем войдите.'; return; }
-    closeDlg($('#auth')); toast('Аккаунт создан!'); await checkAuth();
+    closeDlg($('#auth')); toast('Аккаунт создан!'); await checkAuth(); load();
   }
 });
 $('#googleLoginBtn')?.addEventListener('click', async () => {
@@ -177,201 +247,463 @@ $('#logoutBtn')?.addEventListener('click', async () => {
   location.reload();
 });
 
+const PRODUCT_COLUMNS = 'id,name,description,category,price,image_url,stock,available,active,featured,translations,source_lang';
+const catalogSignature = rows => JSON.stringify(rows.map(p => [p.id, p.name, p.description, p.category, p.price, p.image_url, p.stock, p.available, p.active, p.featured, p.translations]));
+
+// S.products is the single source of truth for cards, cart lines, the quick view and the dock.
+// Every change goes through setProducts(): it reconciles the cart and repaints everything once.
+function setProducts(rows) {
+  S.products = Array.isArray(rows) ? rows : [];
+  S.catalogReady = true;
+  S.catalogError = null;
+  S.catalogSig = catalogSignature(S.products);
+  S.catalogAt = Date.now();
+  if (reconcileCart()) { saveCart(); toast(tr('cart_dropped')); }
+  renderAll();
+  syncDetail(true);
+  publish('stackd:catalog');
+}
 async function load() {
   S.catalogError = null;
   const [slideResult, productResult] = await Promise.all([
     _supabase.from('slides').select('image_url,title,description'),
-    _supabase.from('products').select('id,name,description,category,price,image_url')
+    _supabase.from('products').select(PRODUCT_COLUMNS)
   ]);
-  if (slideResult.error) {
-    console.error('Slides load failed:', slideResult.error);
-    initSlider([]);
-  } else initSlider(slideResult.data || []);
+  if (slideResult.error) console.error('Slides load failed:', slideResult.error);
+  initSlider(slideResult.error ? [] : slideResult.data);
   if (productResult.error) {
     console.error('Products load failed:', productResult.error);
-    S.products = [];
-    S.catalogError = 'Не удалось загрузить каталог. Проверьте подключение и права доступа.';
-  } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
-  renderAll();
+    S.products = []; S.catalogReady = false;
+    S.catalogError = tr('catalog_error');
+    renderAll();
+    return;
+  }
+  setProducts(productResult.data);
 }
+// A long-open page must not keep selling what was deleted, hidden or sold out elsewhere:
+// the catalog is re-read when the tab becomes visible again and at most every 90 s while it stays open.
+const CATALOG_MAX_AGE = 90000;
+let refreshInflight = null;
+function refreshProducts() {
+  refreshInflight ||= (async () => {
+    try {
+      const { data, error } = await _supabase.from('products').select(PRODUCT_COLUMNS);
+      if (error) throw error;
+      const rows = Array.isArray(data) ? data : [];
+      S.catalogAt = Date.now();
+      if (catalogSignature(rows) !== S.catalogSig) setProducts(rows);
+    } catch (error) { console.warn('Catalog refresh failed:', error); }
+    finally { refreshInflight = null; }
+  })();
+  return refreshInflight;
+}
+const catalogIsStale = () => S.catalogReady && !document.hidden && !$('#editor')?.open && Date.now() - S.catalogAt > CATALOG_MAX_AGE;
+document.addEventListener('visibilitychange', () => { if (catalogIsStale()) refreshProducts(); });
+setInterval(() => { if (catalogIsStale()) refreshProducts(); }, 30000);
+
 const find = id => S.products.find(p => String(p.id) === String(id));
 const live = () => S.products.filter(p => p.active !== false);
-const isAvailable = p => p && p.available !== false && (p.stock === undefined || p.stock === null || Number(p.stock) > 0);
+const stockOf = p => (p?.stock === undefined || p?.stock === null || p?.stock === '' ? null : Math.max(0, Math.floor(Number(p.stock) || 0)));
+const isAvailable = p => Boolean(p) && p.available !== false && (stockOf(p) === null || stockOf(p) > 0);
+const isPurchasable = p => Boolean(p) && p.active !== false && isAvailable(p);
+const stockCap = p => Math.min(50, stockOf(p) ?? 50);
 const imgSrc = p => safeImageUrl(p?.image_url || p?.image || '');
+const cartQty = id => Number(S.cart.find(x => String(x.id) === String(id))?.qty || 0);
+// Presentation hooks: stackd-enhancements.js supplies translated product text and the active discount.
+let productView = p => p;
+let productSale = () => null;
+const searchText = p => { const v = productView(p); return normalizeSearch([p.name, p.description, p.category, v.name, v.description, v.category].join(' ')); };
 
-function card(p) {
-  const stockKnown = p.stock !== undefined && p.stock !== null && p.stock !== '';
-  const stock = stockKnown ? Math.max(0, Number(p.stock) || 0) : null;
-  const available = isAvailable(p);
-  return `<article class="card ${available ? '' : 'is-out'}" data-id="${esc(p.id)}">
-    ${p.featured ? '<span class="badge-popular">ХИТ</span>' : ''}
-    <button class="card-media" type="button" data-act="detail" aria-label="${esc(p.name || 'Товар')}">
-      <img src="${esc(imgSrc(p))}" alt="${esc(p.name || '')}" loading="lazy" decoding="async">
+const ICON = name => `<svg class="ic" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+function stepperHtml(qty, atMax, modifier = '') {
+  return `<div class="stepper${modifier ? ' ' + modifier : ''}" role="group" aria-label="${esc(tr('qty_label'))}"><button type="button" data-act="dec" aria-label="${esc(tr('qty_less'))}">${ICON('minus')}</button><output>${qty}</output><button type="button" data-act="inc" aria-label="${esc(tr('qty_more'))}"${atMax ? ' disabled' : ''}>${ICON('plus')}</button></div>`;
+}
+function stockHtml(p) {
+  if (!isAvailable(p)) return `<span class="stock is-out">${esc(tr('sold_out'))}</span>`;
+  const stock = stockOf(p);
+  return stock === null ? '' : `<span class="stock${stock < 5 ? ' is-low' : ''}">${esc(trf('stock_left', { n: stock }))}</span>`;
+}
+function priceHtml(p) {
+  const sale = productSale(p);
+  return `<div class="price">${sale ? `<del>${fmt(sale.original)}</del>` : ''}<strong>${fmt(p.price)}</strong></div>`;
+}
+function buyHtml(p, qty) {
+  if (qty > 0) { const stock = stockOf(p); return stepperHtml(qty, stock !== null && qty >= stock); }
+  if (!isAvailable(p)) return '';
+  // The visible label is the short form; the accessible name stays the full phrase.
+  return `<button class="btn btn-primary btn-add" type="button" data-act="add" aria-label="${esc(tr('add_to_cart'))}">${ICON('plus')}<span>${esc(tr('add_short'))}</span></button>`;
+}
+function flagsHtml(p) {
+  const sale = productSale(p);
+  if (!p.featured && !sale) return '';
+  return `<span class="flags">${p.featured ? `<span class="flag">${esc(tr('popular'))}</span>` : ''}${sale ? `<span class="flag is-sale">${esc(sale.label)} −${sale.percent}%</span>` : ''}</span>`;
+}
+// The one product card template (cards used to be rendered by three stacked overrides).
+function card(p, index = 99) {
+  const v = productView(p), qty = cartQty(p.id);
+  const icon = S.icons[String(p.id)] ? safeImageUrl(S.icons[String(p.id)]) : '';
+  return `<article class="card${isAvailable(p) ? '' : ' is-out'}" data-id="${esc(p.id)}" data-qty="${qty}">
+    <button class="card-media" type="button" data-act="detail" aria-label="${esc(v.name || '')}">
+      <img src="${esc(imgSrc(p))}" alt="" width="400" height="300" loading="${index < 4 ? 'eager' : 'lazy'}" decoding="async">
+      ${flagsHtml(p)}${icon && icon !== PH ? `<span class="card-mark"><img src="${esc(icon)}" alt="" loading="lazy" decoding="async"></span>` : ''}
     </button>
     <div class="card-body">
-      <span class="tag">${esc(p.category || '')}</span>
-      <h3>${esc(p.name || 'Товар')}</h3>
-      <p>${esc(p.description || '')}</p>
-      ${stockKnown ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock} шт.</span>` : ''}
-      <div class="card-foot">
-        <strong>${fmt(p.price)}</strong>
-        <button class="btn btn-primary sm" type="button" data-act="add" ${available ? '' : 'disabled'}>${available ? tr('add_to_cart') : tr('out_of_stock')}</button>
-      </div>
+      <span class="card-cat">${esc(v.category || '')}</span>
+      <h3 class="card-title">${esc(v.name || '')}</h3>
+      ${v.description ? `<p class="card-desc">${esc(v.description)}</p>` : ''}
+      ${stockHtml(p)}
+      <div class="card-foot">${priceHtml(p)}${buyHtml(p, qty)}</div>
     </div>
   </article>`;
 }
+// Updates only the buy control of a card / quick view. The photo and the rest of the node stay untouched,
+// so quantity changes are instant, never flicker and keep keyboard focus.
+function patchBuy(host, p) {
+  if (!host) return;
+  const qty = cartQty(p.id), stock = stockOf(p), stepper = host.querySelector('.stepper');
+  if (stepper && qty > 0) {
+    const output = stepper.querySelector('output');
+    if (output.textContent !== String(qty)) { output.textContent = qty; replay(output, 'is-tick'); }
+    stepper.querySelector('[data-act="inc"]').disabled = stock !== null && qty >= stock;
+    return;
+  }
+  const hadFocus = host.contains(document.activeElement);
+  host.querySelector('.stepper, .btn-add')?.remove();
+  host.insertAdjacentHTML('beforeend', buyHtml(p, qty));
+  if (hadFocus) host.querySelector('[data-act="inc"], [data-act="add"]')?.focus({ preventScroll: true });
+}
+function syncCards() {
+  $$('#grid > .card[data-id]').forEach(node => {
+    const p = find(node.dataset.id), qty = p ? cartQty(p.id) : 0;
+    if (!p || node.dataset.qty === String(qty)) return;
+    node.dataset.qty = String(qty);
+    patchBuy(node.querySelector('.card-foot'), p);
+  });
+}
+// Restarts a one-shot CSS animation class.
+function replay(node, className) {
+  if (!node) return;
+  node.classList.remove(className);
+  void node.offsetWidth;
+  node.classList.add(className);
+}
+
 function updateChipsSlider() {
   const active = $('#chips button[aria-pressed="true"]'), slider = $('#chipsSlider');
   if (!active || !slider) return;
   slider.style.width = `${active.offsetWidth}px`;
   slider.style.transform = `translateX(${active.offsetLeft}px)`;
 }
+// Chips are rebuilt only when the category set or language changes; otherwise the indicator just slides.
+function renderChips(categories, products) {
+  const host = $('#chips');
+  if (!host) return;
+  const label = c => (c === 'All' ? tr('all_categories') : productView(products.find(p => p.category === c) || {}).category || c);
+  const key = S.lang + '|' + categories.map(label).join('|');
+  if (host.dataset.key !== key) {
+    host.dataset.key = key;
+    host.innerHTML = '<span class="chips-slider" id="chipsSlider" aria-hidden="true"></span>' + categories.map(c =>
+      `<button type="button" data-act="cat" data-cat="${esc(c)}" aria-pressed="${S.cat === c}">${esc(label(c))}</button>`).join('');
+    const slider = $('#chipsSlider');
+    slider.style.transition = 'none';
+    requestAnimationFrame(() => { updateChipsSlider(); requestAnimationFrame(() => { slider.style.transition = ''; }); });
+    return;
+  }
+  $$('button[data-cat]', host).forEach(button => button.setAttribute('aria-pressed', String(button.dataset.cat === S.cat)));
+  updateChipsSlider();
+  $('button[aria-pressed="true"]', host)?.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+}
+const stateHtml = (text, retry) => `<div class="state">${ICON('bag')}<p>${esc(text)}</p>${retry ? `<button class="btn btn-ghost" type="button" data-act="reload">${esc(tr('catalog_retry'))}</button>` : ''}</div>`;
 function renderAll() {
   const L = live();
   const categories = ['All', ...new Set([...CATS, ...L.map(p => p.category).filter(Boolean)])].filter(c => c === 'All' || L.some(p => p.category === c));
   if (!categories.includes(S.cat)) S.cat = 'All';
-  if ($('#chips')) {
-    $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(c =>
-      `<button type="button" data-act="cat" data-cat="${esc(c)}" aria-pressed="${S.cat === c}">${c === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(c)}</button>`
-    ).join('');
-    requestAnimationFrame(updateChipsSlider);
-  }
+  renderChips(categories, L);
   const q = normalizeSearch(S.q);
-  const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || normalizeSearch([p.name, p.description, p.category].join(' ')).includes(q)));
-  if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
-  // Fade cards in only when the visible set changed (first load, category, search), never on stock or cart updates.
-  const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
-  if ($('#grid') && S.gridKey !== gridKey && list.length && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
-    $('#grid').querySelectorAll(':scope > .card').forEach((node, i) => {
-      if (i > 11) return;
-      node.style.setProperty('--i', i);
-      node.classList.add('is-enter');
-      node.addEventListener('animationend', () => { node.classList.remove('is-enter'); node.style.removeProperty('--i'); }, { once: true });
-    });
+  const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || searchText(p).includes(q)));
+  const grid = $('#grid');
+  // Until the first answer arrives the grid keeps the skeleton that ships in index.html.
+  if (grid && (S.catalogReady || S.catalogError)) {
+    grid.removeAttribute('aria-busy');
+    grid.innerHTML = list.length ? list.map(card).join('')
+      : stateHtml(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')), Boolean(S.catalogError));
+    // Cards fade in only when the visible set changed (first load, category, search), never on stock or cart updates.
+    const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
+    if (S.gridKey !== gridKey && list.length && !reduce()) {
+      $$(':scope > .card', grid).slice(0, 12).forEach((node, i) => {
+        node.style.setProperty('--i', i);
+        node.classList.add('is-enter');
+        node.addEventListener('animationend', () => { node.classList.remove('is-enter'); node.style.removeProperty('--i'); }, { once: true });
+      });
+    }
+    S.gridKey = gridKey;
   }
-  S.gridKey = gridKey;
   renderCart();
   if ($('#editor')?.open) renderAdmin();
 }
 
 const searchInput = $('#q'), suggestionsBox = $('#searchSuggestions');
-searchInput?.addEventListener('input', e => {
-  const val = String(e.target.value || '').trim();
-  S.q = val;
-  renderAll();
-  if (!val) { suggestionsBox?.classList.remove('active'); return; }
-  const needle = normalizeSearch(val);
-  const matches = live().filter(p => normalizeSearch([p.name, p.description, p.category].join(' ')).includes(needle)).slice(0, 6);
-  if (matches.length && suggestionsBox) {
-    suggestionsBox.innerHTML = matches.map(p => `<button type="button" class="suggestion-item" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}" alt=""><span><span class="s-title">${esc(p.name)}</span><span class="s-cat">${esc(p.category || '')}</span></span></button>`).join('');
-    suggestionsBox.classList.add('active');
-  } else if (suggestionsBox) {
-    suggestionsBox.innerHTML = `<div class="suggestion-empty">${esc(translations[S.lang].no_results)}</div>`;
-    suggestionsBox.classList.add('active');
-  }
-});
-suggestionsBox?.addEventListener('click', e => {
-  const item = e.target.closest('.suggestion-item');
-  if (!item) return;
-  const id = item.dataset.id;
-  suggestionsBox.classList.remove('active');
-  if (searchInput) searchInput.value = '';
-  S.q = '';
-  S.cat = 'All';
-  renderAll();
-  const el = [...document.querySelectorAll('.card[data-id]')].find(node => node.dataset.id === String(id));
-  if (el) {
-    el.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'center' });
-    el.classList.add('card-highlight');
-    setTimeout(() => el.classList.remove('card-highlight'), 1200);
-  }
-});
-document.addEventListener('click', e => { if (!e.target.closest('.search-container')) suggestionsBox?.classList.remove('active'); });
-function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
-document.querySelector('.lang-dropdown')?.addEventListener('click', e => {
-  const btn = e.target.closest('button[data-lang]');
-  if (btn) { applyLanguage(btn.dataset.lang); $('#langDropdown')?.classList.remove('active'); }
-});
-function updateThemeSlider() {
-  const activeBtn = $('.seg button[aria-pressed="true"]'), slider = $('#themeSlider');
-  if (activeBtn && slider) { slider.style.width = `${activeBtn.offsetWidth}px`; slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`; }
+function renderSuggestions() {
+  if (!suggestionsBox) return;
+  const needle = normalizeSearch(S.q);
+  if (!needle) { Overlay.close(suggestionsBox); return; }
+  const matches = live().filter(p => searchText(p).includes(needle)).slice(0, 6);
+  suggestionsBox.innerHTML = matches.length
+    ? matches.map(p => { const v = productView(p); return `<button type="button" class="suggestion" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}" alt="" loading="lazy" decoding="async"><span><strong>${esc(v.name || '')}</strong><small>${esc(v.category || '')}</small></span><em>${fmt(p.price)}</em></button>`; }).join('')
+    : `<p class="suggestion-empty">${esc(tr('no_results'))}</p>`;
+  Overlay.open(suggestionsBox);
 }
+searchInput?.addEventListener('input', e => { S.q = String(e.target.value || '').trim(); renderAll(); renderSuggestions(); });
+searchInput?.addEventListener('focus', () => { if (S.q) renderSuggestions(); });
+suggestionsBox?.addEventListener('click', e => {
+  const item = e.target.closest('.suggestion');
+  if (!item) return;
+  Overlay.close(suggestionsBox);
+  if (searchInput) searchInput.value = '';
+  S.q = ''; S.cat = 'All';
+  renderAll();
+  const node = $$('#grid > .card[data-id]').find(x => x.dataset.id === String(item.dataset.id));
+  if (!node) return;
+  node.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'center' });
+  replay(node, 'is-highlight');
+  node.addEventListener('animationend', () => node.classList.remove('is-highlight'), { once: true });
+});
+
 function applyTheme() {
   let t = 'system';
   try { t = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-  document.documentElement.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light') : t;
-  $$('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === t));
-  setTimeout(updateThemeSlider, 50);
+  const dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#141311' : '#f7f3ec');
+  $$('[data-act="theme"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === t)));
 }
+matchMedia('(prefers-color-scheme:dark)').addEventListener?.('change', applyTheme);
 
 const lines = () => S.cart.map(c => ({ p: find(c.id), qty: c.qty })).filter(l => l.p);
-function renderCart() {
-  const L = lines(), n = L.reduce((a, l) => a + l.qty, 0), t = L.reduce((a, l) => a + l.qty * l.p.price, 0);
-  if ($('#badge')) $('#badge').textContent = n;
-  if ($('#total')) $('#total').textContent = fmt(t);
-  if ($('#lines')) $('#lines').innerHTML = L.length ? L.map(({ p, qty }) => `<li data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><div><strong>${esc(p.name)}</strong><small>${fmt(p.price)}</small><div class="qty"><button data-act="dec">−</button><span>${qty}</span><button data-act="inc">+</button></div></div><button class="link" data-act="rm">${translations[S.lang].cart_remove}</button></li>`).join('') : `<li style="display:block;padding:20px;text-align:center;">${translations[S.lang].cart_empty}</li>`;
-  if ($('#checkoutBtn')) $('#checkoutBtn').disabled = $('#clearBtn').disabled = !L.length;
+function cartLineHtml({ p, qty }) {
+  const v = productView(p), stock = stockOf(p);
+  return `<li data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}" alt="" width="56" height="56" loading="lazy" decoding="async"><div class="line-main"><strong>${esc(v.name || '')}</strong><small>${fmt(p.price)}</small></div>${stepperHtml(qty, stock !== null && qty >= stock, 'is-quiet')}<strong class="line-total">${fmt(p.price * qty)}</strong><button class="icon-btn is-small line-remove" type="button" data-act="rm" aria-label="${esc(tr('line_remove'))}">${ICON('trash')}</button></li>`;
 }
-function bump() { const b = $('#badge'); if (!b) return; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
-function setQty(id, d) {
+function renderCart() {
+  const L = lines(), count = L.reduce((a, l) => a + l.qty, 0), total = L.reduce((a, l) => a + l.qty * l.p.price, 0);
+  document.documentElement.dataset.cart = count ? 'filled' : 'empty';
+  $$('[data-cart-count]').forEach(node => { node.textContent = count; node.hidden = count === 0; });
+  $$('[data-cart-total]').forEach(node => { node.textContent = fmt(total); });
+  const list = $('#lines');
+  if (list) {
+    const key = L.length ? S.lang + '|' + L.map(l => l.p.id).join(',') : '';
+    if (key && list.dataset.key === key) {
+      // Same lines: patch quantities and totals in place (no image reload, focus stays on the pressed button).
+      L.forEach(({ p, qty }) => {
+        const row = $$('li[data-id]', list).find(node => node.dataset.id === String(p.id));
+        if (!row) return;
+        const output = row.querySelector('output'), stock = stockOf(p);
+        if (output.textContent !== String(qty)) { output.textContent = qty; replay(output, 'is-tick'); }
+        row.querySelector('[data-act="inc"]').disabled = stock !== null && qty >= stock;
+        row.querySelector('.line-main small').textContent = fmt(p.price);
+        row.querySelector('.line-total').textContent = fmt(p.price * qty);
+      });
+    } else {
+      list.dataset.key = key;
+      list.innerHTML = L.length ? L.map(cartLineHtml).join('')
+        : `<li class="cart-empty">${ICON('bag')}<strong>${esc(tr('cart_empty'))}</strong><p>${esc(tr('cart_empty_hint'))}</p><button class="btn btn-ghost" type="button" data-act="close">${esc(tr('cart_go_menu'))}</button></li>`;
+    }
+  }
+  if ($('#checkoutBtn')) $('#checkoutBtn').disabled = !L.length;
+  if ($('#clearBtn')) $('#clearBtn').disabled = !L.length;
+  publish('stackd:cart-rendered', { lines: L, count, total });
+}
+function bump() { $$('[data-cart-count]').forEach(node => replay(node, 'is-bump')); }
+// Drops lines whose product is gone, hidden or sold out and clamps quantities to stock.
+// Runs only against a loaded catalog, so a failed request never empties a saved cart.
+function reconcileCart() {
+  if (!S.catalogReady) return false;
+  let changed = false;
+  S.cart = S.cart.flatMap(item => {
+    const p = find(item.id);
+    const qty = isPurchasable(p) ? Math.min(Number(item.qty) || 0, stockCap(p)) : 0;
+    if (qty !== item.qty) changed = true;
+    return qty > 0 ? [{ id: String(item.id), qty }] : [];
+  });
+  return changed;
+}
+// The only path from a cart change to the UI: persist, repaint the cart, patch the cards and the quick view,
+// then tell the other modules (dock, fly animation, promo estimate).
+function commitCart(detail = {}) {
+  saveCart();
+  renderCart();
+  syncCards();
+  syncDetail();
+  document.dispatchEvent(new CustomEvent('stackd:cart', { detail }));
+}
+function setQty(id, d, source) {
   const key = String(id), product = find(key);
   if (!product) return;
   const current = S.cart.find(x => String(x.id) === key);
   const before = current ? Number(current.qty) || 0 : 0;
-  const stockKnown = product.stock !== undefined && product.stock !== null && product.stock !== '';
-  const cap = stockKnown ? Math.max(0, Math.floor(Number(product.stock) || 0)) : 50;
-  const after = Math.max(0, Math.min(50, cap, before + d));
-  if (d > 0 && after === before) { toast(tr('out_of_stock')); return; }
+  const after = Math.max(0, Math.min(stockCap(product), before + d));
+  if (d > 0 && (after === before || !isPurchasable(product))) { toast(tr('out_of_stock')); return; }
+  if (after === before) return;
   if (after === 0) S.cart = S.cart.filter(x => String(x.id) !== key);
   else if (current) current.qty = after;
   else S.cart.push({ id: key, qty: after });
-  saveCart(); renderCart(); bump();
+  // The origin card is resolved before the repaint: the pressed "add" button is replaced by the stepper there.
+  const card = source instanceof Element ? source.closest('.card') : null;
+  commitCart({ id: key, delta: after - before, qty: after, source, card });
+  if (after > before) bump();
 }
 const reduce = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
-function closeDlg(d) {
-  if (!d || !d.open) return;
-  if (reduce()) return d.close();
-  d.classList.add('closing'); d.style.pointerEvents = 'none';
-  setTimeout(() => { d.close(); d.classList.remove('closing'); d.style.pointerEvents = ''; }, 250);
+
+// Overlay lifecycle: closed → opening → open → closing → closed, published as [data-state] for CSS.
+// One implementation serves modal dialogs, anchored menus (dialogs with data-anchor: a dropdown on wide
+// screens, a modal sheet on phones) and plain popovers (elements toggled with [hidden]).
+// The exit waits for the element's own CSS animations through the Web Animations API, so nothing is
+// removed mid-animation and nothing depends on timers; with reduced motion there is simply nothing to wait for.
+const Overlay = (() => {
+  const tokens = new WeakMap(), bound = new WeakSet(), floating = new Set();
+  const narrow = () => matchMedia('(max-width: 680px)').matches;
+  const isDialog = el => el instanceof HTMLDialogElement;
+  const shown = el => (isDialog(el) ? el.open : !el.hidden);
+  const state = el => el.dataset.state || 'closed';
+  const mark = (el, value) => { const token = {}; tokens.set(el, token); el.dataset.state = value; return token; };
+  const anchorOf = el => (el.dataset.anchor ? document.querySelector(el.dataset.anchor) : null);
+  const settled = el => Promise.allSettled(el.getAnimations({ subtree: true })
+    .filter(a => a.effect && a.effect.target === el && Number.isFinite(a.effect.getComputedTiming().endTime))
+    .map(a => a.finished));
+  const isModal = el => { try { return el.matches(':modal'); } catch { return true; } };
+  const syncScrollLock = () => document.documentElement.classList.toggle('has-modal', $$('dialog[open]').some(isModal));
+  const syncTrigger = (el, open) => anchorOf(el)?.setAttribute('aria-expanded', String(open));
+  function place(el) {
+    const anchor = anchorOf(el);
+    if (!anchor || !isDialog(el) || isModal(el)) return;
+    const r = anchor.getBoundingClientRect();
+    // Top and left use the same viewport coordinates as the trigger's rectangle, so the panel lines up
+    // with it whether or not the page reserves a scrollbar gutter.
+    el.style.setProperty('--anchor-top', `${Math.round(r.bottom + 8)}px`);
+    el.style.setProperty('--anchor-left', `${Math.max(8, Math.round(r.right - el.offsetWidth))}px`);
+  }
+  function bind(el) {
+    if (bound.has(el)) return;
+    bound.add(el);
+    if (!isDialog(el)) return;
+    el.addEventListener('cancel', event => { event.preventDefault(); close(el); });   // Escape leaves through the exit animation too
+    el.addEventListener('close', () => {
+      if (el.open) return;
+      mark(el, 'closed'); floating.delete(el); syncTrigger(el, false); syncScrollLock();
+      el.dispatchEvent(new CustomEvent('overlay:closed'));
+    });
+    // Backdrop dismissal: the press and the release must both land outside the panel (padding is not "outside").
+    const outside = event => {
+      if (event.target !== el) return false;
+      const r = el.getBoundingClientRect();
+      return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    el.addEventListener('pointerdown', event => { pressedOutside = outside(event); });
+    el.addEventListener('click', event => { if (pressedOutside && outside(event)) close(el); pressedOutside = false; });
+  }
+  function closeFloating(except) { floating.forEach(el => { if (el !== except) close(el); }); }
+  function closeMenus(except) { $$('dialog[data-anchor][open]').forEach(el => { if (el !== except) close(el); }); }
+  async function open(el) {
+    if (!el) return;
+    bind(el);
+    if (shown(el) && state(el) !== 'closing') return;
+    const dialog = isDialog(el), modal = dialog && (!el.dataset.anchor || narrow());
+    closeFloating(el);
+    if (modal) closeMenus(el);
+    const token = mark(el, 'opening');
+    if (!dialog) el.hidden = false;
+    else if (!el.open) { if (modal) el.showModal(); else el.show(); }
+    if (!modal) { floating.add(el); place(el); }
+    syncTrigger(el, true); syncScrollLock();
+    el.dispatchEvent(new CustomEvent('overlay:open'));
+    await settled(el);
+    if (tokens.get(el) === token) el.dataset.state = 'open';
+  }
+  async function close(el) {
+    if (!el || !shown(el) || state(el) === 'closing') return;
+    const token = mark(el, 'closing');
+    syncTrigger(el, false);
+    await settled(el);
+    if (tokens.get(el) !== token) return;                 // reopened while the exit was running
+    if (isDialog(el)) { el.close(); return; }             // the "close" listener finishes the bookkeeping
+    el.hidden = true; mark(el, 'closed'); floating.delete(el);
+    el.dispatchEvent(new CustomEvent('overlay:closed'));
+  }
+  const toggle = el => (el && shown(el) && state(el) !== 'closing' ? close(el) : open(el));
+  document.addEventListener('pointerdown', event => {
+    floating.forEach(el => { if (!el.contains(event.target) && !anchorOf(el)?.contains(event.target)) close(el); });
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !floating.size) return;
+    const el = [...floating].pop();
+    close(el);
+    if (el.contains(document.activeElement)) anchorOf(el)?.focus({ preventScroll: true });
+  });
+  addEventListener('resize', () => floating.forEach(place), { passive: true });
+  matchMedia('(max-width: 680px)').addEventListener?.('change', () => closeMenus());
+  return { open, close, toggle, closeMenus };
+})();
+const openDlg = el => Overlay.open(el);
+const closeDlg = el => Overlay.close(el);
+
+// Toasts sit in a top-layer popover (above modal dialogs) and leave through their own exit animation.
+function toast(message) {
+  const host = $('#toasts'), text = String(message ?? '');
+  if (!host) { console.info(text); return; }
+  [...host.children].filter(node => node.textContent === text).forEach(node => node.remove());
+  while (host.children.length >= 3) host.firstElementChild.remove();
+  const item = document.createElement('div');
+  item.className = 'toast'; item.setAttribute('role', 'status'); item.textContent = text; item.dataset.state = 'opening';
+  host.append(item);
+  // Re-showing moves the host above any dialog opened since the previous toast.
+  try { if (host.matches(':popover-open')) host.hidePopover(); host.showPopover(); } catch { /* no Popover API: the host is fixed-position */ }
+  const finished = () => Promise.allSettled(item.getAnimations().map(a => a.finished));
+  finished().then(() => { if (item.dataset.state === 'opening') item.dataset.state = 'open'; });
+  const dismiss = async () => {
+    if (item.dataset.state === 'closing') return;
+    item.dataset.state = 'closing';
+    await finished();
+    item.remove();
+    if (!host.children.length) { try { host.hidePopover(); } catch { /* not a popover */ } }
+  };
+  const timer = setTimeout(dismiss, 3200);
+  item.addEventListener('click', () => { clearTimeout(timer); dismiss(); });
 }
-function toast(m) {
-  const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; $('#toasts')?.append(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; setTimeout(() => t.remove(), 300); }, 2400);
+
+// Quick view. It follows the cart while open and closes itself when its product disappears.
+function detailHtml(p) {
+  const v = productView(p);
+  return `<div class="detail" data-id="${esc(p.id)}">
+    <div class="detail-media"><img src="${esc(imgSrc(p))}" alt="" width="640" height="480" decoding="async">${flagsHtml(p)}</div>
+    <div class="detail-body">
+      <span class="card-cat">${esc(v.category || '')}</span>
+      <h2 id="dtn">${esc(v.name || '')}</h2>
+      ${v.description ? `<p class="detail-desc">${esc(v.description)}</p>` : ''}
+      ${stockHtml(p)}
+      <div class="detail-foot">${priceHtml(p)}${buyHtml(p, cartQty(p.id))}</div>
+    </div>
+  </div>`;
 }
 function openDetail(id) {
   const p = find(id), d = $('#detail');
-  if (!p || d?.open) return;
-  if ($('#detailBody')) $('#detailBody').innerHTML = `<div class="detail" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><span class="tag">${esc(p.category)}</span><h2>${esc(p.name)}</h2><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary" data-act="add"${isAvailable(p) ? '' : ' disabled'}>${isAvailable(p) ? translations[S.lang].add_to_cart : translations[S.lang].out_of_stock}</button></div></div>`;
-  d?.showModal();
+  if (!p || !d || !$('#detailBody')) return;
+  $('#detailBody').innerHTML = detailHtml(p);
+  openDlg(d);
+}
+function syncDetail(full = false) {
+  const d = $('#detail'), node = d?.querySelector('.detail[data-id]');
+  if (!d?.open || !node) return;
+  const p = find(node.dataset.id);
+  if (!p || p.active === false) { closeDlg(d); return; }
+  if (full) $('#detailBody').innerHTML = detailHtml(p);
+  else patchBuy(node.querySelector('.detail-foot'), p);
 }
 
-let sliderTimer = null;
+// Slides only feed the hero (image/title fallback). The old auto-rotating slider and its timer are gone.
 function initSlider(slides) {
-  const container = $('#showcaseSlider');
-  if (!container) return;
-  if (sliderTimer) { clearInterval(sliderTimer); sliderTimer = null; }
-  const validSlides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
-  const source = validSlides.length ? validSlides : [{
-    title: 'Добро пожаловать в STACKED', description: 'Подборка предложений',
-    image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
-  }];
-  container.innerHTML = source.map((slide, index) => `
-    <div class="slide ${index === 0 ? 'active' : ''}" aria-hidden="${index !== 0}">
-      <img src="${esc(safeImageUrl(slide.image_url))}" alt="${esc(slide.title)}" loading="${index === 0 ? 'eager' : 'lazy'}">
-      <div class="slide-content"><h2>${esc(slide.title)}</h2><p>${esc(slide.description || '')}</p></div>
-    </div>`).join('');
-  if (source.length < 2) return;
-  let current = 0;
-  sliderTimer = setInterval(() => {
-    if (document.hidden || reduce()) return;
-    const elements = $$('.slide', container);
-    if (elements.length < 2) return;
-    elements[current].classList.remove('active');
-    elements[current].setAttribute('aria-hidden', 'true');
-    current = (current + 1) % elements.length;
-    elements[current].classList.add('active');
-    elements[current].setAttribute('aria-hidden', 'false');
-  }, 5000);
+  S.slides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
+  publish('stackd:slides');
 }
 
 const blank = () => ({ id: Date.now().toString(), name: '', description: '', price: 0, category: 'Burgers' });
@@ -462,12 +794,11 @@ $('#clearProductImage')?.addEventListener('click', () => {
   if (S.draft) { S.draft.image_url = ''; S.draft.image = ''; }
   showProductPreview('');
 });
-document.querySelectorAll('.admin-tabs .btn').forEach(btn => {
-  btn.addEventListener('click', e => {
-    document.querySelectorAll('.admin-tabs .btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-    e.currentTarget.classList.add('active');
-    const tab = $(`#tab-${e.currentTarget.dataset.tab}`); if (tab) tab.style.display = 'block';
+// Admin tabs: panels are switched with [hidden], so each one keeps its own layout.
+$$('.admin-tabs .btn').forEach(button => {
+  button.addEventListener('click', () => {
+    $$('.admin-tabs .btn').forEach(other => other.classList.toggle('active', other === button));
+    $$('#editor .tab-content').forEach(panel => { panel.hidden = panel.id !== `tab-${button.dataset.tab}`; });
   });
 });
 $('#saveSettingsBtn')?.addEventListener('click', async () => {
@@ -636,10 +967,10 @@ function stopOrdersTimers() {
   S.ordersTimer = S.ordersTick = null;
 }
 function openOrders() {
-  if (!S.user) { $('#auth')?.showModal(); return; }
+  if (!S.user) { openDlg($('#auth')); return; }
   const dialog = $('#orders');
   if (!dialog) return;
-  if (!dialog.open) dialog.showModal();
+  openDlg(dialog);
   stopOrdersTimers();
   loadOrders();
   S.ordersTimer = setInterval(() => {
@@ -660,13 +991,13 @@ function showOrderWave(withWarning) {
     document.body.appendChild(d);
     d.addEventListener('click', e => {
       const button = e.target.closest('[data-wave]');
-      if (!button) { if (e.target === d) closeDlg(d); return; }
+      if (!button) return;
       closeDlg(d);
       if (button.dataset.wave === 'open') openOrders();
     });
   }
   d.innerHTML = `<div class="order-wave-sheet"><svg class="order-wave-edge" viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C100 6 200 6 300 26S500 46 600 26S800 6 900 26S1100 46 1200 26V48H0Z" fill="currentColor"/></svg><div class="order-wave-body"><span class="order-wave-icon">${QR_ICON}</span><h2 id="orderWaveTitle">${esc(tr('wave_title'))}</h2><p>${esc(tr('wave_text'))}</p>${withWarning ? `<p class="order-wave-warn">${esc(tr('checkout_notify_error'))}</p>` : ''}<div class="order-wave-actions"><button type="button" class="btn order-wave-primary" data-wave="open">${esc(tr('wave_open'))}</button><button type="button" class="btn order-wave-secondary" data-wave="close">${esc(tr('wave_close'))}</button></div></div></div>`;
-  if (!d.open) d.showModal();
+  openDlg(d);
   d.querySelector('[data-wave="open"]')?.focus({ preventScroll: true });
 }
 async function cancelOrder(id) {
@@ -675,14 +1006,13 @@ async function cancelOrder(id) {
   try {
     const { error } = await _supabase.rpc('cancel_order', { order_uuid: id });
     if (error) throw error;
-    const { data: profile, error: profileError } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
-    if (!profileError) { S.profile = profile || null; if ($('#userBalance')) $('#userBalance').textContent = Number(profile?.balance || 0).toFixed(2); }
+    await refreshProfile().catch(error => console.warn('Balance refresh failed:', error));
     toast(tr('orders_cancelled'));
     await loadOrders();
   } catch (error) { console.error('Cancel order failed:', error); toast('Не удалось отменить заказ: ' + (error.message || '')); }
 }
 async function checkout() {
-  if (!S.user) { $('#auth')?.showModal(); return; }
+  if (!S.user) { openDlg($('#auth')); return; }
   if (S.checkoutBusy) return;
   if (!lines().length) { toast(tr('cart_empty')); return; }
   const button = $('#checkoutBtn'), oldText = button?.textContent || tr('cart_checkout');
@@ -697,8 +1027,9 @@ async function checkout() {
     if (error) throw error;
     const orderId = typeof data === 'string' ? data : (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
     if (!orderId) throw new Error('checkout_order не вернул ID заказа.');
-    S.cart = []; saveCart(); renderCart(); closeDlg($('#drawer'));
+    S.cart = []; commitCart({ cleared: true, reason: 'checkout' }); closeDlg($('#drawer'));
     document.dispatchEvent(new CustomEvent('stackd:order-placed', { detail: { orderId } }));
+    refreshProfile().catch(error => console.warn('Balance refresh failed:', error));
     let telegramOk = false;
     try {
       const { data: notifyData, error: notifyError } = await _supabase.functions.invoke('notify-telegram', { body: { orderId } });
@@ -711,6 +1042,7 @@ async function checkout() {
   } catch (error) {
     console.error('Checkout failed:', error);
     toast('Не удалось оформить заказ: ' + (error.message || 'ошибка сервера'));
+    refreshProducts();   // the usual cause is a stale catalog: reconcile it so the cart shows what can really be ordered
   } finally {
     S.checkoutBusy = false;
     if (button) { button.disabled = false; button.textContent = oldText; }
@@ -719,46 +1051,55 @@ async function checkout() {
 }
 
 const A = {
-  add: id => { const p = find(id); if (p && isAvailable(p)) { setQty(id, 1); toast(p.name + ' ' + translations[S.lang].added_to_cart); } },
-  inc: id => setQty(id, 1), dec: id => setQty(id, -1),
-  rm: id => { S.cart = S.cart.filter(c => c.id !== id); saveCart(); renderCart(); bump(); },
-  clear: () => { S.cart = []; saveCart(); renderCart(); toast(translations[S.lang].cart_cleared); },
+  add: (id, b) => setQty(id, 1, b),
+  inc: (id, b) => setQty(id, 1, b), dec: (id, b) => setQty(id, -1, b),
+  rm: id => { S.cart = S.cart.filter(c => String(c.id) !== String(id)); commitCart({ id: String(id), removed: true }); },
+  clear: () => { if (!S.cart.length) return; S.cart = []; commitCart({ cleared: true }); toast(tr('cart_cleared')); },
   checkout, orders: openOrders,
   'toggle-qr': (_, button) => { const card = button.closest('.order-card'); if (!card) return; const open = card.classList.toggle('qr-open'); button.setAttribute('aria-expanded', String(open)); },
   'cancel-order': id => cancelOrder(id), detail: openDetail, reload: () => load(),
-  'cart-open': () => { const d = $('#drawer'); if (d && !d.open) d.showModal(); },
-  manage: () => { if (!isAdmin()) { toast('Доступ только владельцу проекта.'); return; } const d = $('#editor'); if (!d) return; if (!d.open) { d.showModal(); setDraft(null); } renderAdmin(); },
-  auth: () => { const d = $('#auth'); if (d && !d.open) d.showModal(); },
-  'toggle-lang': toggleLangDropdown,
+  'cart-open': () => openDlg($('#drawer')),
+  manage: () => { if (!isAdmin()) { toast('Доступ только владельцу проекта.'); return; } const d = $('#editor'); if (!d) return; if (!d.open) setDraft(null); openDlg(d); renderAdmin(); },
+  auth: () => openDlg($('#auth')),
+  topup: () => openDlg($(S.user ? '#topup' : '#auth')),
+  profile: () => (S.user ? Overlay.toggle($('#stackdProfileMenu')) : openDlg($('#auth'))),
+  settings: () => Overlay.toggle($('#stkSettings')),
+  menu: () => $('#catalog')?.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' }),
   close: (_, b) => closeDlg(b.closest('dialog')),
   cat: (_, b) => { S.cat = b.dataset.cat; renderAll(); },
-  theme: (_, b) => { try { localStorage.setItem('pdd.theme', b.dataset.v); } catch {} applyTheme(); },
+  theme: (_, b) => {
+    try { localStorage.setItem('pdd.theme', b.dataset.v); } catch {}
+    // Native cross-fade between themes where view transitions exist; an instant switch elsewhere.
+    if (document.startViewTransition && !reduce()) document.startViewTransition(applyTheme); else applyTheme();
+  },
+  lang: (_, b) => applyLanguage(b.dataset.v),
   new: () => { if (!isAdmin()) { toast('Недостаточно прав.'); return; } setDraft(null); },
   edit: id => { if (!isAdmin()) { toast('Недостаточно прав.'); return; } setDraft(find(id)); },
   del: async id => {
     const p = find(id);
     if (!p || !isAdmin()) { toast('Недостаточно прав.'); return; }
     if (!window.confirm(`Удалить "${p.name}"?`)) return;
-    const { error } = await _supabase.from('products').delete().eq('id', id);
+    // .select() returns the rows that were really removed: an RLS refusal deletes nothing without raising an error.
+    const { data: removed, error } = await _supabase.from('products').delete().eq('id', id).select('id');
     if (error) { console.error('Product delete failed:', error); toast('Не удалось удалить товар: ' + error.message); return; }
+    if (!removed?.length) { toast(tr('delete_failed')); refreshProducts(); return; }
     const storedImagePath = getProductStoragePath(p.image_url || p.image || '');
     if (storedImagePath) { const cleanup = await _supabase.storage.from(PRODUCT_BUCKET).remove([storedImagePath]); if (cleanup.error) console.warn('Deleted product image cleanup failed:', cleanup.error); }
-    S.products = S.products.filter(x => String(x.id) !== String(id));
-    S.cart = S.cart.filter(c => String(c.id) !== String(id)); saveCart();
     if (S.draft && String(S.draft.id) === String(id)) setDraft(null);
-    renderAll(); toast('Товар удалён.');
+    // One pass removes the product from the grid, the cart, the dock and an open quick view.
+    setProducts(S.products.filter(x => String(x.id) !== String(id)));
+    toast('Товар удалён.');
   }
 };
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-act]');
-  if (!b) { if (e.target.matches('dialog')) closeDlg(e.target); return; }
+  if (!b || b.disabled) return;
+  if (b.tagName === 'A') e.preventDefault();
   A[b.dataset.act]?.(b.closest('[data-id]')?.dataset.id, b);
 });
-$('#searchForm')?.addEventListener('submit', e => { e.preventDefault(); suggestionsBox?.classList.remove('active'); $('#catalog')?.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' }); });
+$('#searchForm')?.addEventListener('submit', e => { e.preventDefault(); closeDlg(suggestionsBox); searchInput?.blur(); $('#catalog')?.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' }); });
 $('#adminSearch')?.addEventListener('input', e => { S.adminQ = e.target.value.trim(); renderAdmin(); });
-$('#balanceBtn')?.addEventListener('click', () => $('#topup')?.showModal());
-$('#topupBtn')?.addEventListener('click', () => $('#topup')?.showModal());
 
 // Product upload and save.
 $('#pform')?.addEventListener('submit', async e => {
@@ -813,7 +1154,7 @@ $('#topupForm')?.addEventListener('submit', async event => {
   const form = $('#topupForm'), message = $('#topupMsg'), button = form?.querySelector('button[type="submit"]');
   const amount = Number($('#topupAmount')?.value), file = $('#topupFile')?.files?.[0];
   const showMessage = text => { if (message) message.textContent = text; };
-  if (!S.user) { closeDlg($('#topup')); $('#auth')?.showModal(); return; }
+  if (!S.user) { closeDlg($('#topup')); openDlg($('#auth')); return; }
   if (!$('#termsCheck')?.checked) { showMessage('Подтвердите правильность данных заявки.'); return; }
   if (!Number.isFinite(amount) || amount < 1 || amount > 100 || Math.round(amount * 100) !== amount * 100) {
     showMessage('Укажите сумму от 1 до 100 AZN.'); return;
@@ -859,16 +1200,17 @@ try {
 applyLanguage(initialLanguage);
 applyTheme();
 
-// Refresh auth state without running the callback recursively inline.
+// Auth events repeat (initial session, token refresh, tab focus). Only a different user needs new data:
+// the profile, and the catalog as that user is allowed to see it.
 _supabase.auth.onAuthStateChange((_event, session) => {
   setTimeout(() => {
-    S.user = session?.user || null;
-    checkAuth().catch(error => console.error('Authentication refresh failed:', error));
+    if (authInflight || (session?.user?.id || null) === (S.user?.id || null)) return;
+    checkAuth().then(() => load()).catch(error => console.error('Authentication refresh failed:', error));
   }, 0);
 });
 
-// Start the application.
-checkAuth().catch(error => {
-  console.error('STACKED initialization failed:', error);
-  toast('Не удалось запустить сайт. Обновите страницу.');
+// Start the application: session, catalog and settings are requested once, in parallel.
+Promise.allSettled([checkAuth(), load(), loadSettings()]).then(results => {
+  const failed = results.find(result => result.status === 'rejected');
+  if (failed) { console.error('STACKED initialization failed:', failed.reason); toast('Не удалось запустить сайт. Обновите страницу.'); }
 });

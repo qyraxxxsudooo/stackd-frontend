@@ -37,6 +37,25 @@
     mono: 'ui-monospace, SFMono-Regular, Consolas, monospace'
   };
 
+  // Web fonts are requested only when a maintenance design really uses them. They used to be a
+  // render-blocking request on every page view although the storefront itself uses system fonts.
+  const WEB_FONTS = {
+    manrope: "Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800",
+    inter: "Inter:wght@400;500;600;700;800",
+    "space-grotesk": "Space+Grotesk:wght@400;500;700",
+    playfair: "Playfair+Display:wght@400;600;700"
+  };
+  const requestedFonts = new Set();
+  function ensureWebFont(family) {
+    const spec = WEB_FONTS[family];
+    if (!spec || requestedFonts.has(family)) return;
+    requestedFonts.add(family);
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `https://fonts.googleapis.com/css2?family=${spec}&display=swap`;
+    document.head.append(link);
+  }
+
   const THEMES = [
     { id: "midnight", name: "Midnight Luxe", note: "Тёмный фирменный", bg: "#141311", accent: "#F07A2A", theme: "dark" },
     { id: "warm", name: "Warm Minimal", note: "Тёплый кремовый", bg: "#F4EDE1", accent: "#C2500A", theme: "light" },
@@ -189,6 +208,7 @@
     root.dataset.theme = value.theme;
 
     root.style.setProperty("--sm-accent", value.accent_color);
+    if (!isPreview || document.documentElement.hasAttribute("data-admin")) ensureWebFont(value.font_family);
     root.style.setProperty("--sm-font", FONTS[value.font_family]);
     root.style.setProperty("--sm-scale", String(value.font_scale));
     root.style.setProperty("--sm-background-color", value.background_color);

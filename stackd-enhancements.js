@@ -101,17 +101,8 @@
   };
   const t = key => copy[S.lang]?.[key] || copy.ru[key] || key;
   const lang = () => ['ru', 'en', 'az'].includes(S.lang) ? S.lang : 'ru';
-  const stockValue = p => p?.stock === '' || p?.stock === undefined ? null : p?.stock == null ? null : Math.max(0, Math.floor(Number(p.stock) || 0));
-  const quantity = id => Number(S.cart.find(x => String(x.id) === String(id))?.qty || 0);
-  const baseCard = card;
-  const baseRenderAll = renderAll;
-  const baseRenderCart = renderCart;
-  const baseOpenDetail = openDetail;
-  const baseLoad = load;
   const baseSetDraft = setDraft;
   const baseReadForm = readForm;
-  const baseInitSlider = initSlider;
-  const baseLoadSettings = loadSettings;
   let hero = { hero_image_url: '', hero_fit: 'cover', hero_position: 'center', hero_height: '400', hero_ratio: 'auto', hero_title: '', hero_subtitle: '', hero_overlay: 'true', brand_accent: '', hero_enabled: 'true' };
   let heroPreviewObjectUrl = null;
   let heroImageRemoved = false;
@@ -125,6 +116,17 @@
   let newsIndex = 0;
   let translationBusy = false;
   let rateFallback = new Map();
+  // The last known hero and brand settings are restored before this module paints anything, so returning
+  // visitors see the cover, brand name and accent at once instead of a jump when the settings request lands.
+  let heroKnown = false;
+  try {
+    const cached = JSON.parse(localStorage.getItem('stk.site') || 'null');
+    if (cached && typeof cached === 'object') {
+      for (const key of Object.keys(hero)) if (typeof cached.hero?.[key] === 'string') hero[key] = cached.hero[key];
+      for (const key of Object.keys(brandSettings)) if (typeof cached.brand?.[key] === 'string') brandSettings[key] = cached.brand[key];
+      heroKnown = true;
+    }
+  } catch { /* storage unavailable: the reserved placeholder covers the wait */ }
 
   function productText(product, selected = lang()) {
     const source = product.source_lang || 'ru';
@@ -135,79 +137,12 @@
     return product;
   }
 
-  // The original renderer remains responsible for layout and cart state.
-  renderAll = function stackdRenderAll() {
-    const original = S.products;
-    S.products = original.map(p => productText(p));
-    try {
-      const result = baseRenderAll();
-      const allButton = $('#chips button[data-cat="All"]');
-      if (allButton) allButton.textContent = 'All';
-      return result;
-    } finally { S.products = original; }
-  };
-
-  renderCart = function stackdRenderCart() {
-    const original = S.products;
-    S.products = original.map(p => productText(p));
-    try { return baseRenderCart(); }
-    finally { S.products = original; }
-  };
-
-  openDetail = function stackdOpenDetail(id) {
-    const original = S.products;
-    S.products = original.map(p => productText(p));
-    try { return baseOpenDetail(id); }
-    finally { S.products = original; }
-  };
-  A.detail = openDetail;
-
-  card = function stackdProductCard(p) {
-    const qty = quantity(p.id);
-    const stock = stockValue(p);
-    const available = p.available !== false && (stock === null || stock > 0);
-    const image = imgSrc(p);
-    const saleOriginal = Number(promo.originalPrices?.[String(p.id)]);
-    const hasSale = promo.enabled && promotionMatches(p, promo) && Number.isFinite(saleOriginal) && saleOriginal > Number(p.price);
-    return `<article class="card ${available ? '' : 'is-out'}" data-id="${esc(p.id)}">
-      ${p.featured ? `<span class="badge-popular">${t('featured')}</span>` : ''}
-      ${hasSale ? `<span class="stackd-sale-badge"><b>${esc(promo.label || 'СКИДКА')}</b><strong>−${Number(promo.percent)}%</strong></span>` : ''}
-      <button class="card-media" type="button" data-act="detail" aria-label="${esc(p.name || 'Товар')}">
-        <img src="${esc(image)}" alt="${esc(p.name || '')}" loading="lazy" decoding="async">
-        <span class="stackd-arches" aria-label="McDonald’s"><svg viewBox="0 0 48 40" aria-hidden="true"><path d="M3 37V17.5C3 8.8 7.8 3 14 3c5.5 0 8.4 8.2 10 18.6C25.6 11.2 28.5 3 34 3c6.2 0 11 5.8 11 14.5V37h-6.2V17.5c0-5.2-1.7-8.4-4.8-8.4-3.6 0-6.8 15.6-9 27.9h-2c-2.2-12.3-5.4-27.9-9-27.9-3.1 0-4.8 3.2-4.8 8.4V37Z" fill="currentColor"/></svg></span>
-      </button>
-      <div class="card-body">
-        <span class="tag">${esc(p.category || '')}</span>
-        <h3>${esc(p.name || 'Товар')}</h3>
-        <p>${esc(p.description || '')}</p>
-        ${stock !== null ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock > 0 ? `${stock} ${S.lang === 'en' ? 'left' : S.lang === 'az' ? 'ədəd qalıb' : 'шт. осталось'}` : esc(t('outStock'))}</span>` : ''}
-        <div class="card-foot">
-          ${hasSale ? `<span class="stackd-price-stack"><del>${fmt(saleOriginal)}</del><strong>${fmt(p.price)}</strong></span>` : `<strong>${fmt(p.price)}</strong>`}
-          <div class="stackd-card-actions">
-            ${qty > 0 ? `<div class="stackd-card-qty" aria-label="${S.lang === 'en' ? 'Quantity' : S.lang === 'az' ? 'Miqdar' : 'Количество'}"><button type="button" data-act="dec" aria-label="−">−</button><span>${qty}</span><button type="button" data-act="inc" aria-label="+" ${stock !== null && qty >= stock ? 'disabled' : ''}>+</button></div>` : ''}
-            <button class="btn btn-primary sm" type="button" data-act="add" ${available && (stock === null || qty < stock) ? '' : 'disabled'}>${available ? (qty > 0 ? (S.lang === 'en' ? 'Add one' : S.lang === 'az' ? 'Birini əlavə et' : 'Ещё один') : tr('add_to_cart')) : t('outStock')}</button>
-          </div>
-        </div>
-      </div>
-    </article>`;
-  };
-
-  load = async function stackdLoadWithStock() {
-    S.catalogError = null;
-    const [slideResult, productResult] = await Promise.all([
-      _supabase.from('slides').select('image_url,title,description'),
-      _supabase.from('products').select('id,name,description,category,price,image_url,stock,available,active,featured,translations,source_lang')
-    ]);
-    if (slideResult.error) { console.error('Slides load failed:', slideResult.error); initSlider([]); }
-    else initSlider(slideResult.data || []);
-    if (productResult.error) {
-      console.error('Products load failed:', productResult.error);
-      S.products = [];
-      S.catalogError = S.lang === 'en' ? 'Could not load the catalog. Check connection and database policies.' : S.lang === 'az' ? 'Kataloqu yükləmək mümkün olmadı. Bağlantını və verilənlər bazası icazələrini yoxlayın.' : 'Не удалось загрузить каталог. Проверьте подключение и права доступа.';
-    } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
-    renderAll();
-    renderPromotionTargetOptions();
-    syncPromotionForm();
+  // Presentation hooks for the single renderer in app.js: translated product text and the active discount.
+  productView = productText;
+  productSale = product => {
+    const original = Number(promo.originalPrices?.[String(product.id)]);
+    if (!promo.enabled || !promotionMatches(product, promo) || !Number.isFinite(original) || !(original > Number(product.price))) return null;
+    return { original, percent: Number(promo.percent), label: promo.label || 'СКИДКА' };
   };
 
   setDraft = function stackdSetDraft(product) {
@@ -235,33 +170,6 @@
     S.draft.source_lang = $('#stackdSourceLang')?.value || lang();
   };
 
-  function toastTop(message) {
-    const host = $('#toasts');
-    if (!host) { console.info(message); return; }
-    host.setAttribute('popover', 'manual');
-    const duplicate = [...host.children].find(x => x.textContent === String(message));
-    if (duplicate) duplicate.remove();
-    while (host.children.length >= 5) {
-      const oldest = host.firstElementChild;
-      oldest.classList.add('stackd-toast-out');
-      oldest.remove();
-    }
-    const item = document.createElement('div');
-    item.className = 'toast stackd-toast';
-    item.setAttribute('role', 'status');
-    item.textContent = String(message ?? '');
-    host.append(item);
-    try { if (!host.matches(':popover-open')) host.showPopover(); } catch {}
-    const timer = setTimeout(() => {
-      item.classList.add('stackd-toast-out');
-      setTimeout(() => {
-        item.remove();
-        if (!host.children.length) { try { host.hidePopover(); } catch {} }
-      }, 240);
-    }, 3000);
-    item.addEventListener('click', () => { clearTimeout(timer); item.classList.add('stackd-toast-out'); setTimeout(() => item.remove(), 240); });
-  }
-  toast = toastTop;
 
   function injectProductFields() {
     const form = $('#pform');
@@ -546,38 +454,56 @@
     try { const url = new URL(String(value || '').trim()); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; }
     catch { return ''; }
   }
+  // News carousel: one implementation (it used to be rendered as a rail here and rebuilt as a carousel by
+  // stacked-shop.js through body-wide mutation observers). Handlers are set as properties on the persistent
+  // stage element, so repeated renders never stack listeners.
   function renderNewsRail() {
     const catalog = $('#catalog');
     if (!catalog) return;
     let section = $('#stackdNewsRail');
     if (!section) {
-      section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'stackd-news-section';
-      section.innerHTML = `<div class="stackd-news-heading"><h3>${esc(t('newsSection'))}</h3><span>STACKED / UPDATES</span></div><div class="stackd-news-viewport" id="stackdNewsViewport"><div class="stackd-news-track" id="stackdNewsTrack"></div></div>`;
+      section = document.createElement('section'); section.id = 'stackdNewsRail'; section.className = 'news';
+      section.innerHTML = `<div class="stackd-news-heading news-head"><h3>${esc(t('newsSection'))}</h3></div><div class="news-stage" role="region" aria-roledescription="carousel"></div>`;
       catalog.insertBefore(section, catalog.querySelector('.head') || catalog.firstChild);
     }
-    const viewport = $('#stackdNewsViewport'), track = $('#stackdNewsTrack');
+    const stage = $('.news-stage', section);
     if (newsTimer) { clearInterval(newsTimer); newsTimer = null; }
     const items = newsItems.filter(item => item && item.image_url);
     newsIndex = 0; section.hidden = !items.length;
-    if (!items.length) { track.replaceChildren(); viewport.scrollLeft = 0; return; }
-    const slides = items.length > 1 ? [...items, items[0]] : items;
-    track.innerHTML = slides.map((item, index) => {
-      const image = safeImageUrl(item.image_url);
-      const caption = item.title ? `<span class="stackd-news-caption">${esc(item.title)}</span>` : '';
-      const body = `<img src="${esc(image)}" alt="${esc(item.title || 'STACKED news')}" loading="${index === 0 ? 'eager' : 'lazy'}">${caption}`;
-      const href = safeWebLink(item.href);
-      return href ? `<a class="stackd-news-card" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${body}</a>` : `<article class="stackd-news-card">${body}</article>`;
-    }).join('');
-    viewport.scrollLeft = 0;
+    if (!items.length) { stage.replaceChildren(); return; }
+    stage.innerHTML = `<div class="news-slides">${items.map((item, index) => {
+      const inner = `<img src="${esc(safeImageUrl(item.image_url))}" alt="${esc(item.title || 'STACKED')}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">${item.title ? `<span class="news-cap">${esc(item.title)}</span>` : ''}`;
+      const href = safeWebLink(item.href), hidden = index === 0 ? '' : ' aria-hidden="true"';
+      return href
+        ? `<a class="news-slide${index === 0 ? ' is-on' : ''}" href="${esc(href)}" target="_blank" rel="noopener noreferrer"${hidden}${index === 0 ? '' : ' tabindex="-1"'}>${inner}</a>`
+        : `<div class="news-slide${index === 0 ? ' is-on' : ''}"${hidden}>${inner}</div>`;
+    }).join('')}</div>${items.length > 1 ? `<div class="news-dots">${items.map((_, index) => `<button type="button" data-go="${index}" aria-label="${index + 1} / ${items.length}"${index === 0 ? ' aria-current="true"' : ''}></button>`).join('')}</div>` : ''}`;
     if (items.length < 2) return;
-    newsTimer = setInterval(() => {
-      if (document.hidden) return;
-      newsIndex += 1;
-      const next = $$('.stackd-news-card', track)[newsIndex];
-      if (!next) return;
-      viewport.scrollTo({ left: next.offsetLeft, behavior: 'smooth' });
-      if (newsIndex === items.length) setTimeout(() => { viewport.scrollTo({ left: 0, behavior: 'auto' }); newsIndex = 0; }, 560);
-    }, 4000);
+    const slides = $$('.news-slide', stage), dots = $$('.news-dots button', stage);
+    const show = index => {
+      newsIndex = (index + items.length) % items.length;
+      slides.forEach((slide, i) => {
+        const on = i === newsIndex;
+        slide.classList.toggle('is-on', on);
+        if (on) slide.removeAttribute('aria-hidden'); else slide.setAttribute('aria-hidden', 'true');
+        if (slide.tagName === 'A') slide.tabIndex = on ? 0 : -1;
+      });
+      dots.forEach((dot, i) => { if (i === newsIndex) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
+    };
+    const start = () => {
+      clearInterval(newsTimer);
+      newsTimer = setInterval(() => { if (!document.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches) show(newsIndex + 1); }, 6000);
+    };
+    let startX = null;
+    stage.onclick = event => { const dot = event.target.closest('[data-go]'); if (dot) { show(Number(dot.dataset.go)); start(); } };
+    stage.onpointerenter = () => clearInterval(newsTimer);
+    stage.onpointerleave = start;
+    stage.onpointerdown = event => { startX = event.clientX; };
+    stage.onpointerup = event => {
+      if (startX !== null && Math.abs(event.clientX - startX) > 40) { show(newsIndex + (event.clientX < startX ? 1 : -1)); start(); }
+      startX = null;
+    };
+    start();
   }
   function renderNewsAdmin() {
     const host = $('#stackdNewsList');
@@ -755,7 +681,7 @@
     if (footerBrand) footerBrand.textContent = name;
     const footerDescription = $('.foot [data-i18n="footer_desc"]');
     if (footerDescription) footerDescription.textContent = tagline;
-    document.title = `${name} - Premium digital deals`;
+    document.title = `${name} Baku - Food Deals, Discounts & Online Orders`;
     const supportUrl = `https://t.me/${support}`;
     const channelUrl = `https://t.me/${channel}`;
     $$('.social-links a').forEach(anchor => {
@@ -909,7 +835,7 @@
     card.className = 'stackd-showcase-hero';
     card.setAttribute('aria-label', 'STACKED');
     card.innerHTML = `
-      <img class="stackd-showcase-image" alt="" decoding="async">
+      <img class="stackd-showcase-image" alt="" decoding="async" fetchpriority="high">
       <div class="stackd-showcase-shade" aria-hidden="true"></div>
       <div class="stackd-showcase-copy">
         <span class="stackd-showcase-kicker">STACKED / SPECIAL OFFERS</span>
@@ -953,8 +879,11 @@
       subtitle.hidden = !subtitle.textContent.trim();
     }
     if (cta) cta.textContent = S.lang === 'en' ? 'Explore offers' : S.lang === 'az' ? 'Təkliflərə bax' : 'Смотреть предложения';
-    card.hidden = !heroVisible || !imageUrl;
-    showcase.hidden = !heroVisible || !imageUrl;
+    const visible = heroVisible && Boolean(imageUrl);
+    card.hidden = !visible;
+    // Until the settings are known the section keeps its reserved height, so the cover does not push the page down when it appears.
+    showcase.hidden = heroKnown && !visible;
+    showcase.toggleAttribute('data-pending', !heroKnown);
     // Keep the custom hero static. The legacy 5-second slider used to switch
     // to a hidden slide and make the cover disappear on some devices.
     if (slider) slider.hidden = true;
@@ -962,26 +891,20 @@
     syncHeroPreview();
   }
 
-  initSlider = function stackdInitSlider(slides) {
-    baseInitSlider(slides);
-    const first = $('#showcaseSlider .slide');
-    const image = first?.querySelector('img');
-    defaultHeroSlide = {
-      image: image?.getAttribute('src') || '',
-      title: first?.querySelector('.slide-content h2')?.textContent || '',
-      subtitle: first?.querySelector('.slide-content p')?.textContent || ''
-    };
+  function applySlides() {
+    const first = S.slides[0];
+    defaultHeroSlide = { image: first?.image_url || '', title: first?.title || '', subtitle: first?.description || '' };
     updateHero();
-  };
-  loadSettings = async function stackdLoadSettings() {
-    await baseLoadSettings();
-    const { data, error } = await _supabase.from('site_settings').select('key,value');
-    if (error) { console.warn('Extended settings could not be loaded:', error); return; }
-    const values = new Map((data || []).map(row => [row.key, row.value]));
+  }
+  // Settings arrive once from app.js (one shared request) instead of being fetched again here.
+  function applySettings({ values }) {
+    const data = [...values].map(([key, value]) => ({ key, value }));
     for (const row of data || []) {
       if (Object.hasOwn(hero, row.key)) hero[row.key] = row.value ?? hero[row.key];
       if (Object.hasOwn(brandSettings, row.key)) brandSettings[row.key] = row.value ?? brandSettings[row.key];
     }
+    heroKnown = true;
+    try { localStorage.setItem('stk.site', JSON.stringify({ hero, brand: brandSettings })); } catch { /* storage unavailable */ }
     syncHeroSettingsForm();
     syncBrandSettingsForm();
     const savedPromo = parseSetting(values.get('discount_config'), null);
@@ -989,7 +912,8 @@
     const savedNews = parseSetting(values.get('news_items'), []);
     newsItems = Array.isArray(savedNews) ? savedNews.filter(item => item && typeof item.image_url === 'string').slice(0,20).map(item => ({ id: String(item.id || crypto.randomUUID()), image_url: safeImageUrl(item.image_url), title: String(item.title || '').slice(0,90), href: safeWebLink(item.href || '') })) : [];
     makeSettingsUI(); makeBrandSettingsUI(); makePromotionUI(); makeNewsUI(); updateHero(); syncHeroSettingsForm(); syncBrandSettingsForm(); syncPromotionForm(); renderNewsRail(); renderNewsAdmin();
-  };
+    if (S.catalogReady) renderAll();   // discounts and translations change what the cards show
+  }
 
   async function saveHeroSettings(event) {
     event.preventDefault();
@@ -1098,9 +1022,9 @@
     const list = $('#lines');
     const footer = drawer.querySelector('footer');
     const checkoutButton = $('#checkoutBtn');
-    const guide = document.createElement('section');
-    guide.id = 'stackdPurchaseGuide'; guide.className = 'stackd-purchase-guide';
-    guide.innerHTML = `<strong>${esc(t('guideTitle'))}</strong><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
+    const guide = document.createElement('details');
+    guide.id = 'stackdPurchaseGuide'; guide.className = 'guide';
+    guide.innerHTML = `<summary>${esc(t('guideTitle'))}</summary><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
     if (list) list.before(guide);
     if (checkoutButton) checkoutButton.hidden = true;
     if (footer && !$('#stackdSwipe')) {
@@ -1121,7 +1045,7 @@
 
   function renderGuideText() {
     const guide = $('#stackdPurchaseGuide');
-    if (guide) guide.innerHTML = `<strong>${esc(t('guideTitle'))}</strong><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
+    if (guide) guide.innerHTML = `<summary>${esc(t('guideTitle'))}</summary><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
     const label = $('.stackd-swipe-label'); if (label) label.textContent = t('swipe');
     const state = $('#stackdPreparing');
     if (state) state.innerHTML = `<span class="stackd-spinner" aria-hidden="true"></span><strong>${esc(t('preparing'))}</strong><p>${esc(t('preparingText'))}</p>`;
@@ -1142,52 +1066,30 @@
       track.classList.add('is-dragging');
     });
     thumb.addEventListener('pointermove', event => { if (dragging) paint(event.clientX - startX); });
-    const finish = async () => {
-      if (!dragging) return;
-      dragging = false; track.classList.remove('is-dragging');
-      if (max > 0 && offset / max >= 0.88) {
-        completed = true; paint(max); swipe.classList.add('is-complete');
-        if (hint) hint.textContent = t('preparing');
-        const preparing = $('#stackdPreparing'); if (preparing) preparing.hidden = false;
-        try { await A.checkout(); }
-        finally {
-          setTimeout(() => { completed = false; swipe.classList.remove('is-complete'); paint(0); if (preparing) preparing.hidden = true; if (hint) hint.textContent = ''; }, 1600);
-        }
-      } else {
-        paint(0); if (hint) { hint.textContent = t('swipeAgain'); setTimeout(() => { if (hint) hint.textContent = ''; }, 1500); }
+    const confirmOrder = async () => {
+      completed = true; measure(); paint(max); swipe.classList.add('is-complete');
+      if (hint) hint.textContent = t('preparing');
+      const preparing = $('#stackdPreparing'); if (preparing) preparing.hidden = false;
+      try { await A.checkout(); }
+      finally {
+        setTimeout(() => { completed = false; swipe.classList.remove('is-complete'); paint(0); if (preparing) preparing.hidden = true; if (hint) hint.textContent = ''; }, 1600);
       }
     };
-    thumb.addEventListener('pointerup', finish);
-    thumb.addEventListener('pointercancel', finish);
+    const release = confirmed => {
+      if (!dragging) return;
+      dragging = false; track.classList.remove('is-dragging');
+      if (confirmed && max > 0 && offset / max >= 0.88) { confirmOrder(); return; }
+      paint(0);
+      if (confirmed && hint) { hint.textContent = t('swipeAgain'); setTimeout(() => { if (hint) hint.textContent = ''; }, 1500); }
+    };
+    thumb.addEventListener('pointerup', () => release(true));
+    thumb.addEventListener('pointercancel', () => release(false));   // an interrupted gesture never places an order
+    // Keyboard and assistive technology cannot drag: activating the handle confirms the order directly.
+    thumb.addEventListener('click', event => { if (event.detail === 0 && !completed && !S.checkoutBusy) confirmOrder(); });
     window.addEventListener('resize', () => { measure(); paint(0); });
     measure(); paint(0);
   }
 
-  function pulseCart() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const target = $('.cart-btn');
-    if (!target) return;
-    target.classList.remove('stackd-cart-pulse');
-    const badge = target.querySelector('.badge');
-    badge?.classList.remove('pop');
-    void target.offsetWidth;
-    target.classList.add('stackd-cart-pulse');
-    badge?.classList.add('pop');
-    window.setTimeout(() => target.classList.remove('stackd-cart-pulse'), 520);
-  }
-
-  function bindFloodProtection() {
-    const cooldowns = new Map();
-    document.addEventListener('click', event => {
-      const control = event.target.closest('[data-act]');
-      if (!control) return;
-      const action = control.dataset.act;
-      if (!['orders', 'auth', 'manage', 'toggle-qr', 'clear'].includes(action)) return;
-      const now = Date.now(), last = cooldowns.get(action) || 0;
-      if (now - last < 500) { event.preventDefault(); event.stopImmediatePropagation(); }
-      else cooldowns.set(action, now);
-    }, true);
-  }
 
   function bindTopupRateLimit() {
     const form = $('#topupForm');
@@ -1204,13 +1106,7 @@
     }, true);
   }
 
-  // Wrap existing checkout action without changing its RPC/Telegram/QR implementation.
-  A.add = id => {
-    const product = find(id);
-    if (!product || !isAvailable(product)) return;
-    setQty(id, 1);
-    requestAnimationFrame(pulseCart);
-  };
+  // Rate-limit checkout without changing its RPC/Telegram/QR implementation.
 
   const originalCheckoutAction = A.checkout;
   A.checkout = async (...args) => {
@@ -1218,39 +1114,6 @@
     if (!(await rateLimit('checkout', 5, 60))) return;
     return originalCheckoutAction(...args);
   };
-
-  // Improve category slider geometry and resize handling.
-  updateChipsSlider = function stackdUpdateChipsSlider() {
-    const chips = $('#chips'), active = $('#chips button[aria-pressed="true"]'), slider = $('#chipsSlider');
-    if (!chips || !active || !slider) return;
-    slider.style.width = `${active.offsetWidth}px`;
-    slider.style.left = `${active.offsetLeft}px`;
-    slider.style.transform = 'none';
-  };
-
-
-  function buildProfileBalanceRow() {
-    const menu = $('#stackdProfileMenu');
-    if (!menu || $('#stackdProfileBalanceRow')) return;
-    const row = document.createElement('div');
-    row.id = 'stackdProfileBalanceRow';
-    row.className = 'stackd-profile-balance-row';
-    row.innerHTML = `<div><small id="stackdProfileBalanceLabel">${S.lang === 'en' ? 'Balance' : S.lang === 'az' ? 'Balans' : 'Баланс'}</small><strong id="stackdProfileBalanceValue">${esc($('#userBalance')?.textContent?.trim() || '0.00')} AZN</strong></div><button type="button" id="stackdProfileTopup">${S.lang === 'en' ? 'Top up' : S.lang === 'az' ? 'Artır' : 'Пополнить'}</button>`;
-    const orders = $('#myOrdersBtn', menu);
-    menu.insertBefore(row, orders || menu.firstChild);
-    $('#stackdProfileTopup')?.addEventListener('click', () => {
-      menu.hidden = true;
-      $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
-      $('#topup')?.showModal();
-    });
-    const source = $('#userBalance');
-    if (source && 'MutationObserver' in window) {
-      new MutationObserver(() => {
-        const target = $('#stackdProfileBalanceValue');
-        if (target) target.textContent = `${source.textContent?.trim() || '0.00'} AZN`;
-      }).observe(source, { childList: true, characterData: true, subtree: true });
-    }
-  }
 
   let topupHistoryTimer = null;
   let topupHistoryBusy = false;
@@ -1274,21 +1137,7 @@
         topupHistoryTimer = null;
       });
       $('#stackdTopupHistoryRefresh')?.addEventListener('click', loadTopupHistory);
-    }
-    const menu = $('#stackdProfileMenu');
-    if (menu && !$('#stackdTopupHistoryOpen')) {
-      const button = document.createElement('button');
-      button.id = 'stackdTopupHistoryOpen';
-      button.type = 'button';
-      button.className = 'stackd-profile-action';
-      button.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
-      button.addEventListener('click', () => {
-        menu.hidden = true;
-        $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
-        openTopupHistory();
-      });
-      const logoutButton = $('#logoutBtn', menu);
-      menu.insertBefore(button, logoutButton || null);
+      A['topup-history'] = openTopupHistory;
     }
   }
 
@@ -1349,10 +1198,10 @@
   }
 
   function openTopupHistory() {
-    if (!S.user) { $('#auth')?.showModal(); return; }
+    if (!S.user) { openDlg($('#auth')); return; }
     const dialog = $('#stackdTopupHistory');
     if (!dialog) return;
-    if (!dialog.open) dialog.showModal();
+    openDlg(dialog);
     loadTopupHistory();
     if (topupHistoryTimer) clearInterval(topupHistoryTimer);
     topupHistoryTimer = setInterval(() => {
@@ -1361,32 +1210,10 @@
     }, 12000);
   }
 
+  // The profile menu itself is static markup opened through the overlay manager (A.profile in app.js).
   function initProfileMenu() {
-    buildProfileBalanceRow();
     makeTopupHistoryUI();
-    const trigger = $('#stackdProfileTrigger');
-    const menu = $('#stackdProfileMenu');
-    if (!trigger || !menu || trigger.dataset.bound === '1') return;
-    trigger.dataset.bound = '1';
-    const toggle = () => {
-      menu.hidden = !menu.hidden;
-      trigger.setAttribute('aria-expanded', String(!menu.hidden));
-      if (!menu.hidden) requestAnimationFrame(updateThemeSlider);
-    };
-    trigger.addEventListener('click', toggle);
-    document.addEventListener('click', event => {
-      if (!event.target.closest('.stackd-profile-anchor')) { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
-    });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
-    });
-    $('#myOrdersBtn')?.addEventListener('click', () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); });
-    const logout = $('#logoutBtn');
-    if (logout) logout.addEventListener('click', () => { menu.hidden = true; });
     syncProfileMenu();
-    _supabase.auth.onAuthStateChange((_event, session) => {
-      setTimeout(() => { S.user = session?.user || null; syncProfileMenu(); }, 0);
-    });
   }
   function syncProfileMenu() {
     if ($('#stackdProfileEmail')) $('#stackdProfileEmail').textContent = S.user?.email || '';
@@ -1400,15 +1227,8 @@
     if (historyNote) historyNote.textContent = S.lang === 'en' ? 'Each request updates after it is reviewed.' : S.lang === 'az' ? 'Hər müraciətin statusu yoxlamadan sonra yenilənir.' : 'Статус каждой заявки обновляется после проверки.';
     const historyRefresh = $('#stackdTopupHistoryRefresh');
     if (historyRefresh) historyRefresh.textContent = S.lang === 'en' ? 'Refresh' : S.lang === 'az' ? 'Yenilə' : 'Обновить';
-    placeMobileCartButton();
     refreshPromotionNewsLabels();
   }
-  const baseCheckAuth = checkAuth;
-  checkAuth = async function stackdCheckAuthWithProfile(...args) {
-    const result = await baseCheckAuth(...args);
-    syncProfileMenu();
-    return result;
-  };
 
   function refreshAddedLabels() {
     const source = $('#stackdSourceLang');
@@ -1438,8 +1258,6 @@
     const position = $('#stackdHeroPosition'); if (position) { position.options[0].text = t('center'); position.options[1].text = t('top'); position.options[2].text = t('bottom'); }
     const ratio = $('#stackdHeroRatio'); if (ratio) ratio.options[3].text = S.lang === 'en' ? 'Natural height' : S.lang === 'az' ? 'Təbii hündürlük' : 'Автоматически';
     const brandSectionTitle = $('#stackdBrandSettings .stackd-section-head h3'); if (brandSectionTitle) brandSectionTitle.textContent = t('brandTitle');
-    const profileBalanceLabel = $('#stackdProfileBalanceLabel'); if (profileBalanceLabel) profileBalanceLabel.textContent = S.lang === 'en' ? 'Balance' : S.lang === 'az' ? 'Balans' : 'Баланс';
-    const profileTopup = $('#stackdProfileTopup'); if (profileTopup) profileTopup.textContent = S.lang === 'en' ? 'Top up' : S.lang === 'az' ? 'Artır' : 'Пополнить';
     const brandLabels = { stackdSiteName: 'brandName', stackdSiteTagline: 'brandTagline', stackdSupportTelegram: 'supportTelegram', stackdChannelTelegram: 'channelTelegram' };
     for (const [id, key] of Object.entries(brandLabels)) { const label = document.querySelector(`label[for="${id}"]`); if (label) label.textContent = t(key); }
     const brandHint = $('#stackdBrandSettings .stackd-admin-note'); if (brandHint) brandHint.textContent = t('brandHelp');
@@ -1454,74 +1272,6 @@
     refreshPromotionNewsLabels();
   }
 
-  function ensureAccountShortcuts() {
-    const nav = $('.nav');
-    if (!nav) return;
-    let orderButton = $('#stackdOrdersShortcut');
-    if (!orderButton) {
-      orderButton = document.createElement('button');
-      orderButton.id = 'stackdOrdersShortcut';
-      orderButton.type = 'button';
-      orderButton.className = 'stackd-orders-shortcut';
-      orderButton.dataset.act = 'orders';
-      orderButton.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.8h10a2 2 0 0 1 2 2v14.4l-7-3.5-7 3.5V5.8a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 11.5h6"/></svg><span id="stackdOrdersShortcutLabel">Мои заказы</span>`;
-    }
-    let dock = $('#stackdMobileActions');
-    if (!dock) {
-      dock = document.createElement('div');
-      dock.id = 'stackdMobileActions';
-      dock.className = 'stackd-mobile-actions';
-      dock.setAttribute('aria-label', 'Навигация');
-      document.body.append(dock);
-    }
-    return { nav, orderButton, dock };
-  }
-
-  function placeMobileCartButton() {
-    const parts = ensureAccountShortcuts();
-    const cart = $('.cart-btn');
-    if (!parts || !cart) return;
-    const { nav, orderButton, dock } = parts;
-    const language = ($('#currentLangLabel')?.textContent || 'RU').trim().toUpperCase();
-    cart.dataset.cartLabel = language === 'EN' ? 'Cart' : language === 'AZ' ? 'Səbət' : 'Корзина';
-    const orderLabel = $('#stackdOrdersShortcutLabel');
-    if (orderLabel) orderLabel.textContent = language === 'EN' ? 'My orders' : language === 'AZ' ? 'Sifarişlərim' : 'Мои заказы';
-    // Keep orders discoverable even when logged out; the action opens the sign-in dialog.
-    orderButton.hidden = false;
-    const badge = cart.querySelector('.badge');
-    if (badge) {
-      const syncBadge = () => { badge.hidden = (Number.parseInt(badge.textContent || '0', 10) || 0) <= 0; };
-      syncBadge();
-      if (badge.dataset.stackdBound !== '1') {
-        badge.dataset.stackdBound = '1';
-        new MutationObserver(syncBadge).observe(badge, { childList: true, characterData: true, subtree: true });
-      }
-    }
-    if (window.matchMedia('(max-width: 680px)').matches) {
-      dock.hidden = false;
-      dock.classList.toggle('has-orders', !orderButton.hidden);
-      dock.append(orderButton, cart);
-      cart.classList.add('stackd-mobile-cart');
-    } else {
-      dock.hidden = true;
-      dock.classList.remove('has-orders');
-      cart.classList.remove('stackd-mobile-cart');
-      nav.insertBefore(orderButton, cart);
-      nav.append(cart);
-    }
-  }
-
-  function syncThemeButtons() {
-    let selected = 'system';
-    try { selected = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-    $$('.seg button[data-v]').forEach(button => {
-      const active = button.dataset.v === selected;
-      button.setAttribute('aria-pressed', String(active));
-      button.classList.toggle('is-selected', active);
-    });
-  }
-  updateThemeSlider = syncThemeButtons;
-
   function initialise() {
     injectProductFields();
     makeSettingsUI();
@@ -1530,42 +1280,21 @@
     makeNewsUI();
     renderNewsRail();
     initProfileMenu();
-    ensureAccountShortcuts();
     refreshAddedLabels();
     refreshPromotionNewsLabels();
     buildCartGuide();
-    bindFloodProtection();
     bindTopupRateLimit();
-    placeMobileCartButton();
-    syncThemeButtons();
-    window.addEventListener('resize', placeMobileCartButton, { passive: true });
-    const langLabel = $('#currentLangLabel');
-    if (langLabel && 'MutationObserver' in window) new MutationObserver(placeMobileCartButton).observe(langLabel, { childList: true, characterData: true, subtree: true });
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
-      let preference = 'system';
-      try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-      if (preference === 'system') applyTheme();
-    });
     const productForm = $('#pform');
     productForm?.addEventListener('submit', saveProductWithExtras, true);
     $('#saveSettingsBtn')?.addEventListener('click', saveHeroSettings, true);
-    // Reload once after the original deferred app.js initialization so fields omitted by its old query are restored.
-    load().catch(error => console.error('STACKED enhanced catalog load failed:', error));
-    loadSettings().catch(error => console.error('STACKED settings load failed:', error));
-    const grid = $('#grid');
-    if (grid) new MutationObserver(() => requestAnimationFrame(updateChipsSlider)).observe(grid, { childList: true, subtree: true });
-    searchInput?.addEventListener('input', () => setTimeout(() => {
-      if (!S.q || !suggestionsBox) return;
-      const needle = normalizeSearch(S.q);
-      const matches = live().filter(p => normalizeSearch([productText(p).name, productText(p).description, productText(p).category].join(' ')).includes(needle)).slice(0, 6);
-      suggestionsBox.innerHTML = matches.length ? matches.map(p => { const view = productText(p); return `<button type="button" class="suggestion-item" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}" alt=""><span><span class="s-title">${esc(view.name)}</span><span class="s-cat">${esc(view.category || '')}</span></span></button>`; }).join('') : `<div class="suggestion-empty">${esc(tr('no_results'))}</div>`;
-    }, 0));
     window.addEventListener('resize', () => { requestAnimationFrame(updateChipsSlider); updateHero(); }, { passive: true });
-    document.addEventListener('click', event => {
-      const langButton = event.target.closest('[data-lang]');
-      if (!langButton) return;
-      setTimeout(() => { refreshAddedLabels(); refreshPromotionNewsLabels(); syncThemeButtons(); updateHero(); placeMobileCartButton(); }, 0);
-    });
+    // Data and language reach this module through app.js events (sticky: late subscribers get the latest value),
+    // so nothing is fetched twice and no DOM observers are needed to notice changes.
+    subscribe('stackd:slides', applySlides);
+    subscribe('stackd:settings', applySettings);
+    subscribe('stackd:catalog', () => { renderPromotionTargetOptions(); syncPromotionForm(); });
+    subscribe('stackd:auth', syncProfileMenu);
+    subscribe('stackd:lang', () => { refreshAddedLabels(); refreshPromotionNewsLabels(); updateHero(); syncProfileMenu(); });
     console.info(`STACKED enhancements ${VERSION} loaded`);
   }
 

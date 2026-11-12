@@ -475,13 +475,7 @@
     raf = ACTIVE.size ? requestAnimationFrame(frame) : 0;
   };
   const kick = () => { if (!raf && ACTIVE.size) { last = performance.now(); raf = requestAnimationFrame(frame); } };
-  // The site-wide "Motion" setting (html.stk-motion-off) counts as reduced motion too.
-  const sysReduced = G.matchMedia ? G.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false, addEventListener() {} };
-  const reducedMQ = {
-    get matches() { return sysReduced.matches || (typeof document !== 'undefined' && document.documentElement.classList.contains('stk-motion-off')); },
-    addEventListener(type, fn) { sysReduced.addEventListener && sysReduced.addEventListener(type, fn); G.addEventListener && G.addEventListener('stacked:motion', fn); },
-    removeEventListener(type, fn) { sysReduced.removeEventListener && sysReduced.removeEventListener(type, fn); G.removeEventListener && G.removeEventListener('stacked:motion', fn); }
-  };
+  const reducedMQ = G.matchMedia ? G.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false, addEventListener() {} };
   const docTheme = () => {
     const d = document.documentElement.getAttribute('data-theme');
     if (d === 'dark' || d === 'light') return d;
