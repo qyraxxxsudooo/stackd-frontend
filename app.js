@@ -689,11 +689,16 @@ async function checkout() {
   S.checkoutBusy = true;
   if (button) { button.disabled = true; button.textContent = tr('checkout_busy'); }
   try {
-    const { data, error } = await _supabase.rpc('checkout_order', { cart_items: S.cart.map(item => ({ id: item.id, qty: item.qty })) });
+    const cartItems = S.cart.map(item => ({ id: item.id, qty: item.qty }));
+    // stacked-shop.js installs window.stackdPlaceOrder (promo codes + idempotent stackd_checkout); same result shape.
+    const { data, error } = typeof window.stackdPlaceOrder === 'function'
+      ? await window.stackdPlaceOrder(cartItems)
+      : await _supabase.rpc('checkout_order', { cart_items: cartItems });
     if (error) throw error;
     const orderId = typeof data === 'string' ? data : (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
     if (!orderId) throw new Error('checkout_order не вернул ID заказа.');
     S.cart = []; saveCart(); renderCart(); closeDlg($('#drawer'));
+    document.dispatchEvent(new CustomEvent('stackd:order-placed', { detail: { orderId } }));
     let telegramOk = false;
     try {
       const { data: notifyData, error: notifyError } = await _supabase.functions.invoke('notify-telegram', { body: { orderId } });

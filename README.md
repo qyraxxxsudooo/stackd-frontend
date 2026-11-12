@@ -52,3 +52,16 @@ QR code orders, скидки на еду Баку, Stackd Азербайджан
 ## Official Website
 
 https://stackd-frontend.vercel.app/
+
+## Promo codes and Telegram QR notifications (setup)
+
+Server code lives in `supabase/`; nothing there is applied automatically.
+
+1. **Database** — run in the Supabase SQL editor, in order:
+   - `supabase/migrations/20261112120000_promo_codes.sql` — promo tables with RLS, `stackd_promo_preview`, `stackd_checkout` (wraps the existing `checkout_order` in one transaction, idempotent by request id, row-locked limits), release of a use on cancellation.
+   - `supabase/migrations/20261112121000_telegram_qr.sql` — Telegram chat links and one-time link tokens.
+   Until the first migration is applied the site keeps using `checkout_order` directly and promo codes report "temporarily unavailable".
+2. **Edge Function** — `supabase functions deploy telegram-qr --no-verify-jwt`, with secrets `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `QR_NOTIFY_SECRET`.
+3. **Database Webhook** — Database → Webhooks: table `orders`, event `UPDATE`, target the `telegram-qr` function, header `Authorization: Bearer <QR_NOTIFY_SECRET>`.
+4. **Bot webhook** — if the bot has no webhook yet: `setWebhook` to the function URL with `secret_token=<TELEGRAM_WEBHOOK_SECRET>`. If another webhook already serves the bot, forward to this function every `callback_query` whose data starts with `qr:` and every `/start link_…` message, sending the same secret header.
+5. **Site** — Catalog → Site settings → "Telegram bot for QR notifications": enter the bot username. Customers then use "Connect Telegram" in the profile menu.

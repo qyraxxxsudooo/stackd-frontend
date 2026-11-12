@@ -60,18 +60,29 @@ try {
 <link rel="stylesheet" href="stacked-motion.css">
 <link rel="stylesheet" href="stacked-shop.css">
 <style>
-/* STACKED splash: painted on the first frame; a CSS-only failsafe removes it after 4 s even if JS fails. */
-#stackedSplash{position:fixed;inset:0;z-index:2147483000;background:#f7f3ec;pointer-events:none;animation:stackedSplashSafe .01s linear 4.2s forwards}
-html.stacked-dark #stackedSplash{background:#141311}
-html.stacked-no-splash #stackedSplash{display:none}
-@keyframes stackedSplashSafe{to{opacity:0;visibility:hidden}}
+/* STACKED loader: painted on the first frame of every full load. JS removes it as soon as the DOM is ready
+   (min ~0.6 s so it never flickers); the CSS animation below hides it after 2.4 s even if every script fails. */
+#stackedSplash{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:#f7f3ec;color:#211f1c;animation:stkSplashSafe .3s ease 2.4s forwards}
+html.stacked-dark #stackedSplash{background:#141311;color:#f4eee5}
+#stackedSplash.is-leaving{opacity:0;visibility:hidden;transition:opacity .34s cubic-bezier(.22,.72,.18,1),visibility 0s linear .34s}
+.stk-load{display:grid;justify-items:center;gap:14px}
+.stk-load img{width:52px;height:52px;animation:stkLogoIn .55s cubic-bezier(.2,.8,.2,1) both}
+.stk-load-word{font:800 15px/1 Manrope,Inter,system-ui,sans-serif;letter-spacing:.32em;margin-right:-.32em;animation:stkWordIn .6s cubic-bezier(.2,.8,.2,1) .08s both}
+.stk-load-bar{position:relative;width:96px;height:2px;border-radius:2px;overflow:hidden;background:rgba(127,110,90,.2)}
+.stk-load-bar i{position:absolute;inset:0;width:40%;border-radius:2px;background:#c2500a;animation:stkBar 1s cubic-bezier(.45,0,.2,1) .15s infinite}
+html.stacked-dark .stk-load-bar i{background:#f07a2a}
+@keyframes stkLogoIn{from{opacity:0;transform:translateY(8px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes stkWordIn{from{opacity:0;letter-spacing:.5em}to{opacity:1;letter-spacing:.32em}}
+@keyframes stkBar{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+@keyframes stkSplashSafe{to{opacity:0;visibility:hidden}}
+html.stk-motion-off #stackedSplash,html.stk-motion-off #stackedSplash *{animation-duration:.01s!important;animation-iteration-count:1!important}
 @media (prefers-reduced-motion:reduce){#stackedSplash{display:none}}
 </style>
 <script>
 try{
   var d=document.documentElement,t=localStorage.getItem('pdd.theme')||'system';
   if(t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('stacked-dark');
-  if(sessionStorage.getItem('stacked.splash'))d.classList.add('stacked-no-splash');
+  if(localStorage.getItem('stk.motion')==='off')d.classList.add('stk-motion-off');
 }catch(e){}
 </script>
 
@@ -84,7 +95,22 @@ try{
 </head>
 
 <body class="notranslate" translate="no">
-<div id="stackedSplash" aria-hidden="true"></div>
+<div id="stackedSplash" aria-hidden="true"><div class="stk-load"><img src="assets/icons/logo.svg" alt="" width="52" height="52"><span class="stk-load-word">STACKED</span><span class="stk-load-bar"><i></i></span></div></div>
+<script>
+/* Leaves on DOM ready (never waits for photos or Supabase), hard JS timeout 2 s, CSS failsafe 2.4 s. */
+(function(){
+  var s=document.getElementById('stackedSplash'),d=document.documentElement,t0=Date.now(),done=false;
+  function leave(){
+    if(done)return;done=true;
+    d.classList.add('stk-reveal');
+    if(s){s.classList.add('is-leaving');setTimeout(function(){s.remove();document.dispatchEvent(new CustomEvent('stacked:splash-end'));},360);}
+    setTimeout(function(){d.classList.remove('stk-reveal');},1500);
+  }
+  function ready(){setTimeout(leave,Math.max(0,600-(Date.now()-t0)));}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();
+  setTimeout(leave,2000);
+})();
+</script>
 
 <div id="stackdMaintenance" class="stackd-maintenance" hidden role="dialog" aria-modal="true" aria-labelledby="stackdMaintenanceTitle">
 
@@ -139,7 +165,7 @@ try{
   </filter>
 </svg>
 
-<svg width="0" height="0" hidden aria-hidden="true">
+<svg width="0" height="0" hidden aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
   <symbol id="i-cart" viewBox="0 0 24 24">
     <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L19 8H6.2M9 19.5a.5.5 0 1 0 0 .01M17 19.5a.5.5 0 1 0 0 .01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
@@ -230,15 +256,9 @@ try{
           Мои заказы
         </button>
 
-        <div class="stackd-profile-theme">
-          <span id="stackdProfileTheme">Тема оформления</span>
-          <div class="seg" role="group" aria-label="Theme" id="profileThemeSeg">
-            <div class="seg-slider" id="themeSlider"></div>
-            <button type="button" data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
-            <button type="button" data-act="theme" data-v="dark" data-i18n="theme_dark">Тёмная</button>
-            <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
-          </div>
-        </div>
+        <button id="stackdTelegramLink" class="stackd-profile-action" type="button" data-act="tg-link" hidden>
+          Подключить Telegram
+        </button>
 
         <button id="logoutBtn" class="stackd-profile-action stackd-profile-logout" type="button" data-i18n="logout_btn">
           Выйти из аккаунта
@@ -265,6 +285,48 @@ try{
     <svg class="ic"><use href="#i-cart"/></svg>
     <span class="badge" id="badge">0</span>
   </button>
+
+  <div class="stk-settings" id="stkSettingsWrap">
+    <button class="stk-gear" id="stkGear" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="stkSettings" aria-label="Настройки">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M10.3 2.8h3.4l.5 2.6c.6.2 1.2.5 1.7.9l2.5-.9 1.7 2.9-2 1.7a6.6 6.6 0 0 1 0 2l2 1.7-1.7 2.9-2.5-.9c-.5.4-1.1.7-1.7.9l-.5 2.6h-3.4l-.5-2.6c-.6-.2-1.2-.5-1.7-.9l-2.5.9-1.7-2.9 2-1.7a6.6 6.6 0 0 1 0-2l-2-1.7 1.7-2.9 2.5.9c.5-.4 1.1-.7 1.7-.9z"/><circle cx="12" cy="12" r="2.9" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+    </button>
+    <div class="stk-panel" id="stkSettings" role="dialog" aria-labelledby="stkSettingsTitle" hidden>
+      <div class="stk-panel-head">
+        <strong id="stkSettingsTitle" data-stk="settings">Настройки</strong>
+        <button type="button" class="stk-x" data-stk-close aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <section class="stk-sec">
+        <h4 data-stk="appearance">Оформление</h4>
+        <div class="stk-seg" id="stkTheme" role="group">
+          <button type="button" data-act="theme" data-v="light" data-stk="light">Светлая</button>
+          <button type="button" data-act="theme" data-v="dark" data-stk="dark">Тёмная</button>
+          <button type="button" data-act="theme" data-v="system" data-stk="system">Системная</button>
+        </div>
+      </section>
+      <section class="stk-sec">
+        <h4 data-stk="language">Язык</h4>
+        <div class="stk-seg" id="stkLang" role="group">
+          <button type="button" data-stk-lang="ru">RU</button>
+          <button type="button" data-stk-lang="en">EN</button>
+          <button type="button" data-stk-lang="az">AZ</button>
+        </div>
+      </section>
+      <section class="stk-sec">
+        <h4 data-stk="promo">Промокод</h4>
+        <form class="stk-promo" id="stkPromoForm" novalidate>
+          <input id="stkPromoInput" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" aria-labelledby="stkPromoLabel" placeholder="STACKED">
+          <button type="submit" class="btn btn-primary" id="stkPromoApply" data-stk="apply">Применить</button>
+        </form>
+        <span id="stkPromoLabel" hidden>Промокод</span>
+        <div class="stk-promo-result" id="stkPromoResult" aria-live="polite"></div>
+      </section>
+      <section class="stk-sec stk-sec-row">
+        <div><h4 data-stk="motion">Анимации</h4><small data-stk="motionHint">Декоративные эффекты интерфейса</small></div>
+        <button type="button" class="stk-switch" id="stkMotion" role="switch" aria-checked="true" aria-labelledby="stkMotionLabel"><span></span></button>
+        <span id="stkMotionLabel" hidden>Анимации</span>
+      </section>
+    </div>
+  </div>
 
 </header>
 
@@ -436,6 +498,7 @@ try{
   <div class="admin-tabs">
     <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">Товары</button>
     <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">Настройки сайта</button>
+    <button class="btn btn-ghost" data-tab="promos" type="button" id="stkPromoTabBtn">Промокоды</button>
   </div>
 
   <div class="ed tab-content" id="tab-products">
@@ -495,6 +558,8 @@ try{
     <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Сохранить настройки</button>
     <p class="msg" id="settingsMsg"></p>
   </div>
+
+  <div class="tab-content stk-admin-promos" id="tab-promos" style="display:none;"></div>
 </dialog>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
