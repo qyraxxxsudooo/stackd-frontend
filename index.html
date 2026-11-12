@@ -1,0 +1,567 @@
+
+<!doctype html>
+<html lang="ru" data-theme="light" class="notranslate" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="google" content="notranslate">
+
+<meta name="google-site-verification" content="GDV2VOqrb9JPhwJVt1FR3Aj-8y4NtD6NianS-f2GFi0">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+
+<title>STACKED Baku - Food Deals, Discounts &amp; Online Orders</title>
+<meta name="description" content="STACKED Baku - платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте онлайн-заказы с QR-кодами.">
+<meta name="application-name" content="STACKED">
+<meta name="author" content="STACKED">
+<meta name="theme-color" content="#f7f3ec">
+
+<link rel="canonical" href="https://stackd-frontend.vercel.app/">
+<link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="STACKED">
+<meta property="og:title" content="STACKED Baku - Food Deals, Discounts &amp; Online Orders">
+<meta property="og:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды для подтверждённых заказов.">
+<meta property="og:url" content="https://stackd-frontend.vercel.app/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="az_AZ">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="STACKED Baku - Food Deals, Discounts &amp; Online Orders">
+<meta name="twitter:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "STACKED Baku",
+  "alternateName": "STACKED",
+  "url": "https://stackd-frontend.vercel.app/",
+  "description": "Платформа предложений, скидок на еду и онлайн-заказов в Баку, Азербайджан.",
+  "inLanguage": ["ru", "en", "az"]
+}
+</script>
+
+<script>
+try {
+  var t = localStorage.getItem('pdd.theme') || 'system';
+  document.documentElement.dataset.theme =
+    t === 'system'
+      ? (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')
+      : t;
+} catch(e) {}
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="stackd-enhancements.css">
+<link rel="stylesheet" href="stackd-maintenance.css">
+<link rel="stylesheet" href="stacked-motion.css">
+<link rel="stylesheet" href="stacked-shop.css">
+<style>
+/* STACKED splash: painted on the first frame; a CSS-only failsafe removes it after 4 s even if JS fails. */
+#stackedSplash{position:fixed;inset:0;z-index:2147483000;background:#f7f3ec;pointer-events:none;animation:stackedSplashSafe .01s linear 3.6s forwards}
+html.stacked-dark #stackedSplash{background:#141311}
+html[data-motion=off] #stackedSplash{display:none}
+@keyframes stackedSplashSafe{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#stackedSplash{display:none}}
+</style>
+<script>
+try{
+  var d=document.documentElement,t=localStorage.getItem('pdd.theme')||'system';
+  if(t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('stacked-dark');
+  if(localStorage.getItem('stacked.motion')==='off')d.dataset.motion='off';
+}catch(e){}
+</script>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="notranslate" translate="no">
+<div id="stackedSplash" aria-hidden="true"></div>
+
+<div id="stackdMaintenance" class="stackd-maintenance" hidden role="dialog" aria-modal="true" aria-labelledby="stackdMaintenanceTitle">
+
+  <div class="stackd-maintenance-background" hidden>
+    <img alt="">
+  </div>
+
+  <div class="stackd-maintenance-card" data-template="midnight" data-theme="dark">
+
+    <div class="stackd-maintenance-stage" data-decor-position="right">
+
+      <div class="stackd-maintenance-content">
+
+        <div class="stackd-maintenance-mark" aria-hidden="true">
+          <img src="assets/icons/logo.svg" alt="" width="44" height="44">
+        </div>
+
+        <span class="stackd-maintenance-eyebrow">STACKED • BAKU</span>
+
+        <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">
+          Скоро вернёмся
+        </h1>
+
+        <p class="stackd-maintenance-message">
+          Сейчас мы обновляем STACKED. Сайт снова будет доступен совсем скоро.
+        </p>
+
+        <div class="stackd-maintenance-rule" aria-hidden="true"></div>
+
+        <div class="stackd-maintenance-actions">
+          <button id="stackdMaintenanceRetry" type="button" hidden>
+            Повторить проверку
+          </button>
+        </div>
+
+      </div>
+
+      <div class="stackd-maintenance-decor" hidden>
+        <img alt="">
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
+  <filter id="liquid-lens" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008" numOctaves="2" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<svg width="0" height="0" hidden aria-hidden="true">
+  <symbol id="i-cart" viewBox="0 0 24 24">
+    <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L19 8H6.2M9 19.5a.5.5 0 1 0 0 .01M17 19.5a.5.5 0 1 0 0 .01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="i-search" viewBox="0 0 24 24">
+    <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="i-x" viewBox="0 0 24 24">
+    <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="i-google" viewBox="0 0 24 24">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+  </symbol>
+
+  <symbol id="i-chevron" viewBox="0 0 24 24">
+    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="i-tg" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+  </symbol>
+
+  <symbol id="i-wa" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.173-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+  </symbol>
+
+  <symbol id="i-copy" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 4v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2zm-4 4h2v8a2 2 0 0 0 2 2h8v2H6a2 2 0 0 1-2-2V8z"/>
+  </symbol>
+</svg>
+
+<header class="nav glass">
+
+  <a class="brand" href="#top">
+    <stacked-logo size="28" intro><img src="assets/icons/logo.svg" alt="" width="28" height="28"></stacked-logo>
+    <span>STACKED</span>
+  </a>
+
+  <div class="search-container">
+    <form class="search" role="search" id="searchForm">
+      <svg class="ic"><use href="#i-search"/></svg>
+      <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="Поиск в STACKED" autocomplete="off">
+    </form>
+    <div class="search-suggestions glass" id="searchSuggestions"></div>
+  </div>
+
+  <div class="lang-selector" id="langSelector">
+    <button class="btn btn-ghost lang-btn" data-act="toggle-lang" type="button">
+      <span id="currentLangLabel">RU</span>
+      <svg class="ic" width="16" height="16"><use href="#i-chevron"/></svg>
+    </button>
+
+    <div class="lang-dropdown glass" id="langDropdown">
+      <button type="button" data-lang="ru">Русский</button>
+      <button type="button" data-lang="en">English</button>
+      <button type="button" data-lang="az">Azərbaycan</button>
+    </div>
+  </div>
+
+  <div id="userProfile" class="user-profile" style="display:none;">
+    <div class="stackd-profile-anchor">
+      <button id="stackdProfileTrigger" class="stackd-profile-trigger" type="button" aria-expanded="false" aria-controls="stackdProfileMenu" title="Настройки профиля">
+        <img id="userAvatar" src="assets/icons/placeholder.svg" alt="">
+        <strong id="stackdProfileHint">Настройки профиля</strong>
+        <small id="stackdProfileClick">Нажмите, чтобы открыть</small>
+      </button>
+
+      <div id="stackdProfileMenu" class="stackd-profile-menu glass" hidden>
+        <div class="stackd-profile-head">
+          <strong id="stackdProfileTitle">Профиль</strong>
+          <small>
+            <span id="stackdProfileEmailLabel">Вы вошли как</span>
+            <span id="stackdProfileEmail"></span>
+          </small>
+        </div>
+
+        <p id="stackdProfileNote" class="stackd-profile-note">
+          Управляйте аккаунтом и оформлением сайта.
+        </p>
+
+        <button id="myOrdersBtn" class="stackd-profile-action" type="button" data-act="orders">
+          Мои заказы
+        </button>
+
+        <button id="logoutBtn" class="stackd-profile-action stackd-profile-logout" type="button" data-i18n="logout_btn">
+          Выйти из аккаунта
+        </button>
+      </div>
+    </div>
+
+    <div class="balance-group">
+      <div class="balance-display">
+        <span class="b-label" data-i18n="balance_label">Баланс</span>
+        <span class="b-amount">
+          <span id="userBalance">0.00</span> AZN
+        </span>
+      </div>
+      <button class="btn-topup" id="topupBtn" title="Пополнить" aria-label="Пополнить баланс" type="button">+</button>
+    </div>
+  </div>
+
+  <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn" type="button">Войти</button>
+
+  <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;" data-i18n="catalog_btn" type="button">Каталог</button>
+
+  <button class="cart-btn" data-act="cart-open" aria-label="Открыть корзину" type="button">
+    <svg class="ic"><use href="#i-cart"/></svg>
+    <span class="badge" id="badge">0</span>
+  </button>
+
+  <button id="settingsBtn" class="icon-btn settings-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="settingsPanel" aria-label="Настройки" data-i18n-aria="settings_title"><svg class="ic settings-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+</header>
+<div id="settingsScrim" class="settings-scrim" hidden></div>
+<div id="settingsPanel" class="settings-panel" role="dialog" aria-modal="false" aria-labelledby="settingsTitle" hidden>
+  <div class="settings-head">
+    <h2 id="settingsTitle" data-i18n="settings_title">Настройки</h2>
+    <button class="icon-btn" type="button" data-settings-close aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="settings-body">
+    <section class="settings-sec">
+      <h3 data-i18n="set_appearance">Оформление</h3>
+      <div class="seg" role="group" aria-label="Theme" id="profileThemeSeg">
+        <div class="seg-slider" id="themeSlider"></div>
+        <button type="button" data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
+        <button type="button" data-act="theme" data-v="dark" data-i18n="theme_dark">Тёмная</button>
+        <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
+      </div>
+    </section>
+    <section class="settings-sec">
+      <h3 data-i18n="promo_title">Промокод</h3>
+      <form id="promoForm" class="promo-form" autocomplete="off">
+        <input id="promoInput" type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" data-i18n-placeholder="promo_placeholder" placeholder="Введите промокод">
+        <button class="btn btn-primary" type="submit" id="promoApplyBtn" data-i18n="promo_apply">Применить</button>
+      </form>
+      <div id="promoStatus" class="promo-status" aria-live="polite"></div>
+    </section>
+    <section class="settings-sec">
+      <h3 data-i18n="set_language">Язык</h3>
+      <div class="set-choice" role="group" aria-label="Language" id="langChoice">
+        <button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="az">AZ</button>
+      </div>
+    </section>
+    <section class="settings-sec">
+      <h3 data-i18n="set_motion">Анимации</h3>
+      <label class="set-switch"><input type="checkbox" id="motionOff"><span class="set-switch-track" aria-hidden="true"></span><span data-i18n="set_motion_label">Отключить декоративные анимации</span></label>
+    </section>
+    <section class="settings-sec" id="tgSection" hidden>
+      <h3 data-i18n="tg_title">Telegram</h3>
+      <p class="settings-hint" id="tgHint" data-i18n="tg_hint">Получайте QR-код заказа в личные сообщения.</p>
+      <button class="btn btn-ghost block" type="button" id="tgConnectBtn" data-i18n="tg_connect">Подключить уведомления</button>
+    </section>
+  </div>
+</div>
+
+<main id="top">
+  <section class="showcase">
+    <div class="showcase-slider" id="showcaseSlider"></div>
+  </section>
+
+  <section class="wrap" id="catalog" aria-labelledby="ch">
+    <div class="head">
+      <h2 id="ch" data-i18n="menu_title">Меню</h2>
+      <nav class="chips-wrapper">
+        <nav class="chips" id="chips" aria-label="Категории">
+          <div class="chips-slider" id="chipsSlider"></div>
+        </nav>
+      </nav>
+    </div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+
+  <section class="wrap stacked-how" id="how" aria-labelledby="howTitle">
+    <div class="stacked-how-head">
+      <span class="stacked-how-kicker">STACKED</span>
+      <h2 id="howTitle" data-i18n="how_title">Как работает STACKED</h2>
+      <p data-i18n="how_sub">Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.</p>
+    </div>
+    <div class="stacked-how-stage">
+      <stacked-motion type="full" size="large"></stacked-motion>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>
+      <strong>STACKED</strong>
+      <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
+      <div class="social-links">
+        <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+          <svg class="ic"><use href="#i-tg"/></svg>
+          @sharkiff
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <strong data-i18n="footer_support">Поддержка</strong>
+      <p>
+        <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" style="color:var(--text);text-decoration:none;">
+          Telegram: @sharkiff
+        </a>
+      </p>
+    </div>
+
+    <div>
+      <strong data-i18n="footer_about">О проекте</strong>
+      <p data-i18n="footer_about_text">Данные хранятся в облаке Supabase.</p>
+    </div>
+  </div>
+</footer>
+
+<dialog id="drawer" class="drawer glass" aria-labelledby="dh">
+  <header>
+    <h2 id="dh" data-i18n="cart_title">Корзина</h2>
+    <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
+      <svg class="ic"><use href="#i-x"/></svg>
+    </button>
+  </header>
+  <ul id="lines" class="lines"></ul>
+  <footer>
+    <div class="cart-promo" id="cartPromo" hidden></div>
+    <div class="cart-sum" id="cartSubtotalRow" hidden><span data-i18n="cart_subtotal">Сумма</span><span id="cartSubtotal"></span></div>
+    <div class="cart-sum cart-sum-discount" id="cartDiscountRow" hidden><span data-i18n="cart_discount">Скидка</span><span id="cartDiscount"></span></div>
+    <div class="total">
+      <span data-i18n="cart_total">Итого</span>
+      <strong id="total">0.00 AZN</strong>
+    </div>
+    <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout" type="button">Оформить заказ</button>
+    <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear" type="button">Очистить</button>
+  </footer>
+</dialog>
+
+<dialog id="orders" class="modal wide glass" aria-labelledby="ordersTitle">
+  <header class="orders-dialog-header">
+    <h2 id="ordersTitle" data-i18n="orders_title">Мои заказы</h2>
+    <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
+      <svg class="ic"><use href="#i-x"/></svg>
+    </button>
+  </header>
+  <div id="ordersList" class="orders-list" aria-live="polite">
+    <p class="orders-empty">Заказы появятся здесь после оформления.</p>
+  </div>
+</dialog>
+
+<dialog id="detail" class="modal glass" aria-labelledby="dtn">
+  <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
+    <svg class="ic"><use href="#i-x"/></svg>
+  </button>
+  <div id="detailBody"></div>
+</dialog>
+
+<dialog id="auth" class="modal auth-modal glass" aria-labelledby="authTitle">
+  <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
+    <svg class="ic"><use href="#i-x"/></svg>
+  </button>
+  <div class="auth-content">
+    <h2 id="authTitle" data-i18n="auth_title">Добро пожаловать</h2>
+    <p class="auth-sub" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
+    <button class="btn btn-google" id="googleLoginBtn" type="button">
+      <svg class="ic" width="20" height="20"><use href="#i-google"/></svg>
+      <span data-i18n="auth_google">Продолжить с Google</span>
+    </button>
+    <div class="divider">
+      <span data-i18n="auth_or">или</span>
+    </div>
+    <form class="auth-form" id="authForm" novalidate>
+      <input type="email" id="emailInput" placeholder="Email" autocomplete="email" required>
+      <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password" required minlength="6">
+      <p class="msg" id="authMsg"></p>
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
+        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Регистрация</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="topup" class="modal glass">
+  <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
+    <svg class="ic"><use href="#i-x"/></svg>
+  </button>
+  <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
+  <div class="payment-instructions" role="status">
+    <p data-i18n="topup_instructions">
+      Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.
+    </p>
+    <a class="tg-channel-btn" href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.96 7.22c.1 0 .32.02.47.14a.5.5 0 0 1 .17.33c.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.13-2.68-1.8-1.19-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.43.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z"/>
+      </svg>
+      <span data-i18n="topup_channel">Открыть Telegram-канал</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+  <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">
+    Отправка заявки не означает автоматическое зачисление. Поступление средств проверяется отдельно.
+  </p>
+  <form id="topupForm">
+    <label data-i18n="topup_amount">Сумма (AZN)</label>
+    <input type="number" id="topupAmount" required min="1" max="100" step="0.01">
+    <label data-i18n="topup_check">Скриншот чека</label>
+    <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
+    <label class="check terms-check">
+      <input type="checkbox" id="termsCheck" required>
+      <span data-i18n="topup_terms">
+        Я подтверждаю, что данные заявки верны. Зачисление выполняется только после проверки платежа.
+      </span>
+    </label>
+    <p class="msg" id="topupMsg"></p>
+    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Отправить чек</button>
+  </form>
+</dialog>
+
+<dialog id="editor" class="modal wide glass" aria-labelledby="eh">
+  <header>
+    <h2 id="eh" data-i18n="admin_title">Управление</h2>
+    <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
+      <svg class="ic"><use href="#i-x"/></svg>
+    </button>
+  </header>
+
+  <div class="admin-tabs">
+    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">Товары</button>
+    <button class="btn btn-ghost" data-tab="promos" data-i18n="admin_tab_promos" type="button">Промокоды</button>
+    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">Настройки сайта</button>
+  </div>
+
+  <div class="ed tab-content" id="tab-products">
+    <div>
+      <div class="row">
+        <h3>
+          <span data-i18n="admin_products">Товары</span>
+          <span class="count" id="adminCount"></span>
+        </h3>
+        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add" type="button">Добавить</button>
+      </div>
+      <div class="admin-filter">
+        <input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off">
+      </div>
+      <ul id="adminList" class="alist"></ul>
+    </div>
+
+    <form id="pform" novalidate>
+      <h3 id="formTitle" data-i18n="form_new">Новый товар</h3>
+      <label for="pn" data-i18n="form_name">Название</label>
+      <input id="pn" required maxlength="60">
+      <label for="pd" data-i18n="form_desc">Описание</label>
+      <textarea id="pd" rows="3" maxlength="200"></textarea>
+      <div class="two">
+        <div>
+          <label for="pc" data-i18n="form_cat">Категория</label>
+          <input id="pc" list="categoryOptions" required maxlength="40" placeholder="Burgers">
+          <datalist id="categoryOptions"></datalist>
+        </div>
+        <div>
+          <label for="pp" data-i18n="form_price">Цена (AZN)</label>
+          <input id="pp" type="number" min="0" step="0.01" inputmode="decimal" required>
+        </div>
+      </div>
+      <label for="pf" data-i18n="form_image">Картинка (с ПК)</label>
+      <input id="pf" type="file" accept="image/jpeg,image/png,image/webp">
+      <div class="upload-preview" id="productImagePreviewWrap" hidden>
+        <img id="productImagePreview" alt="Предпросмотр изображения товара">
+        <div class="upload-preview-meta">
+          <span id="productImagePreviewName"></span>
+          <button type="button" class="btn btn-ghost sm" id="clearProductImage">Убрать фото</button>
+        </div>
+      </div>
+      <p class="msg" id="formMsg" role="alert"></p>
+      <div class="row">
+        <button type="submit" class="btn btn-primary" data-i18n="form_save">Сохранить</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="ed tab-content" id="tab-promos" style="display:none">
+    <div class="row"><h3><span data-i18n="admin_tab_promos">Промокоды</span> <span class="count" id="promoCount"></span></h3><button class="btn btn-ghost sm" type="button" id="promoNewBtn" data-i18n="pr_new">Новый</button></div>
+    <form id="promoEditor" class="promo-editor" hidden autocomplete="off">
+      <div class="pe-grid">
+        <label><span data-i18n="pr_code">Код</span><input name="code" maxlength="32" required autocapitalize="characters" spellcheck="false" placeholder="STACKED!"></label>
+        <label><span data-i18n="pr_title">Название</span><input name="title" maxlength="80" placeholder="STACKED Special Offer"></label>
+        <label><span data-i18n="pr_type">Тип</span><select name="kind"><option value="percent" data-i18n="pr_percent">Процент</option><option value="fixed" data-i18n="pr_fixed">Фиксированная сумма</option><option value="free_product" data-i18n="pr_free">Бесплатный товар</option></select></label>
+        <label data-pe="value"><span data-i18n="pr_value">Размер скидки</span><input name="value" type="number" inputmode="decimal" min="0.01" step="0.01"></label>
+        <label data-pe="scope"><span data-i18n="pr_scope">Применяется к</span><select name="scope"><option value="all" data-i18n="pr_scope_all">Всему меню</option><option value="product" data-i18n="pr_scope_product">Выбранному товару</option></select></label>
+        <label data-pe="product"><span data-i18n="pr_product">Товар</span><select name="product_id"></select></label>
+        <label><span data-i18n="pr_max_uses">Общий лимит (пусто = без лимита)</span><input name="max_uses" type="number" inputmode="numeric" min="1" step="1"></label>
+        <label><span data-i18n="pr_per_user">Лимит на пользователя</span><input name="per_user_limit" type="number" inputmode="numeric" min="1" step="1" value="1" required></label>
+        <label><span data-i18n="pr_starts">Начало</span><input name="starts_at" type="datetime-local"></label>
+        <label><span data-i18n="pr_ends">Окончание</span><input name="ends_at" type="datetime-local"></label>
+      </div>
+      <label class="pe-check"><input type="checkbox" name="active" checked><span data-i18n="pr_active">Активен</span></label>
+      <p class="msg" id="promoMsg" role="status"></p>
+      <div class="pe-actions"><button class="btn btn-primary" type="submit" data-i18n="pr_save">Сохранить</button><button class="btn btn-ghost" type="button" id="promoCancelBtn" data-i18n="pr_cancel">Отмена</button></div>
+    </form>
+    <div id="promoList" class="promo-list"></div>
+  </div>
+
+  <div class="tab-content" id="tab-settings" style="display:none;padding:20px 0;">
+    <h3 data-i18n="settings_title">Настройки главной страницы</h3>
+    <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
+    <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в STACKED">
+    <label for="settingHeroSub" data-i18n="settings_hero_sub">Подзаголовок / Описание</label>
+    <textarea id="settingHeroSub" rows="2" placeholder="Лучшие предложения на еду..."></textarea>
+    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Сохранить настройки</button>
+    <p class="msg" id="settingsMsg"></p>
+  </div>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<script src="app.js" defer></script>
+<script src="stackd-enhancements.js" defer></script>
+<script src="stackd-maintenance.js" defer></script>
+<script src="stacked-shop.js" defer></script>
+<script src="stacked-motion.js" defer></script>
+
+</body>
+</html>
