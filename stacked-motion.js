@@ -475,7 +475,13 @@
     raf = ACTIVE.size ? requestAnimationFrame(frame) : 0;
   };
   const kick = () => { if (!raf && ACTIVE.size) { last = performance.now(); raf = requestAnimationFrame(frame); } };
-  const reducedMQ = G.matchMedia ? G.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false, addEventListener() {} };
+  // The site-wide "Motion" setting (html.stk-motion-off) counts as reduced motion too.
+  const sysReduced = G.matchMedia ? G.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false, addEventListener() {} };
+  const reducedMQ = {
+    get matches() { return sysReduced.matches || (typeof document !== 'undefined' && document.documentElement.classList.contains('stk-motion-off')); },
+    addEventListener(type, fn) { sysReduced.addEventListener && sysReduced.addEventListener(type, fn); G.addEventListener && G.addEventListener('stacked:motion', fn); },
+    removeEventListener(type, fn) { sysReduced.removeEventListener && sysReduced.removeEventListener(type, fn); G.removeEventListener && G.removeEventListener('stacked:motion', fn); }
+  };
   const docTheme = () => {
     const d = document.documentElement.getAttribute('data-theme');
     if (d === 'dark' || d === 'light') return d;
@@ -589,29 +595,6 @@
     if (!customElements.get('stacked-logo')) customElements.define('stacked-logo', StackedLogo);
   }
 
-  /* ───────────── brand splash (first visit per session) ───────────── */
-  function initSplash() {
-    const el = document.getElementById('stackedSplash');
-    if (!el) return;
-    const finish = () => { el.remove(); document.dispatchEvent(new CustomEvent('stacked:splash-end')); };
-    if (reducedMQ.matches || document.documentElement.classList.contains('stacked-no-splash')) { finish(); return; }
-    try { sessionStorage.setItem('stacked.splash', '1'); } catch (e) { /* storage blocked: splash simply plays every visit */ }
-    const m = document.createElement('stacked-motion');
-    m.setAttribute('type', 'intro'); m.setAttribute('aria-hidden', 'true');
-    el.appendChild(m);
-    let left = false;
-    const leave = () => {
-      if (left) return; left = true;
-      el.style.transition = 'opacity .45s cubic-bezier(.22,.72,.18,1)'; el.style.opacity = '0';
-      setTimeout(finish, 470);
-    };
-    m.addEventListener('stacked-ended', () => setTimeout(leave, 320));
-    ['pointerdown', 'keydown'].forEach((ev) => G.addEventListener(ev, leave, { once: true, passive: true }));
-    setTimeout(leave, 4200);
-  }
 
   G.StackedMotion = { create, easing: E, version: '1.0.0' };
-  if (typeof document !== 'undefined' && document.getElementById) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSplash); else initSplash();
-  }
 })();
