@@ -225,7 +225,6 @@ button,.btn,.icon-btn,.chips button{-webkit-tap-highlight-color:transparent}
 .btn:active:not(:disabled),.icon-btn:active{transform:scale(.97)}
 .toast{animation:toastIn .22s var(--ease) both}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
-html.theme-switching *,html.theme-switching *::before,html.theme-switching *::after{transition:background-color .28s ease,color .28s ease,border-color .28s ease,fill .28s ease!important}
 @media(max-width:680px){dialog.modal[open],dialog.drawer[open]{animation-name:sheetUp;animation-duration:.28s;animation-timing-function:var(--ease)}}
 @keyframes sheetUp{from{opacity:.6;transform:translateY(28px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:no-preference){

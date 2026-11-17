@@ -241,14 +241,6 @@ function renderAll() {
   if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
   // Fade cards in only when the visible set changed (first load, category, search), never on stock or cart updates.
   const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
-  if ($('#grid') && S.gridKey !== gridKey && list.length && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
-    $('#grid').querySelectorAll(':scope > .card').forEach((node, i) => {
-      if (i > 11) return;
-      node.style.setProperty('--i', i);
-      node.classList.add('is-enter');
-      node.addEventListener('animationend', () => { node.classList.remove('is-enter'); node.style.removeProperty('--i'); }, { once: true });
-    });
-  }
   S.gridKey = gridKey;
   renderCart();
   if ($('#editor')?.open) renderAdmin();
@@ -772,7 +764,6 @@ const settingsBtn = $('#settingsBtn'), settingsPanel = $('#settingsPanel'), sett
 function syncSettingsUI() {
   settingsBtn?.setAttribute('aria-label', tr('settings_title'));
   $$('#langChoice button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
-  const motion = $('#motionOff'); if (motion) motion.checked = document.documentElement.dataset.motion === 'off';
   renderPromoUI(); updateThemeSlider();
 }
 async function syncTelegramUI() {
@@ -807,11 +798,6 @@ settingsScrim?.addEventListener('click', () => closeSettings(false));
 document.addEventListener('pointerdown', e => { if (settingsPanel && !settingsPanel.hidden && !settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)) closeSettings(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && settingsPanel && !settingsPanel.hidden) { e.stopPropagation(); closeSettings(); } }, true);
 $('#langChoice')?.addEventListener('click', e => { const b = e.target.closest('button[data-lang]'); if (!b) return; applyLanguage(b.dataset.lang); syncSettingsUI(); });
-$('#motionOff')?.addEventListener('change', e => {
-  const off = e.target.checked;
-  try { localStorage.setItem('stacked.motion', off ? 'off' : 'on'); } catch {}
-  if (off) document.documentElement.dataset.motion = 'off'; else delete document.documentElement.dataset.motion;
-});
 $('#tgConnectBtn')?.addEventListener('click', async e => {
   const btn = e.currentTarget; if (!S.tgBot || btn.disabled) return;
   btn.disabled = true;

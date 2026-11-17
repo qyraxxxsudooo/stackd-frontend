@@ -71,7 +71,7 @@ html[data-motion=off] #stackedSplash{display:none}
 try{
   var d=document.documentElement,t=localStorage.getItem('pdd.theme')||'system';
   if(t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches))d.classList.add('stacked-dark');
-  if(localStorage.getItem('stacked.motion')==='off')d.dataset.motion='off';
+  localStorage.removeItem('stacked.motion');
 }catch(e){}
 </script>
 
@@ -287,10 +287,6 @@ try{
       <div class="set-choice" role="group" aria-label="Language" id="langChoice">
         <button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="az">AZ</button>
       </div>
-    </section>
-    <section class="settings-sec">
-      <h3 data-i18n="set_motion">Анимации</h3>
-      <label class="set-switch"><input type="checkbox" id="motionOff"><span class="set-switch-track" aria-hidden="true"></span><span data-i18n="set_motion_label">Отключить декоративные анимации</span></label>
     </section>
     <section class="settings-sec" id="tgSection" hidden>
       <h3 data-i18n="tg_title">Telegram</h3>
