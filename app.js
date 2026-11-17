@@ -570,7 +570,7 @@ async function renderOrders(rows) {
     const d = describeOrder(order);
     let qr = '';
     if (d.qrIsReady) { try { qr = await resolveOrderQr(order); } catch (error) { console.error('QR signed URL failed:', error); } }
-    const sig = [S.lang, d.status, order.total, order.discount || 0, order.qr_code_url || '', order.qr_expires_at || '', d.qrIsReady && qr ? 'qr' : '', d.qrIsExpired ? 'x' : '', d.canCancel ? 'c' : '', JSON.stringify(order.items || [])].join('|');
+    const sig = [S.lang, d.status, order.total, order.discount_amount || 0, order.qr_code_url || '', order.qr_expires_at || '', d.qrIsReady && qr ? 'qr' : '', d.qrIsExpired ? 'x' : '', d.canCancel ? 'c' : '', JSON.stringify(order.items || [])].join('|');
     return { order, d, qr, sig };
   }));
   if (host.dataset.owner !== (S.user?.id || '')) return;
@@ -621,7 +621,7 @@ async function loadOrders() {
   S.ordersBusy = true;
   const host = $('#ordersList');
   try {
-    const { data, error } = await _supabase.from('orders').select('id,user_id,total,items,status,created_at,qr_code_url,qr_expires_at,discount,promo_code').eq('user_id', S.user.id).order('created_at', { ascending: false }).limit(50);
+    const { data, error } = await _supabase.from('orders').select('id,user_id,total,items,status,created_at,qr_code_url,qr_expires_at,discount_amount,promo_code').eq('user_id', S.user.id).order('created_at', { ascending: false }).limit(50);
     if (error) throw error;
     await renderOrders(Array.isArray(data) ? data : []);
   } catch (error) {
@@ -748,6 +748,8 @@ async function applyPromo(raw) {
     const { data, error } = await _supabase.rpc('stackd_promo_preview', { p_code: code, p_items: S.cart.map(item => ({ id: item.id, qty: item.qty })) });
     if (error) { console.error('promo_validate failed:', error); setPromoMsg(tr('promo_invalid'), true); return; }
     if (!data?.ok) { setPromoMsg(tr('promo_' + (['already_used', 'not_applicable', 'rate_limited'].includes(data?.reason) ? data.reason : 'invalid')), true); return; }
+    data.kind = data.type; data.value = data.type === 'percent' ? data.percent : data.amount;
+    data.product_id = data.product?.id ?? null; data.add_product = data.type === 'free_product' && data.product?.purchasable;
     if (data.add_product && data.product_id && !S.cart.some(x => String(x.id) === String(data.product_id) && x.qty > 0)) {
       setQty(data.product_id, 1);   // the free unit comes out of the cart, so the product has to be there
       if (!S.cart.some(x => String(x.id) === String(data.product_id) && x.qty > 0)) { setPromoMsg(tr('promo_not_applicable'), true); return; }
@@ -876,7 +878,7 @@ async function loadPromos() {
   if (!isAdmin()) return;
   const { data, error } = await _supabase.from('promo_codes').select('*').order('created_at', { ascending: false });
   if (error) { const host = $('#promoList'); if (host) host.innerHTML = `<p class="orders-error">${esc(error.message)}</p>`; return; }
-  S.promoRows = data || []; renderPromoRows();
+  S.promoRows = (data || []).map(r => ({ ...r, kind: r.discount_type, value: r.percent_off ?? r.amount_off, per_user_limit: r.max_uses_per_user })); renderPromoRows();
 }
 document.querySelector('.admin-tabs [data-tab="promos"]')?.addEventListener('click', loadPromos);
 $('#promoNewBtn')?.addEventListener('click', () => openPromoEditor(null));
@@ -888,10 +890,10 @@ PROMO_FORM()?.addEventListener('submit', async e => {
   const f = e.currentTarget, msg = $('#promoMsg'), free = f.kind.value === 'free_product';
   const num = v => (v === '' ? null : Number(v));
   const payload = {
-    code: f.code.value.trim().toUpperCase(), title: f.title.value.trim(), kind: f.kind.value,
-    value: free ? null : num(f.value.value), scope: free ? 'product' : f.scope.value,
+    code: f.code.value.trim().toUpperCase(), title: f.title.value.trim(), discount_type: f.kind.value,
+    percent_off: !free && f.kind.value === 'percent' ? num(f.value.value) : null, amount_off: !free && f.kind.value === 'fixed' ? num(f.value.value) : null, scope: free ? 'product' : f.scope.value,
     product_id: free || f.scope.value === 'product' ? f.product_id.value || null : null,
-    max_uses: num(f.max_uses.value), per_user_limit: num(f.per_user_limit.value) || 1,
+    max_uses: num(f.max_uses.value), max_uses_per_user: num(f.per_user_limit.value) || 1,
     starts_at: f.starts_at.value ? new Date(f.starts_at.value).toISOString() : null,
     ends_at: f.ends_at.value ? new Date(f.ends_at.value).toISOString() : null, active: f.active.checked
   };
@@ -941,8 +943,8 @@ async function checkout() {
     loadOrders();
   } catch (error) {
     console.error('Checkout failed:', error);
-    const promoFail = /promo_(invalid|already_used|not_applicable|rate_limited)/.exec(String(error?.message || ''));
-    if (promoFail) { S.promo = null; S.promoMsg = null; renderCart(); toast(tr('promo_' + promoFail[1])); return; }
+    const promoFail = /promo_(invalid|already_used|not_applicable|rate_limited)/i.exec(String(error?.message || ''));
+    if (promoFail) { S.promo = null; S.promoMsg = null; renderCart(); toast(tr('promo_' + promoFail[1].toLowerCase())); return; }
     toast('Не удалось оформить заказ: ' + (error.message || 'ошибка сервера'));
   } finally {
     S.checkoutBusy = false;
