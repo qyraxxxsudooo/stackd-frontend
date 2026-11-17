@@ -745,7 +745,7 @@ async function applyPromo(raw) {
   const button = $('#promoApplyBtn');
   S.promoBusy = true; if (button) button.disabled = true;
   try {
-    const { data, error } = await _supabase.rpc('promo_validate', { p_code: code, cart_items: S.cart.map(item => ({ id: item.id, qty: item.qty })) });
+    const { data, error } = await _supabase.rpc('stackd_promo_preview', { p_code: code, p_items: S.cart.map(item => ({ id: item.id, qty: item.qty })) });
     if (error) { console.error('promo_validate failed:', error); setPromoMsg(tr('promo_invalid'), true); return; }
     if (!data?.ok) { setPromoMsg(tr('promo_' + (['already_used', 'not_applicable', 'rate_limited'].includes(data?.reason) ? data.reason : 'invalid')), true); return; }
     if (data.add_product && data.product_id && !S.cart.some(x => String(x.id) === String(data.product_id) && x.qty > 0)) {
@@ -814,7 +814,7 @@ $('#tgConnectBtn')?.addEventListener('click', async e => {
   const btn = e.currentTarget; if (!S.tgBot || btn.disabled) return;
   btn.disabled = true;
   try {
-    const { data: token, error } = await _supabase.rpc('create_telegram_link');
+    const { data: token, error } = await _supabase.rpc('stackd_telegram_link_token');
     if (error || !token) throw error || new Error('no token');
     const url = `https://t.me/${S.tgBot}?start=link_${token}`;
     let a = $('#tgOpenLink');
@@ -925,7 +925,7 @@ async function checkout() {
   S.checkoutBusy = true;
   if (button) { button.disabled = true; button.textContent = tr('checkout_busy'); }
   try {
-    const { data, error } = await _supabase.rpc('checkout_order', { cart_items: S.cart.map(item => ({ id: item.id, qty: item.qty })), promo_code: S.promo?.code || null, request_id: (S.checkoutRequestId ||= newRequestId()) });
+    const { data, error } = await _supabase.rpc('stackd_checkout', { p_items: S.cart.map(item => ({ id: item.id, qty: item.qty })), p_promo_code: S.promo?.code || null, p_request_id: (S.checkoutRequestId ||= newRequestId()) });
     if (error) throw error;
     const orderId = typeof data === 'string' ? data : (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
     if (!orderId) throw new Error('checkout_order не вернул ID заказа.');
