@@ -545,11 +545,11 @@ function orderCardHtml(order, d, qr) {
   } else if (d.qrIsExpired) {
     body = `<p class="order-note order-note-expired">${esc(tr('orders_expired_note'))}</p>`;
   } else if (d.status === 'pending') {
-    body = `<p class="order-note">${esc(tr('orders_pending_note'))}</p>${d.canCancel ? `<button type="button" class="btn btn-ghost order-cancel" data-act="cancel-order" data-id="${esc(d.id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
+    body = `<div class="order-wait"><span class="st-qr-wait" aria-hidden="true"><i></i></span><p class="order-note">${esc(tr('orders_pending_note'))}</p></div>${d.canCancel ? `<button type="button" class="btn btn-ghost order-cancel" data-act="cancel-order" data-id="${esc(d.id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
   } else if (d.status !== 'completed' && d.status !== 'cancelled') {
     body = `<p class="order-note">${esc(statusText(d.status))}</p>`;
   }
-  return `<div class="order-card-head"><div class="order-id"><strong>№ ${short}</strong>${createdText ? `<small>${esc(createdText)}</small>` : ''}</div><span class="order-status order-status-${esc(d.status)}">${esc(statusText(d.status))}</span></div>${orderItemsHtml(order.items)}${Number(order.discount) > 0 ? `<div class="order-card-discount"><span>${esc(order.promo_code || '')}</span><span>−${fmt(order.discount)}</span></div>` : ''}<div class="order-card-total"><span>${itemCount ? `${itemCount} ${unit}` : ''}</span><strong>${fmt(order.total)}</strong></div>${body ? `<div class="order-card-body">${body}</div>` : ''}`;
+  return `<div class="order-card-head"><div class="order-id"><strong>№ ${short}</strong>${createdText ? `<small>${esc(createdText)}</small>` : ''}</div><span class="order-status order-status-${esc(d.status)}">${esc(statusText(d.status))}</span></div>${orderItemsHtml(order.items)}${Number(order.discount_amount) > 0 ? `<div class="order-card-discount"><span>${esc(order.promo_code || '')}</span><span>−${fmt(order.discount_amount)}</span></div>` : ''}<div class="order-card-total"><span>${itemCount ? `${itemCount} ${unit}` : ''}</span><strong>${fmt(order.total)}</strong></div>${body ? `<div class="order-card-body">${body}</div>` : ''}`;
 }
 // Keyed update: untouched cards stay in the DOM, so scroll position, an open QR and running animations survive each poll.
 async function renderOrders(rows) {
@@ -911,7 +911,7 @@ async function checkout() {
   if (!lines().length) { toast(tr('cart_empty')); return; }
   const button = $('#checkoutBtn'), oldText = button?.textContent || tr('cart_checkout');
   S.checkoutBusy = true;
-  if (button) { button.disabled = true; button.textContent = tr('checkout_busy'); }
+  if (button) { button.disabled = true; button.innerHTML = (window.stLoader ? stLoader() : '') + `<span>${esc(tr('checkout_busy'))}</span>`; }
   try {
     const { data, error } = await _supabase.rpc('stackd_checkout', { p_items: S.cart.map(item => ({ id: item.id, qty: item.qty })), p_promo_code: S.promo?.code || null, p_request_id: (S.checkoutRequestId ||= newRequestId()) });
     if (error) throw error;
@@ -1045,7 +1045,7 @@ $('#topupForm')?.addEventListener('submit', async event => {
     const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
     if (sessionError) throw sessionError;
     if (!session?.access_token || !S.user?.id) throw new Error('Сессия истекла. Войдите снова.');
-    if (button) { button.disabled = true; button.textContent = 'Отправка...'; }
+    if (button) { button.disabled = true; button.innerHTML = (window.stLoader ? stLoader() : '') + '<span>' + (S.lang === 'en' ? 'Sending...' : S.lang === 'az' ? 'Göndərilir...' : 'Отправка...') + '</span>'; }
     showMessage('Отправка заявки...');
     const formData = new FormData();
     formData.append('file', file, file.name);

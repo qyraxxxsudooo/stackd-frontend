@@ -91,36 +91,57 @@
   const prevRenderCart = renderCart;
   renderCart = function stackedRenderCart() { const r = prevRenderCart.apply(this, arguments); renderDock(); return r; };
 
+  // Genie-style flight (macOS dock feel): the photo funnels toward the dock, travels on an arc and lands
+  // exactly on the mini card's real size and tilt. Driven per frame so it follows the dock even while it slides in.
+  const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const clamp01 = (x) => Math.min(1, Math.max(0, x));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function slotGeom(slot) {
+    const r = slot.getBoundingClientRect(), cs = getComputedStyle(slot), m = cs.transform;
+    let angle = 0;
+    if (m && m !== 'none') { const v = m.match(/matrix\(([^)]+)\)/); if (v) { const [a, b] = v[1].split(',').map(Number); angle = Math.atan2(b, a) * 180 / Math.PI; } }
+    return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: slot.offsetWidth ?? r.width, h: slot.offsetHeight ?? r.height, angle, radius: parseFloat(cs.borderTopLeftRadius) || 8 };
+  }
   function fly(a, clone, id) {
     const key = String(id);
-    const slot = stackEl.querySelector(`[data-dock-id="${CSS.escape(key)}"]`);
+    const findSlot = () => (window.stFlyTarget && window.stFlyTarget()) || stackEl.querySelector(`[data-dock-id="${CSS.escape(key)}"]`);
+    const slot = findSlot();
     if (!slot || !a || !clone) return;
     if (reduced()) { slot.classList.add('is-settle'); setTimeout(() => slot.classList.remove('is-settle'), 400); return; }
-    const b = slot.getBoundingClientRect();
-    if (!a.width || !b.width) return;
+    if (!a.width || !(slot.offsetWidth ?? slot.getBoundingClientRect().width)) return;
     pending.set(key, (pending.get(key) || 0) + 1); slot.classList.add('is-pending');
     const el = document.createElement('div'); el.className = 'stacked-fly';
-    el.style.cssText = `left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px`;
-    clone.removeAttribute('id'); clone.querySelectorAll('[id],button,input').forEach((n) => n.removeAttribute('id'));
-    clone.querySelectorAll('button').forEach((n) => { n.tabIndex = -1; });
+    clone.removeAttribute('id');
     clone.style.cssText = 'margin:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none';
     el.append(clone); layer.append(el);
-    const sc = Math.max(0.05, b.width / a.width);
-    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
-    const k = (f, rx, rz, s) => `translate3d(${dx * f}px,${dy * f}px,0) rotateX(${rx}deg) rotateZ(${rz}deg) scale(${s})`;
-    const anim = el.animate([
-      { transform: k(0, 0, 0, 1), opacity: 1, offset: 0 },
-      { transform: `translate3d(${dx * 0.18}px,${Math.min(-14, dy * 0.02) }px,0) rotateZ(-3deg) scale(${1 - (1 - sc) * 0.18})`, opacity: 1, offset: 0.22 },
-      { transform: k(0.72, 0, 2, 1 - (1 - sc) * 0.78), opacity: 1, offset: 0.68 },
-      { transform: k(1, 0, 0, sc), opacity: 1, offset: 1 }
-    ], { duration: 680, easing: 'cubic-bezier(.32,.72,.2,1)', fill: 'forwards' });
-    const done = () => {
-      el.remove();
-      const left = (pending.get(key) || 1) - 1; if (left <= 0) pending.delete(key); else pending.set(key, left);
-      const real = stackEl.querySelector(`[data-dock-id="${CSS.escape(key)}"]`);
-      if (real) { if (!pending.has(key)) real.classList.remove('is-pending'); real.classList.remove('is-settle'); void real.offsetWidth; real.classList.add('is-settle'); }
+    const ax = a.left + a.width / 2, ay = a.top + a.height / 2, D = 640, t0 = performance.now();
+    let last = slotGeom(slot), raf = 0;
+    const frame = (now) => {
+      const p = clamp01((now - t0) / D);
+      const s = findSlot(); if (s) last = slotGeom(s);
+      const squeeze = clamp01(p / 0.34);                 // funnel forms first
+      const m = ease(clamp01((p - 0.1) / 0.9));          // then it travels
+      const fall = Math.pow(m, 1.35);                    // y lags x a little: an arc into the dock
+      const lift = -14 * Math.sin(Math.PI * clamp01(p / 0.32)) * (1 - m);
+      const cx = lerp(ax, last.cx, m), cy = lerp(ay, last.cy, fall) + lift;
+      const w = lerp(a.width, last.w, m), h = lerp(a.height, last.h, m);
+      const funnel = 0.3 * squeeze * (1 - m);           // bottom edge narrower than the top
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.borderRadius = lerp(16, last.radius, m) + 'px';
+      el.style.clipPath = funnel > 0.002 ? `polygon(0 0,100% 0,${100 - funnel * 100}% 100%,${funnel * 100}% 100%)` : 'none';
+      el.style.transform = `translate3d(${cx - w / 2}px,${cy - h / 2}px,0) perspective(700px) rotateX(${-16 * squeeze * (1 - m)}deg) rotateZ(${lerp(0, last.angle, m)}deg) scaleX(${1 - 0.14 * squeeze * (1 - m)})`;
+      el.style.boxShadow = `0 ${lerp(16, 3, m)}px ${lerp(36, 8, m)}px rgba(20,12,4,${lerp(0.3, 0.16, m)})`;
+      if (p < 1) raf = requestAnimationFrame(frame); else done();
     };
-    anim.onfinish = done; anim.oncancel = done;
+    const done = () => {
+      cancelAnimationFrame(raf); el.remove();
+      const left = (pending.get(key) || 1) - 1; if (left <= 0) pending.delete(key); else pending.set(key, left);
+      const real = findSlot();
+      if (real) { if (!pending.has(key)) real.classList.remove('is-pending'); real.classList.remove('is-settle'); void real.offsetWidth; real.classList.add('is-settle'); }
+      dock.classList.remove('is-catch'); void dock.offsetWidth; dock.classList.add('is-catch');
+      window.stFlyLanded && window.stFlyLanded();
+    };
+    raf = requestAnimationFrame(frame);
   }
 
   /* ───────── actions: race guard + fly + card refresh ───────── */
@@ -135,8 +156,7 @@
       // The flying element is a copy of the product PHOTO only (never the card), measured before the card re-renders.
       const src = btn?.closest('.card')?.querySelector('.card-media img') || btn?.closest('.detail')?.querySelector('img');
       const full = src && src.getBoundingClientRect().width ? src.getBoundingClientRect() : null;
-      const w = full ? Math.min(full.width, 150) : 0, h = full ? full.height * (w / full.width) : 0;
-      const rect = full ? { left: full.left + (full.width - w) / 2, top: full.top + (full.height - h) / 2, width: w, height: h } : null;
+      const rect = full ? { left: full.left, top: full.top, width: full.width, height: full.height } : null;
       const copy = full ? src.cloneNode(false) : null;
       if (copy) { copy.removeAttribute('loading'); copy.removeAttribute('data-act'); copy.setAttribute('alt', ''); }
       const r = orig(id, btn);

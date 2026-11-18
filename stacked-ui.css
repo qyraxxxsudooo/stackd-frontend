@@ -1,0 +1,142 @@
+/* STACKED UI layer: glass material, mobile tab bar + sheets, loaders, micro-interactions. Loaded last. */
+:root{
+  --spring:cubic-bezier(.34,1.42,.64,1);
+  --out:cubic-bezier(.32,.72,0,1);
+  --glass-bg:color-mix(in srgb,var(--surface) 84%,transparent);
+  --glass-edge:rgba(255,255,255,.62);
+  --glass-line:color-mix(in srgb,var(--text) 9%,transparent);
+  --glass-shadow:0 10px 30px rgba(40,26,10,.10),0 1px 2px rgba(40,26,10,.06);
+  --tabbar-h:64px;
+}
+[data-theme=dark]{--glass-bg:color-mix(in srgb,#1d1b18 82%,transparent);--glass-edge:rgba(255,255,255,.09);--glass-line:rgba(255,255,255,.08);--glass-shadow:0 12px 34px rgba(0,0,0,.42),0 1px 2px rgba(0,0,0,.3)}
+
+/* ── glass material: only on chrome that floats over content (header, dock, tab bar, menus) ── */
+.nav.glass,[data-theme=dark] .nav.glass,.stacked-dock-main,.st-tabbar,.stackd-profile-menu,.settings-panel{
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+}
+.nav.glass,[data-theme=dark] .nav.glass{border-bottom:1px solid var(--glass-line);box-shadow:inset 0 -1px 0 var(--glass-edge)}
+.stacked-dock-main,.st-tabbar{border:1px solid var(--glass-line);box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-edge)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .nav.glass,.stacked-dock-main,.st-tabbar,.stackd-profile-menu,.settings-panel{background:var(--surface)}
+}
+@media (prefers-reduced-transparency:reduce){.nav.glass,.stacked-dock-main,.st-tabbar,.stackd-profile-menu,.settings-panel{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+/* ── loader: three burger layers settling onto each other ── */
+.st-loader{position:relative;display:inline-block;flex:none;width:18px;height:15px;color:var(--accent);vertical-align:-2px}
+.btn-primary .st-loader,.stacked-dock-cta .st-loader,button[disabled] .st-loader{color:currentColor}
+.st-loader::before,.st-loader::after,.st-loader i{content:"";position:absolute;left:0;right:0;background:currentColor}
+.st-loader::before{top:0;height:5px;border-radius:6px 6px 2px 2px;animation:stTop 1s var(--out) infinite}
+.st-loader i{top:6.5px;height:2.5px;border-radius:2px;left:1px;right:1px;animation:stMid 1s var(--out) infinite}
+.st-loader::after{bottom:0;height:3.5px;border-radius:1px 1px 4px 4px;animation:stBase 1s var(--out) infinite}
+@keyframes stTop{0%,100%{transform:translateY(0)}35%{transform:translateY(-4px)}55%{transform:translateY(.6px) scaleY(.82)}70%{transform:none}}
+@keyframes stMid{0%,100%{transform:scaleX(1)}45%{transform:scaleX(.62)}65%{transform:scaleX(1.06)}}
+@keyframes stBase{0%,100%{transform:none}55%{transform:scaleY(.8)}}
+/* legacy spinner in the swipe-to-order flow uses the same mark */
+.stackd-spinner{width:18px;height:15px;border:0;border-radius:0;animation:none;position:relative;color:var(--accent);background:linear-gradient(currentColor,currentColor) 1px 6.5px/calc(100% - 2px) 2.5px no-repeat}
+.stackd-spinner::before,.stackd-spinner::after{content:"";position:absolute;left:0;right:0;background:currentColor}
+.stackd-spinner::before{top:0;height:5px;border-radius:6px 6px 2px 2px;animation:stTop 1s var(--out) infinite}
+.stackd-spinner::after{bottom:0;height:3.5px;border-radius:1px 1px 4px 4px;animation:stBase 1s var(--out) infinite}
+button .st-loader+span{margin-left:8px}
+#checkoutBtn,#topupForm button[type=submit]{display:inline-flex;align-items:center;justify-content:center}
+
+/* ── waiting for the QR: a code outline with an orange scan line ── */
+.order-wait{display:flex;align-items:center;gap:12px}
+.st-qr-wait{position:relative;flex:none;width:34px;height:34px;border-radius:8px;overflow:hidden;color:var(--accent);
+  background:
+    linear-gradient(currentColor,currentColor) 4px 4px/9px 9px no-repeat,
+    linear-gradient(currentColor,currentColor) right 4px top 4px/9px 9px no-repeat,
+    linear-gradient(currentColor,currentColor) left 4px bottom 4px/9px 9px no-repeat,
+    color-mix(in srgb,var(--accent) 12%,transparent);
+  opacity:.9}
+.st-qr-wait::before{content:"";position:absolute;inset:16px 4px 4px 16px;background:radial-gradient(circle,currentColor 0 1.2px,transparent 1.7px) 0 0/4.6px 4.6px;opacity:.55}
+.st-qr-wait i{position:absolute;left:3px;right:3px;top:0;height:2px;border-radius:2px;background:currentColor;box-shadow:0 0 8px currentColor;animation:stScan 1.6s ease-in-out infinite}
+@keyframes stScan{0%,100%{transform:translateY(4px)}50%{transform:translateY(28px)}}
+
+/* ── pending top-up pill next to the balance ── */
+.st-pending-pill{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:.74rem;font-weight:650;white-space:nowrap;animation:stPillIn .4s var(--spring)}
+.st-pending-pill[hidden]{display:none}
+@keyframes stPillIn{from{opacity:0;transform:scale(.8)}}
+@media(max-width:1100px){.st-pending-pill span{display:none}.st-pending-pill{padding:0 7px}}
+
+/* ── balance change ── */
+#userBalance{font-variant-numeric:tabular-nums}
+.balance-display.is-up #userBalance{animation:stUp .9s var(--out)}
+.balance-display.is-down #userBalance{animation:stDown .6s var(--out)}
+@keyframes stUp{0%{color:var(--accent);transform:translateY(3px)}40%{color:var(--accent);transform:translateY(-1px)}100%{color:inherit;transform:none}}
+@keyframes stDown{0%{opacity:.4;transform:translateY(-3px)}100%{opacity:1;transform:none}}
+
+/* ── press feedback (touch and mouse) ── */
+.btn,.btn-topup,.cart-btn,.icon-btn,.stacked-dock-cta,.st-tab,.stackd-card-qty button,.chips button,.stackd-profile-action{transition-property:transform,background-color,color,border-color,box-shadow,opacity;transition-duration:.16s;transition-timing-function:var(--out)}
+.btn:active:not(:disabled),.btn-topup:active,.cart-btn:active,.icon-btn:active,.stackd-card-qty button:active:not(:disabled),.chips button:active,.stackd-profile-action:active{transform:scale(.95)}
+.stacked-dock.is-catch .stacked-dock-main{animation:stCatch .42s var(--spring)}
+@keyframes stCatch{0%{transform:none}30%{transform:scale(1.025,.96)}100%{transform:none}}
+@media (hover:hover){
+  .card .card-media img{transition:transform .5s var(--out)}
+  .card:hover .card-media img{transform:scale(1.035)}
+}
+
+/* ── card stepper keeps its own height in every layout ── */
+.stackd-card-qty{align-self:center!important;height:44px!important;min-height:0!important;max-height:44px}
+.stackd-card-qty.is-in{animation:stStepIn .32s var(--spring)}
+@keyframes stStepIn{from{opacity:0;transform:scale(.85)}}
+
+/* empty descriptions no longer leave a hole in the card */
+.card-body>p:empty{display:none}
+.card-body .card-foot{margin-top:auto}
+
+/* ── top-up form polish ── */
+#topup .warn{background:color-mix(in srgb,var(--accent) 8%,transparent);border-color:color-mix(in srgb,var(--accent) 24%,transparent);color:var(--text)}
+#topup input[type=file]::file-selector-button{margin-right:12px;padding:8px 14px;border:0;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font:inherit;font-weight:650;cursor:pointer}
+.st-amounts{display:flex;gap:8px;margin:-4px 0 14px;flex-wrap:wrap}
+.st-amounts button{flex:1 1 0;min-width:56px;height:38px;border:1px solid var(--line);border-radius:12px;background:var(--raised);color:var(--text);font:inherit;font-weight:650;font-variant-numeric:tabular-nums;cursor:pointer;transition:transform .16s var(--out),border-color .16s,background-color .16s}
+.st-amounts button[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+.st-amounts button:active{transform:scale(.94)}
+
+/* ── mobile: tab bar, floating dock, bottom sheets ── */
+.st-tabbar{display:none}
+@media (max-width:680px){
+  .st-tabbar{position:fixed;z-index:70;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));height:var(--tabbar-h);display:grid;grid-template-columns:repeat(4,1fr);padding:5px;border-radius:22px;isolation:isolate}
+  .st-tab-ind{position:absolute;z-index:-1;top:5px;bottom:5px;left:5px;width:calc((100% - 10px) / 4);border-radius:17px;background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent);transform:translateX(calc(var(--i,0) * 100%));transition:transform .48s var(--spring)}
+  .st-tab{position:relative;display:grid;place-items:center;align-content:center;gap:3px;min-width:0;border:0;background:none;color:var(--muted);font:inherit;font-size:.7rem;font-weight:600;letter-spacing:.01em;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:17px}
+  .st-tab svg{width:23px;height:23px}
+  .st-tab[aria-current=page]{color:var(--accent)}
+  .st-tab-label{transition:color .2s}
+  .st-tab.is-bump svg{animation:stBump .5s var(--spring)}
+  @keyframes stBump{0%{transform:scale(1)}30%{transform:scale(.82) translateY(1px)}65%{transform:scale(1.1) translateY(-1px)}100%{transform:none}}
+  .st-tab-dot{position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface);animation:stDot 1.6s ease-in-out infinite}
+  .st-tab-dot[hidden]{display:none}
+  @keyframes stDot{50%{transform:scale(.7);opacity:.6}}
+
+  body.has-tabbar,body.has-tabbar.has-dock{padding-bottom:calc(var(--tabbar-h) + 28px + env(safe-area-inset-bottom))}
+  /* the tab bar replaces the old floating orders/cart buttons and the cart dock on phones */
+  body.has-tabbar .stacked-dock,body.has-tabbar #stackdMobileActions,body.has-tabbar .stackd-mobile-cart{display:none!important}
+  body.has-tabbar #toasts,body.has-tabbar .stackd-toast-host{bottom:calc(var(--tabbar-h) + 22px + env(safe-area-inset-bottom))!important}
+  .st-tab-badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:.66rem;font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px var(--surface);font-variant-numeric:tabular-nums}
+  .st-tab-badge[hidden]{display:none}
+  .st-tab-badge.is-pop{animation:stPop .45s var(--spring)}
+  @keyframes stPop{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:none}}
+  .st-tab.is-catch svg{animation:stCatchIcon .5s var(--spring)}
+  @keyframes stCatchIcon{0%{transform:none}25%{transform:translateY(3px) scale(1.12,.86)}60%{transform:translateY(-2px) scale(.96,1.06)}100%{transform:none}}
+  .st-tab-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;padding:0 2px}
+
+  /* Orders and Top up rise from the tab bar; the bar stays visible and tappable below them */
+  #orders,#topup{position:fixed;inset:auto 0 calc(var(--tabbar-h) + 14px + env(safe-area-inset-bottom)) 0!important;margin:0 8px!important;width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:calc(100dvh - var(--tabbar-h) - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;border-radius:24px!important;overflow:auto;overscroll-behavior:contain;animation:stSheetUp .46s var(--out)!important}
+  #orders::backdrop,#topup::backdrop{clip-path:inset(0 0 calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom)) 0)}
+  #orders.closing,#topup.closing{animation:stSheetDown .24s cubic-bezier(.4,0,1,1) forwards!important}
+  @keyframes stSheetUp{from{transform:translateY(calc(100% + 80px))}to{transform:none}}
+  @keyframes stSheetDown{to{transform:translateY(calc(100% + 80px))}}
+  /* other dialogs become full-width sheets from the screen edge */
+  #detail,#auth{margin:auto 0 0!important;width:100%!important;max-width:100%!important;max-height:92dvh!important;border-radius:24px 24px 0 0!important;padding-bottom:calc(20px + env(safe-area-inset-bottom))!important;animation:stSheetUp .46s var(--out)!important}
+  #detail.closing,#auth.closing{animation:stSheetDown .24s cubic-bezier(.4,0,1,1) forwards!important}
+  /* the header loses duplicated entry points that now live in the tab bar */
+  .card .card-foot{width:100%;align-self:stretch;grid-template-columns:minmax(0,1fr)!important}
+  .card .stackd-card-actions{flex:1 1 100%;width:100%}
+  .card .stackd-card-actions>.btn,.card .stackd-card-qty{flex:1 1 100%!important;width:100%!important;min-width:0!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .st-loader::before,.st-loader::after,.st-loader i,.stackd-spinner::before,.stackd-spinner::after,.st-qr-wait i,.st-tab-dot,.st-pending-pill{animation:none!important}
+  .st-tab-ind{transition:none}.st-tab.is-bump svg,.stacked-dock.is-catch .stacked-dock-main,.balance-display #userBalance{animation:none!important}
+  #orders,#topup,#detail,#auth,#orders.closing,#topup.closing,#detail.closing,#auth.closing{animation:none!important}
+}

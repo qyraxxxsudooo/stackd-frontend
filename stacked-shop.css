@@ -40,8 +40,8 @@ body.has-dock .toasts{bottom:calc(96px + env(safe-area-inset-bottom))}
 .stacked-dock-info strong{font-size:.95rem;line-height:1.2}
 .stacked-dock-info small{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .stacked-dock-cta{flex:none;max-width:44%;padding:10px 16px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.88rem;line-height:1.15;text-align:center;overflow-wrap:break-word}
-.stacked-fly-layer{position:fixed;inset:0;z-index:1200;pointer-events:none;perspective:900px;overflow:hidden}
-.stacked-fly{position:fixed;margin:0;transform-origin:50% 50%;will-change:transform;border-radius:var(--r);overflow:hidden;box-shadow:0 14px 34px rgba(30,20,10,.28);backface-visibility:hidden}
+.stacked-fly-layer{position:fixed;inset:0;z-index:1200;pointer-events:none;overflow:hidden}
+.stacked-fly{position:fixed;left:0;top:0;margin:0;transform-origin:50% 50%;will-change:transform,width,height,clip-path;overflow:hidden;backface-visibility:hidden;contain:layout paint}
 .stacked-fly .card{transform:none!important;transition:none!important}
 @media(max-width:640px){
   .stacked-dock{bottom:0;width:100%;animation-name:stackedDockInM}
@@ -82,7 +82,7 @@ body.has-dock .toasts{bottom:calc(96px + env(safe-area-inset-bottom))}
 .stacked-icon-ctl{display:flex;gap:8px;flex-wrap:wrap;min-width:0}
 .stacked-icon-note{color:var(--muted);font-size:.78rem}
 
-@media(prefers-reduced-motion:reduce){.stacked-dock,.stackd-card-qty.is-in,.stacked-mini.is-settle{animation:none}.stacked-news-slide,.stacked-social,.card{transition:none}.stacked-fly{display:none}}
+@media(prefers-reduced-motion:reduce){.stacked-dock,.stackd-card-qty.is-in,.stacked-mini.is-settle{animation:none}.stacked-news-slide,.stacked-social,.card{transition:none}.stacked-fly{position:fixed;left:0;top:0;margin:0;transform-origin:50% 50%;will-change:transform,width,height,clip-path;overflow:hidden;backface-visibility:hidden;contain:layout paint}}
 
 
 /* ═══ Product card v2: roomy info block, stable stepper, flat badge ═══ */
