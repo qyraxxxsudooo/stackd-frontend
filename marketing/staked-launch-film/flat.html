@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>STAKED — ролик v2</title>
+<style>
+@font-face{font-family:UI;src:url(fonts/inter-cyrillic-800-normal.woff2) format('woff2');font-weight:800;unicode-range:U+0400-04FF}
+@font-face{font-family:UI;src:url(fonts/inter-latin-800-normal.woff2) format('woff2');font-weight:800}
+@font-face{font-family:UI;src:url(fonts/inter-cyrillic-500-normal.woff2) format('woff2');font-weight:500;unicode-range:U+0400-04FF}
+@font-face{font-family:UI;src:url(fonts/inter-latin-500-normal.woff2) format('woff2');font-weight:500}
+html,body{margin:0;background:#000}canvas{display:block}
+</style></head><body><canvas id="c"></canvas>
+<script>
+/* ═════ timing (s): re-time here only ═════ */
+const T = {
+  door: 4.8, counter: 5.6, shock: 7.2, leave: 9.9, stop: 12.0, grow: 13.8, phone: 14.8,
+  plus: 15.6, sheet: 16.0, amount: 16.7, send: 17.3, credited: 18.2, shop: 19.2,
+  adds: [20.5, 21.25, 22.0, 22.75, 23.5, 24.25], cart: 25.2, swipe: 25.8, accepted: 27.0, qr: 27.2,
+  shrink: 31.0, kiosk: 31.6, scan: 32.4, beep: 33.0, trays: [34.0, 34.6, 35.2, 35.8],
+  table: 37.0, logo: 46.5, end: 54.0
+};
+const LINES = [ // [start, who, text]; who: R=Рауф T=Тимур M=Макс A=Али
+  [1.7, 'M', 'Может, по бургеру?'], [3.2, 'T', 'Давай, я голодный.'],
+  [7.3, 'A', 'Сколько?! Семь манат за бургер?'], [9.5, 'T', 'Не, это перебор. Пошли отсюда.'],
+  [12.0, 'R', 'Стойте. Сейчас покажу.'],
+  [15.3, 'R', 'Кидаю двадцать манат на баланс в STAKED.'], [20.0, 'R', 'Бургер тут — два девяносто девять. Берём на всех.'],
+  [26.0, 'R', 'Оформляю — и вот QR-код.'], [29.0, 'M', 'Подожди… и это реально работает?'],
+  [32.0, 'R', 'Смотрите.'], [33.6, 'T', 'Да ладно!'],
+  [39.0, 'A', 'На четверых — меньше шестнадцати манат.'], [43.0, 'T', 'Всё, теперь только так.']
+];
+const W = 1080, H = 1920, TOTAL = T.end;
+const Q = new URLSearchParams(location.search), SC = +(Q.get('scale') || 1);
+const cv = document.getElementById('c'); cv.width = W * SC; cv.height = H * SC; cv.style.width = W + 'px';
+const ctx = cv.getContext('2d');
+/* palette: five colours, tints only as transparency */
+const BG = '#F3EDE2', NV = '#1F2B3D', OR = '#E2621B', SD = '#EBC49A', TL = '#4F8A8B', LT = '#FBF8F2';
+const TAU = Math.PI * 2, PI = Math.PI;
+let QRM = [];
+
+/* ═════ easing ═════ */
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const pr = (t, a, d) => cl((t - a) / d);
+const io = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const out = x => 1 - Math.pow(1 - x, 3), inn = x => x * x * x;
+const back = x => { const c = 1.4; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const seg = (t, a, d, f = io) => f(pr(t, a, d));
+
+/* ═════ drawing primitives ═════ */
+const fill = c => { ctx.fillStyle = c; };
+function rr(x, y, w, h, r, c) { fill(c); ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2)); ctx.fill(); }
+function circ(x, y, r, c) { fill(c); ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); ctx.fill(); }
+function ell(x, y, rx, ry, c, a0 = 0, a1 = TAU) { fill(c); ctx.beginPath(); ctx.ellipse(x, y, Math.max(0, rx), Math.max(0, ry), 0, a0, a1); ctx.closePath(); ctx.fill(); }
+function poly(pts, c) { fill(c); ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill(); }
+function line(x1, y1, x2, y2, w, c) { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function arc(x, y, r, a0, a1, w, c) { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x, y, r, a0, a1); ctx.stroke(); }
+function txt(s, x, y, size, c = NV, o = {}) { ctx.font = `${o.wt || 800} ${size}px UI`; ctx.textAlign = o.al || 'center'; ctx.textBaseline = 'middle'; fill(c); ctx.globalAlpha = o.a ?? 1; ctx.fillText(s, x, y); ctx.globalAlpha = 1; }
+const at = (x, y, s, f, r = 0) => { ctx.save(); ctx.translate(x, y); if (r) ctx.rotate(r); if (s !== 1) ctx.scale(s, s); f(); ctx.restore(); };
+const alpha = (a, f) => { if (a <= 0) return; const p = ctx.globalAlpha; ctx.globalAlpha = p * a; f(); ctx.globalAlpha = p; };
+const blur = (px, f) => { if (px < .3) return f(); ctx.save(); ctx.filter = `blur(${px}px)`; f(); ctx.restore(); };
+function camera(cx, cy, z, f, rot = 0) { ctx.save(); ctx.translate(W / 2, H / 2); if (rot) ctx.rotate(rot); ctx.scale(z, z); ctx.translate(-cx, -cy); f(); ctx.restore(); }
+// a layer at depth d moves d times as much as the camera (parallax)
+function layer(cam, d, f) { ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(lerp(1, cam.z, d), lerp(1, cam.z, d)); ctx.translate(-lerp(W / 2, cam.x, d), -lerp(H / 2, cam.y, d)); f(); ctx.restore(); }
+
+/* ═════ food (palette-built) ═════ */
+function burger(s = 1, sp = 0) { at(0, 0, s, () => {
+  ell(0, 46 + sp * 1.0, 96, 24, SD, 0, PI); rr(-96, 34 + sp, 192, 14, 7, SD);
+  rr(-100, 8 + sp * .5, 200, 30, 15, NV);
+  poly([[-104, 4], [104, 4], [92, 16], [70, 6], [48, 16], [24, 6], [0, 16], [-24, 6], [-48, 16], [-70, 6], [-92, 16]].map(([x, y]) => [x, y - sp * .2]), TL);
+  poly([[-70, 0], [70, 0], [30, 26], [0, 10], [-30, 26]].map(([x, y]) => [x, y - sp * .4]), OR);
+  ell(0, -4 - sp, 98, 70, SD, PI, TAU); rr(-98, -10 - sp, 196, 12, 6, SD);
+  [[-50, -36], [-16, -54], [22, -44], [56, -28], [4, -26], [-30, -18]].forEach(([x, y]) => ell(x, y - sp, 7, 3.5, LT));
+}); }
+function fries(s = 1) { at(0, 0, s, () => {
+  [-40, -26, -12, 2, 16, 30, 42].forEach((x, i) => rr(x - 6, -96 + (i % 3) * 14, 12, 90, 5, SD));
+  poly([[-58, -26], [58, -26], [46, 76], [-46, 76]], OR); ell(0, -26, 58, 16, OR, 0, PI); rr(-20, 14, 40, 28, 14, LT);
+}); }
+function shake(s = 1) { at(0, 0, s, () => {
+  rr(14, -200, 18, 150, 9, OR);
+  poly([[-48, -40], [48, -40], [36, 112], [-36, 112]], LT); rr(-46, 0, 92, 30, 4, TL);
+  ell(0, -40, 52, 20, LT); ell(-14, -62, 30, 26, LT); ell(16, -70, 28, 26, LT); ell(0, -92, 22, 20, LT); circ(8, -118, 12, OR);
+}); }
+function nuggets(s = 1) { at(0, 0, s, () => { poly([[-62, -16], [62, -16], [52, 54], [-52, 54]], TL); poly([[-62, -16], [-48, -60], [48, -60], [62, -16]], TL);
+  [[-30, -20], [4, -26], [34, -16], [-8, -40]].forEach(([x, y]) => ell(x, y, 22, 15, SD)); }); }
+function tray(w = 400) { rr(-w / 2, -12, w, 24, 12, OR); rr(-w / 2 + 18, -4, 40, 8, 4, LT); rr(w / 2 - 58, -4, 40, 8, 4, LT); }
+function logoMark(s) { at(0, 0, s / 32, () => { ctx.translate(-16, -16); rr(0, 0, 32, 32, 9, '#c2500a'); ell(16, 15, 9, 7, '#fff', PI, TAU);
+  line(7, 19, 25, 19, 2.2, '#fff'); line(9, 23, 23, 23, 2.2, '#fff'); }); }
+
+/* ═════ characters: geometric, front view. origin = neck base, feet at y≈440 ═════ */
+const CAST = {
+  R: { top: OR, hair: 'cap', skin: SD },
+  T: { top: TL, hair: 'curly', skin: SD },
+  M: { top: NV, hair: 'side', skin: SD, glasses: true },
+  A: { top: LT, hair: 'buzz', skin: SD, beard: true }
+};
+function limb(x1, y1, a, l1, b, l2, w, c, hand) { // a, b: angles from straight down; returns end
+  const x2 = x1 + Math.sin(a) * l1, y2 = y1 + Math.cos(a) * l1, x3 = x2 + Math.sin(a + b) * l2, y3 = y2 + Math.cos(a + b) * l2;
+  ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
+  if (hand) circ(x3, y3, w * .55, hand); return [x3, y3];
+}
+function face(o, k) {
+  const lx = (o.look || 0) * 12, e = o.eyes || 'open', m = o.mouth || 'smile';
+  [-1, 1].forEach(s => { const x = s * 20 + lx, y = -78;
+    if (e === 'happy') arc(x, y + 4, 9, PI * 1.15, PI * 1.85, 5, NV);
+    else if (e === 'wide') { circ(x, y, 10, LT); circ(x + lx * .1, y + 1, 5.5, NV); }
+    else if (e === 'shut') line(x - 7, y + 2, x + 7, y + 2, 5, NV);
+    else circ(x, y, 6.5, NV);
+    const br = o.brow || 0; line(x - 9, y - 18 - br * 6 + s * br * 2, x + 9, y - 19 - br * 6 - s * br * 2, 5, NV);
+    if (o.glasses) { ctx.strokeStyle = NV; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, 15, 0, TAU); ctx.stroke(); }
+  });
+  if (o.glasses) line(-5 + lx, -80, 5 + lx, -80, 4, NV);
+  const my = -48;
+  if (m === 'smile') arc(lx, my - 10, 14, PI * .2, PI * .8, 5, NV);
+  else if (m === 'grin') { ell(lx, my - 4, 18, 13, NV, 0, PI); rr(lx - 13, my - 4, 26, 5, 2, LT); }
+  else if (m === 'open') ell(lx, my, 11, 12 * (o.talk ?? 1), NV);
+  else if (m === 'o') ell(lx, my, 7, 8, NV);
+  else if (m === 'flat') line(lx - 10, my, lx + 10, my, 5, NV);
+  else if (m === 'chew') { ell(lx, my, 12, 5 + 4 * Math.abs(Math.sin(k * 14)), NV); }
+  else if (m === 'sip') circ(lx, my, 5, NV);
+}
+function hair(o) {
+  const lx = (o.look || 0) * 4;
+  if (o.hair === 'cap') { ell(lx, -98, 63, 52, OR, PI, TAU); rr(lx - 63, -102, 126, 12, 6, OR); rr(lx + (o.look < 0 ? -110 : 10), -98, 100, 16, 8, OR); circ(lx, -148, 6, NV); }
+  if (o.hair === 'curly') { for (let i = 0; i < 9; i++) { const a = PI * (1.02 + i / 8 * .96); circ(lx + Math.cos(a) * 58, -84 + Math.sin(a) * 58, 22, NV); } }
+  if (o.hair === 'side') { ell(lx, -86, 64, 58, NV, PI, TAU); poly([[lx - 64, -86], [lx - 30, -116], [lx + 64, -96], [lx + 64, -86]], NV); }
+  if (o.hair === 'buzz') ell(lx, -90, 62, 50, NV, PI * 1.05, PI * 1.95);
+}
+function person(o, k = 0) {
+  const ph = o.walk, sk = o.skin;
+  // legs
+  const swing = ph === undefined ? 0 : Math.sin(ph) * .42;
+  if (!o.sit) { limb(-30, 196, swing, 120, Math.max(0, -swing) * .6, 120, 50, NV); limb(30, 196, -swing, 120, Math.max(0, swing) * .6, 120, 50, NV);
+    const fx = (s) => { const a = s < 0 ? swing : -swing; return [s * 30 + Math.sin(a) * 120 + Math.sin(a + Math.max(0, -a * s) * .6) * 120, 196 + Math.cos(a) * 120 + Math.cos(a) * 120]; };
+    [-1, 1].forEach(s => { const [x, y] = fx(s); rr(x - 30 + s * 6, y + 14, 60, 22, 11, LT); rr(x - 30 + s * 6, y + 30, 60, 8, 4, NV); }); }
+  // arms behind torso when hanging
+  const aL = o.aL || [.18, -.2], aR = o.aR || [.18, -.2];
+  const swa = ph === undefined ? 0 : Math.sin(ph) * .3;
+  const drawArm = (s, a) => limb(s * 76, 30, s * (a[0] - (s < 0 ? swa : -swa)), 104, s * a[1], 100, 40, o.top === LT ? SD : o.top, sk);
+  // torso
+  rr(-82, 0, 164, 214, 46, o.top); if (o.top === LT) { rr(-82, 0, 164, 214, 46, LT); rr(-20, 0, 40, 28, 10, SD); }
+  rr(-16, -26, 32, 34, 10, sk); // neck
+  if (o.top === OR) { rr(-40, 120, 80, 50, 20, '#00000018'); } // hoodie pocket
+  if (o.top === TL) [44, 92, 140].forEach(y => rr(-82, y, 164, 14, 0, '#00000014'));
+  if (o.top === NV) { rr(-3, 10, 6, 196, 3, '#ffffff22'); }
+  const wl = drawArm(-1, aL), wr = drawArm(1, aR);
+  if (o.itemL) at(wl[0], wl[1] - 20, 1, o.itemL); if (o.itemR) at(wr[0], wr[1] - 20, 1, o.itemR);
+  // head
+  circ(-60, -70, 13, sk); circ(60, -70, 13, sk);
+  circ(0, -76, 64, sk);
+  if (o.beard) { ell(0, -56, 60, 48, NV, 0, PI); ell(0, -60, 40, 26, sk, 0, PI); }
+  hair(o); face(o, k);
+  return { wl, wr };
+}
+const P = (who, extra, k) => person(Object.assign({}, CAST[who], extra), k);
+const bob = ph => -Math.abs(Math.sin(ph)) * 10;
+
+/* speech bubble: text is the actual line; words land one by one */
+function bubble(text, x, y, t0, t, o = {}) {
+  const dur = o.dur ?? Math.max(1.5, text.length * .065 + .6);
+  if (t < t0 || t > t0 + dur + .3) return;
+  const k = seg(t, t0, .28, back), q = seg(t, t0 + dur, .3), size = o.size || 46, maxW = o.maxW || 620;
+  ctx.font = `800 ${size}px UI`; const words = text.split(' '), lines = []; let cur = '';
+  words.forEach(w => { const s = cur ? cur + ' ' + w : w; if (ctx.measureText(s).width > maxW && cur) { lines.push(cur); cur = w; } else cur = s; }); lines.push(cur);
+  const bw = Math.max(...lines.map(l => ctx.measureText(l).width)) + 64, bh = lines.length * size * 1.25 + 44, tl = o.tail ?? -1;
+  const tailX = x; x = cl(x, bw / 2 + 36, W - bw / 2 - 36); const tlo = cl((tailX - x) / 1, -bw / 2 + 60, bw / 2 - 60);
+  at(x, y, (1 - q * .15) * lerp(.6, 1, k), () => { alpha((1 - q) * cl(k * 2), () => {
+    const col = o.c || LT, ink = col === NV || col === OR || col === TL ? LT : NV;
+    if (o.tail !== 0) poly([[tlo + tl * 10 - 22, -4], [tlo + tl * 46, 40], [tlo + tl * 10 + 22, -4]], col); rr(-bw / 2, -bh, bw, bh, 30, col);
+    let n = 0; const shown = Math.floor(pr(t, t0 + .1, Math.max(.3, dur * .45)) * words.length + .999);
+    lines.forEach((l, i) => { const ws = l.split(' '); let s = ''; ws.forEach(w => { if (n < shown) s += (s ? ' ' : '') + w; n++; });
+      ctx.font = `800 ${size}px UI`; const full = ctx.measureText(l).width; txt(s, -full / 2, -bh + 22 + size * .62 + i * size * 1.25, size, ink, { al: 'left' }); });
+  }); });
+}
+const WHO = { R: OR, T: TL, M: NV, A: LT };
+
+/* ═════ sets ═════ */
+function streetBack(t) {
+  rr(-400, 0, 2600, 1920, 0, BG);
+  // night sky band and moon
+  rr(-400, 0, 2600, 520, 0, NV); circ(1500, 220, 70, SD); circ(1530, 200, 64, NV);
+  for (let i = 0; i < 18; i++) { const x = (i * 263) % 2400 - 300, y = 60 + (i * 97) % 380; circ(x, y, 3 + (i % 3), SD); }
+  // buildings silhouette
+  [[-300, 360, 380], [80, 300, 240], [1700, 330, 420], [2050, 280, 300]].forEach(([x, y, w]) => { rr(x, y, w, 300, 0, TL); for (let i = 0; i < 4; i++) rr(x + 30 + i * (w - 60) / 4, y + 50, 30, 40, 4, SD); });
+}
+function storefront() {
+  rr(240, 520, 1100, 1060, 0, LT); rr(240, 520, 1100, 150, 0, NV);
+  txt('БУРГЕРЫ  ·  ШЕЙКИ  ·  ФРИ', 790, 596, 54, LT);
+  for (let i = 0; i < 11; i++) { const x = 240 + i * 100; rr(x, 670, 50, 80, 0, OR); rr(x + 50, 670, 50, 80, 0, LT); ell(x + 50, 750, 50, 26, i % 2 ? LT : OR, 0, PI); }
+  rr(300, 820, 520, 560, 18, NV); rr(320, 840, 480, 520, 12, TL);
+  at(450, 1220, .6, () => burger(1)); at(640, 1210, .55, () => shake(1));
+  [430, 680].forEach(x => { rr(x - 1, 840, 2, 70, 1, SD); ell(x, 930, 46, 30, SD, PI, TAU); });
+  rr(900, 900, 330, 680, 14, NV); rr(925, 930, 280, 360, 10, TL); circ(1180, 1260, 12, SD);
+  rr(-400, 1580, 2600, 340, 0, SD); rr(-400, 1580, 2600, 20, 0, NV);
+  for (let x = -380; x < 2200; x += 220) rr(x, 1700, 120, 10, 5, '#00000012');
+}
+function lampPost(x) { rr(x - 10, 560, 20, 1030, 10, NV); rr(x - 70, 540, 140, 30, 15, NV); ell(x, 600, 60, 34, SD, 0, PI); }
+function counterBack(t, o = {}) {
+  rr(-200, 0, 1500, 1920, 0, BG);
+  rr(-200, 0, 1500, 120, 0, NV);
+  // menu boards: real items; only the burger has a price
+  [[110, 'Бургер', () => burger(.7)], [420, 'Милкшейк', () => at(0, 20, .6, () => shake(1))], [730, 'Фри', () => at(0, 10, .72, () => fries(1))]].forEach(([x, n, d], i) => {
+    rr(x, 190, 260, 360, 26, NV); at(x + 130, 330, 1, d); txt(n, x + 130, 460, 38, LT);
+    if (i === 0) { const k = o.priceK ?? 1; at(x + 130, 512, lerp(1, 1.6, o.pulse || 0), () => { rr(-70, -30, 140, 60, 30, OR); txt('7 ₼', 0, 2, 40, LT); }); }
+  });
+  // pendant lights
+  [260, 800].forEach((x, i) => { const sw = Math.sin(t * 1.2 + i) * 4; rr(x + sw - 2, 120, 4, 30, 2, NV); ell(x + sw, 170, 60, 40, OR, PI, TAU); });
+  // cashier
+  at(540, 780, .72, () => P('A', { top: OR, hair: 'cap', beard: false, mouth: o.cashier || 'smile', aL: [.2, -.3], aR: [.2, -.3] }));
+  // counter
+  rr(-200, 1000, 1500, 60, 0, NV); rr(-200, 1060, 1500, 420, 0, TL);
+  for (let x = -160; x < 1300; x += 160) rr(x, 1100, 120, 340, 16, '#ffffff14');
+  at(210, 1000, 1, () => { rr(-80, -120, 160, 120, 18, NV); rr(-56, -100, 112, 54, 10, SD); });
+  at(860, 1000, 1, () => { rr(-70, -250, 140, 250, 22, NV); rr(-52, -226, 104, 130, 14, o.scanOn ? OR : SD); txt('QR', 0, -160, 36, o.scanOn ? LT : NV); rr(-30, -76, 60, 40, 10, o.scanOn ? OR : TL); });
+  rr(-200, 1480, 1500, 440, 0, SD);
+}
+function cafeBack(t) {
+  rr(-300, 0, 1700, 1920, 0, BG);
+  rr(80, 160, 920, 560, 26, NV); rr(110, 190, 860, 500, 18, TL); rr(536, 190, 8, 500, 0, NV); circ(820, 300, 50, SD); circ(844, 284, 46, TL);
+  for (let i = 0; i < 6; i++) rr(140 + i * 140, 560, 90, 130, 8, '#1F2B3D55');
+  [300, 780].forEach((x, i) => { const sw = Math.sin(t + i * 2) * 3; rr(x + sw - 2, 0, 4, 90, 2, NV); ell(x + sw, 130, 64, 44, OR, PI, TAU); });
+  at(-10, 900, 1, () => { rr(-46, 0, 92, 110, 14, OR); [[-30, -60, .4], [0, -90, 0], [30, -60, -.4]].forEach(([x, y, r]) => at(x, y, 1, () => ell(0, 0, 22, 56, TL), r)); });
+}
+
+/* ═════ phone UI (flat rebuild of the real STAKED site) ═════ */
+const PW = 640, PH = 1300;
+const ITEMS = [{ n: 'Бургер', p: '2.99 ₼', old: '7 ₼', d: s => burger(s * .62) }, { n: 'Чизбургер', p: '1.99 ₼', d: s => burger(s * .54) },
+  { n: 'Картофель фри', p: '2.61 ₼', d: s => at(0, 0, s * .62, () => fries(1)) }, { n: 'Наггетсы', p: '3.29 ₼', d: s => at(0, 6, s * .66, () => nuggets(1)) }];
+const CARD = i => [i % 2 ? 148 : -148, -250 + Math.floor(i / 2) * 410];
+const ORDER = [0, 0, 1, 1, 2, 3];
+function phoneBody() { rr(-PW / 2 - 18, -PH / 2 - 18, PW + 36, PH + 36, 86, NV); rr(-PW / 2, -PH / 2, PW, PH, 70, LT); rr(-70, -PH / 2 + 22, 140, 36, 18, NV); }
+function header(bal, plusK = 0) {
+  const y = -PH / 2 + 118; at(-PW / 2 + 68, y, 1, () => logoMark(60)); txt('STAKED', -PW / 2 + 110, y + 2, 34, NV, { al: 'left' });
+  rr(PW / 2 - 262, y - 32, 220, 64, 32, BG); txt(bal, PW / 2 - 178, y + 2, 30, NV); circ(PW / 2 - 76, y, 26, OR); rr(PW / 2 - 88, y - 3, 24, 6, 3, LT); rr(PW / 2 - 79, y - 12, 6, 24, 3, LT);
+  if (plusK > 0 && plusK < 1) alpha(1 - plusK, () => { ctx.strokeStyle = OR; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(PW / 2 - 76, y, 26 + plusK * 60, 0, TAU); ctx.stroke(); });
+}
+function tabBar(n, bump) {
+  const y = PH / 2 - 112; rr(-PW / 2 + 36, y - 56, PW - 72, 112, 44, BG);
+  const xs = [-198, -66, 66, 198]; rr(xs[0] - 60, y - 44, 120, 88, 30, '#E2621B26');
+  at(xs[0], y - 10, 1, () => { poly([[-16, -10], [16, -10], [13, 18], [-13, 18]], OR); arc(0, -12, 8, PI, TAU, 4, OR); });
+  at(xs[1], y - 10, 1, () => { rr(-13, -20, 26, 40, 5, NV); rr(-7, -8, 14, 4, 2, BG); rr(-7, 2, 14, 4, 2, BG); });
+  at(xs[2], y - 10, 1, () => { rr(-20, -13, 40, 28, 6, NV); rr(-20, -6, 40, 5, 0, BG); });
+  at(xs[3], y - 10 - bump * 10, 1 + bump * .18, () => { poly([[-20, -14], [16, -14], [12, 8], [-14, 8]], NV); circ(-8, 16, 4, NV); circ(8, 16, 4, NV); });
+  ['Магазин', 'Заказы', 'Баланс', 'Корзина'].forEach((s, i) => txt(s, xs[i], y + 30, 20, i ? NV : OR, { wt: 500 }));
+  if (n > 0) { circ(xs[3] + 24, y - 38, 17 * (1 + bump * .35), OR); txt(String(n), xs[3] + 24, y - 37, 20, LT); }
+  return [xs[3], y - 10];
+}
+function cards(t, added, enterAt) {
+  ITEMS.forEach((it, i) => { const [cx, cy] = CARD(i), k = seg(t, enterAt + i * .08, .6, out); if (k <= 0) return;
+    at(cx, cy + (1 - k) * 120, 1, () => alpha(k, () => {
+      rr(-132, -176, 264, 372, 32, BG); rr(-112, -156, 224, 160, 22, '#EBC49A66'); at(0, -64, 1, () => it.d(1));
+      txt(it.n, -108, 34, 26, NV, { al: 'left' }); if (it.old) { txt(it.old, -108, 76, 24, NV, { al: 'left', wt: 500, a: .45 }); rr(-112, 74, 48, 4, 2, OR); }
+      txt(it.p, it.old ? -48 : -108, 76, 32, it.old ? OR : NV, { al: 'left' });
+      const q = added.filter(a => a === i).length; rr(-108, 116, 216, 58, 18, q ? BG : OR);
+      if (q) { rr(-108, 116, 58, 58, 18, OR); rr(50, 116, 58, 58, 18, OR); txt('−', -79, 144, 34, LT); txt('+', 79, 144, 34, LT); txt(String(q), 0, 146, 30, NV); }
+      else txt('В корзину', 0, 146, 24, LT);
+    })); });
+}
+function loaderMark(x, y, t, s = 1, c = OR) { const ph = t % 1; const lift = ph < .35 ? -10 * io(ph / .35) : ph < .6 ? lerp(-10, 0, out((ph - .35) / .25)) : 0, sq = 1 - .35 * Math.sin(cl((ph - .25) / .5) * PI);
+  at(x, y, s, () => { ell(0, -8 + lift, 24, 16, c, PI, TAU); rr(-22 * sq, 2, 44 * sq, 8, 4, c); rr(-24, 16, 48, 8, 4, c); }); }
+function finger(x, y, press) { at(x, y, press ? .94 : 1, () => { rr(-32, -10, 64, 320, 32, SD); ell(0, 6, 18, 12, '#ffffff55'); }); }
+function tapAt(t, tt, x, y) { if (t < tt - .5 || t > tt + .25) return; const k = pr(t, tt - .5, .5); finger(x, y + (1 - io(k)) * 260, k > .92); }
+function phoneScreen(t) {
+  const added = ORDER.filter((_, i) => t >= T.adds[i] + .6);
+  const bal = t < T.credited ? 0 : t < T.credited + .9 ? 20 * io(pr(t, T.credited, .9)) : t < T.swipe + 1 ? 20 : 4.14;
+  header(`${bal.toFixed(2)} ₼`, pr(t, T.plus, .5));
+  if (t < T.shop) {
+    cards(t, [], -10);
+    const k = seg(t, T.sheet, .6);
+    if (k > 0) { alpha(.55 * k, () => rr(-PW / 2, -PH / 2 + 190, PW, PH - 190, 0, NV)); at(0, (1 - k) * 900, 1, () => {
+      rr(-PW / 2, -150, PW, 640, 48, LT); rr(-40, -126, 80, 8, 4, '#1F2B3D33'); txt('Пополнение', -PW / 2 + 52, -70, 44, NV, { al: 'left' });
+      [5, 10, 20, 50].forEach((v, i) => { const x = -210 + i * 140, on = t > T.amount && v === 20; at(x, 20, on ? lerp(1.12, 1, seg(t, T.amount, .3)) : 1, () => { rr(-60, -36, 120, 72, 22, on ? OR : BG); txt(v + ' ₼', 0, 2, 30, on ? LT : NV); }); });
+      rr(-PW / 2 + 52, 96, PW - 104, 68, 20, BG); txt(t > T.amount + .2 ? 'чек.jpg' : 'Скриншот чека', -PW / 2 + 82, 131, 26, NV, { al: 'left', wt: 500, a: .7 });
+      const sending = t > T.send && t < T.credited, done = t >= T.credited;
+      rr(-PW / 2 + 52, 200, PW - 104, 96, 28, done ? '#E2621B26' : OR);
+      if (sending) { loaderMark(-110, 252, t, 1, LT); txt('Отправка…', 40, 250, 32, LT); }
+      else if (done) { ctx.strokeStyle = OR; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.beginPath(); const c = seg(t, T.credited, .35); ctx.moveTo(-170, 250); ctx.lineTo(-150, 270); if (c > .4) ctx.lineTo(lerp(-150, -116, (c - .4) / .6), lerp(270, 228, (c - .4) / .6)); ctx.stroke(); txt('Баланс пополнен', 30, 250, 32, OR); }
+      else txt('Отправить чек', 0, 250, 32, LT);
+    }); }
+    for (let i = 0; i < 6; i++) { const c = pr(t, T.credited + .1 + i * .1, .55); if (c <= 0 || c >= 1) continue;
+      at(lerp(-140 + i * 50, PW / 2 - 178, io(c)), lerp(250, -PH / 2 + 118, io(c)) - Math.sin(c * PI) * 120, 1 - c * .3, () => { circ(0, 0, 24, OR); txt('₼', 0, 2, 26, LT); }); }
+    tabBar(0, 0);
+    tapAt(t, T.plus, PW / 2 - 76, -PH / 2 + 140); tapAt(t, T.amount, 70, 44); tapAt(t, T.send, 0, 270);
+  } else if (t < T.cart) {
+    cards(t, added, T.shop);
+    const bump = Math.max(0, ...T.adds.map(a => { const k = pr(t, a + .6, .4); return k > 0 && k < 1 ? Math.sin(k * PI) : 0; }));
+    const cartP = tabBar(added.length, bump);
+    T.adds.forEach((a, i) => { const k = pr(t, a, .6); if (k <= 0 || k >= 1) return; const [cx, cy] = CARD(ORDER[i]);
+      const m = io(k), x = lerp(cx, cartP[0], m), y = lerp(cy - 64, cartP[1], Math.pow(m, 1.4)) - Math.sin(PI * cl(k / .4)) * 50 * (1 - m);
+      for (let g = 3; g >= 0; g--) { const mg = io(cl(k - g * .025)), gx = lerp(cx, cartP[0], mg), gy = lerp(cy - 64, cartP[1], Math.pow(mg, 1.4)); alpha(g ? .12 : 1, () => at(gx, gy, lerp(1, .2, mg), () => ITEMS[ORDER[i]].d(1), mg * .4)); } });
+    const nx = T.adds.find(a => t < a + .25); if (nx !== undefined) { const i = T.adds.indexOf(nx), [cx, cy] = CARD(ORDER[i]); tapAt(t, nx, cx + 50, cy + 170); }
+  } else {
+    const k = seg(t, T.cart, .55);
+    at(0, (1 - k) * 1000, 1, () => {
+      rr(-PW / 2 + 20, -PH / 2 + 200, PW - 40, PH - 330, 44, BG);
+      if (t < T.accepted) {
+        txt('Корзина', -PW / 2 + 70, -PH / 2 + 270, 46, NV, { al: 'left' });
+        [['Бургер', 2, '5.98'], ['Чизбургер', 2, '3.98'], ['Картофель фри', 1, '2.61'], ['Наггетсы', 1, '3.29']].forEach(([n, q, s], i) => { const y = -PH / 2 + 370 + i * 100;
+          rr(-PW / 2 + 60, y - 38, 76, 76, 20, '#EBC49A66'); at(-PW / 2 + 98, y, 1, () => ITEMS[i].d(.48)); txt(n, -PW / 2 + 160, y - 12, 26, NV, { al: 'left' }); txt('× ' + q, -PW / 2 + 160, y + 20, 22, NV, { al: 'left', wt: 500, a: .6 }); txt(s + ' ₼', PW / 2 - 70, y, 28, NV, { al: 'right' }); });
+        txt('Итого', -PW / 2 + 70, 150, 34, NV, { al: 'left' }); txt('15.86 ₼', PW / 2 - 70, 150, 40, OR, { al: 'right' });
+        const sk = seg(t, T.swipe, .8), busy = t > T.swipe + .8;
+        rr(-PW / 2 + 60, 230, PW - 120, 104, 52, LT); rr(-PW / 2 + 64, 234, 96 + sk * (PW - 232), 96, 48, '#E2621B33');
+        if (busy) loaderMark(30, 282, t); else alpha(1 - sk, () => txt('Проведите, чтобы оформить', 40, 282, 24, NV, { wt: 500 }));
+        circ(-PW / 2 + 112 + sk * (PW - 232), 282, 44, OR); line(-PW / 2 + 106 + sk * (PW - 232), 266, -PW / 2 + 120 + sk * (PW - 232), 282, 7, LT); line(-PW / 2 + 120 + sk * (PW - 232), 282, -PW / 2 + 106 + sk * (PW - 232), 298, 7, LT);
+        if (t > T.swipe - .5 && t < T.swipe + .9) finger(-PW / 2 + 112 + sk * (PW - 232), 300 + (t < T.swipe ? (1 - io(pr(t, T.swipe - .5, .5))) * 260 : 0), t >= T.swipe);
+      } else {
+        const qk = pr(t, T.qr, 1.4);
+        txt('Заказ принят', 0, -PH / 2 + 290, 48, NV);
+        rr(-150, -PH / 2 + 330, 300, 56, 28, '#E2621B26'); txt(qk < 1 ? 'Готовим QR…' : 'QR-код готов', 0, -PH / 2 + 359, 24, OR);
+        const qs = 420, qx = -qs / 2, qy = -250; rr(qx - 30, qy - 30, qs + 60, qs + 60, 30, LT);
+        // the loader's three layers fold out into the QR's grid
+        const n = QRM.length, m = qs / n;
+        if (qk < .25) loaderMark(0, qy + qs / 2, t, lerp(2.4, 1, cl(qk / .25)));
+        for (let yy = 0; yy < n; yy++) for (let xx = 0; xx < n; xx++) { if (QRM[yy][xx] !== '1') continue; const d = (Math.abs(xx - n / 2) + Math.abs(yy - n / 2)) / n, k2 = io(cl((qk - .15 - d * .5) / .3)); if (k2 <= 0) continue;
+          const s = m * k2; rr(qx + xx * m + (m - s) / 2, qy + yy * m + (m - s) / 2, s + .4, s + .4, 0, NV); }
+        txt('Покажите код на кассе', 0, 290, 30, NV, { wt: 500 }); txt('№ 4F2A9C', 0, 340, 26, NV, { a: .5 });
+      }
+    });
+  }
+}
+
+/* ═════ scenes ═════ */
+function sceneStreet(t) {
+  const camX = lerp(480, 640, seg(t, 0, 4.8)), dive = seg(t, T.door - .1, .7, inn), aim = seg(t, T.door - .5, .8, io);
+  const cam = { x: lerp(camX, 1065, aim), y: lerp(1100, 1060, aim), z: lerp(1, 5.0, dive) };
+  layer(cam, .25, () => streetBack(t));
+  layer(cam, 1, () => {
+    storefront();
+    // the door opens as the camera dives in
+    const op = seg(t, T.door + .1, .5); if (op > 0) { rr(925, 930, 140 * (1 - op), 360, 10, NV); rr(1065 + 140 * op, 930, 140 * (1 - op), 360, 10, NV); }
+    const who = ['A', 'T', 'M', 'R'];
+    who.forEach((w, i) => { const wk = pr(t, i * .1, 3.4), x = lerp(60 - i * 130, 240 + i * 155, io(wk)), walking = wk < .98, ph = t * 8 + i * 1.7;
+      const talking = LINES.some(([s, h, tx]) => h === w && t > s && t < s + Math.max(1.4, tx.length * .06));
+      at(x, 1160 + (walking ? bob(ph) : 0), .95, () => P(w, { walk: walking ? ph : undefined, look: w === 'M' ? -.4 : .35, mouth: talking ? 'open' : 'smile', talk: .5 + .5 * Math.abs(Math.sin(t * 16)), eyes: w === 'T' && t > 3.1 ? 'happy' : 'open', aR: w === 'T' && t > 3.2 && t < 4.6 ? [2.6, .2] : undefined }, t)); });
+  });
+  layer(cam, 1.6, () => blur(8, () => { lampPost(80); lampPost(1650); }));
+  if (t < T.door) { const sx = wx => (wx - cam.x) * cam.z + W / 2; bubble(LINES[0][2], sx(550), 960, LINES[0][0], t, { tail: 1 }); bubble(LINES[1][2], sx(395), 960, LINES[1][0], t, { tail: -1, c: TL }); }
+}
+function sceneCounter(t) {
+  const enter = seg(t, T.counter, .9, out), drop = seg(t, T.shock - .5, 1.1);
+  const stopP = seg(t, T.stop - .2, 1.4), grow = seg(t, T.grow, 1.0, inn);
+  const cam = { x: lerp(540, 760, stopP), y: lerp(lerp(560, 1080, drop), 1200, stopP), z: lerp(lerp(1.25, 1.0, enter), 1.5, stopP) };
+  camera(cam.x, cam.y, cam.z, () => {
+    counterBack(t, { pulse: Math.sin(cl((t - T.shock) / .4) * PI) * (t > T.shock && t < T.shock + .4 ? 1 : 0), cashier: t > T.shock && t < T.leave ? 'grin' : 'smile' });
+    const shocked = t > T.shock && t < T.stop + .3, leave = seg(t, T.leave, 1.4) * (1 - seg(t, T.stop + .1, .7));
+    [['A', 150], ['T', 390], ['M', 640], ['R', 900]].forEach(([w, x0], i) => {
+      const lv = i < 2 ? leave : 0, x = x0 - lv * 300, walking = lv > .03 && lv < .97 && t < T.stop + .1, ph = t * 8 + i;
+      const talking = LINES.some(([s, h, tx]) => h === w && t > s && t < s + Math.max(1.4, tx.length * .06));
+      at(x, 1300 + (walking ? bob(ph) : 0), 1.1, () => P(w, { walk: walking ? ph : undefined,
+        look: w === 'R' && t > T.stop - .2 ? -.7 : i < 2 && t > T.leave && t < T.stop ? -.9 : .15,
+        eyes: shocked && w !== 'R' ? 'wide' : t > T.stop + .3 && w !== 'R' ? 'wide' : 'open', brow: shocked ? 1 : 0,
+        mouth: talking ? 'open' : shocked && w !== 'R' ? 'o' : 'smile', talk: .5 + .5 * Math.abs(Math.sin(t * 15)),
+        aL: w === 'T' && shocked && t < T.leave ? [2.7, 1.6] : w === 'M' && shocked ? [.4, -2.6] : undefined,
+        aR: w === 'R' && t > T.stop - .3 ? [lerp(.3, 1.7, seg(t, T.stop - .3, .5)), lerp(-.2, -2.3, seg(t, T.stop - .3, .5))] : w === 'T' && shocked && t < T.leave ? [2.7, 1.6] : undefined,
+        itemR: w === 'R' && t > T.stop + .6 ? () => at(0, 0, .14 * lerp(1, 1, grow), () => { phoneBody(); }) : undefined }, t)); });
+  });
+  bubble(LINES[2][2], 200, 1010, LINES[2][0], t, { tail: -1, c: LT }); bubble(LINES[3][2], 330, 1010, LINES[3][0], t, { tail: -1, c: TL });
+  bubble(LINES[4][2], 720, 830, LINES[4][0], t, { tail: 1, c: OR, dur: 1.7 });
+  // the phone in Рауф's hand grows into the full screen (shape match)
+  if (t > T.grow) { const k = io(pr(t, T.grow, 1.0)); at(lerp(930, W / 2, k), lerp(1240, H / 2 + 110, k), lerp(.21, 1.15, k), () => { phoneBody(); header('0.00 ₼'); cards(99, [], -10); tabBar(0, 0); }); }
+}
+function scenePhone(t) {
+  const dr = Math.sin((t - T.phone) * .7) * 8, tilt = Math.sin((t - T.phone) * .45) * .012;
+  rr(0, 0, W, H, 0, TL);
+  for (let i = 0; i < 7; i++) { const y = ((i * 340 + (t - T.phone) * 40) % 2200) - 200; rr(-100, y, 1300, 120, 60, '#ffffff10'); }
+  at(W / 2 + dr, H / 2 + 110, 1.15, () => { phoneBody(); phoneScreen(t); }, tilt);
+  bubble(LINES[5][2], 540, 270, LINES[5][0], t, { c: OR, tail: 0, size: 40, maxW: 760 });
+  bubble(LINES[6][2], 540, 270, LINES[6][0], t, { c: OR, tail: 0, size: 40, maxW: 760, dur: 3.6 });
+  bubble(LINES[7][2], 540, 270, LINES[7][0], t, { c: OR, tail: 0, size: 40, maxW: 760 });
+  bubble(LINES[8][2], 540, 270, LINES[8][0], t, { c: NV, tail: 0, size: 40, maxW: 760 });
+}
+function sceneKiosk(t) {
+  const cam = { x: lerp(620, 560, seg(t, T.kiosk, 5)), y: 1150, z: lerp(1.12, 1.0, seg(t, T.kiosk, 5)) };
+  const whip = seg(t, T.table - .45, .45, inn);
+  camera(cam.x + whip * 1400, cam.y, cam.z, () => {
+    counterBack(t, { scanOn: t > T.beep && t < T.beep + 1.4, cashier: t > T.beep ? 'grin' : 'smile' });
+    if (t > T.scan && t < T.beep) { const f = (t * 18) % 1 < .6; if (f) { rr(780, 930, 70, 6, 3, OR); rr(780, 960, 70, 6, 3, OR); } }
+    T.trays.forEach((tt, i) => { const k = seg(t, tt, .7, out); if (k <= 0) return; at(lerp(1500, 180 + i * 200, k), 990, .5, () => {
+      tray(400); [[-120, -70, () => burger(.8)], [10, -80, () => fries(.75)], [130, -100, () => shake(.7)]].forEach(([x, y, d], j) => at(x, y, back(cl((k - .3 - j * .1) / .4)), d)); }); });
+    const s = 1.1;
+    [['A', 120], ['T', 360]].forEach(([w, x]) => { const talk = w === 'T' && t > LINES[10][0] && t < LINES[10][0] + 1.4;
+      at(x, 1300, s, () => P(w, { eyes: t > T.beep ? 'wide' : 'open', brow: 1, look: .6, mouth: talk ? 'open' : t > T.beep ? 'grin' : 'o', talk: .6 + .4 * Math.abs(Math.sin(t * 15)), aL: t > T.trays[1] ? [2.6, .3] : undefined, aR: t > T.trays[1] ? [2.6, .3] : undefined }, t)); });
+    at(600, 1300, s, () => P('M', { eyes: t > T.trays[0] ? 'happy' : 'wide', mouth: t > T.trays[0] ? 'grin' : 'o', look: .5 }, t));
+    at(860, 1300, s, () => P('R', { look: -.2, mouth: t > LINES[9][0] && t < LINES[9][0] + .9 ? 'open' : 'smile', aR: [.35, -2.85], itemR: () => at(0, -40, .16, () => { phoneBody(); const n = QRM.length; for (let yy = 0; yy < n; yy++) for (let xx = 0; xx < n; xx++) if (QRM[yy][xx] === '1') rr(-210 + xx * 420 / n, -250 + yy * 420 / n, 420 / n + .4, 420 / n + .4, 0, NV); }) }, t));
+  });
+  if (t > T.beep) { const k = seg(t, T.beep, .45, back); at(860 - (cam.x - 540), 600, k, () => { circ(0, 0, 60, OR); line(-24, 2, -6, 22, 10, LT); line(-6, 22, 28, -18, 10, LT); }); }
+  bubble(LINES[9][2], 860, 1000, LINES[9][0], t, { c: OR, tail: 1, dur: 1.2 }); bubble(LINES[10][2], 360, 1000, LINES[10][0], t, { c: TL, tail: -1, size: 52 });
+  if (whip > 0) for (let i = 0; i < 10; i++) alpha(whip * .5, () => rr(-200 + ((i * 397) % 1300), 200 + i * 170, 400 + whip * 600, 10, 5, NV));
+}
+function sceneTable(t) {
+  const lt = t - T.table, slide = seg(t, T.table, .9, out);
+  const zz = seg(t, T.logo - .8, .8, io), zb = 2.1;
+  const cam0 = { x: lerp(-200, 0, slide) + lerp(500, 590, seg(t, T.table, T.logo - T.table)), y: 1060, z: 1.12 };
+  const cam = { x: lerp(cam0.x, 638.5, zz), y: lerp(cam0.y, 1107 + 160 / zb, zz), z: lerp(cam0.z, zb, zz) };
+  layer(cam, .5, () => cafeBack(t));
+  layer(cam, 1, () => {
+    const cyc = x => { const c = (x % 2.8) / 2.8; return c < .3 ? io(c / .3) : c < .5 ? 1 : c < .8 ? 1 - io((c - .5) / .3) : 0; };
+    const sip = cyc(lt + .4), bite = cyc(lt + 1.8);
+    [0, 1, 2, 3].forEach(i => rr(220 + i * 230 - 90, 820, 180, 260, 40, NV)); // chair backs
+    at(220, 1000, 1, () => P('A', { mouth: (LINES[11][0] < t && t < LINES[11][0] + 2.6) ? 'open' : sip > .6 ? 'sip' : 'smile', talk: .6 + .4 * Math.abs(Math.sin(t * 14)), eyes: sip > .6 ? 'shut' : 'open', look: .3, aR: [lerp(.3, .55, sip), lerp(-1.2, -3.2, sip)], itemR: () => at(0, -30, .5, () => shake(1)) }, t));
+    at(450, 1000 + Math.abs(Math.sin(t * 8)) * -4, 1, () => P('T', { mouth: (LINES[12][0] < t && t < LINES[12][0] + 1.8) ? 'open' : 'grin', talk: .6, eyes: 'happy', aL: [.35, -1.3], aR: lt > 5.5 ? [.7, -3.6] : [.35, -1.3] }, t));
+    at(680, 1000, 1, () => P('M', { mouth: bite > .6 ? 'open' : bite > .05 ? 'chew' : 'smile', look: -.2, aL: [lerp(.3, .55, bite), lerp(-1.2, -3.2, bite)], itemL: () => at(0, -10, .45, () => burger(1)) }, t));
+    at(910, 1000, 1, () => P('R', { mouth: 'chew', look: -.5, eyes: lt > 6 ? 'happy' : 'open', aL: [.35, -1.3], aR: [.35, -1.3] }, t));
+    rr(-200, 1180, 1500, 46, 20, OR); rr(-200, 1226, 1500, 700, 0, SD);
+    at(330, 1170, .95, () => { tray(560); at(-160, -66, .7, () => burger(1)); at(30, -84, .66, () => fries(1)); at(180, -60, .6, () => nuggets(1)); });
+    at(800, 1170, .95, () => { tray(560); at(-170, -66, .7, () => burger(1)); at(0, -100, .58, () => shake(1)); at(170, -84, .66, () => fries(1)); });
+  });
+  layer(cam, 1.5, () => blur(10, () => { at(120, 1500, 1.4, () => shake(1)); at(1150, 1520, 1.4, () => fries(1)); }));
+  const sx = wx => (wx - cam.x) * cam.z + W / 2; bubble(LINES[11][2], sx(220), 700, LINES[11][0], t, { c: LT, tail: -1, maxW: 700 }); bubble(LINES[12][2], sx(450), 700, LINES[12][0], t, { c: TL, tail: -1 });
+}
+function sceneLogo(t) {
+  const lt = t - T.logo;
+  rr(0, 0, W, H, 0, BG);
+  const push = seg(lt, 0, 1.0, io), split = seg(lt, .7, .8), morph = seg(lt, 1.3, 1.1), sq = seg(lt, 1.9, .8, back);
+  const cx = W / 2, cy = 800, S = lerp(1.397, 2.2, push);
+  if (lt < .3) alpha(1 - seg(lt, 0, .3), () => sceneTable(T.logo - .0001));
+  // orange square grows out of the patty
+  if (sq > 0) at(cx, cy, 1, () => rr(-210 * sq, -210 * sq, 420 * sq, 420 * sq, 118 * sq, '#c2500a'));
+  // three burger layers → three logo elements
+  const dome = { x: 0, y: lerp(-4 - 60 * split, -26, morph), rx: lerp(98 * S, 118, morph), ry: lerp(70 * S, 92, morph) };
+  const pat = { y: lerp(20 * S, 48, morph), w: lerp(200 * S, 236, morph), h: lerp(30 * S, 26, morph) };
+  const bot = { y: lerp(46 * S + 60 * split, 104, morph), w: lerp(192 * S, 184, morph), h: lerp(30 * S, 26, morph) };
+  const col = morph > .5 ? '#fff' : null;
+  at(cx, cy, 1, () => {
+    ell(0, dome.y * (morph > 0 ? 1 : S), dome.rx, dome.ry, col || SD, PI, TAU);
+    if (morph < .5) alpha(1 - morph * 2, () => { poly([[-100 * S, 0], [100 * S, 0], [0, 26 * S]].map(([x, y]) => [x, y + 6]), OR); rr(-104 * S, -6, 208 * S, 14, 7, TL); });
+    rr(-pat.w / 2, pat.y - pat.h / 2, pat.w, pat.h, pat.h / 2, col || NV);
+    rr(-bot.w / 2, bot.y - bot.h / 2, bot.w, bot.h, bot.h / 2, col || SD);
+  });
+  // wordmark letter by letter, then tagline and the site
+  'STAKED'.split('').forEach((ch, i) => { const k = seg(lt, 2.6 + i * .07, .6, out); if (k <= 0) return; ctx.save(); ctx.beginPath(); ctx.rect(0, 1120, W, 120); ctx.clip();
+    txt(ch, cx - 250 + i * 100, 1180 + (1 - k) * 120, 150, NV); ctx.restore(); });
+  const k2 = seg(lt, 3.4, .7, out); alpha(k2, () => txt('Вкусно, много — и дешевле', cx, 1310 + (1 - k2) * 30, 52, TL));
+  const k3 = seg(lt, 4.1, .6, back); if (k3 > 0) at(cx, 1480, k3, () => { rr(-330, -56, 660, 112, 56, OR); txt('stackd-frontend.vercel.app', 0, 2, 38, LT); });
+  const k4 = seg(lt, 4.6, .6, out); alpha(k4, () => txt('Telegram  @stackdbaku', cx, 1620, 40, NV, { wt: 500 }));
+  // slow breathing of the mark keeps the hold alive
+  if (lt > 3) { const b = Math.sin((lt - 3) * 1.6) * .5 + .5; alpha(.25, () => { ctx.strokeStyle = OR; ctx.lineWidth = 4; ctx.beginPath(); ctx.roundRect(cx - 240 - b * 20, cy - 240 - b * 20, 480 + b * 40, 480 + b * 40, 130); ctx.stroke(); }); }
+}
+
+/* ═════ frame ═════ */
+function renderAt(t) {
+  ctx.setTransform(SC, 0, 0, SC, 0, 0); rr(0, 0, W, H, 0, BG);
+  if (t < T.counter) sceneStreet(t);
+  else if (t < T.phone) sceneCounter(t);
+  else if (t < T.shrink) scenePhone(t);
+  else if (t < T.kiosk) { const k = seg(t, T.shrink, T.kiosk - T.shrink, inn); sceneKiosk(T.kiosk); alpha(1 - cl(k * 1.4 - .4), () => at(lerp(W / 2, 900, k), lerp(H / 2 + 110, 1020, k), lerp(1.15, .18, k), () => { phoneBody(); phoneScreen(t); })); }
+  else if (t < T.table) sceneKiosk(t);
+  else if (t < T.logo) sceneTable(t);
+  else sceneLogo(t);
+  // seam into the logo: the table scene pushes into a burger, then the logo scene picks the same burger up
+}
+
+/* ═════ events for sound ═════ */
+const EVENTS = []; const ev = (name, t) => EVENTS.push({ name, t: +t.toFixed(3) });
+ev('street_amb', 0); for (let i = 0; i < 15; i++) ev('step', .25 + i * .27); ev('pop', 1.7); ev('pop', 3.2);
+ev('door', T.door + .1); ev('whoosh_in', T.door - .1); ev('room_amb', T.counter); ev('price', T.shock); ev('pop', 7.3); ev('pop', 9.5);
+for (let i = 0; i < 6; i++) ev('step', T.leave + i * .25); ev('pop', 12.0); ev('whoosh_up', T.grow);
+ev('tap', T.plus); ev('sheet', T.sheet); ev('tap', T.amount); ev('tap', T.send); for (let i = 0; i < 6; i++) ev('coin', T.credited + .3 + i * .1); ev('ding', T.credited + .7);
+T.adds.forEach(a => { ev('tap', a); ev('fly', a + .02); ev('land', a + .6); });
+ev('sheet', T.cart); ev('swipe', T.swipe); ev('ding', T.accepted); for (let i = 0; i < 6; i++) ev('tick', T.qr + .2 + i * .18); ev('chime_small', T.qr + 1.4);
+ev('whoosh_down', T.shrink); ev('scan', T.scan); ev('beep', T.beep); T.trays.forEach(a => ev('tray', a)); ev('pop', 33.6);
+ev('whip', T.table - .45); ev('cafe_amb', T.table); for (let i = 0; i < 3; i++) { ev('slurp', T.table + .4 + 2.8 * i + .2); ev('crunch', T.table + 1.8 + 2.8 * i + .5); } ev('pop', 39.0); ev('pop', 43.0);
+ev('whoosh_in', T.logo - .3); ev('morph', T.logo + 1.3); ev('chime', T.logo + 1.9); ev('letters', T.logo + 2.6); ev('pop', T.logo + 4.1);
+EVENTS.sort((a, b) => a.t - b.t);
+window.TOTAL = TOTAL; window.EVENTS = EVENTS; window.renderAt = renderAt; window.LINES = LINES;
+window.ready = (async () => { QRM = await fetch('qr.json').then(r => r.json()); for (const f of ['800 40px UI', '500 40px UI']) { await document.fonts.load(f, 'Пп Aa ₼'); } renderAt(+(Q.get('t') || 0)); })();
+</script></body></html>

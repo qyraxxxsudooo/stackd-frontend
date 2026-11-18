@@ -1,4 +1,4 @@
-"""STAKED launch film: score + sound effects + optional voice, all built from code.
+"""STAKED launch film v2: score + sound effects + character dialogue (ElevenLabs takes), built from code.
 
 python3 build_audio.py events.json out_dir [vo.mp3]
 Writes music.wav, sfx.wav and mix_novoice.wav; with a voice file also mix_voice.wav (voice lines are split on
@@ -10,6 +10,7 @@ from scipy.signal import butter, sosfilt
 
 SR = 48000
 TOTAL = 54.0
+LINES = [(1.7,'M'),(3.2,'T'),(7.3,'A'),(9.5,'T'),(12.0,'R'),(15.3,'R'),(20.0,'R'),(26.0,'R'),(29.0,'M'),(32.0,'R'),(33.6,'T'),(39.0,'A'),(43.0,'T')]
 N = int(TOTAL * SR)
 rng = np.random.default_rng(7)
 VO_STARTS = [12.25, 16.0, 20.3, 26.9, 31.5, 48.4]
@@ -20,6 +21,8 @@ def bp(x, lo, hi, o=2): return sosfilt(butter(o, [lo / (SR / 2), min(hi, SR / 2 
 def lp(x, f, o=2): return sosfilt(butter(o, f / (SR / 2), 'low', output='sos'), x)
 def hp(x, f, o=2): return sosfilt(butter(o, f / (SR / 2), 'high', output='sos'), x)
 def sweep(f0, f1, d): ph = 2 * np.pi * np.cumsum(np.geomspace(f0, f1, int(d * SR))) / SR; return np.sin(ph)
+def mx(*xs):
+    n = max(len(x) for x in xs); return sum(np.pad(x, (0, n - len(x))) for x in xs)
 def noise(d): return rng.standard_normal(int(round(d * SR)))
 def add(buf, x, t, g=1.0, pan=0.0):
     i = int(t * SR); j = min(len(buf), i + len(x))
@@ -47,12 +50,12 @@ MEL = [(0, 74), (1.5, 76), (2, 78), (3, 81), (4, 78), (5.5, 76), (6, 74), (7, 71
 music = np.zeros((N, 2))
 def section_gain(t):  # arrangement: what plays when
     return dict(
-        keys=1.0, bass=0.0 if t < 6 else 1.0, drums=0.0 if t < 2.5 else (0.55 if t < 15.4 else 1.0),
-        mel=1.0 if 37 <= t < 47 or 20 <= t < 26 else 0.0)
+        keys=1.0, bass=0.0 if t < 5.6 else 1.0, drums=0.0 if t < 2.5 else (0.55 if t < 14.8 else 1.0),
+        mel=1.0 if 37 <= t < 46.5 or 19.2 <= t < 25 else 0.0)
 bars = int(TOTAL / BAR) + 1
 for b in range(bars):
     t0 = b * BAR
-    if t0 >= 47.0: break
+    if t0 >= 46.5: break
     ci = b % 4; g = section_gain(t0)
     for k, m in enumerate(CH[ci]):  # chord stabs on 1 and the and-of-2
         for off, v in ((0, .9), (1.5 * BEAT, .55)):
@@ -71,14 +74,14 @@ for b in range(bars):
 # the shock: music drops out under "Сколько?!" and returns after "Стоп!"
 def gain_curve(t):
     g = np.ones_like(t)
-    g = np.where((t > 7.7) & (t < 12.0), .28, g)
-    g = np.where((t >= 12.0) & (t < 12.35), 0.0, g)
-    g = np.where((t >= 12.35) & (t < 15.4), .45, g)
+    g = np.where((t > 7.2) & (t < 11.9), .3, g)
+    g = np.where((t >= 11.9) & (t < 12.2), 0.0, g)
+    g = np.where((t >= 12.2) & (t < 14.8), .45, g)
     return g
 tt = np.arange(N) / SR
 music *= gain_curve(tt)[:, None]
 # ending: a sustained Dmaj9 with a soft swell, then fade
-for k, m in enumerate([50, 57, 62, 66, 69, 76]): add(music, ep(mtof(m), 6.5, .9) * .12, 47.0 + k * .03, pan=(k - 2.5) * .2)
+for k, m in enumerate([50, 57, 62, 66, 69, 76]): add(music, ep(mtof(m), 6.5, .9) * .12, 47.8 + k * .03, pan=(k - 2.5) * .2)
 fade = np.clip((TOTAL - tt) / 2.5, 0, 1); music *= fade[:, None]
 music = lp(music.T, 9000).T
 
@@ -122,6 +125,11 @@ SFX = {
     'beep': lambda: (np.concatenate([np.sign(np.sin(2 * np.pi * 1850 * t_(.12))) * env(int(round(.12 * SR)), .002, .1), np.zeros(int(round(.04 * SR))), np.sign(np.sin(2 * np.pi * 2200 * t_(.14))) * env(int(round(.14 * SR)), .002, .12)]) * .35, .3),
     'tray': lambda: (np.concatenate([bp(noise(.45), 300, 2200) * np.linspace(.2, 1, int(round(.45 * SR))), sweep(160, 70, .15) * env(int(round(.15 * SR)), .001, .05) * 2]), .25),
     'crunch': lambda: (crunch(), .5), 'slurp': lambda: (slurp(), .35), 'laugh_pop': lambda: (sweep(500, 900, .12) * env(int(round(.12 * SR)), .002, .06), .15),
+    'door': lambda: (bell([1320, 2640, 3960], 1.6) * .5 + np.pad(whoosh(.5, 300, 1800), (0, int(round(1.1 * SR)))) * .4, .3),
+    'price': lambda: (mx(sweep(300, 900, .18) * env(int(round(.18 * SR)), .002, .1), sweep(140, 50, .4) * env(int(round(.4 * SR)), .002, .15)), .45),
+    'tick': lambda: (np.sin(2 * np.pi * 2600 * t_(.04)) * env(int(round(.04 * SR)), .0005, .01), .16),
+    'chime_small': lambda: (bell([2093, 2637, 3136], 1.0), .2), 'morph': lambda: (mx(whoosh(1.0, 200, 2400), sweep(200, 600, 1.0) * .3), .3),
+    'letters': lambda: (np.concatenate([np.pad(bp(noise(.03), 2000, 8000) * env(int(round(.03 * SR)), .0005, .006), (0, int(round(.04 * SR)))) for _ in range(6)]), .25),
     'chime': lambda: (sum(np.pad(bell([mtof(m), mtof(m) * 2], 1.8), (int(i * .09 * SR), int(1 * SR)))[:int(2.2 * SR)] for i, m in enumerate([86, 90, 93, 98])) * .5, .3),
     'sparkle': lambda: (sum(np.pad(bell([f], .5), (int(i * .07 * SR), int(1 * SR)))[:int(1 * SR)] for i, f in enumerate([4200, 5300, 6100, 7000])) * .5, .12),
 }
@@ -145,31 +153,32 @@ def norm(x, target_rms):
 music = norm(music, .075); write('music.wav', music); write('sfx.wav', sfx)
 write('mix_novoice.wav', music + sfx)
 
-if len(sys.argv) > 3:
-    raw = os.path.join(out, 'vo_raw.wav')
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', sys.argv[3], '-ar', str(SR), '-ac', '1', raw], check=True)
-    w = wave.open(raw); v = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float) / 32768; w.close()
-    # split on silences longer than 0.35 s
-    frame = int(round(.02 * SR)); en = np.array([np.sqrt(np.mean(v[i:i + frame] ** 2)) for i in range(0, len(v) - frame, frame)])
-    thr = max(en.max() * .04, 1e-4); loud = en > thr; segs = []; i = 0
+def load(path):
+    raw = path + '.wav'; subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', path, '-ar', str(SR), '-ac', '1', raw], check=True)
+    w = wave.open(raw); v = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float) / 32768; w.close(); return v
+def split(v, n):
+    frame = int(.02 * SR); en = np.array([np.sqrt(np.mean(v[i:i + frame] ** 2)) for i in range(0, len(v) - frame, frame)])
+    loud = en > max(en.max() * .05, 1e-4); segs = []; i = 0
     while i < len(loud):
         if loud[i]:
             j = i
-            while j < len(loud) and (loud[j] or (j + 18 < len(loud) and loud[j:j + 18].any())): j += 1
+            while j < len(loud) and (loud[j] or loud[j:j + 15].any()): j += 1
             segs.append((max(0, i - 2) * frame, min(len(v), (j + 3) * frame))); i = j
         else: i += 1
-    print('voice segments:', [(round(a / SR, 2), round(b / SR, 2)) for a, b in segs])
-    # merge the closest pairs until there are as many segments as voice beats
-    while len(segs) > len(VO_STARTS):
+    while len(segs) > n:
         gaps = [segs[k + 1][0] - segs[k][1] for k in range(len(segs) - 1)]; k = int(np.argmin(gaps)); segs[k] = (segs[k][0], segs[k + 1][1]); del segs[k + 1]
-    vo = np.zeros(N); duck = np.zeros(N)
-    for (a, b), st in zip(segs, VO_STARTS):
-        x = v[a:b] * np.minimum(1, np.minimum(np.arange(b - a), np.arange(b - a)[::-1]) / (.01 * SR)); i0 = int(st * SR); j0 = min(N, i0 + len(x))
-        vo[i0:j0] += x[:j0 - i0]; duck[max(0, i0 - int(round(.15 * SR))):min(N, j0 + int(round(.25 * SR)))] = 1
-    duck = lp(duck, 6) ; duck = np.clip(duck, 0, 1)
-    vo = norm(hp(vo, 90), .11)
+    return segs
+vo_dir = sys.argv[3] if len(sys.argv) > 3 else ''
+if vo_dir and all(os.path.exists(os.path.join(vo_dir, c + '.mp3')) for c in 'RTMA'):
+    vo = np.zeros(N); duck = np.zeros(N); report = []
+    for c in 'RTMA':
+        v = load(os.path.join(vo_dir, c + '.mp3')); starts = [st for st, w in LINES if w == c]; segs = split(v, len(starts))
+        report.append((c, len(segs), len(starts)))
+        for (a, b), st in zip(segs, starts):
+            x = v[a:b] * np.minimum(1, np.minimum(np.arange(b - a), np.arange(b - a)[::-1]) / (.01 * SR)); i0 = int(st * SR); j0 = min(N, i0 + len(x))
+            vo[i0:j0] += x[:j0 - i0]; duck[max(0, i0 - int(.12 * SR)):min(N, j0 + int(.2 * SR))] = 1
+    print('voice lines per character (found, needed):', report)
+    duck = np.clip(lp(duck, 6), 0, 1); vo = norm(hp(vo, 90), .12)
     write('voice.wav', np.stack([vo, vo], 1))
-    mix = music * (1 - .55 * duck)[:, None] + sfx * (1 - .3 * duck)[:, None] + np.stack([vo, vo], 1)
-    write('mix_voice.wav', mix)
-    print('segments placed:', len(segs))
+    write('mix_voice.wav', music * (1 - .6 * duck)[:, None] + sfx * (1 - .35 * duck)[:, None] + np.stack([vo, vo], 1))
 print('done')

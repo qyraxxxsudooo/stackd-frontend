@@ -1,5 +1,9 @@
 # STAKED launch film
 
+**v2 (current): `flat.html`** — flat vector, 5-colour palette, 9:16 1080x1920 60 fps, dialogue of four friends (ElevenLabs: Dzmitry, Egor, kRYUKOV, Said RU). Plan in `STORYBOARD.md`. Voice mix: put R.mp3, T.mp3, M.mp3, A.mp3 (one take per character) in a folder and run `python3 sound/build_audio.py sound/events.json out <folder>`.
+
+v1 below (ink style, `film.html`) is kept for reference.
+
 54 s, 9:16 (1080x1920, 24 fps). Hand-drawn ink on paper, lines boil 10x a second, orange is the only colour.
 Everything is code: no generated images or video.
 
