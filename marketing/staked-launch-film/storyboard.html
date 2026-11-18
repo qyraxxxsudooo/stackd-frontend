@@ -1,0 +1,70 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>STACKED · рекламный ролик · раскадровка</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#1a1714;color:#f1ece3;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.board{width:1920px;padding:36px 34px}h1{margin:0 0 6px;font-size:40px;font-weight:650;letter-spacing:-1px}h1 span{color:#a39c90;font-weight:400}
+.sub{font-size:17px;color:#c9c1b4;margin-bottom:24px;max-width:1800px;line-height:1.45}
+.grid{display:grid;grid-template-columns:repeat(5,350px);gap:26px 22px}
+.frame{position:relative;width:350px;height:622px;border-radius:12px;overflow:hidden;background:#f4efe4}
+.frame svg{position:absolute;inset:0;width:100%;height:100%}
+.num{position:absolute;left:10px;top:10px;width:38px;height:38px;border-radius:50%;background:#1f1d1a;color:#fff;font-weight:700;font-size:19px;display:flex;align-items:center;justify-content:center;z-index:2}
+.t{font-size:13px;color:#a39c90;margin-top:9px}.b{font-size:18px;font-weight:650;margin:2px 0 4px}
+.vo{margin-top:5px;font-size:14px;color:#9fb4ff}.d{font-size:14px;color:#d6cfc3;line-height:1.42}
+.mv{margin-top:6px;font-size:13px;color:#f5d04e;line-height:1.38}.sfx{margin-top:6px;font-size:13px;color:#ff9a5a;line-height:1.38}.tr{margin-top:6px;font-size:13px;color:#4fe3a6;line-height:1.38}
+</style></head><body><div class="board">
+<h1>STACKED <span>· рекламный ролик · раскадровка v1</span></h1>
+<div class="sub">45 с, вертикаль 9:16 (Reels, TikTok, Shorts), вторая версия 16:9 из тех же сцен. Тушь от руки на светлой бумаге: неровный контур, местами двойная линия и разрывы, без заливок и штриховки, линии прорисовываются по ходу пера и «кипят» 10 раз в секунду. Единственный цвет — оранжевый STACKED (кнопки, лоадер, QR-луч). Каждый кадр перетекает в следующий формой, без склеек-растворений. Две версии: с голосом (синие строки) и без голоса (те же фразы короткими титрами). Ресторан без логотипов и названий сетей.<br>Синий — голос/титр, жёлтый — движение, оранжевый — звуки, зелёный — переход в следующий кадр.</div>
+<div class="grid" id="g"></div></div>
+<script>
+// tiny ink sketcher: seeded jitter, double strokes, gaps
+let seed=7;const R=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const J=(v,a=1.6)=>v+(R()-.5)*a*2;
+function pl(pts,o={}){const w=o.w||2.2,c=o.c||'#1f1d1a';let s='';const pass=o.single?1:2;
+ for(let k=0;k<pass;k++){let d='';pts.forEach(([x,y],i)=>{d+=(i?'L':'M')+J(x,k?2.4:1.2).toFixed(1)+' '+J(y,k?2.4:1.2).toFixed(1)});
+  s+=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${k?w*.55:w}" stroke-linecap="round" stroke-linejoin="round" opacity="${k?.55:1}" ${o.dash?'stroke-dasharray="'+o.dash+'"':''}/>`}return s}
+const ln=(x1,y1,x2,y2,o)=>pl(seg(x1,y1,x2,y2),o);
+function seg(x1,y1,x2,y2,n=6){return Array.from({length:n+1},(_,i)=>[x1+(x2-x1)*i/n,y1+(y2-y1)*i/n])}
+const rc=(x,y,w,h,o)=>pl([...seg(x,y,x+w,y),...seg(x+w,y,x+w,y+h),...seg(x+w,y+h,x,y+h),...seg(x,y+h,x,y+3)],o);
+function el(cx,cy,rx,ry,o={}){const a0=o.a0||0,a1=o.a1??6.1,n=28;return pl(Array.from({length:n+1},(_,i)=>{const a=a0+(a1-a0)*i/n;return[cx+Math.cos(a)*rx,cy+Math.sin(a)*ry]}),o)}
+const tx=(x,y,s,size=22,o={})=>`<text x="${x}" y="${y}" font-family="'Comic Neue','Segoe Print','Bradley Hand',cursive" font-size="${size}" fill="${o.c||'#1f1d1a'}" text-anchor="${o.a||'middle'}" font-weight="${o.wt||700}">${s}</text>`;
+const OR='#e8681e';
+function person(x,y,s=1,o={}){ // simple ink figure from head to hips
+ return el(x,y,26*s,30*s)+pl([[x-8*s,y+18*s],[x-4*s,y+22*s],[x+6*s,y+20*s]],{w:1.6})+el(x-9*s,y-4*s,2.5*s,3*s,{w:2})+el(x+9*s,y-4*s,2.5*s,3*s,{w:2})
+ +pl([[x-40*s,y+120*s],[x-38*s,y+45*s],[x-20*s,y+32*s],[x+20*s,y+32*s],[x+38*s,y+45*s],[x+40*s,y+120*s]])+(o.arm||'')}
+function phone(x,y,w,h){return rc(x,y,w,h,{w:2.6})+ln(x+w*.38,y+14,x+w*.62,y+14,{w:2})}
+function burger(cx,cy,s=1,c){c=c||'#1f1d1a';return el(cx,cy,70*s,42*s,{a0:3.2,a1:6.25,c})+ln(cx-72*s,cy,cx+72*s,cy,{c})+pl([[cx-74*s,cy+14*s],[cx-50*s,cy+22*s],[cx-20*s,cy+12*s],[cx+10*s,cy+22*s],[cx+40*s,cy+12*s],[cx+74*s,cy+16*s]],{c})+ln(cx-70*s,cy+30*s,cx+70*s,cy+30*s,{c})+el(cx,cy+34*s,70*s,20*s,{a0:0,a1:3.14,c})+[[-30,-20],[0,-30],[28,-18],[-10,-12]].map(([a,b])=>el(cx+a*s,cy+b*s,3,2,{w:1.5,single:1,c})).join('')}
+function steam(cx,cy){return [ -24,0,24].map(d=>pl([[cx+d,cy],[cx+d-8,cy-18],[cx+d+6,cy-36],[cx+d-4,cy-56]],{w:1.6})).join('')}
+function qr(x,y,s,c='#1f1d1a'){let o=rc(x,y,s,s,{w:2.4,c});[[0,0],[1,0],[0,1]].forEach(([a,b])=>{const q=s*.3;o+=rc(x+8+a*(s-16-q),y+8+b*(s-16-q),q,q,{w:2.2,c})+rc(x+16+a*(s-16-q),y+16+b*(s-16-q),q-16,q-16,{w:1.8,c,single:1})});for(let i=0;i<14;i++){const px=x+s*.42+R()*s*.5,py=y+s*.42+R()*s*.5;o+=rc(px,py,7,7,{w:1.6,c,single:1})}return o}
+function logo(cx,cy,s=1,c='#1f1d1a'){return rc(cx-60*s,cy-60*s,120*s,120*s,{w:3,c})+el(cx,cy+4*s,38*s,28*s,{a0:3.2,a1:6.25,c,w:3})+ln(cx-38*s,cy+18*s,cx+38*s,cy+18*s,{c,w:3})+ln(cx-30*s,cy+34*s,cx+30*s,cy+34*s,{c,w:3})}
+function loader(cx,cy,c=OR){return el(cx,cy-6,14,9,{a0:3.2,a1:6.25,c,w:3,single:1})+ln(cx-12,cy+2,cx+12,cy+2,{c,w:3,single:1})+ln(cx-14,cy+9,cx+14,cy+9,{c,w:3,single:1})}
+const F=[];
+// 1 logo
+F.push(logo(175,260,1.4)+pl([[40,470],[90,468],[175,470],[260,472],[310,470]],{w:2.4})+tx(175,400,'STACKED',40)+pl([[255,222],[275,200],[300,190]],{w:1.5,c:OR})+el(305,188,5,5,{c:OR,w:2,single:1}));
+// 2 restaurant, empty wallet
+F.push(rc(30,40,290,120,{w:2.2})+tx(90,85,'БУРГЕР',18)+tx(240,85,'7 ₼',30)+ln(50,110,300,110,{w:1.4,dash:'6 8'})+person(175,300,1.1)+rc(120,410,110,60,{w:2.6})+pl([[175,410],[175,470]],{w:1.4})+el(250,360,16,9,{w:1.6})+el(270,350,12,7,{w:1.6})+pl([[248,352],[262,332],[284,322]],{w:1.4,dash:'3 6'})+ln(20,520,330,520,{w:2.4}));
+// 3 phone, tap top up
+F.push(phone(55,60,240,480)+tx(175,130,'STACKED',24)+rc(85,160,180,70,{w:2})+tx(130,205,'0.00 ₼',22)+el(240,195,20,20,{c:OR,w:3})+ln(232,195,248,195,{c:OR,w:3,single:1})+ln(240,187,240,203,{c:OR,w:3,single:1})+rc(85,260,85,120,{w:1.8})+rc(180,260,85,120,{w:1.8})+pl([[250,240],[262,226],[276,232],[290,280],[300,330]],{w:2.4})+el(240,195,34,34,{w:1.2,dash:'4 6',c:OR}));
+// 4 top-up sheet, loader, balance 10
+F.push(phone(55,60,240,480)+pl([[60,300],[110,288],[175,286],[240,288],[290,300]],{w:2.4})+tx(175,340,'Пополнение',22)+loader(175,395)+tx(175,460,'10.00 ₼',38,{c:OR})+pl([[150,250],[175,226],[200,250]],{w:2,c:OR})+[[110,200],[240,180],[200,140]].map(([a,b])=>el(a,b,12,12,{w:2})+tx(a,b+6,'₼',14)).join(''));
+// 5 shop card, price, genie to cart
+F.push(phone(55,60,240,480)+rc(85,110,180,250,{w:2.2})+burger(175,190,.8)+tx(130,300,'7 ₼',20)+ln(110,294,150,290,{c:OR,w:2.6,single:1})+tx(215,305,'2.99 ₼',28,{c:OR})+rc(100,320,150,30,{c:OR,w:2.6})+tx(175,342,'В корзину',16,{c:OR})+pl([[200,320],[230,390],[245,450],[250,500]],{w:1.4,dash:'4 6'})+pl([[226,490],[240,470],[262,470],[270,490]],{w:2})+rc(232,498,38,18,{w:2}));
+// 6 order -> QR draws
+F.push(phone(55,60,240,480)+tx(175,130,'Заказ принят',22)+qr(105,170,140)+ln(108,250,242,250,{c:OR,w:3,single:1})+tx(175,370,'Покажите на кассе',16)+loader(175,420));
+// 7 kiosk scan
+F.push(rc(170,60,150,260,{w:2.6})+rc(190,90,110,80,{w:2})+tx(245,140,'SCAN',16)+pl([[150,210],[120,230],[100,260]],{w:2})+phone(60,200,90,170)+qr(78,240,54)+pl([[150,250],[190,180]],{c:OR,w:2.4,single:1})+pl([[150,290],[190,190]],{c:OR,w:2.4,single:1})+rc(60,430,230,40,{w:2.4})+burger(175,420,.5)+steam(175,370)+ln(20,500,330,500,{w:2.4}));
+// 8 bite
+F.push(burger(175,300,1.5)+el(250,265,26,22,{a0:1.6,a1:4.7,w:2.6})+steam(175,180)+person(175,500,.9)+tx(175,600,'мм-м',22)+[[70,190],[290,180],[300,330]].map(([a,b])=>ln(a-8,b,a+8,b,{w:1.6,c:OR,single:1})+ln(a,b-8,a,b+8,{w:1.6,c:OR,single:1})).join(''));
+// 9 end card
+F.push(logo(175,230,1.2,'#1f1d1a')+tx(175,360,'STACKED',40)+tx(175,410,'Вкусно и дешевле',22,{wt:400})+rc(70,450,210,46,{c:OR,w:2.6})+tx(175,480,'Открыть сайт',18,{c:OR})+tx(175,540,'@stackdbaku',16,{wt:400}));
+// [time, title, VO, description, motion, sfx, transition]
+const S=[
+['0–4 с','Перо рисует STACKED','—','Пустой лист. Перо выводит знак STACKED (три слоя бургера в квадрате) и надпись. Оранжевая искра у угла знака.','Линии появляются по ходу пера, контур «кипит». Камера медленно подъезжает.','шорох пера по бумаге, мягкий «тик» на искре','Нижняя линия знака тянется вправо и становится полом ресторана.'],
+['4–9 с','Ресторан. В кошельке пусто','«Хочется бургер, а в кошельке пусто?»','Парень у кассы под табло «Бургер 7 ₼». Открывает кошелёк — оттуда вылетает моль.','Табло прорисовывается сверху вниз, моль вылетает по дуге, парень опускает плечи.','гул зала, скрип кошелька, трепет крыльев, вздох','Парень достаёт телефон, его контур растёт и заполняет кадр.'],
+['9–14 с','Открывает STACKED','«Открой STACKED.»','Экран сайта тушью: баланс 0.00 ₼, оранжевая кнопка «+», карточки товаров.','Палец входит снизу и нажимает «+», вокруг кнопки расходится пунктирное кольцо.','мягкий тап, короткий щелчок','Кнопка «+» раскрывается в шторку пополнения, которая поднимается снизу (как на сайте).'],
+['14–19 с','Пополнение','«Пополни баланс за пару минут.»','Шторка «Пополнение», маленький оранжевый лоадер из трёх слоёв, потом баланс 10.00 ₼.','Слои лоадера оседают друг на друга, монеты падают в баланс, цифры считаются от 0 до 10.','звон монет по одной, лёгкий «динь» на 10.00','Цифра баланса уезжает вверх, снизу въезжает карточка бургера.'],
+['19–25 с','Бургер дешевле, чем на кассе','«Тот же бургер — дешевле, чем на кассе.»','Карточка бургера: 7 ₼ зачёркнуто оранжевым, 2.99 ₼. Кнопка «В корзину».','Тап — фото карточки сжимается «джинном» и летит в иконку корзины, корзина подпрыгивает.','вжух полёта, «поп» на посадке','Иконка корзины раскрывается в экран оформленного заказа.'],
+['25–30 с','Заказ и QR-код','«Оформи заказ — и получи QR-код.»','«Заказ принят». QR-код рисуется линия за линией, по нему проходит оранжевый луч.','Сначала три угловых квадрата, потом точки; луч сверху вниз; лоадер на месте статуса.','быстрые штрихи пера, чистый «дзынь» готовности','QR отъезжает назад, телефон уменьшается и оказывается в руке у сканера кассы.'],
+['30–36 с','На кассе','«Покажи код на кассе.»','Парень подносит телефон к сканеру. Два оранжевых луча. На поднос выезжает бургер, от него идёт пар.','Лучи вспыхивают, поднос выезжает слева, линии пара «кипят».','писк сканера, скольжение подноса, шелест обёртки','Камера въезжает в бургер, он заполняет кадр.'],
+['36–41 с','Первый укус','«И просто наслаждайся.»','Крупный бургер, большой укус, довольное лицо, оранжевые искры.','Укус вырезает дугу, крошки разлетаются, парень улыбается.','хруст, хруст булочки, довольное «мм-м» (звук, не текст)','Слои бургера оседают друг на друга и складываются в знак STACKED.'],
+['41–45 с','Финал','«STACKED. Вкусно и дешевле.»','Знак STACKED, строка «Вкусно и дешевле», кнопка «Открыть сайт», @stackdbaku.','Буквы проявляются из размытия с лёгким подъёмом, контур продолжает «кипеть».','финальный аккорд, мягкий удар','Конец. Последний кадр держится 1,5 с для обложки.']];
+document.getElementById('g').innerHTML=S.map(([t,b,vo,d,mv,sfx,tr],i)=>`<div><div class="frame"><div class="num">${i+1}</div><svg viewBox="0 0 350 622">${F[i]}</svg></div><div class="t">${t}</div><div class="b">${b}</div>${vo!=='—'?`<div class="vo">${vo}</div>`:''}<div class="d">${d}</div><div class="mv">${mv}</div><div class="sfx">♪ ${sfx}</div><div class="tr">→ ${tr}</div></div>`).join('');
+</script></body></html>
