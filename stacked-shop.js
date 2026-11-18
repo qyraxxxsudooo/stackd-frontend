@@ -1,5 +1,5 @@
 /*
- * STACKED shop layer. Loaded after app.js and stackd-enhancements.js; it wraps their globals
+ * STAKED shop layer. Loaded after app.js and stackd-enhancements.js; it wraps their globals
  * (card, renderCart, A.add/inc/dec) instead of rewriting them, so catalog, auth, orders and Supabase logic stay untouched.
  *
  * Adds: fly-to-cart card stack dock, quantity stepper without a duplicate button, per-product mini icon (admin),
@@ -28,7 +28,7 @@
         if (row.key === 'product_icons') { try { const v = JSON.parse(row.value || '{}'); settings.product_icons = v && typeof v === 'object' ? v : {}; } catch { settings.product_icons = {}; } }
         else if (row.key in settings) settings[row.key] = String(row.value || '').trim();
       });
-    } catch (e) { console.warn('STACKED shop settings not loaded:', e.message || e); }
+    } catch (e) { console.warn('STAKED shop settings not loaded:', e.message || e); }
     renderFooterSocials(); refreshAllCards();
   }
   const httpsUrl = (v, host) => {

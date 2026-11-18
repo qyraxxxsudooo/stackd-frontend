@@ -200,7 +200,7 @@ label{font-size:.9rem;font-weight:600;margin-bottom:6px;display:block;color:var(
   .seg { display: flex; }
 }
 
-/* STACKED repair patch: real reusable glass material with a solid fallback. */
+/* STAKED repair patch: real reusable glass material with a solid fallback. */
 .glass {
   background: color-mix(in srgb, var(--surface) 78%, transparent);
   border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
@@ -304,7 +304,7 @@ button, .btn { touch-action: manipulation; }
 }
 
 
-/* STACKED payment channel CTA */
+/* STAKED payment channel CTA */
 .payment-instructions { display:grid; gap:13px; }
 .payment-instructions p { color:var(--muted); }
 .tg-channel-btn {
@@ -318,7 +318,7 @@ button, .btn { touch-action: manipulation; }
 .tg-channel-btn:active { transform:scale(.985); }
 .tg-channel-btn .ic { width:21px;height:21px; }
 
-/* STACKED order cards and Telegram QR reveal */
+/* STAKED order cards and Telegram QR reveal */
 .orders-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
 .orders-list{display:flex;flex-direction:column;gap:16px;max-height:min(70dvh,760px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:2px 2px 6px;scrollbar-gutter:stable}
 .orders-empty,.orders-error{flex:none;padding:28px 20px;text-align:center;color:var(--muted);background:var(--bg);border:1px dashed var(--line);border-radius:12px}

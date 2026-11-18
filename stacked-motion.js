@@ -1,5 +1,5 @@
 /*
- * STACKED MOTION, brand motion system (dependency-free: no libraries, fonts, images, network).
+ * STAKED MOTION, brand motion system (dependency-free: no libraries, fonts, images, network).
  *
  *   <stacked-logo size="28"></stacked-logo>                       brand mark: intro + hover micro-motion
  *   <stacked-motion type="full"></stacked-motion>                 Choose, Order, Processing, Pickup story (loop)
@@ -48,7 +48,7 @@
 
   const I18N = {
     ru: {
-      aria: 'Как работает STACKED: выбор предложения, заказ, обработка и получение',
+      aria: 'Как работает STAKED: выбор предложения, заказ, обработка и получение',
       rail: ['ВЫБОР', 'ЗАКАЗ', 'ОБРАБОТКА', 'ПОЛУЧЕНИЕ'],
       cap: [['Выбор', 'Выберите предложение', 'дешевле обычной цены.'], ['Заказ', 'Оформите заказ', 'по сниженной цене.'], ['Обработка', 'Администратор берёт', 'заказ в работу.'], ['Получение', 'Покажите подтверждение', 'в ресторане и заберите.']],
       choose: 'ВЫБЕРИТЕ ПРЕДЛОЖЕНИЕ', item: 'Бургер', itemSub: 'Предложение дня', add: 'В корзину',
@@ -57,7 +57,7 @@
       pickT: 'ПОЛУЧЕНИЕ', ready: 'Подтверждение готово', show: 'Покажите в ресторане', ok: 'Готово'
     },
     en: {
-      aria: 'How STACKED works: choose an offer, order, processing and pickup',
+      aria: 'How STAKED works: choose an offer, order, processing and pickup',
       rail: ['CHOOSE', 'ORDER', 'PROCESSING', 'PICKUP'],
       cap: [['Choose', 'Pick an offer cheaper', 'than the usual price.'], ['Order', 'Place your order', 'at the lower price.'], ['Processing', 'Our admin takes', 'your order in work.'], ['Pickup', 'Show the confirmation', 'at the restaurant.']],
       choose: 'CHOOSE AN OFFER', item: 'Burger', itemSub: 'Offer of the day', add: 'Add to cart',
@@ -66,7 +66,7 @@
       pickT: 'PICKUP', ready: 'Confirmation ready', show: 'Show it at the restaurant', ok: 'Done'
     },
     az: {
-      aria: 'STACKED necə işləyir: təklif seçimi, sifariş, emal və təhvil',
+      aria: 'STAKED necə işləyir: təklif seçimi, sifariş, emal və təhvil',
       rail: ['SEÇİM', 'SİFARİŞ', 'EMAL', 'TƏHVİL'],
       cap: [['Seçim', 'Adi qiymətdən ucuz', 'təklifi seçin.'], ['Sifariş', 'Sifarişi aşağı', 'qiymətlə verin.'], ['Emal', 'Administrator sifarişi', 'işə götürür.'], ['Təhvil', 'Restoranda təsdiqi', 'göstərin və götürün.']],
       choose: 'TƏKLİF SEÇİN', item: 'Burger', itemSub: 'Günün təklifi', add: 'Səbətə at',
@@ -202,7 +202,7 @@
   const SHELL = () => `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"`;
 
   /* ═════════════ STORY (full + single-scene phone clips) ═════════════
-   * Choose → Order → Processing → Pickup. Prices are an illustration (7.00 retail → 3.00 on STACKED).
+   * Choose → Order → Processing → Pickup. Prices are an illustration (7.00 retail → 3.00 on STAKED).
    * No QR code and no "success" is drawn: the last scene shows a confirmation ticket, not a scannable code. */
   const K = { L: 2.0, cut0: 2.0, cut1: 3.0, sc: [3.0, 5.4, 7.8, 10.2], end: [5.4, 7.8, 10.2, 13.0], exit0: 13.0, T: 14.0 };
 
@@ -222,7 +222,7 @@
     const screen =
       `<g data-k="scr">` +
       /* header */
-      `<g data-k="hd">` + T(-58, -142.5, 'STACKED', { sz: 9.5, w: 800, f: c.ink, ls: 1.6 }) +
+      `<g data-k="hd">` + T(-58, -142.5, 'STAKED', { sz: 9.5, w: 800, f: c.ink, ls: 1.6 }) +
       `<rect x="44" y="-157" width="38" height="22" rx="11" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/><path d="M52 -148.5h2.2l1.4 6.4h5.6l1.3-4.6h-8.4" fill="none" stroke="${c.ink}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>` +
       `<g data-k="hd.cn"><circle cx="75" cy="-153" r="5" fill="${c.accent}"/>${T(75, -150.2, '1', { sz: 6.5, w: 800, f: c.onAccent, a: 'middle' })}</g></g>` +
       /* S0 choose */
@@ -297,7 +297,7 @@
     }
 
     const lockup = isSlice ? '' :
-      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STACKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>`;
+      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STAKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>`;
     const defs =
       `<defs><clipPath id="${id}-s"><rect x="-92" y="-186" width="184" height="372" rx="28"/></clipPath>` +
       `<clipPath id="${id}-w"><rect data-k="wmclip" x="-130" y="-34" width="0" height="50"/></clipPath>` +
@@ -415,8 +415,8 @@
   /* ═════════════ INTRO lock-up ═════════════ */
   function makeIntro(cfg) {
     const c = PAL[cfg.theme] || PAL.light, id = 'sm' + ++UID;
-    const markup = `${SHELL()} viewBox="0 0 320 200" role="img" aria-label="STACKED"><defs><clipPath id="${id}-w"><rect data-k="wmclip" x="-120" y="-34" width="0" height="50"/></clipPath></defs>` +
-      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STACKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>${logoMk('L')}</svg>`;
+    const markup = `${SHELL()} viewBox="0 0 320 200" role="img" aria-label="STAKED"><defs><clipPath id="${id}-w"><rect data-k="wmclip" x="-120" y="-34" width="0" height="50"/></clipPath></defs>` +
+      `<g data-k="wm"><g clip-path="url(#${id}-w)">${T(3.5, 0, 'STAKED', { sz: 34, w: 800, f: c.ink, a: 'middle', ls: 7 })}</g></g>${logoMk('L')}</svg>`;
     const mount = (svg) => {
       const R = rig(svg);
       return (t) => {
@@ -431,7 +431,7 @@
 
   /* ═════════════ LOADER ═════════════ */
   function makeLoader() {
-    const markup = `${SHELL()} viewBox="0 0 64 64" role="img" aria-label="STACKED"><g transform="translate(32 32) scale(1.5)">${logoMk('L')}</g></svg>`;
+    const markup = `${SHELL()} viewBox="0 0 64 64" role="img" aria-label="STAKED"><g transform="translate(32 32) scale(1.5)">${logoMk('L')}</g></svg>`;
     const mount = (svg) => { const R = rig(svg); return (t) => { R.put('L', {}); logoLoader(R, 'L', t); }; };
     return { markup, vb: [64, 64], T: 1.8, loopStart: 0, loop: true, still: -1, mount, stillStatic: true };
   }

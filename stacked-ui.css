@@ -1,4 +1,4 @@
-/* STACKED UI layer: glass material, mobile tab bar + sheets, loaders, micro-interactions. Loaded last. */
+/* STAKED UI layer: glass material, mobile tab bar + sheets, loaders, micro-interactions. Loaded last. */
 :root{
   --spring:cubic-bezier(.34,1.42,.64,1);
   --out:cubic-bezier(.32,.72,0,1);

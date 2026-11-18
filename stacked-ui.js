@@ -1,5 +1,5 @@
 /*
- * STACKED UI layer (loaded last). Adds, without touching data logic:
+ * STAKED UI layer (loaded last). Adds, without touching data logic:
  *  - mobile tab bar (Shop / Orders / Top up) with a sliding indicator; Orders and Top up open as bottom sheets
  *    that rise from the tab bar, and switching tabs while a sheet is open swaps sheets in place;
  *  - small orange "stacking" loader (window.stLoader) used by checkout, top-up and pending orders;
@@ -29,7 +29,7 @@
   };
   const TABS = ['shop', 'orders', 'topup', 'cart'];
   const bar = document.createElement('nav');
-  bar.className = 'st-tabbar'; bar.setAttribute('aria-label', 'STACKED');
+  bar.className = 'st-tabbar'; bar.setAttribute('aria-label', 'STAKED');
   bar.innerHTML = `<span class="st-tab-ind" aria-hidden="true"></span>${TABS.map((k) => `<button type="button" class="st-tab" data-tab="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg><span class="st-tab-label"></span>${k === 'cart' ? '<b class="st-tab-badge" hidden>0</b>' : '<b class="st-tab-dot" hidden></b>'}</button>`).join('')}`;
   document.body.append(bar);
   document.body.classList.add('has-tabbar');

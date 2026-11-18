@@ -1,4 +1,4 @@
-/* STACKED motion — layout hooks for the brand animation system (loaded after styles.css). */
+/* STAKED motion — layout hooks for the brand animation system (loaded after styles.css). */
 
 /* Brand mark in the header: reserves its box before JS runs, so nothing shifts. */
 stacked-logo{display:inline-block;width:var(--s,28px);height:var(--s,28px);flex:none;line-height:0}
