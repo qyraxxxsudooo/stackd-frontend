@@ -171,6 +171,7 @@
     const id = b.closest('[data-id]')?.dataset.id; if (id) setTimeout(() => refreshCard(id), 0);
   });
   document.getElementById('clearBtn')?.addEventListener('click', () => setTimeout(refreshAllCards, 0));
+  document.addEventListener('stacked:cart-cleared', refreshAllCards);
 
   /* ───────── footer socials ───────── */
   const ICON = {

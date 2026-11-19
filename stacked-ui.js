@@ -46,7 +46,7 @@
 
   /* ───────── tab bar ───────── */
   const ICONS = {
-    shop: '<path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/>',
+    shop: '<path d="M4 9.5V20h16V9.5"/><path d="M3 9.5 4.6 4h14.8L21 9.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M10 20v-5h4v5"/>',
     orders: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/>',
     topup: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><path d="M16 14.5h2"/><path d="M12 2v3M10.5 3.5 12 2l1.5 1.5"/>',
     cart: '<path d="M3 4h2.2l2.1 10.4a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.2L20 8H6.1"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>'
@@ -197,4 +197,48 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) pollTopups(); });
   $('#topupForm')?.addEventListener('submit', () => setTimeout(pollTopups, 2500));
   pollTopups();
+
+  /* ───────── cart clear: items are swept into the button, which bursts ───────── */
+  if (typeof A !== 'undefined' && typeof A.clear === 'function') {
+    const plainClear = A.clear;
+    let clearing = false;
+    A.clear = function stClear(...args) {
+      const items = [...document.querySelectorAll('#lines li[data-id]')];
+      const btn = $('#clearBtn');
+      if (clearing) return;
+      if (!items.length || !btn || reduced() || typeof Element.prototype.animate !== 'function') return plainClear.apply(this, args);
+      clearing = true;
+      const b = btn.getBoundingClientRect(), bx = b.left + b.width / 2, by = b.top + b.height / 2;
+      const runs = items.map((li, i) => {
+        const r = li.getBoundingClientRect(), dx = bx - (r.left + r.width / 2), dy = by - (r.top + r.height / 2);
+        li.style.willChange = 'transform,opacity';
+        return li.animate([
+          { transform: 'none', opacity: 1 },
+          { transform: `translate(${dx * .15}px,${dy * .1 - 14}px) scale(1.02) rotate(${i % 2 ? 2 : -2}deg)`, opacity: 1, offset: .3 },
+          { transform: `translate(${dx}px,${dy}px) scale(.12) rotate(${i % 2 ? 14 : -14}deg)`, opacity: 0 }
+        ], { duration: 620, delay: i * 70, easing: 'cubic-bezier(.55,0,.6,1)', fill: 'forwards' }).finished;
+      });
+      const hit = items.length * 70 + 520;
+      setTimeout(() => {
+        btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(.94)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'cubic-bezier(.3,1.4,.4,1)' });
+        const ring = document.createElement('div'); ring.className = 'st-clear-ring';
+        Object.assign(ring.style, { left: bx + 'px', top: by + 'px', width: b.height * 1.4 + 'px', height: b.height * 1.4 + 'px' });
+        document.body.append(ring); setTimeout(() => ring.remove(), 700);
+        for (let k = 0; k < 12; k++) {
+          const d = document.createElement('i'); d.className = 'st-clear-dot'; Object.assign(d.style, { left: bx - 3 + 'px', top: by - 3 + 'px' });
+          document.body.append(d);
+          const a = (k / 12) * Math.PI * 2 + Math.random() * .4, dist = 46 + Math.random() * 40;
+          d.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist}px) scale(.2)`, opacity: 0 }],
+            { duration: 560 + Math.random() * 200, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }).finished.then(() => d.remove());
+        }
+      }, hit - 120);
+      Promise.all(runs).then(() => {
+        plainClear.apply(this, args);
+        document.dispatchEvent(new Event('stacked:cart-cleared'));
+        clearing = false;
+        const empty = document.querySelector('#lines li:not([data-id])');
+        empty?.classList.add('st-empty-pop');
+      }, () => { clearing = false; plainClear.apply(this, args); });
+    };
+  }
 })();

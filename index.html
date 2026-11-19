@@ -79,9 +79,11 @@ try{
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://wjlkztgmbqaflcdldapi.supabase.co" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 
 <body class="notranslate" translate="no">
@@ -283,16 +285,9 @@ try{
       </form>
       <div id="promoStatus" class="promo-status" aria-live="polite"></div>
     </section>
-    <section class="settings-sec">
-      <h3 data-i18n="set_language">Язык</h3>
-      <div class="set-choice" role="group" aria-label="Language" id="langChoice">
-        <button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="az">AZ</button>
-      </div>
-    </section>
-    <section class="settings-sec" id="tgSection" hidden>
-      <h3 data-i18n="tg_title">Telegram</h3>
-      <p class="settings-hint" id="tgHint" data-i18n="tg_hint">Получайте QR-код заказа в личные сообщения.</p>
-      <button class="btn btn-ghost block" type="button" id="tgConnectBtn" data-i18n="tg_connect">Подключить уведомления</button>
+    <section class="settings-sec st-winter-sec">
+      <h3 data-i18n="set_winter">Новогодняя тема</h3>
+      <label class="st-switch"><input type="checkbox" id="winterToggle"><span class="st-switch-ui" aria-hidden="true"></span><span data-i18n="set_winter_label">Снег, огни и зимняя улица</span></label>
     </section>
   </div>
 </div>
@@ -560,6 +555,7 @@ try{
 <script src="stacked-shop.js" defer></script>
 <script src="stacked-motion.js" defer></script>
 <script src="stacked-ui.js" defer></script>
+<script src="stacked-winter.js" defer></script>
 
 </body>
 </html>
