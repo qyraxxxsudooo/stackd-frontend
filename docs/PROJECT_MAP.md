@@ -31,9 +31,14 @@ Removed `admin_add_balance` (anyone could credit any balance); hardened checkout
 ## Testing
 No test suite. QA is done with Playwright against a local mock of Supabase (the sandbox cannot reach supabase.co): iPhone 390, Android 360, tablet 768, desktop 1440, light and dark. Checks: no horizontal overflow, no console errors, fly-to-cart frames, tab bar sheets.
 
-## New Year theme (`stacked-winter.js`)
-- Switch: Settings → «Новогодняя тема» (`#winterToggle`), saved in `localStorage['stacked.winter']`. Nothing is created while it is off.
-- Dark theme: fixed night-street scene (SVG) with a street lamp standing on the ground line; light theme: bright snowy day.
-- One canvas (`.stw-snow`, z 25) draws the snow. Flakes settle on `#grid .card` tops and the tab bar top; fast scrolling,
-  brushing a card with the pointer or shaking the phone knocks snow off; tilting the phone blows it sideways.
-- Off for `prefers-reduced-motion` (scene only). Pixel ratio capped, flake count scales with screen area.
+## New Year theme and site music (`stacked-winter.js`)
+- Admin: Каталог → Настройки сайта → «Зима и музыка». Saves `site_settings`: `winter_mode` (on/off), `music_url`, `music_title`,
+  `music_volume` (0–100), `music_autoplay` (1/0). Tracks upload to the public `site-media` bucket (audio only, 20 MB, admin write).
+- Visitors: when the admin has the theme on, Settings shows «Новогодняя тема» so anyone can switch it off for themselves
+  (`localStorage['stacked.winter']='0'`). A music button appears in the header when a track is set; autoplay starts on the
+  first tap (browsers block sound before that); the visitor's pause is remembered (`stacked.music`).
+- Dark theme: night street, lit lamp on the ground line, decorated tree, snowy roofs. Light theme: winter morning at sunrise.
+  The scene is an SVG rendered once as an image.
+- One canvas (`.stw-snow`, z 25) draws the snow; flakes settle on `#grid .card` tops and the tab bar; fast scroll, pointer
+  brushing or a phone shake knocks snow off; tilt blows it sideways. On phones the canvas is allocated once with spare height
+  (toolbar resizes do not reallocate it), flake count drops automatically if frames run long.
