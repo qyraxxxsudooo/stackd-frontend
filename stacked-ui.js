@@ -54,7 +54,7 @@
   }
   const close = (d) => { if (d?.open) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
   function go(k) {
-    if (k === 'cart') { const cur = sheets[active]?.(); if (cur?.open) close(cur); setTimeout(() => { if (typeof A !== 'undefined' && A['cart-open']) A['cart-open'](); else $('#drawer')?.showModal(); }, cur?.open ? 230 : 0); return; }
+    if (k === 'cart') { const cur = sheets[active]?.(); if (cur?.open) close(cur); setActive('cart'); setTimeout(() => { if (typeof A !== 'undefined' && A['cart-open']) A['cart-open'](); else $('#drawer')?.showModal(); }, cur?.open ? 230 : 0); return; }
     if (k === active && k !== 'shop') return;
     if (k !== 'shop' && !S.user) { $('#auth')?.showModal(); return; }
     const current = sheets[active]?.();
@@ -77,6 +77,7 @@
     if (d.id !== 'orders' && d.id !== 'topup') close(d);
     go(hit.dataset.tab);
   }, true);
+  $('#drawer')?.addEventListener('close', () => setTimeout(() => { if (active === 'cart' && !$('#drawer').open) setActive('shop'); }, 260));
   ['orders', 'topup'].forEach((id) => {
     const d = $('#' + id); if (!d) return;
     d.addEventListener('close', () => { setTimeout(() => { if (active === id && !d.open) setActive('shop'); }, 260); });

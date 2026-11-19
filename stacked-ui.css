@@ -93,29 +93,30 @@ button .st-loader+span{margin-left:8px}
 .st-amounts button[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
 .st-amounts button:active{transform:scale(.94)}
 
-/* ── tab bar (phone and desktop), side panels, sheets ── */
+/* ── tab bar (phone and desktop) ── */
+.st-tabbar{position:fixed;z-index:70;display:grid;grid-template-columns:repeat(4,1fr);padding:5px;border-radius:24px;isolation:isolate}
+.st-tab-ind{position:absolute;z-index:-1;top:5px;bottom:5px;left:5px;width:calc((100% - 10px) / 4);border-radius:17px;background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent);transform:translateX(calc(var(--i,0) * 100%));transition:transform .48s var(--spring)}
+.st-tab{position:relative;display:grid;place-items:center;align-content:center;gap:3px;min-width:0;border:0;background:none;color:var(--muted);font:inherit;font-size:.7rem;font-weight:600;letter-spacing:.01em;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:17px}
+.st-tab svg{width:23px;height:23px}
+.st-tab[aria-current=page]{color:var(--accent)}
+.st-tab-label{transition:color .2s}
+.st-tab.is-bump svg{animation:stBump .5s var(--spring)}
+@keyframes stBump{0%{transform:scale(1)}30%{transform:scale(.82) translateY(1px)}65%{transform:scale(1.1) translateY(-1px)}100%{transform:none}}
+.st-tab-dot{position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface);animation:stDot 1.6s ease-in-out infinite}
+.st-tab-dot[hidden]{display:none}
+@keyframes stDot{50%{transform:scale(.7);opacity:.6}}
+
+/* the tab bar replaces the old floating orders/cart buttons and the cart dock on phones */
+.st-tab-badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:.66rem;font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px var(--surface);font-variant-numeric:tabular-nums}
+.st-tab-badge[hidden]{display:none}
+.st-tab-badge.is-pop{animation:stPop .45s var(--spring)}
+@keyframes stPop{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:none}}
+.st-tab.is-catch svg{animation:stCatchIcon .5s var(--spring)}
+@keyframes stCatchIcon{0%{transform:none}25%{transform:translateY(3px) scale(1.12,.86)}60%{transform:translateY(-2px) scale(.96,1.06)}100%{transform:none}}
+.st-tab-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;padding:0 2px}
+
+
 @media (max-width:680px){
-  .st-tabbar{position:fixed;z-index:70;display:grid;grid-template-columns:repeat(4,1fr);padding:5px;border-radius:24px;isolation:isolate}
-  .st-tab-ind{position:absolute;z-index:-1;top:5px;bottom:5px;left:5px;width:calc((100% - 10px) / 4);border-radius:17px;background:color-mix(in srgb,var(--accent) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent);transform:translateX(calc(var(--i,0) * 100%));transition:transform .48s var(--spring)}
-  .st-tab{position:relative;display:grid;place-items:center;align-content:center;gap:3px;min-width:0;border:0;background:none;color:var(--muted);font:inherit;font-size:.7rem;font-weight:600;letter-spacing:.01em;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:17px}
-  .st-tab svg{width:23px;height:23px}
-  .st-tab[aria-current=page]{color:var(--accent)}
-  .st-tab-label{transition:color .2s}
-  .st-tab.is-bump svg{animation:stBump .5s var(--spring)}
-  @keyframes stBump{0%{transform:scale(1)}30%{transform:scale(.82) translateY(1px)}65%{transform:scale(1.1) translateY(-1px)}100%{transform:none}}
-  .st-tab-dot{position:absolute;top:9px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface);animation:stDot 1.6s ease-in-out infinite}
-  .st-tab-dot[hidden]{display:none}
-  @keyframes stDot{50%{transform:scale(.7);opacity:.6}}
-
-  /* the tab bar replaces the old floating orders/cart buttons and the cart dock on phones */
-  .st-tab-badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:.66rem;font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px var(--surface);font-variant-numeric:tabular-nums}
-  .st-tab-badge[hidden]{display:none}
-  .st-tab-badge.is-pop{animation:stPop .45s var(--spring)}
-  @keyframes stPop{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:none}}
-  .st-tab.is-catch svg{animation:stCatchIcon .5s var(--spring)}
-  @keyframes stCatchIcon{0%{transform:none}25%{transform:translateY(3px) scale(1.12,.86)}60%{transform:translateY(-2px) scale(.96,1.06)}100%{transform:none}}
-  .st-tab-label{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;padding:0 2px}
-
   /* other dialogs become full-width sheets from the screen edge */
   #detail,#auth{margin:auto 0 0!important;width:100%!important;max-width:100%!important;max-height:92dvh!important;border-radius:24px 24px 0 0!important;padding-bottom:calc(20px + env(safe-area-inset-bottom))!important;animation:stSheetUp .46s var(--out)!important}
   #detail.closing,#auth.closing{animation:stSheetDown .24s cubic-bezier(.4,0,1,1) forwards!important}
@@ -156,3 +157,17 @@ body.has-tabbar #toasts,body.has-tabbar .stackd-toast-host{bottom:calc(64px + 36
 @media (prefers-reduced-motion:reduce){#drawer.closing,#orders.closing,#topup.closing{animation:none!important}}
 @keyframes stSheetUp{from{transform:translateY(calc(100% + 80px))}to{transform:none}}
 @keyframes stSheetDown{to{transform:translateY(calc(100% + 80px))}}
+
+/* ════════ Apple-style glass polish for the tab bar ════════ */
+.st-tabbar{background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 62%,transparent),color-mix(in srgb,var(--surface) 48%,transparent))!important;-webkit-backdrop-filter:blur(30px) saturate(190%) brightness(1.04)!important;backdrop-filter:blur(30px) saturate(190%) brightness(1.04)!important;border:1px solid color-mix(in srgb,#fff 16%,transparent)!important;box-shadow:0 18px 50px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.08)!important;overflow:hidden}
+.st-tabbar::before{content:"";position:absolute;inset:0;z-index:-2;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 140% at 50% -40%,rgba(255,255,255,.18),transparent 55%)}
+[data-theme=light] .st-tabbar,:root:not(.stacked-dark) .st-tabbar{border-color:rgba(255,255,255,.7)!important;box-shadow:0 18px 44px rgba(60,40,20,.16),0 2px 6px rgba(60,40,20,.08),inset 0 1px 0 rgba(255,255,255,.9)!important}
+.st-tab{appearance:none;-webkit-appearance:none;padding:0;outline:none}
+.st-tab:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+.st-tab svg{width:22px;height:22px;transition:transform .25s var(--spring)}
+.st-tab:active svg{transform:scale(.88)}
+.st-tab-label{font-size:.7rem;font-weight:650}
+.st-tab-ind{background:color-mix(in srgb,var(--accent) 16%,rgba(255,255,255,.06))!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 26%,transparent),inset 0 1px 0 rgba(255,255,255,.12)!important}
+@media (min-width:681px){.st-tabbar{height:66px!important}.st-tab{flex-direction:row;font-size:.78rem}.st-tab-label{font-size:.76rem}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.st-tabbar{background:var(--surface)!important}}
+#orders::backdrop,#topup::backdrop,#drawer::backdrop{background:rgba(10,8,6,.22)!important;-webkit-backdrop-filter:blur(6px) saturate(120%)!important;backdrop-filter:blur(6px) saturate(120%)!important}
