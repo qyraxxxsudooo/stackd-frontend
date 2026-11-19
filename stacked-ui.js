@@ -12,13 +12,37 @@
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const L = () => (['ru', 'en', 'az'].includes(S.lang) ? S.lang : 'ru');
   const TX = {
-    ru: { shop: 'Магазин', orders: 'Заказы', topup: 'Пополнить', cart: 'Корзина', pending: 'Пополнение на проверке', credited: 'Баланс пополнен' },
-    en: { shop: 'Shop', orders: 'Orders', topup: 'Top up', cart: 'Cart', pending: 'Top-up under review', credited: 'Balance topped up' },
-    az: { shop: 'Mağaza', orders: 'Sifarişlər', topup: 'Artır', cart: 'Səbət', pending: 'Balans yoxlanılır', credited: 'Balans artırıldı' }
+    ru: { shop: 'Магазин', orders: 'Заказы', topup: 'Пополнить', cart: 'Корзина', pending: 'Пополнение на проверке', credited: 'Баланс пополнен', pick: 'Выбрать', nofile: 'Скриншот не выбран' },
+    en: { shop: 'Shop', orders: 'Orders', topup: 'Top up', cart: 'Cart', pending: 'Top-up under review', credited: 'Balance topped up', pick: 'Choose', nofile: 'No screenshot selected' },
+    az: { shop: 'Mağaza', orders: 'Sifarişlər', topup: 'Artır', cart: 'Səbət', pending: 'Balans yoxlanılır', credited: 'Balans artırıldı', pick: 'Seç', nofile: 'Skrinşot seçilməyib' }
   };
   const t = (k) => TX[L()][k];
 
   window.stLoader = (cls = '') => `<span class="st-loader ${cls}" aria-hidden="true"><i></i></span>`;
+
+  /* ───────── centred panels: orders, top-up, cart ─────────
+     They open non-modally above a blurred scrim, so the tab bar stays on top and clickable. */
+  const PANELS = ['orders', 'topup', 'drawer'];
+  const scrim = document.createElement('div'); scrim.className = 'st-scrim'; scrim.setAttribute('aria-hidden', 'true');
+  document.body.append(scrim);
+  const openPanel = () => PANELS.map((id) => document.getElementById(id)).find((d) => d?.open && !d.classList.contains('closing'));
+  const nativeShowModal = HTMLDialogElement.prototype.showModal;
+  HTMLDialogElement.prototype.showModal = function stShowModal() {
+    if (!PANELS.includes(this.id) || document.querySelector('dialog:modal')) return nativeShowModal.call(this);
+    if (this.open) return;
+    PANELS.forEach((id) => { const o = document.getElementById(id); if (o !== this && o?.open && !o.classList.contains('closing')) (typeof closeDlg === 'function' ? closeDlg(o) : o.close()); });
+    this.setAttribute('aria-modal', 'true'); this.setAttribute('role', 'dialog');
+    this.show();
+    (this.querySelector('[autofocus]') || this.querySelector('[data-act="close"]'))?.focus({ preventScroll: true });
+  };
+  let syncT = 0;
+  const syncScrim = () => { clearTimeout(syncT); syncT = setTimeout(() => {
+    const on = !!openPanel(); scrim.classList.toggle('is-on', on); document.body.classList.toggle('st-locked', on);
+  }, 30); };
+  PANELS.forEach((id) => { const d = document.getElementById(id); if (d) new MutationObserver(syncScrim).observe(d, { attributes: true, attributeFilter: ['open', 'class'] }); });
+  const dismiss = () => { const d = openPanel(); if (d) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
+  scrim.addEventListener('click', dismiss);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.querySelector('dialog:modal') && openPanel()) { e.preventDefault(); dismiss(); } });
 
   /* ───────── tab bar ───────── */
   const ICONS = {
@@ -54,15 +78,15 @@
   }
   const close = (d) => { if (d?.open) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
   function go(k) {
-    if (k === 'cart') { const cur = sheets[active]?.(); if (cur?.open) close(cur); setActive('cart'); setTimeout(() => { if (typeof A !== 'undefined' && A['cart-open']) A['cart-open'](); else $('#drawer')?.showModal(); }, cur?.open ? 230 : 0); return; }
-    if (k === active && k !== 'shop') return;
+    if (k === 'cart') { const dr = $('#drawer'); if (dr?.open && !dr.classList.contains('closing')) { close(dr); return; } setActive('cart'); if (typeof A !== 'undefined' && A['cart-open']) A['cart-open'](); else dr?.showModal(); return; }
+    if (k === active && k !== 'shop') { const cur = sheets[k]?.(); if (cur?.open) close(cur); return; }
     if (k !== 'shop' && !S.user) { $('#auth')?.showModal(); return; }
     const current = sheets[active]?.();
     setActive(k);
-    if (k === 'shop') { close(current); $('#catalog')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' }); return; }
+    if (k === 'shop') { const any = openPanel(); if (any) { close(any); return; } $('#catalog')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' }); return; }
     const next = sheets[k]();
     const open = () => { if (k === 'orders' && typeof openOrders === 'function') openOrders(); else if (next && !next.open) next.showModal(); };
-    if (current?.open) { close(current); setTimeout(open, reduced() ? 0 : 230); } else open();
+    open();
   }
   bar.addEventListener('click', (e) => { const b = e.target.closest('.st-tab'); if (b) go(b.dataset.tab); });
   // A modal sheet sits in the top layer above the bar; a tap where the bar is drawn reaches the dialog's backdrop.
@@ -77,6 +101,7 @@
     if (d.id !== 'orders' && d.id !== 'topup') close(d);
     go(hit.dataset.tab);
   }, true);
+  { const dr = $('#drawer'); if (dr) new MutationObserver(() => { if (dr.open && !dr.classList.contains('closing') && active !== 'cart') setActive('cart'); }).observe(dr, { attributes: true, attributeFilter: ['open'] }); }
   $('#drawer')?.addEventListener('close', () => setTimeout(() => { if (active === 'cart' && !$('#drawer').open) setActive('shop'); }, 260));
   ['orders', 'topup'].forEach((id) => {
     const d = $('#' + id); if (!d) return;
@@ -85,7 +110,7 @@
   });
   if (typeof applyLanguage === 'function') {
     const prev = applyLanguage;
-    applyLanguage = function stackedApplyLanguage() { const r = prev.apply(this, arguments); labels(); return r; };
+    applyLanguage = function stackedApplyLanguage() { const r = prev.apply(this, arguments); labels(); window.stPaintFile?.(); return r; };
   }
   const cartTab = bar.querySelector('[data-tab="cart"]'), tabBadge = cartTab.querySelector('.st-tab-badge'), srcBadge = $('#badge');
   const syncBadge = () => {
@@ -110,6 +135,17 @@
     row.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; amount.value = b.dataset.v; sync(); amount.dispatchEvent(new Event('input', { bubbles: true })); });
     amount.addEventListener('input', sync);
     $('#topupForm')?.addEventListener('reset', () => setTimeout(sync, 0));
+  }
+
+  /* ───────── localized file picker for the receipt ───────── */
+  const file = $('#topupFile');
+  if (file) {
+    const box = document.createElement('label'); box.className = 'st-file'; box.htmlFor = 'topupFile';
+    box.innerHTML = '<b></b><span></span>';
+    file.classList.add('st-file-input'); file.after(box);
+    const paint = () => { const f = file.files?.[0]; box.querySelector('b').textContent = t('pick'); box.querySelector('span').textContent = f ? f.name : t('nofile'); box.classList.toggle('has-file', !!f); };
+    file.addEventListener('change', paint); $('#topupForm')?.addEventListener('reset', () => setTimeout(paint, 0));
+    paint(); window.stPaintFile = paint;
   }
 
   /* ───────── balance count-up ───────── */

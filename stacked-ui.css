@@ -129,9 +129,8 @@ button .st-loader+span{margin-left:8px}
 }
 
 /* ════════ FINAL LAYER: one navigation for phone and desktop ════════
-   Bottom glass tab bar on every screen. Orders, top-up and cart open as glass panels on the right,
-   above the bar, so the bar is never covered. The old floating cart dock and mobile cart button are removed. */
-:root{--panel-w:min(440px,calc(100vw - 32px))}
+   Bottom glass tab bar on every screen. Orders, top-up and cart open as centred glass panels between
+   the top of the screen and the bar; a blurred scrim sits under the bar, so the bar stays usable. The old floating cart dock and mobile cart button are removed. */
 .st-tabbar{display:grid!important;position:fixed!important;z-index:70;left:50%!important;right:auto!important;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom))!important;width:min(520px,calc(100vw - 32px))!important;height:64px!important;padding:5px!important;border-radius:24px!important;background:var(--glass-bg)!important;border:1px solid var(--glass-line)!important;box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-edge)!important;-webkit-backdrop-filter:blur(24px) saturate(180%)!important;backdrop-filter:blur(24px) saturate(180%)!important}
 .st-tab:hover{color:var(--text)}
 .st-tab[aria-current=page]:hover{color:var(--accent)}
@@ -140,21 +139,6 @@ body.has-tabbar{padding-bottom:calc(64px + 40px + env(safe-area-inset-bottom))}
 body.has-tabbar #toasts,body.has-tabbar .stackd-toast-host{bottom:calc(64px + 36px + env(safe-area-inset-bottom))!important}
 /* the old duplicates: floating dock, mobile cart pill, header cart button (the tab bar has the cart) */
 .stacked-dock,#stackdMobileActions,.stackd-mobile-actions,.stackd-mobile-cart,body.has-tabbar header.nav .cart-btn{display:none!important}
-/* panels: right-hand glass, above the bar */
-#orders,#topup,#drawer{position:fixed!important;inset:auto auto auto auto!important;top:calc(12px + env(safe-area-inset-top))!important;right:16px!important;left:auto!important;bottom:calc(64px + 30px + env(safe-area-inset-bottom))!important;margin:0!important;width:var(--panel-w)!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;border:1px solid var(--glass-line)!important;border-radius:24px!important;background:var(--glass-bg)!important;-webkit-backdrop-filter:blur(24px) saturate(180%)!important;backdrop-filter:blur(24px) saturate(180%)!important;box-shadow:var(--glass-shadow)!important;overflow:auto;overscroll-behavior:contain;animation:stPanelIn .34s var(--out)!important}
-#drawer[open]{display:flex!important;flex-direction:column;overflow:hidden}
-#drawer>.lines{overflow:auto;min-height:0}
-#drawer>header,#drawer>footer{background:transparent!important}
-#drawer.closing,#orders.closing,#topup.closing{animation:stPanelOut .22s cubic-bezier(.4,0,1,1) forwards!important}
-#orders::backdrop,#topup::backdrop,#drawer::backdrop{background:rgba(20,15,10,.18);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);clip-path:inset(0 0 calc(64px + 22px + env(safe-area-inset-bottom)) 0)}
-@keyframes stPanelIn{from{opacity:0;transform:translateX(28px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes stPanelOut{to{opacity:0;transform:translateX(28px) scale(.985)}}
-@media (max-width:680px){
-  #orders,#topup,#drawer{left:10px!important;right:10px!important;width:auto!important;top:calc(10px + env(safe-area-inset-top))!important;bottom:calc(64px + 22px + env(safe-area-inset-bottom))!important;border-radius:22px!important}
-}
-/* glass for the other dialogs on every screen */
-#detail,#auth,dialog.modal.glass{background:var(--glass-bg)!important;-webkit-backdrop-filter:blur(24px) saturate(180%)!important;backdrop-filter:blur(24px) saturate(180%)!important;border:1px solid var(--glass-line)!important;box-shadow:var(--glass-shadow)!important}
-@media (prefers-reduced-motion:reduce){#drawer.closing,#orders.closing,#topup.closing{animation:none!important}}
 @keyframes stSheetUp{from{transform:translateY(calc(100% + 80px))}to{transform:none}}
 @keyframes stSheetDown{to{transform:translateY(calc(100% + 80px))}}
 
@@ -170,4 +154,82 @@ body.has-tabbar #toasts,body.has-tabbar .stackd-toast-host{bottom:calc(64px + 36
 .st-tab-ind{background:color-mix(in srgb,var(--accent) 16%,rgba(255,255,255,.06))!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 26%,transparent),inset 0 1px 0 rgba(255,255,255,.12)!important}
 @media (min-width:681px){.st-tabbar{height:66px!important}.st-tab{flex-direction:row;font-size:.78rem}.st-tab-label{font-size:.76rem}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.st-tabbar{background:var(--surface)!important}}
-#orders::backdrop,#topup::backdrop,#drawer::backdrop{background:rgba(10,8,6,.22)!important;-webkit-backdrop-filter:blur(6px) saturate(120%)!important;backdrop-filter:blur(6px) saturate(120%)!important}
+
+/* ════════ Centred glass panels: orders, top-up, cart ════════
+   Opened non-modally by stacked-ui.js so the tab bar (z 70) stays above the scrim (z 65) and clickable.
+   The panel is centred in the space above the bar and grows with its content. */
+:root{--bar-space:calc(64px + 14px + 18px + env(safe-area-inset-bottom));--top-space:calc(18px + env(safe-area-inset-top))}
+.st-scrim{position:fixed;inset:0;z-index:65;background:rgba(12,9,6,.34);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);opacity:0;visibility:hidden;transition:opacity .32s var(--out),visibility 0s linear .32s}
+:root:not(.stacked-dark) .st-scrim{background:rgba(70,48,24,.16)}
+.st-scrim.is-on{opacity:1;visibility:visible;transition:opacity .32s var(--out),visibility 0s}
+html{scrollbar-gutter:stable}
+body.st-locked{overflow:hidden}
+#orders,#topup,#drawer{position:fixed!important;z-index:80;inset:var(--top-space) 0 var(--bar-space) 0!important;margin:auto!important;width:min(480px,calc(100vw - 24px))!important;max-width:none!important;height:fit-content!important;min-height:0!important;max-height:calc(100dvh - var(--top-space) - var(--bar-space))!important;padding:22px!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:28px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 78%,transparent),color-mix(in srgb,var(--surface) 70%,transparent))!important;-webkit-backdrop-filter:blur(40px) saturate(180%)!important;backdrop-filter:blur(40px) saturate(180%)!important;box-shadow:0 40px 100px rgba(0,0,0,.42),0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.14)!important;color:var(--text);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;transform-origin:50% 100%;animation:stPanelIn .5s cubic-bezier(.2,1.18,.32,1)!important}
+:root:not(.stacked-dark) #orders,:root:not(.stacked-dark) #topup,:root:not(.stacked-dark) #drawer{border-color:rgba(255,255,255,.75)!important;box-shadow:0 40px 90px rgba(70,45,20,.20),0 8px 22px rgba(70,45,20,.10),inset 0 1px 0 rgba(255,255,255,.9)!important}
+#drawer{padding:0!important}
+#drawer[open]{display:flex!important;flex-direction:column;overflow:hidden}
+#drawer>.lines{flex:1 1 auto;overflow:auto;min-height:0}
+#drawer>header,#drawer>footer,#drawer>.lines{background:transparent!important}
+#drawer>header{border-bottom:1px solid var(--glass-line)!important}
+#drawer>footer{border-top:1px solid var(--glass-line)!important}
+#orders>header,#topup>header{position:sticky;top:-22px;z-index:2;margin:-22px -22px 18px!important;padding:20px 22px 16px!important;background:color-mix(in srgb,var(--surface) 72%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-line)!important}
+#orders.closing,#topup.closing,#drawer.closing{animation:stPanelOut .22s cubic-bezier(.4,0,1,1) forwards!important;pointer-events:none}
+@keyframes stPanelIn{0%{opacity:0;transform:translateY(22px) scale(.94)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes stPanelOut{to{opacity:0;transform:translateY(12px) scale(.965)}}
+/* the panel's inner cards are content, not glass: give them a quiet solid tone */
+#drawer .stackd-cart-guide,#drawer .cart-note,#drawer .lines>.line,#orders .order-card{background:color-mix(in srgb,var(--text) 4%,transparent)!important;border-color:var(--glass-line)!important}
+@media (max-width:680px){
+  :root{--bar-space:calc(64px + 14px + 12px + env(safe-area-inset-bottom));--top-space:calc(12px + env(safe-area-inset-top))}
+  #orders,#topup,#drawer{width:calc(100vw - 20px)!important;border-radius:26px!important;padding:18px!important}
+  #drawer{padding:0!important}
+  #orders>header,#topup>header{top:-18px;margin:-18px -18px 14px!important;padding:16px 18px 14px!important}
+}
+@media (prefers-reduced-transparency:reduce){.st-scrim{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(0,0,0,.5)}#orders,#topup,#drawer{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
+@media (prefers-reduced-motion:reduce){#orders,#topup,#drawer,#orders.closing,#topup.closing,#drawer.closing{animation:none!important}.st-scrim{transition:none}}
+
+/* ════════ Cart panel: whole panel scrolls, header and totals stay pinned ════════ */
+#drawer[open]{overflow-y:auto!important;overflow-x:hidden}
+#drawer>header{position:sticky;top:0;z-index:3;padding:18px 20px 14px!important;background:color-mix(in srgb,var(--surface) 76%,transparent)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+#drawer>footer{position:sticky;bottom:0;z-index:3;gap:8px!important;padding:14px 20px 16px!important;background:color-mix(in srgb,var(--surface) 80%,transparent)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+#drawer>.lines{flex:none!important;overflow:visible!important;padding:4px 20px!important;margin:0}
+#drawer .stackd-purchase-guide{margin:14px 20px 4px!important;padding:12px 14px!important;border-radius:16px!important;font-size:.8rem;line-height:1.45}
+#drawer .stackd-purchase-guide p{margin:4px 0 0}
+#drawer:has(#lines li[data-id]) .stackd-purchase-guide p:not(:first-of-type){display:none}
+#drawer .cart-sum,#drawer .total{font-variant-numeric:tabular-nums}
+/* cart line: thumbnail · name / price / stepper · remove */
+#lines li[data-id]{display:grid!important;grid-template-columns:56px minmax(0,1fr) auto!important;grid-template-areas:"img info rm";align-items:center!important;gap:14px!important;padding:12px 0!important;border-bottom:1px solid var(--glass-line)!important;background:none!important}
+#lines li[data-id]:last-child{border-bottom:0!important}
+#lines li[data-id]>img{grid-area:img;width:56px!important;height:56px!important;border-radius:14px!important;object-fit:cover;background:color-mix(in srgb,var(--text) 6%,transparent)}
+#lines li[data-id]>div{grid-area:info;display:grid!important;gap:3px;min-width:0}
+#lines li[data-id]>div>strong{display:block;font-size:.92rem;font-weight:700;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lines li[data-id]>div>small{display:block;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+#lines li[data-id] .qty{display:inline-flex!important;align-items:center;justify-self:start;gap:2px;margin-top:4px;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--text) 7%,transparent)}
+#lines li[data-id] .qty button{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--text);font:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:background-color .15s,transform .15s var(--out)}
+#lines li[data-id] .qty button:hover{background:color-mix(in srgb,var(--text) 10%,transparent)}
+#lines li[data-id] .qty button:active{transform:scale(.88)}
+#lines li[data-id] .qty span{min-width:22px;text-align:center;font-weight:700;font-size:.86rem;font-variant-numeric:tabular-nums}
+#lines li[data-id]>.link{grid-area:rm;align-self:start;margin-top:2px;padding:4px 2px;font-size:.76rem;color:var(--muted);text-decoration:none}
+#lines li[data-id]>.link:hover{color:var(--accent)}
+@media (max-width:680px){#drawer>header{padding:16px 16px 12px!important}#drawer>footer{padding:12px 16px 14px!important}#drawer>.lines{padding:2px 16px!important}#drawer .stackd-purchase-guide{margin:12px 16px 4px!important}}
+
+/* file picker with localized text */
+.st-file{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 10px;border:1px dashed color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:14px;background:color-mix(in srgb,var(--accent) 5%,transparent);cursor:pointer;transition:border-color .2s,background-color .2s}
+.st-file:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.st-file b{flex:none;padding:8px 14px;border-radius:10px;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-weight:650;font-size:.86rem}
+.st-file span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.86rem}
+.st-file.has-file span{color:var(--text)}
+.st-file-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none}
+.st-file:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ════════ Cleanup: duplicates of the tab bar, profile menu on phones ════════ */
+body.has-tabbar #stackdOrdersShortcut{display:none!important}
+.foot .stacked-socials{display:none!important}
+.stackd-profile-menu{background:color-mix(in srgb,var(--surface) 80%,transparent)!important;-webkit-backdrop-filter:blur(30px) saturate(180%)!important;backdrop-filter:blur(30px) saturate(180%)!important}
+@media (max-width:680px){
+  .stackd-profile-menu{position:fixed!important;top:calc(78px + env(safe-area-inset-top))!important;left:12px!important;right:12px!important;width:auto!important;transform-origin:top center}
+}
+#drawer>header{background:color-mix(in srgb,var(--surface) 90%,transparent)!important;-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%)}
+#drawer>footer{background:color-mix(in srgb,var(--surface) 93%,transparent)!important;-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%)}
+#orders>header{background:color-mix(in srgb,var(--surface) 90%,transparent)!important}
+@media (max-height:760px){#drawer>footer{position:static}}
+.stackd-profile-menu{background:color-mix(in srgb,var(--surface) 92%,transparent)!important}
