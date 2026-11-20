@@ -658,6 +658,7 @@
     const save = $('#stackdPromoSave'); if (save) save.textContent = t('discountSave');
     const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
     renderPromotionTargetOptions(); renderNewsAdmin();
+    syncProfilePreferences();
   }
 
   function applyBrandAccent(value) {
@@ -1367,9 +1368,99 @@
     }, 12000);
   }
 
+  function syncProfilePreferences() {
+    const panel = $('#stackdProfilePreferences');
+    if (!panel) return;
+    const language = S.lang === 'en' ? 'en' : S.lang === 'az' ? 'az' : 'ru';
+    const copy = {
+      ru: { title:'Настройки приложения', appearance:'Тема оформления', language:'Язык интерфейса', system:'Авто', light:'Светлая', dark:'Тёмная', hint:'Изменения сохраняются на этом устройстве.' },
+      en: { title:'App preferences', appearance:'Appearance', language:'Interface language', system:'System', light:'Light', dark:'Dark', hint:'Your choices are saved on this device.' },
+      az: { title:'Tətbiq ayarları', appearance:'Görünüş', language:'İnterfeys dili', system:'Sistem', light:'Açıq', dark:'Tünd', hint:'Seçimlər bu cihazda saxlanılır.' }
+    }[language];
+    panel.querySelector('[data-profile-copy="title"]').textContent = copy.title;
+    panel.querySelector('[data-profile-copy="appearance"]').textContent = copy.appearance;
+    panel.querySelector('[data-profile-copy="language"]').textContent = copy.language;
+    panel.querySelector('[data-profile-copy="hint"]').textContent = copy.hint;
+    panel.querySelector('#stackdProfileThemeSeg [data-v="system"]').textContent = copy.system;
+    panel.querySelector('#stackdProfileThemeSeg [data-v="light"]').textContent = copy.light;
+    panel.querySelector('#stackdProfileThemeSeg [data-v="dark"]').textContent = copy.dark;
+    panel.querySelectorAll('[data-profile-lang]').forEach(button => {
+      const selected = button.dataset.profileLang === language;
+      button.setAttribute('aria-pressed', String(selected));
+      button.classList.toggle('is-selected', selected);
+    });
+    try {
+      const selectedTheme = localStorage.getItem('pdd.theme') || 'system';
+      panel.querySelectorAll('#stackdProfileThemeSeg [data-v]').forEach(button => {
+        const selected = button.dataset.v === selectedTheme;
+        button.setAttribute('aria-pressed', String(selected));
+        button.classList.toggle('is-selected', selected);
+      });
+    } catch {}
+    const syncSlider = (selector, sliderSelector, activeSelector) => {
+      const group = panel.querySelector(selector);
+      const slider = panel.querySelector(sliderSelector);
+      const activeButton = group?.querySelector(activeSelector);
+      if (!group || !slider || !activeButton) return;
+      slider.style.width = activeButton.offsetWidth + 'px';
+      slider.style.transform = 'translateX(' + activeButton.offsetLeft + 'px)';
+    };
+    requestAnimationFrame(() => {
+      syncSlider('#stackdProfileThemeSeg', '#stackdProfileThemeSlider', 'button[aria-pressed="true"]');
+      syncSlider('#stackdProfileLanguageSeg', '#stackdProfileLanguageSlider', 'button[aria-pressed="true"]');
+    });
+  }
+
+  function buildProfilePreferences() {
+    const menu = $('#stackdProfileMenu');
+    if (!menu || $('#stackdProfilePreferences')) return;
+    const panel = document.createElement('section');
+    panel.id = 'stackdProfilePreferences';
+    panel.className = 'stackd-profile-preferences';
+    panel.innerHTML = `
+      <div class="stackd-profile-pref-heading"><strong data-profile-copy="title"></strong><small data-profile-copy="hint"></small></div>
+      <div class="stackd-profile-pref-group">
+        <span class="stackd-profile-pref-label" data-profile-copy="appearance"></span>
+        <div class="stackd-profile-segment" id="stackdProfileThemeSeg" role="group" aria-label="Theme">
+          <span class="stackd-profile-segment-slider" id="stackdProfileThemeSlider" aria-hidden="true"></span>
+          <button type="button" data-act="theme" data-v="system">Авто</button>
+          <button type="button" data-act="theme" data-v="light">Светлая</button>
+          <button type="button" data-act="theme" data-v="dark">Тёмная</button>
+        </div>
+      </div>
+      <div class="stackd-profile-pref-group">
+        <span class="stackd-profile-pref-label" data-profile-copy="language"></span>
+        <div class="stackd-profile-segment" id="stackdProfileLanguageSeg" role="group" aria-label="Language">
+          <span class="stackd-profile-segment-slider" id="stackdProfileLanguageSlider" aria-hidden="true"></span>
+          <button type="button" data-profile-lang="ru">RU</button>
+          <button type="button" data-profile-lang="en">EN</button>
+          <button type="button" data-profile-lang="az">AZ</button>
+        </div>
+      </div>`;
+    const orders = $('#myOrdersBtn', menu);
+    menu.insertBefore(panel, orders || null);
+    panel.addEventListener('click', event => {
+      const languageButton = event.target.closest('[data-profile-lang]');
+      if (languageButton) {
+        const nextLanguage = languageButton.dataset.profileLang;
+        if (['ru','en','az'].includes(nextLanguage) && typeof applyLanguage === 'function') {
+          applyLanguage(nextLanguage);
+          refreshPromotionNewsLabels();
+          syncProfilePreferences();
+        }
+        return;
+      }
+      if (event.target.closest('#stackdProfileThemeSeg button[data-v]')) {
+        requestAnimationFrame(syncProfilePreferences);
+      }
+    });
+    syncProfilePreferences();
+  }
+
   function initProfileMenu() {
     buildProfileBalanceRow();
     makeTopupHistoryUI();
+    buildProfilePreferences();
     const trigger = $('#stackdProfileTrigger');
     const menu = $('#stackdProfileMenu');
     if (!trigger || !menu || trigger.dataset.bound === '1') return;
@@ -1381,11 +1472,14 @@
     };
     trigger.addEventListener('click', toggle);
     document.addEventListener('click', event => {
-      if (!event.target.closest('.stackd-profile-anchor') && !event.target.closest('.stackd-profile-menu') && !event.target.closest('.st-tab[data-tab="profile"]')) {
-        menu.hidden = true;
-        trigger.setAttribute('aria-expanded', 'false');
-        window.stakedSetTabActive?.('shop');
-      }
+      if (event.target.closest('.stackd-profile-anchor') || event.target.closest('.stackd-profile-menu') || event.target.closest('.st-tab[data-tab="profile"]')) return;
+      // Only reset navigation when this listener actually closes an open menu.
+      // Previously every click outside the hidden header anchor reset the active tab to Shop,
+      // overwriting the Cart tab's state immediately after stacked-ui.js selected it.
+      if (menu.hidden) return;
+      menu.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      window.stakedSetTabActive?.('shop');
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
@@ -1400,6 +1494,12 @@
   }
   function syncProfileMenu() {
     if ($('#stackdProfileEmail')) $('#stackdProfileEmail').textContent = S.user?.email || '';
+    const profileHead = $('.stackd-profile-head', $('#stackdProfileMenu') || document);
+    if (profileHead) {
+      const displayName = S.user?.user_metadata?.full_name || S.user?.user_metadata?.name || S.user?.email || 'STAKED';
+      profileHead.dataset.initial = String(displayName).trim().charAt(0).toUpperCase() || 'S';
+    }
+    syncProfilePreferences();
     const avatar = $('#userAvatar');
     if (avatar) avatar.alt = 'Profile';
     const historyButton = $('#stackdTopupHistoryOpen');
