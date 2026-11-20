@@ -59,13 +59,29 @@
   function refreshCard(id) {
     const old = document.querySelector(`.card[data-id="${CSS.escape(String(id))}"]`), p = find(id);
     if (!old || !p) return;
-    const tpl = document.createElement('template'); tpl.innerHTML = card(p).trim();
-    const next = tpl.content.firstElementChild; if (!next) return;
-    const had = !!old.querySelector('.stackd-card-qty'), has = !!next.querySelector('.stackd-card-qty');
-    next.querySelector('.stackd-card-qty')?.classList.add(had ? 'is-steady' : 'is-in');
-    old.replaceWith(next);
+    const actions = old.querySelector('.stackd-card-actions');
+    if (!actions) return;
+    const qty = Number(S.cart.find(item => String(item.id) === String(id))?.qty || 0);
+    const current = actions.querySelector('.stackd-card-qty');
+    if (qty > 0 && current) {
+      const value = current.querySelector('span');
+      if (value && value.textContent !== String(qty)) value.textContent = String(qty);
+      const inc = current.querySelector('[data-act="inc"]');
+      const stock = Number(p.stock);
+      if (inc) inc.disabled = Number.isFinite(stock) && stock > 0 && qty >= stock;
+      return;
+    }
+    const tpl = document.createElement('template');
+    tpl.innerHTML = card(p).trim();
+    const nextActions = tpl.content.firstElementChild?.querySelector('.stackd-card-actions');
+    if (!nextActions) return;
+    actions.replaceWith(nextActions);
+    if (qty > 0) nextActions.querySelector('.stackd-card-qty')?.classList.add('is-in');
   }
-  function refreshAllCards() { try { renderAll(); } catch { /* catalog not ready yet */ } }
+  function refreshAllCards() {
+    try { S.products.forEach(product => refreshCard(product.id)); } catch { /* catalog not ready yet */ }
+  }
+  window.stakedRefreshProductCards = refreshAllCards;
 
   /* ───────── cart dock: a compact stack of mini cards ───────── */
   const dock = document.createElement('div');
@@ -110,10 +126,13 @@
     if (reduced()) { slot.classList.add('is-settle'); setTimeout(() => slot.classList.remove('is-settle'), 400); return; }
     if (!a.width || !(slot.offsetWidth ?? slot.getBoundingClientRect().width)) return;
     pending.set(key, (pending.get(key) || 0) + 1); slot.classList.add('is-pending');
+    if (![a.left, a.top, a.width, a.height].every(Number.isFinite) || a.width <= 0 || a.height <= 0) return;
     const el = document.createElement('div'); el.className = 'stacked-fly';
+    el.style.cssText = `position:fixed;left:0;top:0;width:${a.width}px;height:${a.height}px;transform:translate3d(${a.left}px,${a.top}px,0);transform-origin:50% 50%;overflow:hidden;pointer-events:none;will-change:transform,width,height,clip-path;backface-visibility:hidden;contain:layout paint`;
     clone.removeAttribute('id');
     clone.style.cssText = 'margin:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none';
-    el.append(clone); layer.append(el);
+    el.append(clone);
+    layer.append(el);
     const ax = a.left + a.width / 2, ay = a.top + a.height / 2, D = 640, t0 = performance.now();
     let last = slotGeom(slot), raf = 0;
     const frame = (now) => {
