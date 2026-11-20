@@ -391,7 +391,7 @@ function applyTheme() {
   const browserTheme = document.querySelector('meta[name="theme-color"]');
   if (browserTheme) browserTheme.setAttribute('content', resolved === 'dark' ? '#141311' : '#f7f3ec');
 
-  $('.seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.v === preference));
+  $('.seg button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === preference)));
   setTimeout(updateThemeSlider, 50);
 }
 
