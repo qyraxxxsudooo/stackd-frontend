@@ -34,64 +34,23 @@ html.st-winter{background:#070b17}
 html.st-winter:not(.stacked-dark):not([data-theme=dark]){background:#f6dccb}
 html.st-winter body{background:transparent!important}
 .stw-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
-.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .18s ease-out}
+.stw-atmosphere{position:absolute;inset:-28px;z-index:0;overflow:hidden;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .2s ease-out}
+.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:none!important;transform:none!important}
 .stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
 .stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
 .stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
 .stw-bg[data-dark="false"]::before{background:radial-gradient(ellipse 46% 35% at 70% 70%,rgba(255,211,159,.25),transparent 75%),radial-gradient(ellipse 55% 22% at 20% 15%,rgba(255,255,255,.25),transparent 78%);opacity:.8}
 .stw-bg[data-dark="false"]::after{background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 28%,rgba(255,226,211,.12));opacity:.8}
 .stw-lamp{z-index:2;position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
+.stw-lamp::before{content:"";position:absolute;left:-80%;top:-22%;width:260%;height:64%;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,rgba(255,222,168,.22),rgba(255,207,140,.09) 42%,transparent 76%);filter:blur(22px);pointer-events:none}
 .stw-lamp img{position:absolute;inset:0;width:100%;height:100%}
-.stw-halo{position:absolute;left:50%;top:13.6%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,140,.55),rgba(255,196,100,.16) 45%,transparent 72%)}
-.stw-cone{position:absolute;left:50%;top:21.6%;width:230%;bottom:0;transform:translateX(-50%);background:radial-gradient(ellipse 50% 100% at 50% 0,rgba(255,212,130,.38),rgba(255,200,110,.16) 45%,rgba(255,200,110,.04) 70%,transparent 82%);will-change:opacity;animation:stwFlicker 7s steps(1) infinite}
-.stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
-@keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
+.stw-halo{position:absolute;left:50%;top:13.6%;width:175%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,220,164,.26),rgba(255,205,142,.08) 48%,transparent 76%);filter:blur(7px);pointer-events:none}
+.stw-city-landmarks{opacity:.96}
 @keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
-.stw-snowfall{position:fixed;inset:0;z-index:70;overflow:hidden;pointer-events:none;contain:strict;isolation:isolate}
-.stw-snowfall-layer{position:absolute;left:0;right:0;top:-100vh;height:300vh;pointer-events:none;background-repeat:repeat-y;background-size:100% 50vh;will-change:transform;animation:stwSnowTravel 20s linear infinite}
-.stw-snowfall-layer:nth-child(1){
-  opacity:.78;animation-duration:19s;
-  background-image:
-    radial-gradient(circle at 4% 8%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 17% 29%,rgba(255,255,255,.82) 0 1.2px,transparent 2.2px),
-    radial-gradient(circle at 31% 13%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 45% 42%,rgba(255,255,255,.78) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 58% 7%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 72% 31%,rgba(255,255,255,.8) 0 1.2px,transparent 2.2px),
-    radial-gradient(circle at 88% 16%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 96% 45%,rgba(255,255,255,.75) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 10% 73%,rgba(255,255,255,.78) 0 1px,transparent 2px),
-    radial-gradient(circle at 25% 88%,rgba(255,255,255,.84) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 40% 66%,rgba(255,255,255,.8) 0 1px,transparent 2px),
-    radial-gradient(circle at 54% 94%,rgba(255,255,255,.82) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 67% 68%,rgba(255,255,255,.86) 0 1px,transparent 2px),
-    radial-gradient(circle at 82% 84%,rgba(255,255,255,.8) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 93% 62%,rgba(255,255,255,.82) 0 1px,transparent 2px)
-}
-.stw-snowfall-layer:nth-child(2){
-  opacity:.5;animation-duration:29s;animation-delay:-13s
-  ;background-image:
-    radial-gradient(circle at 9% 22%,rgba(255,255,255,.85) 0 1.7px,transparent 3px),
-    radial-gradient(circle at 28% 51%,rgba(255,255,255,.78) 0 1.5px,transparent 2.8px),
-    radial-gradient(circle at 49% 18%,rgba(255,255,255,.85) 0 1.8px,transparent 3px),
-    radial-gradient(circle at 64% 76%,rgba(255,255,255,.76) 0 1.5px,transparent 2.8px),
-    radial-gradient(circle at 79% 39%,rgba(255,255,255,.82) 0 1.7px,transparent 3px),
-    radial-gradient(circle at 94% 91%,rgba(255,255,255,.8) 0 1.5px,transparent 2.8px)
-}
-.stw-snowfall-layer:nth-child(3){
-  opacity:.34;animation-duration:38s;animation-delay:-21s
-  ;background-image:
-    radial-gradient(circle at 14% 61%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
-    radial-gradient(circle at 37% 34%,rgba(255,255,255,.68) 0 2px,transparent 3.6px),
-    radial-gradient(circle at 57% 87%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
-    radial-gradient(circle at 74% 11%,rgba(255,255,255,.7) 0 2px,transparent 3.6px),
-    radial-gradient(circle at 91% 57%,rgba(255,255,255,.7) 0 2.1px,transparent 3.7px)
-}
-@keyframes stwSnowTravel{to{transform:translate3d(0,33.333333%,0)}}
-@media(max-width:680px){.stw-snowfall{opacity:.88}.stw-snowfall-layer:nth-child(3){opacity:.24}}
-@media(prefers-reduced-motion:reduce){.stw-snowfall-layer{animation:none!important;transform:none!important}}
+.stw-snow-canvas{position:fixed;inset:0;z-index:30;width:100%;height:100%;pointer-events:none;contain:strict;display:block}
+@media(prefers-reduced-motion:reduce){.stw-snow-canvas{opacity:.72}}
 @media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
-@media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.stw-bg::before{animation:none!important}.stw-atmosphere{transition:none}}
 
 .stw-city-control{display:grid;gap:6px;margin:12px 0}
 .stw-city-control>label{font-size:.82rem;font-weight:650;color:var(--text)}
@@ -244,21 +203,24 @@ ${fg}
   function applySceneBlur(value = site.winterBlur) {
     const amount = clamp(Math.round(Number(value) || 0), 0, 18);
     site.winterBlur = amount;
-    if (bg) bg.style.setProperty('--stw-scene-blur', amount + 'px');
+    if (bg) {
+      bg.style.setProperty('--stw-scene-blur', amount + 'px');
+      bg.querySelector('.stw-atmosphere')?.style.setProperty('--stw-scene-blur', amount + 'px');
+    }
     return amount;
   }
   function buildScene() {
     const dark = isDark();
     if (!bg) { bg = document.createElement('div'); bg.className = 'stw-bg'; bg.setAttribute('aria-hidden', 'true'); document.body.prepend(bg); }
     bg.dataset.dark = String(dark);
+    bg.dataset.city = site.winterCity;
+    const key = site.winterCity + '-' + (dark ? 'd' : 'l');
+    cache[key] ||= svgUrl(dark ? darkScene(site.winterCity) : morningScene(site.winterCity));
+    cache['lamp-' + (dark ? 'd' : 'l')] ||= svgUrl(lampSvg(dark));
+    bg.innerHTML = '<div class="stw-atmosphere"><img class="stw-scene" alt="" decoding="async" src="' + cache[key] + '"><div class="stw-lamp">' + (dark ? '<div class="stw-halo"></div>' : '') + '<img alt="" decoding="async" src="' + cache['lamp-' + (dark ? 'd' : 'l')] + '"></div></div>';
     applySceneBlur(site.winterBlur);
-    const key = dark ? 'd' : 'l';
-    cache[key] ||= svgUrl(dark ? darkScene() : morningScene());
-    cache['lamp' + key] ||= svgUrl(lampSvg(dark));
-    bg.innerHTML = `<img class="stw-scene" alt="" decoding="async" src="${cache[key]}"><div class="stw-lamp">${dark ? '<div class="stw-pool"></div><div class="stw-cone"></div><div class="stw-halo"></div>' : ''}<img alt="" decoding="async" src="${cache['lamp' + key]}"></div>`;
     layout();
   }
-
   /* the lamp stands on the scene's ground line (the image is anchored to the bottom and scaled to cover) */
   function layout() {
     const w = innerWidth, h = innerHeight, scale = Math.max(w / 1600, h / 900);
@@ -270,9 +232,168 @@ ${fg}
     lampEl.style.setProperty('--stw-lh', lh + 'px'); lampEl.style.setProperty('--stw-lb', lb + 'px'); lampEl.style.setProperty('--stw-lx', lx + 'px');
   }
 
-  /* ═════════════ decorative snowfall ═════════════ */
-  let on = false, snowLayer = null;
-  const onResize = () => { layout(); };
+
+  /* ═════════════ snow: layered, non-colliding particles ═════════════ */
+  let on = false, snowCanvas = null, snowCtx = null, snowRaf = 0;
+  let snowParticles = [], snowWidth = 0, snowHeight = 0, snowDpr = 1;
+  let snowLast = 0, snowNextFrame = 0, snowResizeTimer = 0, snowWind = 0;
+  const snowPointer = { x: -1000, y: -1000, vx: 0, vy: 0, last: 0 };
+  const snowMedia = matchMedia('(prefers-reduced-motion: reduce)');
+  const onResize = () => {
+    layout();
+    clearTimeout(snowResizeTimer);
+    snowResizeTimer = setTimeout(resizeSnow, 110);
+  };
+  function makeSnowParticle(initial = false) {
+    const depth = Math.random();
+    return {
+      x: Math.random() * snowWidth,
+      y: initial ? Math.random() * snowHeight : -10 - Math.random() * 50,
+      depth,
+      radius: .55 + depth * 2.1,
+      speed: 18 + depth * 56,
+      drift: 5 + depth * 25,
+      phase: Math.random() * Math.PI * 2,
+      frequency: .00028 + Math.random() * .00072,
+      opacity: .2 + depth * .68,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - .5) * (.18 + depth * .8),
+      crystal: depth > .74 && Math.random() > .3,
+      cursorForce: 0
+    };
+  }
+  function resizeSnow() {
+    if (!snowCanvas || !snowCtx) return;
+    const w = Math.max(1, Math.round(innerWidth));
+    const h = Math.max(1, Math.round(innerHeight));
+    const area = w * h;
+    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.55 : 1.8);
+    snowDpr = Math.min(deviceDpr, Math.sqrt(3200000 / area));
+    snowWidth = w;
+    snowHeight = h;
+    snowCanvas.width = Math.round(w * snowDpr);
+    snowCanvas.height = Math.round(h * snowDpr);
+    snowCanvas.style.width = w + 'px';
+    snowCanvas.style.height = h + 'px';
+    snowCtx.setTransform(snowDpr, 0, 0, snowDpr, 0, 0);
+    const target = coarse
+      ? Math.round(clamp(area / 3600, 125, 250))
+      : Math.round(clamp(area / 4700, 210, 430));
+    while (snowParticles.length < target) snowParticles.push(makeSnowParticle(true));
+    if (snowParticles.length > target) snowParticles.length = target;
+    drawSnow(0, performance.now());
+  }
+  function drawSnow(dt, now) {
+    if (!snowCtx) return;
+    const ctx = snowCtx;
+    ctx.clearRect(0, 0, snowWidth, snowHeight);
+    const motionOff = snowMedia.matches;
+    const gust = motionOff ? 0 : Math.sin(now * .00017) * 8 + Math.sin(now * .000071 + 2.1) * 5;
+    snowWind += (gust - snowWind) * Math.min(1, dt * .8);
+
+    for (const flake of snowParticles) {
+      if (!motionOff) {
+        const dx = flake.x - snowPointer.x;
+        const dy = flake.y - snowPointer.y;
+        const distance = Math.hypot(dx, dy);
+        let cursorPush = 0;
+        if (!coarse && snowPointer.last && now - snowPointer.last < 260 && distance < 175) {
+          const falloff = 1 - distance / 175;
+          const pointerVelocity = clamp(snowPointer.vx * .45 + snowPointer.vy * .12, -42, 42);
+          cursorPush = pointerVelocity * falloff * falloff * .62;
+        }
+        flake.cursorForce += (cursorPush - flake.cursorForce) * Math.min(1, dt * 2.2);
+        const localSway = Math.sin(now * flake.frequency + flake.phase) * flake.drift;
+        const microGust = Math.sin(now * .00031 + flake.phase * 1.7) * (2 + flake.depth * 5);
+        flake.x += (snowWind + localSway + microGust + flake.cursorForce) * dt;
+        flake.y += flake.speed * dt;
+        flake.rotation += flake.spin * dt;
+        if (flake.y > snowHeight + 12) {
+          flake.y = -8 - Math.random() * 60;
+          flake.x = Math.random() * snowWidth;
+        }
+        if (flake.x < -18) flake.x = snowWidth + 10;
+        else if (flake.x > snowWidth + 18) flake.x = -10;
+      }
+      const depth = flake.depth;
+      ctx.save();
+      ctx.translate(flake.x, flake.y);
+      ctx.rotate(flake.rotation);
+      ctx.globalAlpha = flake.opacity;
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = 'rgba(255,255,255,.92)';
+      ctx.lineCap = 'round';
+      if (depth < .25) ctx.filter = 'blur(.8px)';
+      if (flake.crystal && !motionOff) {
+        const radius = flake.radius * 1.6;
+        ctx.lineWidth = Math.max(.45, flake.radius * .25);
+        ctx.beginPath();
+        for (let arm = 0; arm < 6; arm++) {
+          const angle = arm * Math.PI / 3;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          const branch = radius * .34;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(x, y);
+          ctx.moveTo(x * .58, y * .58);
+          ctx.lineTo(x * .58 - Math.sin(angle) * branch, y * .58 + Math.cos(angle) * branch);
+          ctx.moveTo(x * .58, y * .58);
+          ctx.lineTo(x * .58 + Math.sin(angle) * branch, y * .58 - Math.cos(angle) * branch);
+        }
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, flake.radius * .48, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, flake.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+  function stepSnow(now) {
+    snowRaf = 0;
+    if (!on || !snowCtx || document.hidden) return;
+    const interval = 1000 / (coarse ? 42 : 60);
+    if (now < snowNextFrame) {
+      snowRaf = requestAnimationFrame(stepSnow);
+      return;
+    }
+    snowNextFrame = now + interval;
+    const dt = Math.min(.045, (now - (snowLast || now)) / 1000);
+    snowLast = now;
+    drawSnow(dt, now);
+    if (!snowMedia.matches) snowRaf = requestAnimationFrame(stepSnow);
+  }
+  function kickSnow() {
+    if (!on || !snowCtx || document.hidden || snowMedia.matches || snowRaf) return;
+    snowLast = 0;
+    snowRaf = requestAnimationFrame(stepSnow);
+  }
+  function onSnowPointer(event) {
+    if (coarse) return;
+    const now = performance.now();
+    const elapsed = Math.max(.008, (now - (snowPointer.last || now)) / 1000);
+    snowPointer.vx = clamp((event.clientX - snowPointer.x) / elapsed, -1600, 1600);
+    snowPointer.vy = clamp((event.clientY - snowPointer.y) / elapsed, -1600, 1600);
+    snowPointer.x = event.clientX;
+    snowPointer.y = event.clientY;
+    snowPointer.last = now;
+  }
+  const onSnowVisibility = () => {
+    if (document.hidden) {
+      cancelAnimationFrame(snowRaf);
+      snowRaf = 0;
+    } else kickSnow();
+  };
+  const onSnowMotionPreference = () => {
+    if (!on) return;
+    cancelAnimationFrame(snowRaf);
+    snowRaf = 0;
+    drawSnow(0, performance.now());
+    kickSnow();
+  };
   function enable() {
     if (on) return;
     on = true;
@@ -280,25 +401,48 @@ ${fg}
     root.classList.add('st-winter');
     buildScene();
     addEventListener('resize', onResize, { passive: true });
-
-    // This is a visual overlay only: no canvas, particle simulation, collisions or sensors.
-    snowLayer = document.createElement('div');
-    snowLayer.className = 'stw-snowfall';
-    snowLayer.setAttribute('aria-hidden', 'true');
-    snowLayer.innerHTML = '<i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i>';
-    document.documentElement.append(snowLayer);
+    snowCanvas = document.createElement('canvas');
+    snowCanvas.className = 'stw-snow-canvas';
+    snowCanvas.setAttribute('aria-hidden', 'true');
+    snowCtx = snowCanvas.getContext('2d', { alpha: true, desynchronized: true });
+    if (snowCtx) {
+      document.body.append(snowCanvas);
+      resizeSnow();
+      snowLast = 0;
+      snowNextFrame = 0;
+      if (!coarse) addEventListener('pointermove', onSnowPointer, { passive: true });
+      document.addEventListener('visibilitychange', onSnowVisibility);
+      if (snowMedia.addEventListener) snowMedia.addEventListener('change', onSnowMotionPreference);
+      else snowMedia.addListener?.(onSnowMotionPreference);
+      kickSnow();
+    } else {
+      snowCanvas.remove();
+      snowCanvas = null;
+    }
   }
   function disable() {
     if (!on) return;
     on = false;
     root.classList.remove('st-winter');
     removeEventListener('resize', onResize);
-    snowLayer?.remove();
-    snowLayer = null;
+    removeEventListener('pointermove', onSnowPointer);
+    document.removeEventListener('visibilitychange', onSnowVisibility);
+    if (snowMedia.removeEventListener) snowMedia.removeEventListener('change', onSnowMotionPreference);
+    else snowMedia.removeListener?.(onSnowMotionPreference);
+    clearTimeout(snowResizeTimer);
+    cancelAnimationFrame(snowRaf);
+    snowRaf = 0;
+    snowCanvas?.remove();
+    snowCanvas = null;
+    snowCtx = null;
+    snowParticles = [];
     bg?.remove();
     bg = null;
   }
-  new MutationObserver(() => { if (on && bg && bg.dataset.dark !== String(isDark())) buildScene(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+  new MutationObserver(() => {
+    if (!on || !bg) return;
+    if (bg.dataset.dark !== String(isDark()) || bg.dataset.city !== site.winterCity) buildScene();
+  }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
   /* visitor switch in Settings: shown only while the admin has the theme on */
   const userToggle = $('#winterToggle'), userSec = userToggle?.closest('.settings-sec');
