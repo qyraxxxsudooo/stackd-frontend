@@ -59,6 +59,42 @@
   document.body.append(bar);
   document.body.classList.add('has-tabbar');
   const sheets = { orders: () => $('#orders'), topup: () => $('#topup') };
+
+  // Keep the profile flyout outside #userProfile, which starts hidden until
+  // the auth UI refreshes. This prevents the hidden header wrapper hiding it.
+  const profileMenu = $('#stackdProfileMenu');
+  const profileTrigger = $('#stackdProfileTrigger');
+  if (profileMenu && profileMenu.parentElement !== document.body) document.body.append(profileMenu);
+
+  function ensureProfileBalanceRow() {
+    const menu = $('#stackdProfileMenu');
+    if (!menu || $('#stackdProfileBalanceRow')) return;
+    const row = document.createElement('div');
+    row.id = 'stackdProfileBalanceRow';
+    row.className = 'stackd-profile-balance-row';
+    row.innerHTML = '<div><small id="stackdProfileBalanceLabel"></small><strong id="stackdProfileBalanceValue"></strong></div><button type="button" id="stackdProfileTopup"></button>';
+    row.querySelector('small').textContent = S.lang === 'en' ? 'Balance' : S.lang === 'az' ? 'Balans' : 'Баланс';
+    row.querySelector('strong').textContent = ($('#userBalance')?.textContent?.trim() || '0.00') + ' AZN';
+    row.querySelector('button').textContent = S.lang === 'en' ? 'Top up' : S.lang === 'az' ? 'Artır' : 'Пополнить';
+    menu.insertBefore(row, menu.querySelector('#myOrdersBtn') || menu.firstChild);
+    row.querySelector('button').addEventListener('click', () => {
+      menu.hidden = true;
+      menu.setAttribute('aria-hidden', 'true');
+      profileTrigger?.setAttribute('aria-expanded', 'false');
+      setActive('topup');
+      const dialog = $('#topup');
+      if (dialog && !dialog.open) dialog.showModal();
+    });
+    const balance = $('#userBalance');
+    if (balance && 'MutationObserver' in window) {
+      new MutationObserver(() => {
+        const value = $('#stackdProfileBalanceValue');
+        if (value) value.textContent = (balance.textContent?.trim() || '0.00') + ' AZN';
+      }).observe(balance, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
+  ensureProfileBalanceRow();
   let active = 'shop';
   function labels() {
     bar.querySelectorAll('.st-tab').forEach((b) => {
@@ -78,21 +114,40 @@
     });
   }
   const close = (d) => { if (d?.open) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
-  function go(k) {
-    const profileMenu = $('#stackdProfileMenu');
-    const profileTrigger = $('#stackdProfileTrigger');
+  async function go(k) {
     if (k === 'profile') {
-      if (!S.user) { $('#auth')?.showModal(); return; }
-      const opening = Boolean(profileMenu?.hidden);
+      // Refresh the in-memory user if the persisted Supabase session restored first.
+      if (!S.user) {
+        try {
+          const { data, error } = await _supabase.auth.getSession();
+          if (error) throw error;
+          S.user = data?.session?.user || null;
+        } catch (error) {
+          console.error('Profile session check failed:', error);
+        }
+      }
+      if (!S.user) {
+        const auth = $('#auth');
+        if (auth && !auth.open) auth.showModal();
+        return;
+      }
+      if (!profileMenu) {
+        console.error('STAKED profile menu element is missing.');
+        return;
+      }
+      ensureProfileBalanceRow();
+      const opening = profileMenu.hidden;
       const currentPanel = openPanel();
       if (currentPanel) close(currentPanel);
-      if (profileMenu) profileMenu.hidden = !opening;
+      profileMenu.hidden = !opening;
+      profileMenu.setAttribute('aria-hidden', String(!opening));
       profileTrigger?.setAttribute('aria-expanded', String(opening));
       setActive(opening ? 'profile' : 'shop');
       return;
     }
     if (profileMenu && !profileMenu.hidden) {
       profileMenu.hidden = true;
+      profileMenu.setAttribute('aria-hidden', 'true');
       profileTrigger?.setAttribute('aria-expanded', 'false');
     }
     if (k === 'cart') {
@@ -103,8 +158,16 @@
       else dr?.showModal();
       return;
     }
-    if (k === active && k !== 'shop') { const cur = sheets[k]?.(); if (cur?.open) close(cur); return; }
-    if (k !== 'shop' && !S.user) { $('#auth')?.showModal(); return; }
+    if (k === active && k !== 'shop') {
+      const current = sheets[k]?.();
+      if (current?.open) { close(current); return; }
+      // An active indicator can outlive a closed dialog: allow the next tap to reopen it.
+    }
+    if (k !== 'shop' && !S.user) {
+      const auth = $('#auth');
+      if (auth && !auth.open) auth.showModal();
+      return;
+    }
     setActive(k);
     if (k === 'shop') {
       const any = openPanel();
@@ -112,14 +175,14 @@
       $('#catalog')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
       return;
     }
-    const next = sheets[k]();
+    const next = sheets[k]?.();
     if (k === 'orders' && typeof openOrders === 'function') openOrders();
     else if (next && !next.open) next.showModal();
   }
   window.stakedSetTabActive = (key) => setActive(key);
   bar.addEventListener('click', (e) => { const b = e.target.closest('.st-tab'); if (b) go(b.dataset.tab); });
   document.addEventListener('click', (event) => {
-    if (event.target.closest('.st-tab[data-tab="profile"]') || event.target.closest('.stackd-profile-anchor')) return;
+    if (event.target.closest('.st-tab[data-tab="profile"]') || event.target.closest('.stackd-profile-anchor') || event.target.closest('.stackd-profile-menu')) return;
     const menu = $('#stackdProfileMenu');
     if (menu && !menu.hidden) { menu.hidden = true; $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false'); if (active === 'profile') setActive('shop'); }
   });
