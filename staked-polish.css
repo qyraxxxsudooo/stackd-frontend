@@ -349,3 +349,20 @@ html,body,*{scrollbar-width:none}
     backdrop-filter:none!important;
   }
 }
+
+
+/* Keep the promo input and action on one aligned row, including narrow phones.
+   These ID-qualified selectors intentionally win over legacy mobile form rules. */
+#cartPromo.st-promo-glass .cart-promo-form,
+#stackdProfileMenu .stackd-profile-promo.st-promo-glass .stackd-profile-promo-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(92px,auto)!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+#cartPromo.st-promo-glass .cart-promo-form .btn,
+#stackdProfileMenu .stackd-profile-promo.st-promo-glass .stackd-profile-promo-form .btn{
+  width:auto!important;
+  min-width:92px!important;
+  justify-self:stretch;
+}
