@@ -1464,6 +1464,20 @@
     const trigger = $('#stackdProfileTrigger');
     const menu = $('#stackdProfileMenu');
     if (!trigger || !menu || trigger.dataset.bound === '1') return;
+    const head = $('.stackd-profile-head', menu);
+    if (head && !$('#stackdProfileClose', head)) {
+      const closeButton = document.createElement('button');
+      closeButton.id = 'stackdProfileClose';
+      closeButton.type = 'button';
+      closeButton.setAttribute('aria-label', S.lang === 'en' ? 'Close profile' : S.lang === 'az' ? 'Profili bağla' : 'Закрыть профиль');
+      closeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+      closeButton.addEventListener('click', () => {
+        menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+        window.stakedSetTabActive?.('shop');
+      });
+      head.append(closeButton);
+    }
     trigger.dataset.bound = '1';
     const toggle = () => {
       menu.hidden = !menu.hidden;
