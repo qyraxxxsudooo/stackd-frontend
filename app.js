@@ -345,6 +345,8 @@ function applyTheme() {
   // previously prevented the winter background from following a theme change.
   root.dataset.theme = resolved;
   root.classList.toggle('stacked-dark', resolved === 'dark');
+  const browserTheme = document.querySelector('meta[name="theme-color"]');
+  if (browserTheme) browserTheme.setAttribute('content', resolved === 'dark' ? '#141311' : '#f7f3ec');
 
   $('.seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.v === preference));
   setTimeout(updateThemeSlider, 50);
