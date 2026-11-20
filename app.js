@@ -228,20 +228,42 @@ function updateChipsSlider() {
 }
 function renderAll() {
   const L = live();
-  const categories = ['All', ...new Set([...CATS, ...L.map(p => p.category).filter(Boolean)])].filter(c => c === 'All' || L.some(p => p.category === c));
+  const categories = ['All', ...new Set([...CATS, ...L.map(p => p.category).filter(Boolean)])]
+    .filter(category => category === 'All' || L.some(product => product.category === category));
   if (!categories.includes(S.cat)) S.cat = 'All';
+
   if ($('#chips')) {
-    $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(c =>
-      `<button type="button" data-act="cat" data-cat="${esc(c)}" aria-pressed="${S.cat === c}">${c === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(c)}</button>`
+    $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(category =>
+      `<button type="button" data-act="cat" data-cat="${esc(category)}" aria-pressed="${S.cat === category}">${category === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(category)}</button>`
     ).join('');
     requestAnimationFrame(updateChipsSlider);
   }
+
   const q = normalizeSearch(S.q);
-  const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || normalizeSearch([p.name, p.description, p.category].join(' ')).includes(q)));
-  if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
-  // Fade cards in only when the visible set changed (first load, category, search), never on stock or cart updates.
-  const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
-  S.gridKey = gridKey;
+  const list = L.filter(product =>
+    (S.cat === 'All' || product.category === S.cat) &&
+    (!q || normalizeSearch([product.name, product.description, product.category].join(' ')).includes(q))
+  );
+  const nextGridKey = S.cat + '|' + list.map(product => product.id).join(',');
+  const gridChanged = nextGridKey !== S.gridKey;
+  const grid = $('#grid');
+
+  if (grid) {
+    grid.innerHTML = list.length
+      ? list.map(card).join('')
+      : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
+
+    // Animate only when the visible result set changes, not when cart or stock state refreshes.
+    if (gridChanged && !reduce()) {
+      const cards = grid.querySelectorAll('.card');
+      cards.forEach((element, index) => {
+        element.style.setProperty('--stagger-index', String(Math.min(index, 10)));
+        element.classList.add('st-card-enter');
+      });
+    }
+  }
+
+  S.gridKey = nextGridKey;
   renderCart();
   if ($('#editor')?.open) renderAdmin();
 }
