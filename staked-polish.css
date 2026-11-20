@@ -455,3 +455,12 @@ html[data-theme="dark"] #stackdProfileMenu #logoutBtn,html.stacked-dark #stackdP
   .stackd-profile-segment-slider,.stackd-profile-quick-action,#stackdProfileClose,#stackdProfileBalanceRow button{transition:none!important}
 }
 .st-tab-ind{transition:transform .46s cubic-bezier(.22,1.2,.32,1)!important}
+
+
+/* Accessibility override: equal specificity to the opening animation selectors. */
+@media(prefers-reduced-motion:reduce){
+  .stackd-profile-menu:not([hidden]).is-visible,
+  .stackd-profile-menu.is-closing{animation:none!important}
+  .stackd-profile-menu:not([hidden]).is-visible::after{animation:none!important}
+  .st-tab-ind{transition:none!important}
+}
