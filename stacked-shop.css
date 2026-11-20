@@ -257,7 +257,7 @@ html[data-motion=off] *,html[data-motion=off] *::before,html[data-motion=off] *:
   transition:border-color .2s ease,box-shadow .2s ease;
 }
 .card::before{
-  content:"";position:absolute;z-index:2;inset:0;border-radius:inherit;pointer-events:none;
+  content:"";position:absolute;z-index:0;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(155deg,rgba(255,255,255,.16),transparent 32%,transparent 78%,rgba(255,255,255,.025));
   box-shadow:inset 0 1px 0 var(--glass-highlight);
 }
