@@ -1519,6 +1519,16 @@
       button.setAttribute('aria-pressed', String(active));
       button.classList.toggle('is-selected', active);
     });
+
+    // Keep the pill aligned with the selected control after profile/settings
+    // panels are opened, resized, or translated.
+    const active = $('#profileThemeSeg button[data-v][aria-pressed="true"]');
+    const slider = $('#themeSlider');
+    const segment = $('#profileThemeSeg');
+    if (active && slider && segment) {
+      slider.style.width = active.offsetWidth + 'px';
+      slider.style.transform = 'translateX(' + (active.offsetLeft - 3) + 'px)';
+    }
   }
   updateThemeSlider = syncThemeButtons;
 
