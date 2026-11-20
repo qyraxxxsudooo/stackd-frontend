@@ -46,7 +46,7 @@ html.st-winter body{background:transparent!important}
 .stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
 @keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
 @keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
-.stw-snow{position:fixed;left:0;top:0;z-index:25;pointer-events:none}
+.stw-snow{position:fixed;left:0;top:0;z-index:19;pointer-events:none}
 @media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
 @media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
 `;
@@ -247,16 +247,24 @@ ${fg}
   const capAt = (s, i) => { const x = i * COL + COL / 2, e = Math.min(x, s.w - x); return e >= s.rad ? s.cap : s.cap * Math.max(0, e / s.rad) ** 1.6; };
   function measure() {
     const sy = scrollY, bar = $('.st-tabbar');
-    const els = cardObserver ? [...visibleCards] : [...document.querySelectorAll('#grid .card')]; if (bar) els.push(bar);
+    const els = cardObserver ? [...visibleCards] : [...document.querySelectorAll('#grid .card')];
+    // Treat fixed chrome and category filters as real snow-catching surfaces too.
+    const chrome = [...document.querySelectorAll('.nav, .chips, .settings-panel:not([hidden]), dialog[open]')];
+    for (const el of chrome) if (el.getClientRects().length && !els.includes(el)) els.push(el);
+    if (bar && !els.includes(bar)) els.push(bar);
     const seen = new Set();
     for (const el of els) {
       const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
       const isBar = el === bar;
       let s = surf.get(el);
-      if (!s) { s = { el, fixed: isBar, cap: isBar ? 11 : 12, rad: isBar ? 24 : 18, top: 0, l: 0, w: 0, cols: new Float32Array(0), vis: false, vtop: 0, fresh: !isBar }; surf.set(el, s); }
+      const pinned = isBar || el.matches('.nav, .settings-panel, dialog[open]');
+      if (!s) { s = { el, fixed: pinned, cap: isBar ? 11 : pinned ? 9 : 12, rad: isBar ? 24 : pinned ? 16 : 18, top: 0, l: 0, w: 0, cols: new Float32Array(0), vis: false, vtop: 0, fresh: !isBar }; surf.set(el, s); }
+      s.fixed = pinned;
+      s.cap = isBar ? 11 : pinned ? 9 : 12;
+      s.rad = isBar ? 24 : pinned ? 16 : 18;
       const n = Math.max(2, Math.ceil(r.width / COL));
       if (s.cols.length !== n) { const c = new Float32Array(n); c.set(s.cols.subarray(0, Math.min(n, s.cols.length))); s.cols = c; }
-      s.l = r.left; s.w = r.width; s.top = isBar ? r.top : r.top + sy;
+      s.l = r.left; s.w = r.width; s.top = pinned ? r.top : r.top + sy;
       if (s.fresh) { s.fresh = false; for (let i = 0; i < n; i++) s.cols[i] = capAt(s, i) * (.5 + Math.sin(i * .31 + r.left) * .12 + Math.sin(i * .9) * .05 + Math.random() * .06); }
       seen.add(el);
     }
@@ -309,7 +317,7 @@ ${fg}
     }
 
     for (let i = flakes.length - 1; i >= 0; i--) {
-      const f = flakes[i], py = f.y;
+      const f = flakes[i];
       if (f.loose) { f.vy = Math.min(240, f.vy + 420 * dt); f.vx *= 1 - dt * 1.2; }
       else { f.ph += dt * f.sp; f.vy += ((20 + f.r * 16) * fall - f.vy) * dt * 2; f.vx = wind * (.35 + f.r * .18) + Math.sin(f.ph) * 4.5 * f.r; }
       if (now - ptr.t < 600) { const dx = f.x - ptr.x, dy = f.y - ptr.y, d2 = dx * dx + dy * dy; if (d2 < 7000) { const d = Math.sqrt(d2) || 1, p = (1 - d / 84) * 260 * dt; f.x += dx / d * p; f.y += dy / d * p * .5; } }
@@ -318,8 +326,12 @@ ${fg}
       if (!gone) for (const s of (collisionBuckets.get(Math.floor(f.x / SURFACE_CELL)) || [])) {
         if (!s.vis || f.x < s.l || f.x >= s.l + s.w) continue;
         const c = ((f.x - s.l) / COL) | 0, surface = s.vtop - s.cols[c];
-        if (py <= surface && f.y >= surface) {
-          if (f.loose || Math.random() < (s.fixed ? .9 : .75)) { const cap = capAt(s, c); if (s.cols[c] < cap) s.cols[c] = Math.min(cap, s.cols[c] + f.r * (f.loose ? .6 : 1.1)); gone = true; }
+        if (f.y + f.r >= surface) {
+          // Catch particles that cross the edge and particles initially spawned
+          // inside a card. A full snow cap must still block the particle.
+          const cap = capAt(s, c);
+          if (s.cols[c] < cap) s.cols[c] = Math.min(cap, s.cols[c] + f.r * (f.loose ? .6 : 1.1));
+          gone = true;
           break;
         }
       }
