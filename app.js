@@ -16,7 +16,7 @@ const CATS = ['Burgers', 'Sides', 'Drinks', 'Desserts'];
 const S = {
   products: [], cart: [], cat: 'All', q: '', adminQ: '', user: null, profile: null,
   draft: null, lang: 'ru', catalogError: null, ordersTimer: null, ordersBusy: false,
-  checkoutBusy: false, topupRequestId: crypto.randomUUID(), qrCache: new Map()
+  checkoutBusy: false, topupRequestId: crypto.randomUUID(), pendingPromoCode: null, qrCache: new Map()
 };
 
 try {
@@ -38,9 +38,9 @@ function safeImageUrl(value) {
 
 const translations = {
   ru: {
-    search_placeholder: 'Поиск в STAKED', how_title: 'Как работает STAKED', how_sub: 'Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
+    search_placeholder: 'Поиск в STAKED', how_title: 'Как работает STAKED', how_sub: 'Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.', logout_confirm: 'Выйти из аккаунта?', promo_waiting_cart: 'Код сохранён. Добавьте товар в корзину, чтобы проверить его.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
     login_btn: 'Войти', logout_btn: 'Выйти', catalog_btn: 'Каталог', orders_btn: 'Мои заказы', menu_title: 'Меню', balance_label: 'Баланс',
-    footer_desc: 'Лучшие предложения на еду в Баку.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'Данные хранятся в облаке Supabase.',
+    footer_desc: 'Выбирайте предложения, оформляйте заказ онлайн и забирайте его после подтверждения.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'STAKED собирает предложения ресторанов в одном каталоге. Здесь можно оформить заказ и следить за его подтверждением.',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
     auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
     topup_title: 'Пополнение', topup_card_warn: 'Заявка проверяется оператором. Баланс пополнится только после подтверждения платежа.', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
@@ -68,9 +68,9 @@ const translations = {
     search_empty: 'Ничего не найдено.'
   },
   en: {
-    search_placeholder: 'Search STAKED', how_title: 'How STAKED works', how_sub: 'Choose an offer, place an order, wait for processing and pick it up at the restaurant.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
+    search_placeholder: 'Search STAKED', how_title: 'How STAKED works', how_sub: 'Choose an offer, place an order, wait for processing and pick it up at the restaurant.', logout_confirm: 'Log out of your account?', promo_waiting_cart: 'Code saved. Add an item to your cart to check it.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
     login_btn: 'Log in', logout_btn: 'Log out', catalog_btn: 'Admin panel', orders_btn: 'My orders', menu_title: 'Catalog', balance_label: 'Balance',
-    footer_desc: 'The best food deals in Baku.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'Data is stored in Supabase cloud.',
+    footer_desc: 'Choose an offer, place your order online, and collect it after confirmation.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'STAKED brings restaurant offers into one catalogue. Place an order here and follow its confirmation status.',
     cart_title: 'Cart', cart_total: 'Total', cart_checkout: 'Checkout', cart_clear: 'Clear', cart_empty: 'Your cart is empty', cart_remove: 'Remove',
     auth_title: 'Welcome', auth_sub: 'Log in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_login_btn: 'Log in', auth_register_btn: 'Sign up',
     topup_title: 'Add balance', topup_card_warn: 'Your request is reviewed by an operator. Funds are added only after payment confirmation.', topup_amount: 'Amount (AZN)', topup_check: 'Payment receipt screenshot', topup_btn: 'Submit receipt',
@@ -98,9 +98,9 @@ const translations = {
     search_empty: 'No results found.'
   },
   az: {
-    search_placeholder: 'STAKED-də axtar', how_title: 'STAKED necə işləyir', how_sub: 'Təklifi seçin, sifariş verin, emalı gözləyin və restoranda götürün.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
+    search_placeholder: 'STAKED-də axtar', how_title: 'STAKED necə işləyir', how_sub: 'Təklifi seçin, sifariş verin, emalı gözləyin və restoranda götürün.', logout_confirm: 'Hesabdan çıxmaq istəyirsiniz?', promo_waiting_cart: 'Kod saxlanıldı. Yoxlamaq üçün səbətə məhsul əlavə edin.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
     login_btn: 'Daxil ol', logout_btn: 'Çıxış', catalog_btn: 'İdarəetmə', orders_btn: 'Sifarişlərim', menu_title: 'Kataloq', balance_label: 'Balans',
-    footer_desc: 'Bakıda ən yaxşı yemək təklifləri.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'Məlumatlar Supabase buludunda saxlanılır.',
+    footer_desc: 'Təklifi seçin, onlayn sifariş edin və təsdiqdən sonra restorandan götürün.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'STAKED restoran təkliflərini bir kataloqda toplayır. Buradan sifariş verib təsdiq statusunu izləyə bilərsiniz.',
     cart_title: 'Səbət', cart_total: 'Cəmi', cart_checkout: 'Sifarişi rəsmiləşdir', cart_clear: 'Təmizlə', cart_empty: 'Səbət boşdur', cart_remove: 'Sil',
     auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_login_btn: 'Daxil ol', auth_register_btn: 'Qeydiyyat',
     topup_title: 'Balansı artır', topup_card_warn: 'Müraciət operator tərəfindən yoxlanılır. Vəsait yalnız ödəniş təsdiqləndikdən sonra əlavə olunur.', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbzin ekran görüntüsü', topup_btn: 'Qəbzi göndər',
@@ -129,6 +129,7 @@ const translations = {
   }
 };
 const tr = key => translations[S.lang]?.[key] || translations.ru[key] || key;
+try { S.pendingPromoCode = String(localStorage.getItem('pdd.pendingPromo') || '').trim().toUpperCase() || null; } catch { S.pendingPromoCode = null; }
 function applyLanguage(lang) {
   const selected = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'ru';
   S.lang = selected;
@@ -257,9 +258,18 @@ $('#googleLoginBtn')?.addEventListener('click', async (event) => {
   }
 });
 $('#logoutBtn')?.addEventListener('click', async () => {
-  if (S.ordersTimer) clearInterval(S.ordersTimer);
-  await _supabase.auth.signOut();
-  location.reload();
+  if (!window.confirm(tr('logout_confirm'))) return;
+  try {
+    if (S.ordersTimer) clearInterval(S.ordersTimer);
+    const { error } = await _supabase.auth.signOut();
+    if (error) throw error;
+    S.pendingPromoCode = null;
+    try { localStorage.removeItem('pdd.pendingPromo'); } catch {}
+    location.reload();
+  } catch (error) {
+    console.error('Sign out failed:', error);
+    toast(S.lang === 'en' ? 'Could not sign out. Try again.' : S.lang === 'az' ? 'Hesabdan çıxmaq mümkün olmadı. Yenidən cəhd edin.' : 'Не удалось выйти из аккаунта. Попробуйте ещё раз.');
+  }
 });
 
 async function load() {
@@ -405,20 +415,36 @@ suggestionsBox?.addEventListener('click', e => {
   }
 });
 document.addEventListener('click', e => { if (!e.target.closest('.search-container')) suggestionsBox?.classList.remove('active'); });
-function toggleLangDropdown() { $('#langDropdown')?.classList.toggle('active'); }
+function setLangDropdown(open) {
+  const menu = $('#langDropdown'), trigger = $('.lang-btn');
+  if (!menu) return;
+  const next = typeof open === 'boolean' ? open : !menu.classList.contains('active');
+  menu.classList.toggle('active', next);
+  trigger?.setAttribute('aria-expanded', String(next));
+}
+function toggleLangDropdown() { setLangDropdown(); }
 document.querySelector('.lang-dropdown')?.addEventListener('click', e => {
   const btn = e.target.closest('button[data-lang]');
-  if (btn) { applyLanguage(btn.dataset.lang); $('#langDropdown')?.classList.remove('active'); }
+  if (btn) {
+    applyLanguage(btn.dataset.lang);
+    setLangDropdown(false);
+    document.querySelectorAll('.lang-dropdown button[data-lang]').forEach(item =>
+      item.setAttribute('aria-pressed', String(item.dataset.lang === S.lang))
+    );
+  }
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('#langSelector')) setLangDropdown(false);
 });
 function updateThemeSlider() {
-  const activeBtn = $('.seg button[aria-pressed="true"]'), slider = $('#themeSlider');
-  if (activeBtn && slider) { slider.style.width = `${activeBtn.offsetWidth}px`; slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`; }
+  const group = $('#profileThemeSeg'), activeBtn = group?.querySelector('button[aria-pressed="true"]'), slider = $('#themeSlider');
+  if (activeBtn && slider) {
+    slider.style.width = `${activeBtn.offsetWidth}px`;
+    slider.style.transform = `translateX(${activeBtn.offsetLeft - 3}px)`;
+  }
 }
 function applyTheme() {
   const root = document.documentElement;
-  root.classList.add('theme-switching');
-  clearTimeout(applyTheme.timer);
-  applyTheme.timer = setTimeout(() => root.classList.remove('theme-switching'), 320);
 
   let preference = 'system';
   try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
@@ -433,8 +459,8 @@ function applyTheme() {
   const browserTheme = document.querySelector('meta[name="theme-color"]');
   if (browserTheme) browserTheme.setAttribute('content', resolved === 'dark' ? '#141311' : '#f7f3ec');
 
-  document.querySelectorAll('.seg button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === preference)));
-  setTimeout(updateThemeSlider, 50);
+  $('#profileThemeSeg')?.querySelectorAll('button[data-v]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === preference)));
+  requestAnimationFrame(updateThemeSlider);
 }
 
 
@@ -471,6 +497,12 @@ function setQty(id, d) {
   else if (current) current.qty = after;
   else S.cart.push({ id: key, qty: after });
   saveCart(); renderCart(); bump();
+  if (after > 0 && S.pendingPromoCode && !S.promo && !S.promoBusy) {
+    const pendingCode = S.pendingPromoCode;
+    S.pendingPromoCode = null;
+    try { localStorage.removeItem('pdd.pendingPromo'); } catch {}
+    setTimeout(() => applyPromo(pendingCode), 0);
+  }
 }
 const reduce = () => matchMedia('(prefers-reduced-motion:reduce)').matches || document.documentElement.dataset.motion === 'off';
 function closeDlg(d) {
@@ -867,13 +899,27 @@ function promoChipHtml(est) {
 }
 function renderPromoUI() {
   if (!S.user && S.promo) S.promo = null;
-  const est = promoEstimate(), status = $('#promoStatus'), box = $('#cartPromo');
+  const est = promoEstimate(), box = $('#cartPromo');
   const msg = S.promoMsg ? `<p class="promo-msg ${S.promoMsg.error ? 'is-error' : 'is-ok'}">${esc(S.promoMsg.text)}</p>` : '';
-  if (status) status.innerHTML = (S.promo ? promoChipHtml(est) : '') + msg;
+  const promoView = (S.promo ? promoChipHtml(est) : '') + msg;
   if (box) {
     box.hidden = !lines().length;
-    box.innerHTML = S.promo ? promoChipHtml(est) : `<button type="button" class="link" data-promo="settings">${esc(tr('promo_cart_hint'))}</button>`;
+    if (!$('#cartPromoForm', box)) {
+      box.innerHTML = `<div class="cart-promo-title">${esc(tr('promo_cart_hint'))}</div>
+        <form id="cartPromoForm" class="promo-form cart-promo-form" data-promo-form autocomplete="off">
+          <input id="cartPromoInput" data-promo-input type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="${esc(tr('promo_placeholder'))}">
+          <button class="btn btn-primary" type="submit" id="cartPromoApplyBtn" data-promo-apply>${esc(tr('promo_apply'))}</button>
+        </form>
+        <div id="cartPromoStatus" class="promo-status" aria-live="polite"></div>`;
+    }
   }
+  ['#promoStatus', '#profilePromoStatus', '#cartPromoStatus'].forEach(selector => {
+    const status = $(selector);
+    if (status) status.innerHTML = promoView;
+  });
+  $('[data-promo-input]').forEach(input => {
+    if (input !== document.activeElement && !input.value && S.pendingPromoCode) input.value = S.pendingPromoCode;
+  });
   const showSum = Boolean(S.promo) && est.discount > 0;
   [['#cartSubtotalRow', showSum], ['#cartDiscountRow', showSum]].forEach(([sel, on]) => { const node = $(sel); if (node) node.hidden = !on; });
   if ($('#cartSubtotal')) $('#cartSubtotal').textContent = fmt(est.subtotal);
@@ -884,11 +930,17 @@ async function applyPromo(raw) {
   const code = String(raw || '').trim().toUpperCase();
   if (!code || S.promoBusy) return;
   if (!S.user) { setPromoMsg(tr('promo_need_login'), true); return; }
-  if (!lines().length) { setPromoMsg(tr('promo_not_applicable'), true); return; }
+  if (!lines().length) {
+    S.pendingPromoCode = code;
+    try { localStorage.setItem('pdd.pendingPromo', code); } catch {}
+    S.promoMsg = { text: tr('promo_waiting_cart'), error: false };
+    renderPromoUI();
+    return;
+  }
 
-  const button = $('#promoApplyBtn');
+  const buttons = $('[data-promo-apply]');
   S.promoBusy = true;
-  if (button) button.disabled = true;
+  buttons.forEach(button => { button.disabled = true; });
   try {
     const cartItems = S.cart
       .filter(item => item && Number.isInteger(Number(item.qty)) && Number(item.qty) > 0)
@@ -958,7 +1010,9 @@ async function applyPromo(raw) {
     }
 
     S.promoMsg = { text: tr('promo_applied'), error: false };
-    if ($('#promoInput')) $('#promoInput').value = '';
+    S.pendingPromoCode = null;
+    try { localStorage.removeItem('pdd.pendingPromo'); } catch {}
+    $('[data-promo-input]').forEach(input => { input.value = ''; });
     renderCart();
   } catch (error) {
     console.error('Promo preview failed:', error);
@@ -973,14 +1027,18 @@ async function applyPromo(raw) {
     }
   } finally {
     S.promoBusy = false;
-    if (button) button.disabled = false;
+    buttons.forEach(button => { button.disabled = false; });
   }
 }
-$('#promoForm')?.addEventListener('submit', e => { e.preventDefault(); applyPromo($('#promoInput')?.value); });
+document.addEventListener('submit', e => {
+  const form = e.target.closest('form[data-promo-form]');
+  if (!form) return;
+  e.preventDefault();
+  applyPromo(form.querySelector('[data-promo-input]')?.value);
+});
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-promo]'); if (!b) return;
   if (b.dataset.promo === 'remove') { S.promo = null; S.promoMsg = null; renderCart(); }
-  if (b.dataset.promo === 'settings') { closeDlg($('#drawer')); openSettings(); $('#promoInput')?.focus({ preventScroll: true }); }
 });
 
 /* ===================== Settings panel ===================== */
@@ -1192,7 +1250,7 @@ async function checkout() {
     if (error) throw error;
     const orderId = typeof data === 'string' ? data : (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
     if (!orderId) throw new Error('checkout_order не вернул ID заказа.');
-    S.cart = []; S.promo = null; S.checkoutRequestId = null; saveCart(); renderCart(); closeDlg($('#drawer'));
+    S.cart = []; S.promo = null; S.pendingPromoCode = null; try { localStorage.removeItem('pdd.pendingPromo'); } catch {} S.checkoutRequestId = null; saveCart(); renderCart(); closeDlg($('#drawer')); document.dispatchEvent(new Event('stacked:cart-cleared'));
     let telegramOk = false;
     try {
       const { data: notifyData, error: notifyError } = await _supabase.functions.invoke('notify-telegram', { body: { orderId } });
