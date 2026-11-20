@@ -229,7 +229,7 @@
       const result = await _supabase.from('site_settings').upsert(rows,{onConflict:'key'});
       if (result.error) throw result.error;
       Object.assign(state,next);
-      fields.forEach(field => { $('#staked-file-' + field.key).value = ''; });
+      fields.forEach(field => { $('#staked-' + field.key).value = next[field.key]; $('#staked-file-' + field.key).value = ''; });
       apply();
       message.textContent = t('saved');
       return true;
