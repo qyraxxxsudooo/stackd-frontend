@@ -180,8 +180,9 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
     const { error } = await _supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // www is redirected to the apex before this handler runs.
-        redirectTo: window.location.origin + '/'
+        // Always finish OAuth on the canonical origin. Never derive this from
+        // window.location.origin: users may start from www or a preview host.
+        redirectTo: 'https://staked.food/'
       }
     });
     if (error) throw error;
@@ -1292,6 +1293,46 @@ try {
 applyLanguage(initialLanguage);
 applyTheme();
 
+// Finalize OAuth callbacks before refreshing the account UI.
+// Supabase normally detects the implicit-flow fragment during client startup;
+// this fallback covers delayed callback restoration without exposing tokens.
+async function finalizeOAuthCallback() {
+  const params = new URLSearchParams(window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '');
+  const hasOAuthTokens = params.has('access_token') && params.has('refresh_token');
+  if (!hasOAuthTokens) return;
+
+  let session = null;
+  try {
+    const current = await _supabase.auth.getSession();
+    if (current.error) throw current.error;
+    session = current.data?.session || null;
+  } catch (error) {
+    console.warn('OAuth session lookup failed; attempting callback recovery.');
+  }
+
+  if (!session) {
+    const { data, error } = await _supabase.auth.setSession({
+      access_token: params.get('access_token'),
+      refresh_token: params.get('refresh_token')
+    });
+    if (error) throw error;
+    session = data?.session || null;
+  }
+
+  if (session) {
+    // Remove access/refresh/provider tokens from the visible URL and browser history.
+    window.history.replaceState(window.history.state, document.title, window.location.pathname + window.location.search);
+  }
+}
+
+const authCallbackReady = finalizeOAuthCallback().catch(error => {
+  console.error('OAuth callback could not be finalized:', error?.message || 'Unknown auth error');
+  const message = 'Не удалось завершить вход. Попробуйте войти через Google ещё раз.';
+  const authMessage = $('#authMsg');
+  if (authMessage) authMessage.textContent = message;
+  else if (typeof toast === 'function') toast(message);
+});
+
 // Auth changes update the account UI only. Catalog/settings are fetched once at boot.
 let authRefreshTimer = 0;
 function scheduleAuthRefresh(loadData = false) {
@@ -1307,5 +1348,5 @@ _supabase.auth.onAuthStateChange((_event, session) => {
   scheduleAuthRefresh();
 });
 
-// Start the app once; repeated INITIAL_SESSION / TOKEN_REFRESHED events won't reload all site data.
-scheduleAuthRefresh(true);
+// Start only after the OAuth callback has been restored and its tokens removed from the URL.
+authCallbackReady.finally(() => scheduleAuthRefresh(true));
