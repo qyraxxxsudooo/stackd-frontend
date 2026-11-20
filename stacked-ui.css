@@ -333,7 +333,7 @@ body.has-tabbar #stackdOrdersShortcut{display:none!important}
 .settings-panel .seg button[aria-pressed=true]{
   color:var(--glass-selected-text)!important
 }
-#profileThemeSeg .seg-slider,#themeSlider{display:block}
+#profileThemeSeg .seg-slider,#themeSlider{display:block!important}
 #profileThemeSeg button[aria-pressed=true]{color:var(--glass-selected-text)!important}
 
 /* One continuous category capsule; the moving selection uses the same material as settings. */
