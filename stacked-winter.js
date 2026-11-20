@@ -8,7 +8,7 @@
    Nothing heavy is created until the theme is actually on. */
 (() => {
   'use strict';
-  const LOCAL = 'stacked.winter', MUSIC_LOCAL = 'stacked.music';
+  const LOCAL = 'stacked.winter';
   const root = document.documentElement;
   const $ = (s, r = document) => r.querySelector(s);
   const isDark = () => root.classList.contains('stacked-dark') || root.dataset.theme === 'dark';
@@ -18,15 +18,15 @@
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const lang = () => { try { return (typeof S !== 'undefined' && S.lang) || localStorage.getItem('pdd.lang') || 'ru'; } catch { return 'ru'; } };
   const TXT = {
-    ru: { admin: 'Зима и музыка', city: 'Зимний город', cityHelp: 'Выберите архитектурную атмосферу зимнего оформления.', cityBaku: 'Баку', cityNewYork: 'Нью-Йорк', cityTokyo: 'Токио', cityLondon: 'Лондон', cityParis: 'Париж', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
-    en: { admin: 'Winter and music', city: 'Winter city', cityHelp: 'Choose the architectural atmosphere for the winter scene.', cityBaku: 'Baku', cityNewYork: 'New York', cityTokyo: 'Tokyo', cityLondon: 'London', cityParis: 'Paris', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
-    az: { admin: 'Qış və musiqi', city: 'Qış şəhəri', cityHelp: 'Qış səhnəsi üçün şəhər atmosferini seçin.', cityBaku: 'Bakı', cityNewYork: 'Nyu-York', cityTokyo: 'Tokio', cityLondon: 'London', cityParis: 'Paris', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
+    ru: { admin: 'Зима и музыка', city: 'Зимний город', cityHelp: 'Выберите архитектурную атмосферу зимнего оформления.', cityBaku: 'Баку', cityNewYork: 'Нью-Йорк', cityTokyo: 'Токио', cityLondon: 'Лондон', cityParis: 'Париж', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: '', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
+    en: { admin: 'Winter and music', city: 'Winter city', cityHelp: 'Choose the architectural atmosphere for the winter scene.', cityBaku: 'Baku', cityNewYork: 'New York', cityTokyo: 'Tokyo', cityLondon: 'London', cityParis: 'Paris', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: '', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
+    az: { admin: 'Qış və musiqi', city: 'Qış şəhəri', cityHelp: 'Qış səhnəsi üçün şəhər atmosferini seçin.', cityBaku: 'Bakı', cityNewYork: 'Nyu-York', cityTokyo: 'Tokio', cityLondon: 'London', cityParis: 'Paris', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: '', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
   };
   const t = (k) => (TXT[lang()] || TXT.ru)[k] || TXT.ru[k];
   const toastMsg = (m) => { try { if (typeof toast === 'function') toast(m); } catch { /* no toast */ } };
 
   const CITY_IDS = ['baku', 'new-york', 'tokyo', 'london', 'paris'];
-  const site = { winter: 'off', winterCity: 'baku', winterBlur: 0, musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
+  const site = { winter: 'off', winterCity: 'baku', winterBlur: 0 };
 
   /* ═════════════ styles (injected once) ═════════════ */
   const CSS = `
@@ -267,8 +267,8 @@ ${fg}
     const w = Math.max(1, Math.round(innerWidth));
     const h = Math.max(1, Math.round(innerHeight));
     const area = w * h;
-    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.55 : 1.8);
-    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt(6000000 / area)));
+    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.1 : 1.8);
+    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt((coarse ? 2200000 : 6000000) / area)));
     snowWidth = w;
     snowHeight = h;
     snowCanvas.width = Math.round(w * snowDpr);
@@ -277,7 +277,7 @@ ${fg}
     snowCanvas.style.height = h + 'px';
     snowCtx.setTransform(snowDpr, 0, 0, snowDpr, 0, 0);
     const target = coarse
-      ? Math.round(clamp(area / 3600, 125, 250))
+      ? Math.round(clamp(area / 22000, 28, 56))
       : Math.round(clamp(area / 4700, 210, 430));
     while (snowParticles.length < target) snowParticles.push(makeSnowParticle(true));
     if (snowParticles.length > target) snowParticles.length = target;
@@ -290,6 +290,29 @@ ${fg}
     const motionOff = snowMedia.matches;
     const gust = motionOff ? 0 : Math.sin(now * .00017) * 8 + Math.sin(now * .000071 + 2.1) * 5;
     snowWind += (gust - snowWind) * Math.min(1, dt * .8);
+
+    // Touch GPUs use a low-cost circle-only renderer; skip per-flake transforms and trigonometry.
+    if (coarse) {
+      for (const flake of snowParticles) {
+        if (!motionOff) {
+          flake.x += (snowWind + flake.drift * .12) * dt;
+          flake.y += flake.speed * dt;
+          if (flake.y > snowHeight + 12) {
+            flake.y = -8 - Math.random() * 36;
+            flake.x = Math.random() * snowWidth;
+          }
+          if (flake.x < -12) flake.x = snowWidth + 8;
+          else if (flake.x > snowWidth + 12) flake.x = -8;
+        }
+        ctx.globalAlpha = flake.opacity;
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, Math.max(.65, flake.radius * .82), 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      return;
+    }
 
     for (const flake of snowParticles) {
       if (!motionOff) {
@@ -355,7 +378,7 @@ ${fg}
   function stepSnow(now) {
     snowRaf = 0;
     if (!on || !snowCtx || document.hidden) return;
-    const interval = 1000 / (coarse ? 42 : 60);
+    const interval = 1000 / (coarse ? 30 : 60);
     if (now < snowNextFrame) {
       snowRaf = requestAnimationFrame(stepSnow);
       return;
@@ -461,44 +484,11 @@ ${fg}
     applyWinter();
   });
 
-  /* ═════════════ music ═════════════ */
-  let audio = null, musicBtn = null, armed = false;
-  const userMuted = () => { try { return localStorage.getItem(MUSIC_LOCAL) === 'off'; } catch { return false; } };
-  function paintMusic() {
-    if (!musicBtn) return;
-    const playing = !!audio && !audio.paused;
-    musicBtn.classList.toggle('has-track', !!site.musicUrl);
-    musicBtn.classList.toggle('is-playing', playing);
-    const label = (playing ? t('pause') : t('play')) + (site.musicTitle ? ' · ' + site.musicTitle : '');
-    musicBtn.setAttribute('aria-label', label); musicBtn.title = label; musicBtn.setAttribute('aria-pressed', String(playing));
-  }
-  function ensureAudio() {
-    if (!site.musicUrl) return null;
-    if (!audio) { audio = new Audio(); audio.loop = true; audio.preload = 'none'; audio.addEventListener('play', paintMusic); audio.addEventListener('pause', paintMusic); }
-    if (audio.dataset.src !== site.musicUrl) { audio.pause(); audio.src = site.musicUrl; audio.dataset.src = site.musicUrl; }
-    audio.volume = clamp(site.musicVolume / 100, 0, 1);
-    return audio;
-  }
-  async function playMusic() { const a = ensureAudio(); if (!a) return; try { await a.play(); musicBtn?.classList.remove('hint'); } catch { /* blocked until a tap */ } paintMusic(); }
+  /* Site music was removed. This hook removes stale controls from cached markup. */
   function setupMusic() {
-    addStyle('st-music-style', UI_CSS);
-    if (!musicBtn) {
-      musicBtn = document.createElement('button'); musicBtn.type = 'button'; musicBtn.className = 'icon-btn st-music';
-      musicBtn.innerHTML = '<span class="st-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
-      $('#settingsBtn')?.before(musicBtn);
-      musicBtn.addEventListener('click', () => {
-        const a = ensureAudio(); if (!a) return;
-        if (a.paused) { try { localStorage.setItem(MUSIC_LOCAL, 'on'); } catch { /* */ } playMusic(); }
-        else { a.pause(); try { localStorage.setItem(MUSIC_LOCAL, 'off'); } catch { /* */ } }
-      });
-    }
-    if (!site.musicUrl) { audio?.pause(); paintMusic(); return; }
-    ensureAudio(); paintMusic();
-    if (site.musicAutoplay && !userMuted() && !armed) {
-      armed = true; musicBtn.classList.add('hint');
-      const start = (e) => { if (musicBtn.contains(e.target)) return; removeEventListener('pointerdown', start, true); removeEventListener('keydown', start, true); if (!userMuted()) playMusic(); };
-      addEventListener('pointerdown', start, true); addEventListener('keydown', start, true);
-    }
+    document.querySelectorAll('.st-music').forEach(button => button.remove());
+    const preview = document.getElementById('stwAdminPreview');
+    if (preview) { preview.pause(); preview.removeAttribute('src'); preview.load(); preview.remove(); }
   }
 
   /* ═════════════ settings from the database ═════════════ */
@@ -507,14 +497,10 @@ ${fg}
     site.winter = m.winter_mode === 'on' ? 'on' : 'off';
     site.winterCity = CITY_IDS.includes(m.winter_city) ? m.winter_city : (CITY_IDS.includes(site.winterCity) ? site.winterCity : 'baku');
     site.winterBlur = clamp(Number(m.winter_blur ?? site.winterBlur ?? 0) || 0, 0, 18);
-    site.musicUrl = /^https:\/\//.test(m.music_url || '') ? m.music_url : '';
-    site.musicTitle = String(m.music_title || '').slice(0, 80);
-    site.musicVolume = clamp(Number(m.music_volume ?? 40) || 0, 0, 100);
-    site.musicAutoplay = m.music_autoplay === '1';
   }
   async function load() {
     try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_city', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
+      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_city', 'winter_blur']);
       if (error) throw error;
       readRows(data);
     } catch { /* keep the last known state */ }
@@ -549,23 +535,8 @@ ${fg}
         <input type="range" id="stwAdminBlur" min="0" max="18" step="1" value="0" aria-label="Winter background blur">
         <p class="stackd-admin-note" data-stw="blurHelp"></p>
       </div>
-      <h4 style="margin:18px 0 6px" data-stw="music"></h4>
-      <label for="stwAdminFile" data-stw="file"></label>
-      <input type="file" id="stwAdminFile" class="st-file-input" accept="audio/mpeg,audio/mp4,audio/aac,audio/x-m4a,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.ogg,.wav">
-      <label class="st-file" for="stwAdminFile"><b data-stw="pick"></b><span id="stwAdminFileName" data-stw="nofile"></span></label>
-      <label for="stwAdminUrl" data-stw="url"></label>
-      <input type="url" id="stwAdminUrl" inputmode="url" placeholder="https://" autocomplete="off">
-      <label for="stwAdminTitle" data-stw="title"></label>
-      <input type="text" id="stwAdminTitle" maxlength="80" autocomplete="off">
-      <label for="stwAdminVol"><span data-stw="volume"></span> <b id="stwAdminVolVal"></b></label>
-      <input type="range" id="stwAdminVol" min="0" max="100" step="5">
-      <label class="st-switch"><input type="checkbox" id="stwAdminAuto"><span class="st-switch-ui" aria-hidden="true"></span><span data-stw="autoplay"></span></label>
-      <audio id="stwAdminPreview" controls preload="none" hidden></audio>
-      <div class="stw-now" id="stwAdminNow"></div>
-      <div class="stw-row"><button type="button" class="btn btn-primary" id="stwAdminSave" data-stw="save"></button><button type="button" class="btn btn-ghost" id="stwAdminRemove" data-stw="remove"></button></div>`;
+      <div class="stw-row"><button type="button" class="btn btn-primary" id="stwAdminSave" data-stw="save"></button></div>`;
     tab.append(adminBox);
-    const vol = $('#stwAdminVol'), volVal = $('#stwAdminVolVal');
-    vol.addEventListener('input', () => { volVal.textContent = vol.value + '%'; if (audio) audio.volume = vol.value / 100; });
     const citySelect = $('#stwAdminCity');
     citySelect.addEventListener('change', () => {
       site.winterCity = CITY_IDS.includes(citySelect.value) ? citySelect.value : 'baku';
@@ -577,10 +548,7 @@ ${fg}
       const amount = applySceneBlur(blur.value);
       blurVal.textContent = amount + ' px';
     });
-    $('#stwAdminFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; $('#stwAdminFileName').textContent = f ? f.name : t('nofile'); const p = $('#stwAdminPreview'); if (f) { p.src = URL.createObjectURL(f); p.hidden = false; if (!$('#stwAdminTitle').value) $('#stwAdminTitle').value = f.name.replace(/\.[a-z0-9]+$/i, '').slice(0, 80); } });
-    $('#stwAdminSave').addEventListener('click', () => saveAdmin(false));
-    $('#stwAdminRemove').addEventListener('click', () => { $('#stwAdminUrl').value = ''; $('#stwAdminFile').value = ''; $('#stwAdminTitle').value = ''; saveAdmin(true); });
-    syncAdmin();
+    $('#stwAdminSave').addEventListener('click', () => saveAdmin());    syncAdmin();
   }
   function syncAdmin() {
     if (!adminBox) return;
@@ -590,48 +558,33 @@ ${fg}
     $('#stwAdminBlur').value = String(site.winterBlur);
     $('#stwAdminBlurVal').textContent = site.winterBlur + ' px';
     applySceneBlur(site.winterBlur);
-    $('#stwAdminUrl').value = site.musicUrl; $('#stwAdminTitle').value = site.musicTitle;
-    $('#stwAdminVol').value = site.musicVolume; $('#stwAdminVolVal').textContent = site.musicVolume + '%';
-    $('#stwAdminAuto').checked = site.musicAutoplay;
-    const p = $('#stwAdminPreview');
-    if (site.musicUrl) { if (p.dataset.src !== site.musicUrl) { p.src = site.musicUrl; p.dataset.src = site.musicUrl; } p.hidden = false; } else { p.hidden = true; }
-    $('#stwAdminNow').textContent = site.musicUrl ? '♪ ' + (site.musicTitle || site.musicUrl) : '';
   }
-  async function saveAdmin(removing) {
-    const btn = $('#stwAdminSave'); btn.disabled = true;
+  async function saveAdmin() {
+    const btn = $('#stwAdminSave');
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
     try {
-      let url = $('#stwAdminUrl').value.trim();
-      const file = $('#stwAdminFile').files?.[0];
-      if (file && !removing) {
-        if (file.size > 20 * 1024 * 1024) throw new Error('file over 20 MB');
-        toastMsg(t('uploading'));
-        const ext = (file.name.match(/\.([a-z0-9]{2,4})$/i)?.[1] || 'mp3').toLowerCase();
-        const path = `music/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const { error: upErr } = await _supabase.storage.from('site-media').upload(path, file, { upsert: false, contentType: file.type || 'audio/mpeg', cacheControl: '31536000' });
-        if (upErr) throw upErr;
-        url = _supabase.storage.from('site-media').getPublicUrl(path).data.publicUrl;
-      }
-      if (url && !/^https:\/\//.test(url)) { toastMsg(t('badUrl')); return; }
       const rows = [
         { key: 'winter_mode', value: $('#stwAdminWinter').checked ? 'on' : 'off' },
         { key: 'winter_city', value: CITY_IDS.includes($('#stwAdminCity').value) ? $('#stwAdminCity').value : 'baku' },
-        { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) },
-        { key: 'music_url', value: url },
-        { key: 'music_title', value: $('#stwAdminTitle').value.trim().slice(0, 80) },
-        { key: 'music_volume', value: String($('#stwAdminVol').value) },
-        { key: 'music_autoplay', value: $('#stwAdminAuto').checked ? '1' : '0' }
+        { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) }
       ];
       const { error } = await _supabase.from('site_settings').upsert(rows, { onConflict: 'key' });
       if (error) throw error;
-      readRows(rows); $('#stwAdminFile').value = ''; $('#stwAdminFileName').textContent = t('nofile');
+      readRows(rows);
       try { localStorage.setItem('stacked.site', JSON.stringify(site)); } catch { /* */ }
-      applyWinter(); setupMusic(); syncAdmin();
+      applyWinter();
+      syncAdmin();
       toastMsg(t('saved'));
-    } catch (err) { console.error('winter/music settings failed:', err); toastMsg(t('err')); }
-    finally { btn.disabled = false; }
+    } catch (err) {
+      console.error('winter settings failed:', err);
+      toastMsg(t('err'));
+    } finally {
+      btn.disabled = false;
+    }
   }
 
-  document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(() => { syncAdmin(); paintMusic(); }, 80); });
+    document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(syncAdmin, 80); });
 
   // start from the last known state at once (no flash), then confirm with the database
   try { const c = JSON.parse(localStorage.getItem('stacked.site') || 'null'); if (c && typeof c === 'object') { Object.assign(site, c); applyWinter(); } } catch { /* */ }
