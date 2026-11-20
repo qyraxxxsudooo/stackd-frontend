@@ -268,7 +268,7 @@ ${fg}
     const h = Math.max(1, Math.round(innerHeight));
     const area = w * h;
     const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.55 : 1.8);
-    snowDpr = Math.min(deviceDpr, Math.sqrt(3200000 / area));
+    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt(6000000 / area)));
     snowWidth = w;
     snowHeight = h;
     snowCanvas.width = Math.round(w * snowDpr);
