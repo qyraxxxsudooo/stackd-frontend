@@ -7,6 +7,15 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="google" content="notranslate">
 
+<script>
+/* Keep OAuth PKCE storage on one origin. Preserve path, query and fragment. */
+if (window.location.hostname.toLowerCase() === 'www.staked.food') {
+  var canonicalUrl = new URL(window.location.href);
+  canonicalUrl.hostname = 'staked.food';
+  window.location.replace(canonicalUrl.href);
+}
+</script>
+
 <meta name="google-site-verification" content="GDV2VOqrb9JPhwJVt1FR3Aj-8y4NtD6NianS-f2GFi0">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
