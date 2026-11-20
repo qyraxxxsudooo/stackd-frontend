@@ -142,7 +142,7 @@
     try {
       const result = baseRenderAll();
       const allButton = $('#chips button[data-cat="All"]');
-      if (allButton) allButton.textContent = 'All';
+      if (allButton) allButton.textContent = S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все';
       return result;
     } finally { S.products = original; }
   };
@@ -177,7 +177,7 @@
         <span class="stackd-arches" aria-label="McDonald’s"><svg viewBox="0 0 48 40" aria-hidden="true"><path d="M3 37V17.5C3 8.8 7.8 3 14 3c5.5 0 8.4 8.2 10 18.6C25.6 11.2 28.5 3 34 3c6.2 0 11 5.8 11 14.5V37h-6.2V17.5c0-5.2-1.7-8.4-4.8-8.4-3.6 0-6.8 15.6-9 27.9h-2c-2.2-12.3-5.4-27.9-9-27.9-3.1 0-4.8 3.2-4.8 8.4V37Z" fill="currentColor"/></svg></span>
       </button>
       <div class="card-body">
-        <span class="tag">${esc(p.category || '')}</span>
+        <span class="tag">${esc((({Burgers:{ru:'Бургеры',en:'Burgers',az:'Burgerlər'},Combos:{ru:'Комбо',en:'Combos',az:'Kombo'},Sides:{ru:'Закуски',en:'Sides',az:'Qəlyanaltılar'},Drinks:{ru:'Напитки',en:'Drinks',az:'İçkilər'},Desserts:{ru:'Десерты',en:'Desserts',az:'Desertlər'}})[p.category] || {})[S.lang] || p.category || '')}</span>
         <h3>${esc(p.name || 'Товар')}</h3>
         <p>${esc(p.description || '')}</p>
         ${stock !== null ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock > 0 ? `${stock} ${S.lang === 'en' ? 'left' : S.lang === 'az' ? 'ədəd qalıb' : 'шт. осталось'}` : esc(t('outStock'))}</span>` : ''}
