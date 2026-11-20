@@ -181,7 +181,7 @@ $('#googleLoginBtn')?.addEventListener('click', async () => {
       provider: 'google',
       options: {
         // www is redirected to the apex before this handler runs.
-        redirectTo: 'https://staked.food/'
+        redirectTo: window.location.origin + '/'
       }
     });
     if (error) throw error;
