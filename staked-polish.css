@@ -35,7 +35,16 @@ html,body,*{scrollbar-width:none}
 
 /* Quiet, readable empty and validation states. */
 .state,.orders-empty,.orders-error,.suggestion-empty{border-radius:18px;padding:22px 18px;background:var(--glass-card);border:1px solid var(--glass-divider);color:var(--muted);text-align:center}
-#topupMsg,.msg{display:block;min-height:1.2em;margin:10px 0 0;padding:0;border:0;background:transparent;color:var(--muted);font-size:.86rem;line-height:1.45}
+#topupMsg{display:flex;align-items:flex-start;gap:10px;min-height:0;margin:12px 0 0;padding:12px 14px;border:1px solid var(--glass-divider);border-radius:15px;background:var(--glass-panel);color:var(--text);font-size:.86rem;line-height:1.5;overflow-wrap:anywhere}
+#topupMsg:empty{display:none}
+#topupMsg::before{content:"";flex:none;width:7px;height:7px;margin-top:.48em;border-radius:50%;background:var(--muted)}
+#topupMsg[data-state="info"]{border-color:color-mix(in srgb,var(--accent) 24%,var(--glass-divider));background:color-mix(in srgb,var(--accent) 7%,var(--glass-panel))}
+#topupMsg[data-state="info"]::before{background:var(--accent)}
+#topupMsg[data-state="success"]{border-color:rgba(34,160,100,.28);background:rgba(34,160,100,.08)}
+#topupMsg[data-state="success"]::before{background:#22a06b}
+#topupMsg[data-state="error"]{border-color:color-mix(in srgb,var(--danger,#d44) 28%,var(--glass-divider));background:color-mix(in srgb,var(--danger,#d44) 7%,var(--glass-panel))}
+#topupMsg[data-state="error"]::before{background:var(--danger,#d44)}
+.msg{display:block;min-height:1.2em;margin:10px 0 0;padding:0;border:0;background:transparent;color:var(--muted);font-size:.86rem;line-height:1.45}
 #topup .payment-instructions{border-radius:16px;background:var(--glass-card);border-color:var(--glass-divider)}
 #topup input,#topup select,#topup textarea{border-radius:13px}
 
