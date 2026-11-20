@@ -1,0 +1,18 @@
+DROP POLICY IF EXISTS "Admin manage products" ON public.products;
+CREATE POLICY "Admin insert products" ON public.products AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin update products" ON public.products AS PERMISSIVE FOR UPDATE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com') WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin delete products" ON public.products AS PERMISSIVE FOR DELETE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+DROP POLICY IF EXISTS "Admin manage site_settings" ON public.site_settings;
+CREATE POLICY "Admin insert site_settings" ON public.site_settings AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin update site_settings" ON public.site_settings AS PERMISSIVE FOR UPDATE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com') WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin delete site_settings" ON public.site_settings AS PERMISSIVE FOR DELETE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+DROP POLICY IF EXISTS "Admin manage slides" ON public.slides;
+CREATE POLICY "Admin insert slides" ON public.slides AS PERMISSIVE FOR INSERT TO authenticated WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin update slides" ON public.slides AS PERMISSIVE FOR UPDATE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com') WITH CHECK (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+CREATE POLICY "Admin delete slides" ON public.slides AS PERMISSIVE FOR DELETE TO authenticated USING (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com');
+DROP POLICY IF EXISTS "stackd_maintenance_owner_insert" ON public.site_maintenance_settings;
+DROP POLICY IF EXISTS "stackd_maintenance_owner_update" ON public.site_maintenance_settings;
+DROP POLICY IF EXISTS "stackd_maintenance_public_read" ON public.site_maintenance_settings;
+DROP POLICY IF EXISTS "Users can read own top-up history" ON public.topups;
+DROP POLICY IF EXISTS "Users see own topups" ON public.topups;
+CREATE POLICY "Users see own topups" ON public.topups AS PERMISSIVE FOR SELECT TO authenticated USING (((select auth.uid()) = user_id) OR (lower(coalesce(((select auth.jwt()) ->> 'email'), '')) = 'yuska20102010@gmail.com'));
