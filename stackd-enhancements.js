@@ -1304,15 +1304,15 @@
     const menu = $('#stackdProfileMenu');
     if (!menu || $('#stackdProfilePromo')) return;
     const copy = {
-      ru: { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' },
-      en: { title: 'Promo code', placeholder: 'Enter promo code', apply: 'Apply' },
-      az: { title: 'Promokod', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
+      ru: { title: 'Введите промокод', placeholder: 'Введите промокод', apply: 'Применить' },
+      en: { title: 'Enter promo code', placeholder: 'Enter promo code', apply: 'Apply' },
+      az: { title: 'Promokodu daxil edin', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
     }[S.lang] || { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' };
     const section = document.createElement('section');
     section.id = 'stackdProfilePromo';
-    section.className = 'stackd-profile-promo';
+    section.className = 'stackd-profile-promo st-promo-glass';
     section.innerHTML = `
-      <strong class="stackd-profile-promo-title" data-i18n="promo_title">${copy.title}</strong>
+      <strong class="stackd-profile-promo-title cart-promo-title" data-i18n="promo_enter">${copy.title}</strong>
       <form id="profilePromoForm" class="promo-form stackd-profile-promo-form" data-promo-form autocomplete="off">
         <input id="profilePromoInput" data-promo-input type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" data-i18n-placeholder="promo_placeholder" placeholder="${copy.placeholder}">
         <button class="btn btn-primary" type="submit" id="profilePromoApplyBtn" data-promo-apply data-i18n="promo_apply">${copy.apply}</button>
