@@ -126,8 +126,8 @@
     if (!slot || !a || !clone) return;
     if (reduced()) { slot.classList.add('is-settle'); setTimeout(() => slot.classList.remove('is-settle'), 400); return; }
     if (!a.width || !(slot.offsetWidth ?? slot.getBoundingClientRect().width)) return;
-    pending.set(key, (pending.get(key) || 0) + 1); slot.classList.add('is-pending');
     if (![a.left, a.top, a.width, a.height].every(Number.isFinite) || a.width <= 0 || a.height <= 0) return;
+    pending.set(key, (pending.get(key) || 0) + 1); slot.classList.add('is-pending');
     const el = document.createElement('div'); el.className = 'stacked-fly';
     el.style.cssText = `position:fixed;left:0;top:0;width:${a.width}px;height:${a.height}px;transform:translate3d(${a.left}px,${a.top}px,0);transform-origin:50% 50%;overflow:hidden;pointer-events:none;will-change:transform,width,height,clip-path;backface-visibility:hidden;contain:layout paint`;
     clone.removeAttribute('id');
