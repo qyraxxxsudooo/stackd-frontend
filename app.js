@@ -290,13 +290,35 @@ function updateThemeSlider() {
 }
 function applyTheme() {
   const root = document.documentElement;
-  root.classList.add('theme-switching'); clearTimeout(applyTheme.timer); applyTheme.timer = setTimeout(() => root.classList.remove('theme-switching'), 320);
-  let t = 'system';
-  try { t = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-  document.documentElement.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light') : t;
-  $$('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === t));
+  root.classList.add('theme-switching');
+  clearTimeout(applyTheme.timer);
+  applyTheme.timer = setTimeout(() => root.classList.remove('theme-switching'), 320);
+
+  let preference = 'system';
+  try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
+  const resolved = preference === 'system'
+    ? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : preference;
+
+  // Keep the data attribute and legacy class in lockstep. A stale dark class
+  // previously prevented the winter background from following a theme change.
+  root.dataset.theme = resolved;
+  root.classList.toggle('stacked-dark', resolved === 'dark');
+
+  $('.seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.v === preference));
   setTimeout(updateThemeSlider, 50);
 }
+
+
+ // Re-evaluate the system theme only while the user's preference is Auto.
+const systemThemePreference = window.matchMedia?.('(prefers-color-scheme: dark)');
+const syncSystemTheme = () => {
+  let preference = 'system';
+  try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
+  if (preference === 'system') applyTheme();
+};
+if (systemThemePreference?.addEventListener) systemThemePreference.addEventListener('change', syncSystemTheme);
+else systemThemePreference?.addListener?.(syncSystemTheme);
 
 const lines = () => S.cart.map(c => ({ p: find(c.id), qty: c.qty })).filter(l => l.p);
 function renderCart() {
