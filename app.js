@@ -146,7 +146,22 @@ function applyLanguage(lang) {
     const value = translations[selected]?.[element.dataset.i18nPlaceholder] ?? translations.ru[element.dataset.i18nPlaceholder];
     if (value !== undefined) element.placeholder = value;
   });
-  renderAll();
+  if (typeof window.stakedRefreshProductCards === 'function') {
+    const categoryNames = {
+      ru: { All: 'Все', Burgers: 'Бургеры', Combos: 'Комбо', Sides: 'Закуски', Drinks: 'Напитки', Desserts: 'Десерты' },
+      en: { All: 'All', Burgers: 'Burgers', Combos: 'Combos', Sides: 'Sides', Drinks: 'Drinks', Desserts: 'Desserts' },
+      az: { All: 'Hamısı', Burgers: 'Burgerlər', Combos: 'Kombo', Sides: 'Qəlyanaltılar', Drinks: 'İçkilər', Desserts: 'Desertlər' }
+    }[selected];
+    $('#chips button[data-cat]').forEach(button => {
+      const category = button.dataset.cat;
+      button.textContent = categoryNames[category] || category;
+    });
+    requestAnimationFrame(updateChipsSlider);
+    window.stakedRefreshProductCards();
+    renderCart();
+  } else {
+    renderAll();
+  }
   if ($('#editor')?.open) renderAdmin();
   if ($('#orders')?.open) loadOrders();
 }
