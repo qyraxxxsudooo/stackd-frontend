@@ -298,6 +298,21 @@
   });
   document.addEventListener('click', (event) => { if (!contextMenu.contains(event.target)) hideContextMenu(); });
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hideContextMenu(); });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-lang]')) return;
+    setTimeout(() => {
+      const language = S.lang || 'ru';
+      const labels = language === 'en'
+        ? ['Back to top', 'Refresh page', 'Copy page link']
+        : language === 'az'
+          ? ['Yuxarı qayıt', 'Səhifəni yenilə', 'Səhifə linkini köçür']
+          : ['В начало', 'Обновить страницу', 'Копировать ссылку'];
+      contextMenu.querySelectorAll('[data-st-context]').forEach((button, index) => {
+        button.textContent = labels[index] || '';
+      });
+    }, 0);
+  });
+
   window.addEventListener('resize', hideContextMenu, { passive: true });
   window.addEventListener('scroll', hideContextMenu, { passive: true, capture: true });
 
