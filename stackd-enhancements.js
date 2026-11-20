@@ -1517,6 +1517,7 @@
     if (historyRefresh) historyRefresh.textContent = S.lang === 'en' ? 'Refresh' : S.lang === 'az' ? 'Yenilə' : 'Обновить';
     placeMobileCartButton();
     refreshPromotionNewsLabels();
+    if (typeof renderPromoUI === 'function') renderPromoUI();
   }
   const baseCheckAuth = checkAuth;
   checkAuth = async function stackdCheckAuthWithProfile(...args) {
