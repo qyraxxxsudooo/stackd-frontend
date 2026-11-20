@@ -1506,8 +1506,9 @@
       dock.hidden = true;
       dock.classList.remove('has-orders');
       cart.classList.remove('stackd-mobile-cart');
-      nav.insertBefore(orderButton, cart);
-      nav.append(cart);
+      // The cart may still be inside the mobile dock after a viewport change.
+      // append() safely moves both controls back into the desktop navigation.
+      nav.append(orderButton, cart);
     }
   }
 
