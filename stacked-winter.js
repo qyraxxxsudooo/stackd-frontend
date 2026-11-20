@@ -2,8 +2,8 @@
    • The admin turns the theme on or off for the whole site (Каталог → Настройки → «Зима и музыка», site_settings.winter_mode).
      When it is on, each visitor can still switch it off for themselves in Settings.
    • Dark theme: a night street with a lit lamp, a decorated tree and snowy roofs. Light theme: a winter morning at sunrise.
-   • One canvas of snow. Flakes settle on product cards and on the tab bar; scrolling, brushing a card or shaking the phone
-     knocks the snow off and it falls onto the bar; tilting the phone blows it sideways.
+   • A lightweight CSS snowfall is drawn across the whole screen. Flakes pass over the interface without
+     landing, accumulating, colliding, reacting to scrolling, pointer movement or device sensors.
    • The admin can upload a track (or paste a link); visitors get a small play button in the header.
    Nothing heavy is created until the theme is actually on. */
 (() => {
@@ -46,7 +46,49 @@ html.st-winter body{background:transparent!important}
 .stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
 @keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
 @keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
-.stw-snow{position:fixed;left:0;top:0;z-index:19;pointer-events:none}
+.stw-snowfall{position:fixed;inset:0;z-index:70;overflow:hidden;pointer-events:none;contain:strict;isolation:isolate}
+.stw-snowfall-layer{position:absolute;left:0;right:0;top:-100vh;height:300vh;pointer-events:none;background-repeat:repeat-y;background-size:100% 50vh;will-change:transform;animation:stwSnowTravel 20s linear infinite}
+.stw-snowfall-layer:nth-child(1){
+  opacity:.78;animation-duration:19s;
+  background-image:
+    radial-gradient(circle at 4% 8%,rgba(255,255,255,.9) 0 1px,transparent 2px),
+    radial-gradient(circle at 17% 29%,rgba(255,255,255,.82) 0 1.2px,transparent 2.2px),
+    radial-gradient(circle at 31% 13%,rgba(255,255,255,.9) 0 1px,transparent 2px),
+    radial-gradient(circle at 45% 42%,rgba(255,255,255,.78) 0 1.1px,transparent 2.1px),
+    radial-gradient(circle at 58% 7%,rgba(255,255,255,.9) 0 1px,transparent 2px),
+    radial-gradient(circle at 72% 31%,rgba(255,255,255,.8) 0 1.2px,transparent 2.2px),
+    radial-gradient(circle at 88% 16%,rgba(255,255,255,.9) 0 1px,transparent 2px),
+    radial-gradient(circle at 96% 45%,rgba(255,255,255,.75) 0 1.1px,transparent 2.1px),
+    radial-gradient(circle at 10% 73%,rgba(255,255,255,.78) 0 1px,transparent 2px),
+    radial-gradient(circle at 25% 88%,rgba(255,255,255,.84) 0 1.1px,transparent 2.1px),
+    radial-gradient(circle at 40% 66%,rgba(255,255,255,.8) 0 1px,transparent 2px),
+    radial-gradient(circle at 54% 94%,rgba(255,255,255,.82) 0 1.1px,transparent 2.1px),
+    radial-gradient(circle at 67% 68%,rgba(255,255,255,.86) 0 1px,transparent 2px),
+    radial-gradient(circle at 82% 84%,rgba(255,255,255,.8) 0 1.1px,transparent 2.1px),
+    radial-gradient(circle at 93% 62%,rgba(255,255,255,.82) 0 1px,transparent 2px)
+}
+.stw-snowfall-layer:nth-child(2){
+  opacity:.5;animation-duration:29s;animation-delay:-13s
+  ;background-image:
+    radial-gradient(circle at 9% 22%,rgba(255,255,255,.85) 0 1.7px,transparent 3px),
+    radial-gradient(circle at 28% 51%,rgba(255,255,255,.78) 0 1.5px,transparent 2.8px),
+    radial-gradient(circle at 49% 18%,rgba(255,255,255,.85) 0 1.8px,transparent 3px),
+    radial-gradient(circle at 64% 76%,rgba(255,255,255,.76) 0 1.5px,transparent 2.8px),
+    radial-gradient(circle at 79% 39%,rgba(255,255,255,.82) 0 1.7px,transparent 3px),
+    radial-gradient(circle at 94% 91%,rgba(255,255,255,.8) 0 1.5px,transparent 2.8px)
+}
+.stw-snowfall-layer:nth-child(3){
+  opacity:.34;animation-duration:38s;animation-delay:-21s
+  ;background-image:
+    radial-gradient(circle at 14% 61%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
+    radial-gradient(circle at 37% 34%,rgba(255,255,255,.68) 0 2px,transparent 3.6px),
+    radial-gradient(circle at 57% 87%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
+    radial-gradient(circle at 74% 11%,rgba(255,255,255,.7) 0 2px,transparent 3.6px),
+    radial-gradient(circle at 91% 57%,rgba(255,255,255,.7) 0 2.1px,transparent 3.7px)
+}
+@keyframes stwSnowTravel{to{transform:translate3d(0,33.333333%,0)}}
+@media(max-width:680px){.stw-snowfall{opacity:.88}.stw-snowfall-layer:nth-child(3){opacity:.24}}
+@media(prefers-reduced-motion:reduce){.stw-snowfall-layer{animation:none!important;transform:none!important}}
 @media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
 @media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
 `;
@@ -192,7 +234,6 @@ ${fg}
   }
 
   /* the lamp stands on the scene's ground line (the image is anchored to the bottom and scaled to cover) */
-  const view = { lamp: null, maxH: 0 };
   function layout() {
     const w = innerWidth, h = innerHeight, scale = Math.max(w / 1600, h / 900);
     const lampEl = bg && bg.querySelector('.stw-lamp'); if (!lampEl) return;
@@ -201,256 +242,35 @@ ${fg}
     const lb = (900 - 786) * scale;
     const lx = small ? 6 : Math.max(18, (w - 1280) / 2 - lw * .6);
     lampEl.style.setProperty('--stw-lh', lh + 'px'); lampEl.style.setProperty('--stw-lb', lb + 'px'); lampEl.style.setProperty('--stw-lx', lx + 'px');
-    view.lamp = isDark() ? { hx: lx + lw / 2, hy: h - lb - lh * .784, gy: h - lb, hw: lw * 1.05 } : null;
   }
 
-  /* ═════════════ snow ═════════════ */
-  let on = false, cv = null, ctx = null, raf = 0;
-  const flakes = [], surf = new Map();
-  let W = 0, H = 0, DPR = 1, last = 0, wind = 0, tilt = 0, fall = 1, shake = 0, lastY = scrollY, vScroll = 0, want = 0, slow = 0, frames = 0, lowQ = false;
-  const ptr = { x: -999, y: -999, vx: 0, t: 0 };
-  const COL = 4, SURFACE_CELL = 96, LOOSE_MAX = coarse ? 90 : 300;
-  const collisionBuckets = new Map();
-  const visibleCards = new Set();
-  let cardObserver = null, nextFrameAt = 0, looseCount = 0;
-
-  function resize(force) {
-    if (!cv) return;
-    const w = innerWidth, h = innerHeight;
-    view.maxH = Math.max(view.maxH, h);
-    // phone browsers resize the viewport while their toolbars slide: reallocate only when the width changes or it grows a lot
-    const needH = coarse ? view.maxH + 40 : h;
-    if (force === true || w !== W || needH > H + 60 || (!coarse && needH !== H)) {
-      DPR = Math.min(devicePixelRatio || 1, coarse ? 1.05 : 1.5);
-      W = w; H = needH;
-      cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-      cv.style.width = W + 'px'; cv.style.height = H + 'px';
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      want = coarse ? Math.round(clamp(W * h / 7800, 42, 170) * .48) : Math.round(clamp(W * h / 6500, 60, 260));
-      fitFlakes();
-    }
-    layout(); measure();
-  }
-  function fitFlakes() {
-    let base = 0; for (const f of flakes) if (!f.loose) base++;
-    for (let i = base; i < want; i++) flakes.push(spawn({}, true));
-    for (let i = flakes.length - 1, extra = base - want; i >= 0 && extra > 0; i--) if (!flakes[i].loose) { flakes.splice(i, 1); extra--; }
-  }
-  function spawn(f, anywhere) {
-    const r = Math.random(), size = r < .55 ? .9 + Math.random() * .8 : r < .9 ? 1.7 + Math.random() * 1 : 2.7 + Math.random() * 1.2;
-    f.r = size; f.x = Math.random() * (W + 80) - 40; f.y = anywhere ? Math.random() * innerHeight : -6 - Math.random() * 60;
-    f.vy = 20 + size * 16; f.ph = Math.random() * 6.28; f.sp = .6 + Math.random() * 1.1; f.loose = false; f.vx = 0;
-    return f;
-  }
-  function loose(x, y, vx, vy) { if (looseCount >= LOOSE_MAX) return; looseCount++; flakes.push({ r: 1 + Math.random() * 1.5, x, y, vx, vy, ph: 0, sp: 1, loose: true }); }
-
-  const capAt = (s, i) => { const x = i * COL + COL / 2, e = Math.min(x, s.w - x); return e >= s.rad ? s.cap : s.cap * Math.max(0, e / s.rad) ** 1.6; };
-  function measure() {
-    const sy = scrollY, bar = $('.st-tabbar');
-    const els = cardObserver ? [...visibleCards] : [...document.querySelectorAll('#grid .card')];
-    // Treat fixed chrome and category filters as real snow-catching surfaces too.
-    const chrome = [...document.querySelectorAll('.nav, .chips, .settings-panel:not([hidden]), dialog[open]')];
-    for (const el of chrome) if (el.getClientRects().length && !els.includes(el)) els.push(el);
-    if (bar && !els.includes(bar)) els.push(bar);
-    const seen = new Set();
-    for (const el of els) {
-      const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
-      const isBar = el === bar;
-      let s = surf.get(el);
-      const pinned = isBar || el.matches('.nav, .settings-panel, dialog[open]');
-      if (!s) { s = { el, fixed: pinned, cap: isBar ? 11 : pinned ? 9 : 12, rad: isBar ? 24 : pinned ? 16 : 18, top: 0, l: 0, w: 0, cols: new Float32Array(0), vis: false, vtop: 0, fresh: !isBar }; surf.set(el, s); }
-      s.fixed = pinned;
-      s.cap = isBar ? 11 : pinned ? 9 : 12;
-      s.rad = isBar ? 24 : pinned ? 16 : 18;
-      const n = Math.max(2, Math.ceil(r.width / COL));
-      if (s.cols.length !== n) { const c = new Float32Array(n); c.set(s.cols.subarray(0, Math.min(n, s.cols.length))); s.cols = c; }
-      s.l = r.left; s.w = r.width; s.top = pinned ? r.top : r.top + sy;
-      if (s.fresh) { s.fresh = false; for (let i = 0; i < n; i++) s.cols[i] = capAt(s, i) * (.5 + Math.sin(i * .31 + r.left) * .12 + Math.sin(i * .9) * .05 + Math.random() * .06); }
-      seen.add(el);
-    }
-    for (const el of surf.keys()) if (!seen.has(el)) surf.delete(el);
-  }
-  function knock(s, from, to, amount, vy) {
-    const a = Math.max(0, from), b = Math.min(s.cols.length - 1, to);
-    for (let i = a; i <= b; i++) {
-      const take = s.cols[i] * amount; if (take < .25) continue;
-      s.cols[i] -= take;
-      for (let k = 0; k < take / 1.8; k++) loose(s.l + i * COL + Math.random() * COL, s.vtop - s.cols[i] - 1, (Math.random() - .5) * 70 + ptr.vx * .15, vy + Math.random() * 40);
-    }
-  }
-
-  function step(now) {
-    raf = 0; if (!on || !ctx) return;
-    if (coarse && now < nextFrameAt) { raf = requestAnimationFrame(step); return; }
-    nextFrameAt = coarse ? now + 1000 / 30 : now;
-    const dtRaw = (now - (last || now)) / 1000, dt = Math.min(.05, dtRaw); last = now;
-    // adaptive quality: if frames keep running long, use fewer flakes and simpler drawing
-    if (dtRaw > .026 && dtRaw < .2) slow++;
-    if (++frames >= 45) { if (slow > 22 && want > 30) { want = Math.round(want * .72); fitFlakes(); lowQ = true; } slow = 0; frames = 0; }
-    const sy = scrollY; vScroll = vScroll * .8 + ((sy - lastY) / Math.max(dt, .001)) * .2; lastY = sy;
-    const gust = Math.sin(now / 3100) * 10 + Math.sin(now / 1300) * 4;
-    wind += (tilt * 110 + gust - wind) * Math.min(1, dt * 1.6);
-    const dark = isDark(), L = view.lamp, vh = innerHeight;
-
-    ctx.clearRect(0, 0, W, H);
-    const list = [...surf.values()];
-    collisionBuckets.clear();
-    for (const s of list) {
-      s.vtop = s.fixed ? s.top : s.top - sy;
-      s.vis = s.vtop > -30 && s.vtop < vh + 20;
-      if (!s.vis) continue;
-      const firstCell = Math.floor(s.l / SURFACE_CELL);
-      const lastCell = Math.floor((s.l + s.w) / SURFACE_CELL);
-      for (let cell = firstCell; cell <= lastCell; cell++) {
-        let bucket = collisionBuckets.get(cell);
-        if (!bucket) collisionBuckets.set(cell, bucket = []);
-        bucket.push(s);
-      }
-    }
-
-    const sp = Math.abs(vScroll);
-    if (sp > 450 || shake > 0) {
-      const k = clamp((sp - 450) / 4000, 0, .35) + shake;
-      for (const s of list) if (s.vis && !s.fixed) knock(s, 0, s.cols.length - 1, k * dt * 6, 30 + Math.min(sp, 1500) * .05);
-      if (shake) for (const s of list) if (s.fixed) knock(s, 0, s.cols.length - 1, shake * dt * 4, -60);
-      shake = Math.max(0, shake - dt * 1.5);
-    }
-
-    for (let i = flakes.length - 1; i >= 0; i--) {
-      const f = flakes[i];
-      if (f.loose) { f.vy = Math.min(240, f.vy + 420 * dt); f.vx *= 1 - dt * 1.2; }
-      else { f.ph += dt * f.sp; f.vy += ((20 + f.r * 16) * fall - f.vy) * dt * 2; f.vx = wind * (.35 + f.r * .18) + Math.sin(f.ph) * 4.5 * f.r; }
-      if (now - ptr.t < 600) { const dx = f.x - ptr.x, dy = f.y - ptr.y, d2 = dx * dx + dy * dy; if (d2 < 7000) { const d = Math.sqrt(d2) || 1, p = (1 - d / 84) * 260 * dt; f.x += dx / d * p; f.y += dy / d * p * .5; } }
-      f.x += f.vx * dt; f.y += f.vy * dt;
-      let gone = f.y > vh + 8 || f.x < -60 || f.x > W + 60;
-      if (!gone) for (const s of (collisionBuckets.get(Math.floor(f.x / SURFACE_CELL)) || [])) {
-        if (!s.vis || f.x < s.l || f.x >= s.l + s.w) continue;
-        const c = ((f.x - s.l) / COL) | 0, surface = s.vtop - s.cols[c];
-        if (f.y + f.r >= surface) {
-          // Catch particles that cross the edge and particles initially spawned
-          // inside a card. A full snow cap must still block the particle.
-          const cap = capAt(s, c);
-          if (s.cols[c] < cap) s.cols[c] = Math.min(cap, s.cols[c] + f.r * (f.loose ? .6 : 1.1));
-          gone = true;
-          break;
-        }
-      }
-      if (gone) { if (f.loose) { flakes.splice(i, 1); looseCount--; } else spawn(f, false); }
-    }
-
-    // piles
-    ctx.fillStyle = dark ? '#e9eefc' : '#ffffff';
-    ctx.strokeStyle = dark ? 'rgba(255,255,255,.6)' : 'rgba(120,140,190,.55)'; ctx.lineWidth = 1;
-    for (const s of list) {
-      const c = s.cols, n = c.length, melt = (s.fixed ? .35 : .035) * dt;
-      for (let i = 0; i < n - 1; i++) { const d = c[i] - c[i + 1]; if (d > 1.1 || d < -1.1) { const m = d * .22; c[i] -= m; c[i + 1] += m; } }
-      for (let i = 0; i < n; i++) c[i] = Math.min(c[i] * (1 - melt), capAt(s, i));
-      if (!s.vis) continue;
-      const top = s.vtop + (s.fixed ? 1 : 3);
-      ctx.beginPath(); ctx.moveTo(s.l, top);
-      for (let i = 0; i < n; i++) ctx.lineTo(s.l + i * COL + COL / 2, top - c[i]);
-      ctx.lineTo(s.l + s.w, top); ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-
-    // flakes; in the dark theme the ones inside the lamp's light turn warm
-    const warm = [];
-    ctx.beginPath();
-    for (const f of flakes) {
-      if (f.y < -4) continue;
-      if (L && !lowQ && f.y > L.hy && f.y < L.gy && Math.abs(f.x - L.hx) < (f.y - L.hy) / (L.gy - L.hy) * L.hw + 8) { warm.push(f); continue; }
-      ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.2832);
-    }
-    ctx.fillStyle = dark ? 'rgba(255,255,255,.88)' : 'rgba(255,255,255,.97)'; ctx.fill();
-    if (!dark && !lowQ) { ctx.strokeStyle = 'rgba(120,120,170,.30)'; ctx.lineWidth = .8; ctx.stroke(); }
-    if (warm.length) { ctx.beginPath(); for (const f of warm) { ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r * 1.08, 0, 6.2832); } ctx.fillStyle = '#ffe3a3'; ctx.fill(); }
-
-    raf = requestAnimationFrame(step);
-  }
-
-  function onPointer(e) {
-    ptr.vx = e.clientX - ptr.x; ptr.x = e.clientX; ptr.y = e.clientY; ptr.t = performance.now();
-    if (e.pointerType === 'touch' || Math.abs(ptr.vx) < 2) return;
-    for (const s of surf.values()) {
-      if (!s.vis || e.clientX < s.l || e.clientX > s.l + s.w) continue;
-      if (e.clientY > s.vtop - 26 && e.clientY < s.vtop + 14) { const c = ((e.clientX - s.l) / COL) | 0; knock(s, c - 4, c + 4, .85, s.fixed ? -80 : 10); }
-    }
-  }
-  function onOrient(e) { if (e.gamma == null) return; tilt = clamp(e.gamma / 40, -1, 1); fall = clamp(1 + ((e.beta || 45) - 45) / 160, .7, 1.3); }
-  function onMotion(e) { const a = e.acceleration; if (!a) return; if (Math.hypot(a.x || 0, a.y || 0, a.z || 0) > 13) shake = Math.min(.9, shake + .35); }
-  async function askSensors() {
-    try { if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') await DeviceOrientationEvent.requestPermission(); } catch { /* declined */ }
-    try { if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') await DeviceMotionEvent.requestPermission(); } catch { /* declined */ }
-  }
-
-  let mo = null, mt = 0, iv = 0, rt = 0;
-  const remeasure = () => { clearTimeout(mt); mt = setTimeout(measure, 150); };
-  const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); resize(); }, 140); };
-  const kick = () => { if (on && cv && !raf && !document.hidden) { last = 0; raf = requestAnimationFrame(step); } };
-  const onVisibility = () => {
-    if (document.hidden) {
-      cancelAnimationFrame(raf); raf = 0; clearInterval(iv); iv = 0;
-      return;
-    }
-    last = 0; measure();
-    if (on && !iv) iv = setInterval(measure, 4000);
-    kick();
-  };
-
+  /* ═════════════ decorative snowfall ═════════════ */
+  let on = false, snowLayer = null;
+  const onResize = () => { layout(); };
   function enable() {
-    if (on) return; on = true;
+    if (on) return;
+    on = true;
     addStyle('stw-style', CSS);
     root.classList.add('st-winter');
     buildScene();
     addEventListener('resize', onResize, { passive: true });
-    if (reduced()) return;
-    cv = document.createElement('canvas'); cv.className = 'stw-snow'; cv.setAttribute('aria-hidden', 'true');
-    ctx = cv.getContext('2d', { alpha: true, desynchronized: true });
-    document.body.append(cv);
-    flakes.length = 0; looseCount = 0; W = 0; H = 0; lowQ = false; resize(true);
-    if (!coarse) addEventListener('pointermove', onPointer, { passive: true });
-    addEventListener('deviceorientation', onOrient, { passive: true });
-    addEventListener('devicemotion', onMotion, { passive: true });
-    document.addEventListener('visibilitychange', onVisibility);
-    const grid = $('#grid');
-    if (grid && 'IntersectionObserver' in window) {
-      cardObserver = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visibleCards.add(entry.target);
-          else visibleCards.delete(entry.target);
-        }
-        remeasure();
-      }, { rootMargin: '180px 0px' });
-      grid.querySelectorAll('.card').forEach((card) => cardObserver.observe(card));
-    }
-    mo = new MutationObserver((records) => {
-      if (cardObserver) for (const record of records) {
-        record.addedNodes.forEach((node) => {
-          if (node.nodeType !== 1) return;
-          if (node.matches?.('.card')) cardObserver.observe(node);
-          node.querySelectorAll?.('.card').forEach((card) => cardObserver.observe(card));
-        });
-        record.removedNodes.forEach((node) => {
-          if (node.nodeType !== 1) return;
-          if (node.matches?.('.card')) { cardObserver.unobserve(node); visibleCards.delete(node); surf.delete(node); }
-          node.querySelectorAll?.('.card').forEach((card) => { cardObserver.unobserve(card); visibleCards.delete(card); surf.delete(card); });
-        });
-      }
-      remeasure();
-    });
-    if (grid) mo.observe(grid, { childList: true });
-    iv = setInterval(measure, 4000);
-    kick();
+
+    // This is a visual overlay only: no canvas, particle simulation, collisions or sensors.
+    snowLayer = document.createElement('div');
+    snowLayer.className = 'stw-snowfall';
+    snowLayer.setAttribute('aria-hidden', 'true');
+    snowLayer.innerHTML = '<i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i>';
+    document.documentElement.append(snowLayer);
   }
   function disable() {
-    if (!on) return; on = false;
+    if (!on) return;
+    on = false;
     root.classList.remove('st-winter');
-    cancelAnimationFrame(raf); raf = 0;
-    cv?.remove(); cv = null; ctx = null; bg?.remove(); bg = null; surf.clear(); flakes.length = 0; looseCount = 0;
-    removeEventListener('resize', onResize); removeEventListener('pointermove', onPointer);
-    removeEventListener('deviceorientation', onOrient); removeEventListener('devicemotion', onMotion);
-    document.removeEventListener('visibilitychange', onVisibility);
-    mo?.disconnect(); cardObserver?.disconnect(); cardObserver = null; visibleCards.clear(); collisionBuckets.clear();
-    clearInterval(iv); iv = 0; nextFrameAt = 0;
+    removeEventListener('resize', onResize);
+    snowLayer?.remove();
+    snowLayer = null;
+    bg?.remove();
+    bg = null;
   }
   new MutationObserver(() => { if (on && bg && bg.dataset.dark !== String(isDark())) buildScene(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
@@ -465,7 +285,6 @@ ${fg}
   }
   userToggle?.addEventListener('change', () => {
     try { localStorage.setItem(LOCAL, userToggle.checked ? '1' : '0'); } catch { /* storage blocked */ }
-    if (userToggle.checked) askSensors();
     applyWinter();
   });
 
