@@ -961,7 +961,7 @@ PROMO_FORM()?.addEventListener('submit', async e => {
   const endsAt = f.ends_at.value ? new Date(f.ends_at.value) : null;
 
   const fail = message => { if (msg) msg.textContent = message; };
-  if (!/^[^\\s]{3,32}$/.test(code)) { fail('Код должен содержать 3–32 символа без пробелов.'); return; }
+  if (!/^[^\s]{3,32}$/.test(code)) { fail('Код должен содержать 3–32 символа без пробелов.'); return; }
   if (title.length < 1 || title.length > 80) { fail('Название должно содержать от 1 до 80 символов.'); return; }
   if (!['percent', 'fixed', 'free_product'].includes(kind)) { fail('Выберите корректный тип промокода.'); return; }
   if (!free && (!Number.isFinite(value) || value <= 0)) { fail('Укажите положительный размер скидки.'); return; }
