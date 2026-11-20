@@ -68,6 +68,8 @@ html,body,*{scrollbar-width:none}
   .card .badge-popular,.card .stackd-sale-badge{background:var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight)}
   .nav.glass,.settings-panel,.stackd-profile-menu,.st-tabbar,.stacked-dock-main{background:var(--glass-panel-strong)}
   html.st-winter .stw-atmosphere{filter:none!important;transform:none!important}
+  html.st-winter .stw-bg::before,html.st-winter .stw-bg::after{animation:none!important}
+  html.st-winter .stw-atmosphere{transition:none!important}
   html.st-winter .stw-scene{will-change:auto}
   .st-tab.is-bump svg{animation-duration:.22s}
   .card:hover .card-media img{transform:none!important}
