@@ -221,3 +221,131 @@ html,body,*{scrollbar-width:none}
   .stackd-profile-menu:not([hidden]).is-visible,.stackd-profile-menu.is-closing{animation:none!important}
   #stackdProfileClose{transition:none!important}
 }
+
+
+/* Shared promo-code component for the cart and account panel. */
+#cartPromo.st-promo-glass,
+#stackdProfileMenu .stackd-profile-promo.st-promo-glass{
+  position:relative;
+  isolation:isolate;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+  align-items:start;
+  gap:11px!important;
+  width:100%;
+  min-width:0;
+  margin:0!important;
+  padding:14px!important;
+  overflow:hidden;
+  border:1px solid var(--glass-edge)!important;
+  border-radius:18px!important;
+  border-top:1px solid var(--glass-edge)!important;
+  background:var(--surface);
+  background:linear-gradient(145deg,var(--glass-panel-strong),var(--glass-panel))!important;
+  color:var(--text)!important;
+  box-shadow:var(--glass-shadow),var(--glass-inset)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(165%)!important;
+  backdrop-filter:blur(22px) saturate(165%)!important;
+}
+#cartPromo.st-promo-glass[hidden],
+#stackdProfileMenu .stackd-profile-promo.st-promo-glass[hidden]{
+  display:none!important;
+}
+.st-promo-glass .cart-promo-title,
+.st-promo-glass .stackd-profile-promo-title{
+  display:block;
+  min-width:0;
+  margin:0!important;
+  color:var(--text)!important;
+  font-size:.88rem!important;
+  line-height:1.3;
+  font-weight:700!important;
+  letter-spacing:0;
+  text-transform:none;
+}
+.st-promo-glass .promo-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(92px,auto)!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%;
+  min-width:0;
+  margin:0!important;
+}
+.st-promo-glass .promo-form input{
+  display:block;
+  box-sizing:border-box;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0 12px!important;
+  border:1px solid var(--glass-divider)!important;
+  border-radius:12px!important;
+  background:var(--glass-panel-strong)!important;
+  color:var(--text)!important;
+  font:600 .9rem/1.2 var(--font)!important;
+  text-transform:uppercase;
+  letter-spacing:.035em;
+  box-shadow:inset 0 1px 0 var(--glass-highlight)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(140%);
+  backdrop-filter:blur(10px) saturate(140%);
+}
+.st-promo-glass .promo-form input::placeholder{
+  color:var(--muted)!important;
+  opacity:.88;
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:500;
+}
+.st-promo-glass .promo-form .btn{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  width:auto!important;
+  min-width:92px!important;
+  max-width:100%;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0 13px!important;
+  border:1px solid color-mix(in srgb,var(--accent) 70%,var(--glass-edge))!important;
+  border-radius:12px!important;
+  background:var(--accent)!important;
+  color:var(--accent-ink)!important;
+  font:650 .84rem/1.1 var(--font)!important;
+  white-space:nowrap;
+  box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.24)!important;
+}
+.st-promo-glass .promo-form .btn:disabled{
+  opacity:.58;
+  cursor:wait;
+}
+.st-promo-glass .promo-status{
+  display:grid;
+  min-width:0;
+  gap:7px;
+}
+.st-promo-glass .promo-status:empty{display:none}
+.st-promo-glass .promo-msg{font-size:.8rem;line-height:1.4;overflow-wrap:anywhere}
+.st-promo-glass .promo-chip{
+  border:1px solid color-mix(in srgb,var(--accent) 38%,var(--glass-divider));
+  border-radius:12px;
+  background:color-mix(in srgb,var(--accent) 8%,var(--glass-panel));
+  box-shadow:inset 0 1px 0 var(--glass-highlight);
+}
+@media(max-width:680px){
+  .st-promo-glass .promo-form{grid-template-columns:minmax(0,1fr) minmax(92px,auto)!important}
+  .st-promo-glass .promo-form .btn{width:auto!important}
+}
+@media(prefers-reduced-transparency:reduce){
+  #cartPromo.st-promo-glass,
+  #stackdProfileMenu .stackd-profile-promo.st-promo-glass{
+    background:var(--surface)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+}
