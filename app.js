@@ -277,7 +277,7 @@ function renderAll() {
 
   if ($('#chips')) {
     $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(category =>
-      `<button type="button" data-act="cat" data-cat="${esc(category)}" aria-pressed="${S.cat === category}">${category === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(category)}</button>`
+      `<button type="button" data-act="cat" data-cat="${esc(category)}" aria-pressed="${S.cat === category}">${category === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(category === 'Burgers' ? (S.lang === 'en' ? 'Burgers' : S.lang === 'az' ? 'Burgerlər' : 'Бургеры') : category === 'Combos' ? (S.lang === 'en' ? 'Combos' : S.lang === 'az' ? 'Kombo' : 'Комбо') : category === 'Sides' ? (S.lang === 'en' ? 'Sides' : S.lang === 'az' ? 'Qəlyanaltılar' : 'Закуски') : category === 'Drinks' ? (S.lang === 'en' ? 'Drinks' : S.lang === 'az' ? 'İçkilər' : 'Напитки') : category === 'Desserts' ? (S.lang === 'en' ? 'Desserts' : S.lang === 'az' ? 'Desertlər' : 'Десерты') : category)}</button>`
     ).join('');
     requestAnimationFrame(updateChipsSlider);
   }
