@@ -1308,7 +1308,7 @@ $('#topupForm')?.addEventListener('submit', async event => {
   event.preventDefault();
   const form = $('#topupForm'), message = $('#topupMsg'), button = form?.querySelector('button[type="submit"]');
   const amount = Number($('#topupAmount')?.value), file = $('#topupFile')?.files?.[0];
-  const showMessage = text => { if (message) message.textContent = text; };
+  const showMessage = (text, state = 'error') => { if (message) { message.textContent = text; message.dataset.state = state; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite'); } };
   const errorCopy = new Map([
     ['Поддерживаются только JPEG, PNG и WebP.', tr('topup_invalid_file_type')],
     ['Размер изображения должен быть не более 5 МБ.', tr('topup_invalid_file_size')],
@@ -1331,7 +1331,7 @@ $('#topupForm')?.addEventListener('submit', async event => {
     if (sessionError) throw sessionError;
     if (!session?.access_token || !S.user?.id) throw new Error('Сессия недействительна. Войдите снова.');
     if (button) { button.disabled = true; button.innerHTML = (window.stLoader ? stLoader() : '') + '<span>' + tr('topup_sending') + '</span>'; }
-    showMessage(tr('topup_sending_request'));
+    showMessage(tr('topup_sending_request'), 'info');
     const formData = new FormData();
     formData.append('file', file, file.name);
     formData.append('amount', String(amount));
@@ -1351,11 +1351,11 @@ $('#topupForm')?.addEventListener('submit', async event => {
     }
     form.reset();
     S.topupRequestId = crypto.randomUUID();
-    showMessage(tr('topup_submitted'));
+    showMessage(tr('topup_submitted'), 'success');
   } catch (error) {
     console.error('Top-up submission failed:', error);
     const messageText = errorCopy.get(String(error?.message || ''));
-    showMessage(messageText || (error instanceof TypeError ? tr('topup_network_error') : error instanceof Error && error.message.startsWith('Поддерживаются') ? tr('topup_invalid_file_type') : tr('topup_generic_error')));
+    showMessage(messageText || (error instanceof TypeError ? tr('topup_network_error') : error instanceof Error && error.message.startsWith('Поддерживаются') ? tr('topup_invalid_file_type') : tr('topup_generic_error')), 'error');
   } finally {
     if (button) { button.disabled = false; button.textContent = tr('topup_btn'); }
   }
