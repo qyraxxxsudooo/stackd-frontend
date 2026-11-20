@@ -136,13 +136,12 @@ function applyLanguage(lang) {
   try { localStorage.setItem('pdd.lang', selected); } catch {}
   document.documentElement.lang = selected;
   if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
-  $('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
-  $('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
-  $$('[data-i18n]').forEach(element => {
+  document.querySelectorAll('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
+  $document.querySelectorAll('[data-i18n]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18n] ?? translations.ru[element.dataset.i18n];
     if (value !== undefined) element.textContent = value;
   });
-  $$('[data-i18n-placeholder]').forEach(element => {
+  $document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18nPlaceholder] ?? translations.ru[element.dataset.i18nPlaceholder];
     if (value !== undefined) element.placeholder = value;
   });
@@ -152,7 +151,7 @@ function applyLanguage(lang) {
       en: { All: 'All', Burgers: 'Burgers', Combos: 'Combos', Sides: 'Sides', Drinks: 'Drinks', Desserts: 'Desserts' },
       az: { All: 'Hamısı', Burgers: 'Burgerlər', Combos: 'Kombo', Sides: 'Qəlyanaltılar', Drinks: 'İçkilər', Desserts: 'Desertlər' }
     }[selected];
-    $('#chips button[data-cat]').forEach(button => {
+    document.querySelectorAll('#chips button[data-cat]').forEach(button => {
       const category = button.dataset.cat;
       button.textContent = categoryNames[category] || category;
     });
@@ -476,7 +475,7 @@ function applyTheme() {
   const browserTheme = document.querySelector('meta[name="theme-color"]');
   if (browserTheme) browserTheme.setAttribute('content', resolved === 'dark' ? '#141311' : '#f7f3ec');
 
-  $('#profileThemeSeg')?.querySelectorAll('button[data-v]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === preference)));
+  document.querySelectorAll('#profileThemeSeg button[data-v]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.v === preference)));
   requestAnimationFrame(updateThemeSlider);
 }
 
@@ -934,7 +933,7 @@ function renderPromoUI() {
     const status = $(selector);
     if (status) status.innerHTML = promoView;
   });
-  $$('[data-promo-input]').forEach(input => {
+  $document.querySelectorAll('[data-promo-input]').forEach(input => {
     if (input !== document.activeElement && !input.value && S.pendingPromoCode) input.value = S.pendingPromoCode;
   });
   const showSum = Boolean(S.promo) && est.discount > 0;
@@ -1029,7 +1028,7 @@ async function applyPromo(raw) {
     S.promoMsg = { text: tr('promo_applied'), error: false };
     S.pendingPromoCode = null;
     try { localStorage.removeItem('pdd.pendingPromo'); } catch {}
-    $$('[data-promo-input]').forEach(input => { input.value = ''; });
+    $document.querySelectorAll('[data-promo-input]').forEach(input => { input.value = ''; });
     renderCart();
   } catch (error) {
     console.error('Promo preview failed:', error);
@@ -1062,7 +1061,7 @@ document.addEventListener('click', e => {
 const settingsBtn = $('#settingsBtn'), settingsPanel = $('#settingsPanel'), settingsScrim = $('#settingsScrim');
 function syncSettingsUI() {
   settingsBtn?.setAttribute('aria-label', tr('settings_title'));
-  $$('#langChoice button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
+  $document.querySelectorAll('#langChoice button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)));
   renderPromoUI(); updateThemeSlider();
 }
 async function syncTelegramUI() {
