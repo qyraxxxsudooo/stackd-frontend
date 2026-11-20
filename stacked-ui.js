@@ -164,9 +164,18 @@
       // An active indicator can outlive a closed dialog: allow the next tap to reopen it.
     }
     if (k !== 'shop' && !S.user) {
-      const auth = $('#auth');
-      if (auth && !auth.open) auth.showModal();
-      return;
+      try {
+        const { data, error } = await _supabase.auth.getSession();
+        if (error) throw error;
+        S.user = data?.session?.user || null;
+      } catch (error) {
+        console.error('Navigation session check failed:', error);
+      }
+      if (!S.user) {
+        const auth = $('#auth');
+        if (auth && !auth.open) auth.showModal();
+        return;
+      }
     }
     setActive(k);
     if (k === 'shop') {
