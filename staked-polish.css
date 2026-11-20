@@ -68,8 +68,9 @@ html,body,*{scrollbar-width:none}
 .staked-background-settings .msg{overflow-wrap:anywhere}
 @media(max-width:430px){.st-tab-label{font-size:.61rem}.st-tab svg{width:21px;height:21px}.staked-bg-colors{grid-template-columns:1fr}}
 @media (pointer:coarse){
-  .card,.card-body,.card .badge-popular,.card .stackd-sale-badge,
-  .nav.glass,.settings-panel,.stackd-profile-menu,.st-tabbar,.stacked-dock-main{
+  /* Keep product-card rendering cheap on touch devices, but preserve glass on the small
+     floating controls layer: tab bar, profile, settings and header. */
+  .card,.card-body,.card .badge-popular,.card .stackd-sale-badge{
     -webkit-backdrop-filter:none!important;backdrop-filter:none!important
   }
   .card{background:var(--glass-card);box-shadow:0 5px 18px rgba(0,0,0,.08),inset 0 1px 0 var(--glass-highlight)}
@@ -86,4 +87,121 @@ html,body,*{scrollbar-width:none}
 @media (prefers-reduced-motion:reduce){
   .st-tab-ind,.chips button{transition:none!important}
   .st-tab.is-bump svg,.st-tab-dot,.st-tab-badge.is-pop{animation:none!important}
+}
+
+
+/* ════════ STAKED account hub · Liquid Glass ════════ */
+.stackd-profile-menu[hidden]{display:none!important}
+.stackd-profile-menu{
+  display:grid!important;gap:14px!important;
+  position:fixed!important;left:50%!important;right:auto!important;top:auto!important;
+  bottom:calc(64px + 38px + env(safe-area-inset-bottom))!important;
+  width:min(460px,calc(100vw - 24px))!important;
+  max-height:min(78dvh,720px)!important;overflow-y:auto!important;
+  padding:20px!important;overscroll-behavior:contain;
+  transform:translateX(-50%);
+  transform-origin:bottom center;
+  background:
+    radial-gradient(120% 90% at 8% 0%,rgba(255,255,255,.19),transparent 54%),
+    linear-gradient(145deg,color-mix(in srgb,var(--glass-panel-strong) 88%,rgba(255,255,255,.1)),color-mix(in srgb,var(--surface) 78%,transparent))!important;
+  border:1px solid color-mix(in srgb,var(--glass-edge) 78%,rgba(255,255,255,.22))!important;
+  -webkit-backdrop-filter:blur(30px) saturate(185%) brightness(1.04)!important;
+  backdrop-filter:blur(30px) saturate(185%) brightness(1.04)!important;
+  box-shadow:0 26px 76px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.30),inset 0 -1px 0 rgba(0,0,0,.08)!important;
+  animation:stProfileIn .42s cubic-bezier(.18,.9,.3,1.22) both;
+  z-index:95!important
+}
+@keyframes stProfileIn{
+  from{opacity:0;transform:translateX(-50%) translateY(18px) scale(.965);filter:blur(5px)}
+  to{opacity:1;transform:translateX(-50%) translateY(0) scale(1);filter:blur(0)}
+}
+.stackd-profile-head{
+  display:grid!important;grid-template-columns:54px minmax(0,1fr) 38px;
+  align-items:center;column-gap:13px;row-gap:3px;
+  padding:0 0 16px!important;margin:0!important;
+  border-bottom:1px solid var(--glass-divider)!important
+}
+.stackd-profile-head::before{
+  content:attr(data-initial);grid-column:1;grid-row:1/3;
+  display:grid;place-items:center;width:54px;height:54px;border-radius:19px;
+  color:#fff;font-size:1.25rem;font-weight:800;letter-spacing:-.04em;
+  background:linear-gradient(145deg,#ff9a50,#d95b17 58%,#a83e12);
+  box-shadow:0 8px 22px rgba(194,80,10,.25),inset 0 1px 0 rgba(255,255,255,.45)
+}
+.stackd-profile-head>strong{grid-column:2;grid-row:1;margin:0!important;font-size:1.22rem!important;letter-spacing:-.035em}
+.stackd-profile-head>small{grid-column:2;grid-row:2;display:block;min-width:0;overflow-wrap:anywhere;font-size:.78rem;line-height:1.4}
+#stackdProfileClose{
+  grid-column:3;grid-row:1/3;justify-self:end;align-self:start;
+  width:36px;height:36px;display:grid;place-items:center;
+  border:1px solid var(--glass-divider);border-radius:50%;
+  color:var(--text);background:var(--glass-card);cursor:pointer;
+  transition:transform .2s ease,background .2s ease
+}
+#stackdProfileClose svg{width:17px;height:17px}
+#stackdProfileClose:active{transform:scale(.9)}
+#stackdProfileMenu .stackd-profile-note{margin:0!important;font-size:.82rem;line-height:1.45;color:var(--muted)}
+#stackdProfileBalanceRow{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  min-height:76px;padding:15px 16px!important;border-radius:19px!important;
+  border:1px solid var(--glass-divider)!important;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 10%,var(--glass-card)),var(--glass-card))!important;
+  box-shadow:inset 0 1px 0 var(--glass-highlight),0 8px 22px rgba(0,0,0,.06)
+}
+#stackdProfileBalanceRow>div{display:grid;gap:5px;min-width:0}
+#stackdProfileBalanceRow small{font-size:.76rem!important;letter-spacing:.01em}
+#stackdProfileBalanceRow strong{font-size:1.35rem!important;font-weight:800;letter-spacing:-.035em}
+#stackdProfileBalanceRow button{min-height:42px;padding:10px 15px!important;border-radius:13px!important;background:var(--accent)!important;color:var(--accent-ink)!important;box-shadow:0 5px 14px color-mix(in srgb,var(--accent) 22%,transparent)}
+.stackd-profile-preferences{
+  display:grid;gap:13px;padding:15px;border:1px solid var(--glass-divider);
+  border-radius:19px;background:color-mix(in srgb,var(--glass-card) 88%,transparent);
+  box-shadow:inset 0 1px 0 var(--glass-highlight)
+}
+.stackd-profile-pref-heading{display:grid;gap:4px}
+.stackd-profile-pref-heading strong{font-size:.94rem;letter-spacing:-.015em;color:var(--text)}
+.stackd-profile-pref-heading small{font-size:.73rem;line-height:1.4;color:var(--muted)}
+.stackd-profile-pref-group{display:grid;gap:7px;min-width:0}
+.stackd-profile-pref-label{font-size:.74rem;font-weight:750;letter-spacing:.055em;text-transform:uppercase;color:var(--muted)}
+.stackd-profile-segment{
+  position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:3px;padding:4px;border:1px solid var(--glass-divider);border-radius:14px;
+  background:color-mix(in srgb,var(--text) 5%,var(--glass-panel));
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.08)
+}
+.stackd-profile-segment-slider{
+  position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);
+  border:1px solid var(--glass-edge);border-radius:10px;
+  background:var(--glass-selected-bg);
+  box-shadow:0 2px 9px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.48);
+  transition:transform .34s cubic-bezier(.2,.85,.25,1.22),width .25s ease;
+  pointer-events:none
+}
+.stackd-profile-segment button{
+  position:relative;z-index:1;min-width:0;min-height:40px;padding:7px 5px;
+  border:0;border-radius:10px;background:transparent;color:var(--muted);
+  font:inherit;font-size:.82rem;font-weight:650;cursor:pointer;
+  -webkit-tap-highlight-color:transparent
+}
+.stackd-profile-segment button[aria-pressed=true]{color:var(--text);font-weight:800}
+#stackdProfileMenu .stackd-profile-action{
+  display:flex;align-items:center;width:100%;min-height:48px;padding:12px 14px!important;
+  border-radius:15px!important;font-size:.88rem;font-weight:700;text-align:left
+}
+#stackdProfileMenu .stackd-profile-logout{margin-top:2px;color:var(--muted)!important}
+@media(min-width:681px){
+  .stackd-profile-menu{bottom:calc(70px + 42px)!important;max-height:min(80vh,760px)!important}
+}
+@media(max-width:420px){
+  .stackd-profile-menu{padding:16px!important;gap:12px!important;max-height:80dvh!important}
+  .stackd-profile-preferences{padding:13px;gap:11px}
+  #stackdProfileBalanceRow{min-height:70px;padding:13px!important}
+}
+@media (pointer:coarse){
+  .stackd-profile-menu,.st-tabbar,.settings-panel,.nav.glass,.stacked-dock-main{
+    -webkit-backdrop-filter:blur(26px) saturate(180%) brightness(1.025)!important;
+    backdrop-filter:blur(26px) saturate(180%) brightness(1.025)!important
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .stackd-profile-menu{animation:none!important}
+  .stackd-profile-segment-slider{transition:none!important}
 }
