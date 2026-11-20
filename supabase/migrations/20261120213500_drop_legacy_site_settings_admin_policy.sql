@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Admin manage settings" ON public.site_settings;
