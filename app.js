@@ -249,17 +249,37 @@ function renderAll() {
   const grid = $('#grid');
 
   if (grid) {
-    grid.innerHTML = list.length
+    const markup = list.length
       ? list.map(card).join('')
       : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
-
-    // Animate only when the visible result set changes, not when cart or stock state refreshes.
-    if (gridChanged && !reduce()) {
-      const cards = grid.querySelectorAll('.card');
-      cards.forEach((element, index) => {
+    const animateCards = () => {
+      if (!gridChanged || reduce()) return;
+      grid.querySelectorAll('.card').forEach((element, index) => {
         element.style.setProperty('--stagger-index', String(Math.min(index, 10)));
         element.classList.add('st-card-enter');
       });
+    };
+
+    clearTimeout(S.gridRenderTimer);
+    S.gridRenderToken = (S.gridRenderToken || 0) + 1;
+    const renderToken = S.gridRenderToken;
+
+    if (gridChanged && grid.children.length && !reduce()) {
+      // Fade the outgoing set first; token guards discard stale results when
+      // the user changes category or search again before the transition ends.
+      grid.classList.remove('st-grid-exit');
+      void grid.offsetHeight;
+      grid.classList.add('st-grid-exit');
+      S.gridRenderTimer = setTimeout(() => {
+        if (S.gridRenderToken !== renderToken) return;
+        grid.innerHTML = markup;
+        grid.classList.remove('st-grid-exit');
+        animateCards();
+      }, 125);
+    } else {
+      grid.classList.remove('st-grid-exit');
+      grid.innerHTML = markup;
+      animateCards();
     }
   }
 
@@ -267,7 +287,6 @@ function renderAll() {
   renderCart();
   if ($('#editor')?.open) renderAdmin();
 }
-
 const searchInput = $('#q'), suggestionsBox = $('#searchSuggestions');
 searchInput?.addEventListener('input', e => {
   const val = String(e.target.value || '').trim();
