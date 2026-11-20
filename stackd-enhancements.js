@@ -1403,8 +1403,10 @@
       const activeButton = group?.querySelector(activeSelector);
       if (!group || !slider || !activeButton) return;
       slider.style.width = activeButton.offsetWidth + 'px';
-      slider.style.transform = 'translateX(' + activeButton.offsetLeft + 'px)';
+      slider.style.transform = 'translateX(' + (activeButton.offsetLeft - 4) + 'px)';
     };
+    const closeButton = $('#stackdProfileClose');
+    if (closeButton) closeButton.setAttribute('aria-label', language === 'en' ? 'Close profile' : language === 'az' ? 'Profili bağla' : 'Закрыть профиль');
     requestAnimationFrame(() => {
       syncSlider('#stackdProfileThemeSeg', '#stackdProfileThemeSlider', 'button[aria-pressed="true"]');
       syncSlider('#stackdProfileLanguageSeg', '#stackdProfileLanguageSlider', 'button[aria-pressed="true"]');
