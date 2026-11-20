@@ -45,6 +45,20 @@ const translations = {
     auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
     topup_title: 'Пополнение', topup_card_warn: 'Заявка проверяется оператором. Баланс пополнится только после подтверждения платежа.', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
     topup_instructions: 'Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.', topup_channel: 'Открыть Telegram-канал', topup_terms: 'Я подтверждаю, что указал верную сумму и приложил подтверждение оплаты. Отправка заявки не означает автоматическое зачисление: баланс обновится только после проверки платежа.',
+    topup_terms_required: 'Подтвердите правильность данных заявки.',
+    topup_amount_invalid: 'Укажите сумму от 1 до 100 AZN с точностью до копеек.',
+    topup_file_required: 'Прикрепите изображение чека.',
+    topup_session_expired: 'Сессия истекла. Войдите в аккаунт снова.',
+    topup_sending: 'Отправка…',
+    topup_sending_request: 'Отправляем заявку на проверку…',
+    topup_submitted: 'Заявка принята. Баланс обновится после проверки платежа.',
+    topup_network_error: 'Не удалось связаться с сервером. Проверьте соединение и повторите попытку.',
+    topup_generic_error: 'Не удалось отправить заявку. Попробуйте ещё раз.',
+    topup_invalid_file_type: 'Поддерживаются только JPEG, PNG и WebP.',
+    topup_invalid_file_size: 'Размер изображения должен быть не более 5 МБ.',
+    topup_invalid_file_content: 'Содержимое файла не соответствует формату изображения.',
+    topup_pending_limit: 'Слишком много ожидающих заявок. Дождитесь проверки предыдущих.',
+    auth_callback_error: 'Не удалось завершить вход. Попробуйте войти через Google ещё раз.',
     admin_title: 'Управление', admin_tab_products: 'Товары', admin_tab_settings: 'Настройки сайта', admin_products: 'Товары', admin_add: 'Добавить', admin_search: 'Поиск товаров',
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
@@ -61,6 +75,20 @@ const translations = {
     auth_title: 'Welcome', auth_sub: 'Log in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_login_btn: 'Log in', auth_register_btn: 'Sign up',
     topup_title: 'Add balance', topup_card_warn: 'Your request is reviewed by an operator. Funds are added only after payment confirmation.', topup_amount: 'Amount (AZN)', topup_check: 'Payment receipt screenshot', topup_btn: 'Submit receipt',
     topup_instructions: 'Transfer details are in the pinned message of our Telegram channel. Attach your receipt screenshot after payment.', topup_channel: 'Open Telegram channel', topup_terms: 'I confirm that the amount is correct and that I attached proof of payment. Submitting a request does not credit the balance automatically; the payment must be verified first.',
+    topup_terms_required: 'Confirm that the request details are correct.',
+    topup_amount_invalid: 'Enter an amount from 1 to 100 AZN, with up to two decimal places.',
+    topup_file_required: 'Attach an image of the receipt.',
+    topup_session_expired: 'Your session has expired. Sign in again.',
+    topup_sending: 'Sending…',
+    topup_sending_request: 'Submitting your request for review…',
+    topup_submitted: 'Request received. Your balance will update after payment verification.',
+    topup_network_error: 'Could not reach the server. Check your connection and try again.',
+    topup_generic_error: 'Could not submit the request. Please try again.',
+    topup_invalid_file_type: 'Only JPEG, PNG and WebP images are supported.',
+    topup_invalid_file_size: 'The image must be no larger than 5 MB.',
+    topup_invalid_file_content: 'The file content does not match its image format.',
+    topup_pending_limit: 'You have too many pending requests. Wait for the previous ones to be reviewed.',
+    auth_callback_error: 'Could not complete sign-in. Please try Google sign-in again.',
     admin_title: 'Management', admin_tab_products: 'Products', admin_tab_settings: 'Site settings', admin_products: 'Products', admin_add: 'Add product', admin_search: 'Search products',
     settings_title: 'Homepage settings', settings_hero_title: 'Homepage title', settings_hero_sub: 'Subtitle / description', settings_save: 'Save settings',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from device)', form_save: 'Save',
@@ -77,6 +105,20 @@ const translations = {
     auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_login_btn: 'Daxil ol', auth_register_btn: 'Qeydiyyat',
     topup_title: 'Balansı artır', topup_card_warn: 'Müraciət operator tərəfindən yoxlanılır. Vəsait yalnız ödəniş təsdiqləndikdən sonra əlavə olunur.', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbzin ekran görüntüsü', topup_btn: 'Qəbzi göndər',
     topup_instructions: 'Köçürmə rekvizitləri Telegram kanalının sabitlənmiş mesajındadır. Ödənişdən sonra qəbzin şəklini əlavə edin.', topup_channel: 'Telegram kanalını aç', topup_terms: 'Məbləğin düzgün olduğunu və ödəniş təsdiqini əlavə etdiyimi təsdiq edirəm. Müraciətin göndərilməsi balansın avtomatik artırılması demək deyil; əvvəlcə ödəniş yoxlanılır.',
+    topup_terms_required: 'Müraciət məlumatlarının düzgünlüyünü təsdiqləyin.',
+    topup_amount_invalid: '1–100 AZN aralığında, qəpik dəqiqliyi ilə məbləğ daxil edin.',
+    topup_file_required: 'Çekin şəklini əlavə edin.',
+    topup_session_expired: 'Sessiyanın müddəti bitib. Hesaba yenidən daxil olun.',
+    topup_sending: 'Göndərilir…',
+    topup_sending_request: 'Müraciət yoxlanış üçün göndərilir…',
+    topup_submitted: 'Müraciət qəbul edildi. Balans ödəniş yoxlanıldıqdan sonra yenilənəcək.',
+    topup_network_error: 'Serverlə əlaqə yaratmaq olmadı. İnternet bağlantısını yoxlayıb yenidən cəhd edin.',
+    topup_generic_error: 'Müraciəti göndərmək mümkün olmadı. Yenidən cəhd edin.',
+    topup_invalid_file_type: 'Yalnız JPEG, PNG və WebP şəkilləri dəstəklənir.',
+    topup_invalid_file_size: 'Şəklin ölçüsü 5 MB-dan çox olmamalıdır.',
+    topup_invalid_file_content: 'Faylın məzmunu şəkil formatına uyğun deyil.',
+    topup_pending_limit: 'Gözləyən müraciətlərin sayı çoxdur. Əvvəlkilərin yoxlanmasını gözləyin.',
+    auth_callback_error: 'Daxil olma tamamlana bilmədi. Google ilə yenidən daxil olmağa çalışın.',
     admin_title: 'İdarəetmə', admin_tab_products: 'Məhsullar', admin_tab_settings: 'Sayt ayarları', admin_products: 'Məhsullar', admin_add: 'Məhsul əlavə et', admin_search: 'Məhsul axtar',
     settings_title: 'Ana səhifə ayarları', settings_hero_title: 'Ana səhifə başlığı', settings_hero_sub: 'Alt başlıq / təsvir', settings_save: 'Ayarları saxla',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (cihazdan)', form_save: 'Saxla',
@@ -1267,24 +1309,34 @@ $('#topupForm')?.addEventListener('submit', async event => {
   const form = $('#topupForm'), message = $('#topupMsg'), button = form?.querySelector('button[type="submit"]');
   const amount = Number($('#topupAmount')?.value), file = $('#topupFile')?.files?.[0];
   const showMessage = text => { if (message) message.textContent = text; };
+  const errorCopy = new Map([
+    ['Поддерживаются только JPEG, PNG и WebP.', tr('topup_invalid_file_type')],
+    ['Размер изображения должен быть не более 5 МБ.', tr('topup_invalid_file_size')],
+    ['Содержимое файла не соответствует формату изображения.', tr('topup_invalid_file_content')],
+    ['Сумма должна быть от 1 до 100 AZN.', tr('topup_amount_invalid')],
+    ['Прикрепите изображение чека.', tr('topup_file_required')],
+    ['Слишком много ожидающих заявок. Дождитесь проверки предыдущих.', tr('topup_pending_limit')],
+    ['Сессия недействительна. Войдите снова.', tr('topup_session_expired')],
+    ['Войдите в аккаунт.', tr('topup_session_expired')]
+  ]);
   if (!S.user) { closeDlg($('#topup')); $('#auth')?.showModal(); return; }
-  if (!$('#termsCheck')?.checked) { showMessage('Подтвердите правильность данных заявки.'); return; }
+  if (!$('#termsCheck')?.checked) { showMessage(tr('topup_terms_required')); return; }
   if (!Number.isFinite(amount) || amount < 1 || amount > 100 || Math.round(amount * 100) !== amount * 100) {
-    showMessage('Укажите сумму от 1 до 100 AZN.'); return;
+    showMessage(tr('topup_amount_invalid')); return;
   }
-  if (!file) { showMessage('Прикрепите скриншот чека.'); return; }
+  if (!file) { showMessage(tr('topup_file_required')); return; }
   try {
     await validateProductImage(file);
     const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
     if (sessionError) throw sessionError;
-    if (!session?.access_token || !S.user?.id) throw new Error('Сессия истекла. Войдите снова.');
-    if (button) { button.disabled = true; button.innerHTML = (window.stLoader ? stLoader() : '') + '<span>' + (S.lang === 'en' ? 'Sending...' : S.lang === 'az' ? 'Göndərilir...' : 'Отправка...') + '</span>'; }
-    showMessage('Отправка заявки...');
+    if (!session?.access_token || !S.user?.id) throw new Error('Сессия недействительна. Войдите снова.');
+    if (button) { button.disabled = true; button.innerHTML = (window.stLoader ? stLoader() : '') + '<span>' + tr('topup_sending') + '</span>'; }
+    showMessage(tr('topup_sending_request'));
     const formData = new FormData();
     formData.append('file', file, file.name);
     formData.append('amount', String(amount));
     formData.append('requestId', S.topupRequestId);
-    // Compatibility field for older submit-topup deployments; the server must still verify the JWT user.
+    // The server derives ownership from the verified JWT; userId is retained only for backward compatibility.
     formData.append('userId', S.user.id);
     const response = await fetch(`${SUPABASE_URL}/functions/v1/submit-topup`, {
       method: 'POST',
@@ -1292,13 +1344,18 @@ $('#topupForm')?.addEventListener('submit', async event => {
       body: formData
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || result.ok !== true) throw new Error(result.error || result.message || `Ошибка отправки заявки: ${response.status}`);
+    if (!response.ok || result.ok !== true) {
+      const serverMessage = String(result.error || result.message || '');
+      if (serverMessage) throw new Error(errorCopy.get(serverMessage) || tr('topup_generic_error'));
+      throw new Error(tr('topup_generic_error'));
+    }
     form.reset();
     S.topupRequestId = crypto.randomUUID();
-    showMessage('Заявка отправлена. Баланс пополнится после проверки платежа.');
+    showMessage(tr('topup_submitted'));
   } catch (error) {
     console.error('Top-up submission failed:', error);
-    showMessage(error?.message || 'Не удалось отправить заявку.');
+    const messageText = errorCopy.get(String(error?.message || ''));
+    showMessage(messageText || (error instanceof TypeError ? tr('topup_network_error') : error instanceof Error && error.message.startsWith('Поддерживаются') ? tr('topup_invalid_file_type') : tr('topup_generic_error')));
   } finally {
     if (button) { button.disabled = false; button.textContent = tr('topup_btn'); }
   }
@@ -1347,7 +1404,7 @@ async function finalizeOAuthCallback() {
 
 const authCallbackReady = finalizeOAuthCallback().catch(error => {
   console.error('OAuth callback could not be finalized:', error?.message || 'Unknown auth error');
-  const message = 'Не удалось завершить вход. Попробуйте войти через Google ещё раз.';
+  const message = tr('auth_callback_error');
   const authMessage = $('#authMsg');
   if (authMessage) authMessage.textContent = message;
   else if (typeof toast === 'function') toast(message);
