@@ -106,7 +106,8 @@ function applyLanguage(lang) {
   if ($('#orders')?.open) loadOrders();
 }
 
-async function checkAuth() {
+let authDataLoaded = false;
+async function checkAuth({ loadData = false } = {}) {
   try {
     const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
     if (sessionError) throw sessionError;
@@ -135,7 +136,10 @@ async function checkAuth() {
     console.error('Authentication/profile loading failed:', error);
     toast('Не удалось загрузить профиль. Обновите страницу.');
   }
-  await Promise.allSettled([load(), loadSettings()]);
+  if (loadData && !authDataLoaded) {
+    await Promise.allSettled([load(), loadSettings()]);
+    authDataLoaded = true;
+  }
 }
 async function loadSettings() {
   const { data, error } = await _supabase.from('site_settings').select('key,value');
@@ -168,8 +172,26 @@ $('#signUpBtn')?.addEventListener('click', async () => {
   }
 });
 $('#googleLoginBtn')?.addEventListener('click', async () => {
-  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: 'https://staked.food/' } });
-  if (error) toast('Ошибка Google: ' + error.message);
+  const button = $('#googleLoginBtn');
+  if (button?.disabled) return;
+  const originalText = button?.textContent;
+  if (button) { button.disabled = true; button.textContent = S.lang === 'en' ? 'Connecting to Google…' : S.lang === 'az' ? 'Google-a qoşulur…' : 'Подключение к Google…'; }
+  try {
+    const { error } = await _supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // www is redirected to the apex before this handler runs.
+        redirectTo: 'https://staked.food/'
+      }
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error('Google sign-in failed:', error);
+    const message = error?.message || 'Не удалось открыть вход Google.';
+    if ($('#authMsg')) $('#authMsg').textContent = message;
+    else toast('Ошибка Google: ' + message);
+    if (button) { button.disabled = false; button.textContent = originalText || tr('auth_google'); }
+  }
 });
 $('#logoutBtn')?.addEventListener('click', async () => {
   if (S.ordersTimer) clearInterval(S.ordersTimer);
@@ -1270,16 +1292,20 @@ try {
 applyLanguage(initialLanguage);
 applyTheme();
 
-// Refresh auth state without running the callback recursively inline.
+// Auth changes update the account UI only. Catalog/settings are fetched once at boot.
+let authRefreshTimer = 0;
+function scheduleAuthRefresh(loadData = false) {
+  clearTimeout(authRefreshTimer);
+  authRefreshTimer = window.setTimeout(() => {
+    checkAuth({ loadData: loadData || !authDataLoaded }).catch(error => {
+      console.error('Authentication refresh failed:', error);
+    });
+  }, 60);
+}
 _supabase.auth.onAuthStateChange((_event, session) => {
-  setTimeout(() => {
-    S.user = session?.user || null;
-    checkAuth().catch(error => console.error('Authentication refresh failed:', error));
-  }, 0);
+  S.user = session?.user || null;
+  scheduleAuthRefresh();
 });
 
-// Start the application.
-checkAuth().catch(error => {
-  console.error('STAKED initialization failed:', error);
-  toast('Не удалось запустить сайт. Обновите страницу.');
-});
+// Start the app once; repeated INITIAL_SESSION / TOKEN_REFRESHED events won't reload all site data.
+scheduleAuthRefresh(true);
