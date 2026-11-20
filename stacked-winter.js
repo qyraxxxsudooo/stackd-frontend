@@ -92,6 +92,14 @@ html.st-winter body{background:transparent!important}
 @media(prefers-reduced-motion:reduce){.stw-snowfall-layer{animation:none!important;transform:none!important}}
 @media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
 @media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
+
+.stw-city-control{display:grid;gap:6px;margin:12px 0}
+.stw-city-control>label{font-size:.82rem;font-weight:650;color:var(--text)}
+.stw-city-control select{
+  width:100%;min-height:42px;padding:9px 38px 9px 12px;border:1px solid var(--line);
+  border-radius:12px;background:var(--surface);color:var(--text);font:inherit
+}
+.stw-city-control .stackd-admin-note{margin:0}
 `;
   const UI_CSS = `
 .st-music{position:relative;display:none!important;place-items:center;flex:none}
@@ -350,6 +358,7 @@ ${fg}
   function readRows(rows) {
     const m = Object.fromEntries((rows || []).map((r) => [r.key, r.value]));
     site.winter = m.winter_mode === 'on' ? 'on' : 'off';
+    site.winterCity = CITY_IDS.includes(m.winter_city) ? m.winter_city : (CITY_IDS.includes(site.winterCity) ? site.winterCity : 'baku');
     site.winterBlur = clamp(Number(m.winter_blur ?? site.winterBlur ?? 0) || 0, 0, 18);
     site.musicUrl = /^https:\/\//.test(m.music_url || '') ? m.music_url : '';
     site.musicTitle = String(m.music_title || '').slice(0, 80);
@@ -358,7 +367,7 @@ ${fg}
   }
   async function load() {
     try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
+      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_city', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
       if (error) throw error;
       readRows(data);
     } catch { /* keep the last known state */ }
@@ -377,6 +386,17 @@ ${fg}
       <div class="stackd-section-head"><h3 data-stw="admin"></h3><span>SEASON</span></div>
       <label class="st-switch"><input type="checkbox" id="stwAdminWinter"><span class="st-switch-ui" aria-hidden="true"></span><span data-stw="winter"></span></label>
       <p class="stackd-admin-note" data-stw="winterHelp"></p>
+      <div class="stw-city-control">
+        <label for="stwAdminCity" data-stw="city"></label>
+        <select id="stwAdminCity">
+          <option value="baku" data-stw="cityBaku"></option>
+          <option value="new-york" data-stw="cityNewYork"></option>
+          <option value="tokyo" data-stw="cityTokyo"></option>
+          <option value="london" data-stw="cityLondon"></option>
+          <option value="paris" data-stw="cityParis"></option>
+        </select>
+        <p class="stackd-admin-note" data-stw="cityHelp"></p>
+      </div>
       <div class="stw-blur-control">
         <label for="stwAdminBlur"><span data-stw="blur"></span> <b id="stwAdminBlurVal">0 px</b></label>
         <input type="range" id="stwAdminBlur" min="0" max="18" step="1" value="0" aria-label="Winter background blur">
@@ -399,6 +419,12 @@ ${fg}
     tab.append(adminBox);
     const vol = $('#stwAdminVol'), volVal = $('#stwAdminVolVal');
     vol.addEventListener('input', () => { volVal.textContent = vol.value + '%'; if (audio) audio.volume = vol.value / 100; });
+    const citySelect = $('#stwAdminCity');
+    citySelect.addEventListener('change', () => {
+      site.winterCity = CITY_IDS.includes(citySelect.value) ? citySelect.value : 'baku';
+      try { localStorage.setItem('stacked.site', JSON.stringify(site)); } catch { /* */ }
+      if (on) buildScene();
+    });
     const blur = $('#stwAdminBlur'), blurVal = $('#stwAdminBlurVal');
     blur.addEventListener('input', () => {
       const amount = applySceneBlur(blur.value);
@@ -413,6 +439,7 @@ ${fg}
     if (!adminBox) return;
     adminBox.querySelectorAll('[data-stw]').forEach((el) => { el.textContent = t(el.dataset.stw); });
     $('#stwAdminWinter').checked = site.winter === 'on';
+    $('#stwAdminCity').value = CITY_IDS.includes(site.winterCity) ? site.winterCity : 'baku';
     $('#stwAdminBlur').value = String(site.winterBlur);
     $('#stwAdminBlurVal').textContent = site.winterBlur + ' px';
     applySceneBlur(site.winterBlur);
@@ -440,6 +467,7 @@ ${fg}
       if (url && !/^https:\/\//.test(url)) { toastMsg(t('badUrl')); return; }
       const rows = [
         { key: 'winter_mode', value: $('#stwAdminWinter').checked ? 'on' : 'off' },
+        { key: 'winter_city', value: CITY_IDS.includes($('#stwAdminCity').value) ? $('#stwAdminCity').value : 'baku' },
         { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) },
         { key: 'music_url', value: url },
         { key: 'music_title', value: $('#stwAdminTitle').value.trim().slice(0, 80) },
