@@ -1519,6 +1519,16 @@
       button.setAttribute('aria-pressed', String(active));
       button.classList.toggle('is-selected', active);
     });
+
+    // Keep the pill aligned with the selected control after profile/settings
+    // panels are opened, resized, or translated.
+    const active = $('#profileThemeSeg button[data-v][aria-pressed="true"]');
+    const slider = $('#themeSlider');
+    const segment = $('#profileThemeSeg');
+    if (active && slider && segment) {
+      slider.style.width = active.offsetWidth + 'px';
+      slider.style.transform = 'translateX(' + (active.offsetLeft - 3) + 'px)';
+    }
   }
   updateThemeSlider = syncThemeButtons;
 
@@ -1541,11 +1551,7 @@
     window.addEventListener('resize', placeMobileCartButton, { passive: true });
     const langLabel = $('#currentLangLabel');
     if (langLabel && 'MutationObserver' in window) new MutationObserver(placeMobileCartButton).observe(langLabel, { childList: true, characterData: true, subtree: true });
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
-      let preference = 'system';
-      try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-      if (preference === 'system') applyTheme();
-    });
+    // The core app owns the single system-appearance listener.
     const productForm = $('#pform');
     productForm?.addEventListener('submit', saveProductWithExtras, true);
     $('#saveSettingsBtn')?.addEventListener('click', saveHeroSettings, true);

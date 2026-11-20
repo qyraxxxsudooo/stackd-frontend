@@ -241,4 +241,79 @@
       }, () => { clearing = false; plainClear.apply(this, args); });
     };
   }
+
+  /* ───────── restrained STAKED context menu on non-editing surfaces ───────── */
+  const contextMenu = document.createElement('div');
+  contextMenu.className = 'st-context-menu';
+  contextMenu.hidden = true;
+  contextMenu.setAttribute('role', 'menu');
+  const contextLabels = S.lang === 'en'
+    ? ['Back to top', 'Refresh page', 'Copy page link']
+    : S.lang === 'az'
+      ? ['Yuxarı qayıt', 'Səhifəni yenilə', 'Səhifə linkini köçür']
+      : ['В начало', 'Обновить страницу', 'Копировать ссылку'];
+  contextMenu.innerHTML =
+    '<button type="button" role="menuitem" data-st-context="top">' + contextLabels[0] + '</button>' +
+    '<button type="button" role="menuitem" data-st-context="reload">' + contextLabels[1] + '</button>' +
+    '<button type="button" role="menuitem" data-st-context="copy">' + contextLabels[2] + '</button>';
+  document.body.append(contextMenu);
+  let contextHideTimer = 0;
+  const hideContextMenu = () => {
+    clearTimeout(contextHideTimer);
+    contextMenu.classList.remove('is-open');
+    contextHideTimer = setTimeout(() => { contextMenu.hidden = true; }, 150);
+  };
+  document.addEventListener('contextmenu', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    // Keep browser actions available in editable controls, links, media and selected text.
+    if (target.closest('input,textarea,select,[contenteditable="true"],a,button,[role="button"],video,audio,iframe')) return;
+    if (window.getSelection && window.getSelection().toString().trim()) return;
+    event.preventDefault();
+    clearTimeout(contextHideTimer);
+    contextMenu.hidden = false;
+    contextMenu.classList.remove('is-open');
+    const width = 204, height = 3 * 41 + 12;
+    const x = Math.max(8, Math.min(event.clientX, innerWidth - width - 8));
+    const y = Math.max(8, Math.min(event.clientY, innerHeight - height - 8));
+    contextMenu.style.left = x + 'px';
+    contextMenu.style.top = y + 'px';
+    requestAnimationFrame(() => contextMenu.classList.add('is-open'));
+  });
+  contextMenu.addEventListener('click', async (event) => {
+    const action = event.target.closest('[data-st-context]')?.dataset.stContext;
+    hideContextMenu();
+    if (action === 'top') {
+      window.scrollTo({ top: 0, behavior: reduced() ? 'auto' : 'smooth' });
+    } else if (action === 'reload') {
+      window.location.reload();
+    } else if (action === 'copy') {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (typeof toast === 'function') toast(S.lang === 'en' ? 'Link copied' : S.lang === 'az' ? 'Link kopyalandı' : 'Ссылка скопирована');
+      } catch {
+        if (typeof toast === 'function') toast(S.lang === 'en' ? 'Could not copy the link' : S.lang === 'az' ? 'Linki köçürmək olmadı' : 'Не удалось скопировать ссылку');
+      }
+    }
+  });
+  document.addEventListener('click', (event) => { if (!contextMenu.contains(event.target)) hideContextMenu(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') hideContextMenu(); });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-lang]')) return;
+    setTimeout(() => {
+      const language = S.lang || 'ru';
+      const labels = language === 'en'
+        ? ['Back to top', 'Refresh page', 'Copy page link']
+        : language === 'az'
+          ? ['Yuxarı qayıt', 'Səhifəni yenilə', 'Səhifə linkini köçür']
+          : ['В начало', 'Обновить страницу', 'Копировать ссылку'];
+      contextMenu.querySelectorAll('[data-st-context]').forEach((button, index) => {
+        button.textContent = labels[index] || '';
+      });
+    }, 0);
+  });
+
+  window.addEventListener('resize', hideContextMenu, { passive: true });
+  window.addEventListener('scroll', hideContextMenu, { passive: true, capture: true });
+
 })();

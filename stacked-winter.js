@@ -18,14 +18,15 @@
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const lang = () => { try { return (typeof S !== 'undefined' && S.lang) || localStorage.getItem('pdd.lang') || 'ru'; } catch { return 'ru'; } };
   const TXT = {
-    ru: { admin: 'Зима и музыка', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
-    en: { admin: 'Winter and music', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
-    az: { admin: 'Qış və musiqi', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
+    ru: { admin: 'Зима и музыка', city: 'Зимний город', cityHelp: 'Выберите архитектурную атмосферу зимнего оформления.', cityBaku: 'Баку', cityNewYork: 'Нью-Йорк', cityTokyo: 'Токио', cityLondon: 'Лондон', cityParis: 'Париж', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
+    en: { admin: 'Winter and music', city: 'Winter city', cityHelp: 'Choose the architectural atmosphere for the winter scene.', cityBaku: 'Baku', cityNewYork: 'New York', cityTokyo: 'Tokyo', cityLondon: 'London', cityParis: 'Paris', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
+    az: { admin: 'Qış və musiqi', city: 'Qış şəhəri', cityHelp: 'Qış səhnəsi üçün şəhər atmosferini seçin.', cityBaku: 'Bakı', cityNewYork: 'Nyu-York', cityTokyo: 'Tokio', cityLondon: 'London', cityParis: 'Paris', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
   };
   const t = (k) => (TXT[lang()] || TXT.ru)[k] || TXT.ru[k];
   const toastMsg = (m) => { try { if (typeof toast === 'function') toast(m); } catch { /* no toast */ } };
 
-  const site = { winter: 'off', winterBlur: 0, musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
+  const CITY_IDS = ['baku', 'new-york', 'tokyo', 'london', 'paris'];
+  const site = { winter: 'off', winterCity: 'baku', winterBlur: 0, musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
 
   /* ═════════════ styles (injected once) ═════════════ */
   const CSS = `
@@ -33,64 +34,31 @@ html.st-winter{background:#070b17}
 html.st-winter:not(.stacked-dark):not([data-theme=dark]){background:#f6dccb}
 html.st-winter body{background:transparent!important}
 .stw-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
-.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .18s ease-out}
+.stw-atmosphere{position:absolute;inset:-28px;z-index:0;overflow:hidden;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .2s ease-out}
+.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:none!important;transform:none!important}
 .stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
 .stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
 .stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
 .stw-bg[data-dark="false"]::before{background:radial-gradient(ellipse 46% 35% at 70% 70%,rgba(255,211,159,.25),transparent 75%),radial-gradient(ellipse 55% 22% at 20% 15%,rgba(255,255,255,.25),transparent 78%);opacity:.8}
 .stw-bg[data-dark="false"]::after{background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 28%,rgba(255,226,211,.12));opacity:.8}
 .stw-lamp{z-index:2;position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
+.stw-lamp::before{content:"";position:absolute;left:-80%;top:-22%;width:260%;height:64%;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,rgba(255,222,168,.22),rgba(255,207,140,.09) 42%,transparent 76%);filter:blur(22px);pointer-events:none}
 .stw-lamp img{position:absolute;inset:0;width:100%;height:100%}
-.stw-halo{position:absolute;left:50%;top:13.6%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,140,.55),rgba(255,196,100,.16) 45%,transparent 72%)}
-.stw-cone{position:absolute;left:50%;top:21.6%;width:230%;bottom:0;transform:translateX(-50%);background:radial-gradient(ellipse 50% 100% at 50% 0,rgba(255,212,130,.38),rgba(255,200,110,.16) 45%,rgba(255,200,110,.04) 70%,transparent 82%);will-change:opacity;animation:stwFlicker 7s steps(1) infinite}
-.stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
-@keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
+.stw-halo{position:absolute;left:50%;top:13.6%;width:175%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,220,164,.26),rgba(255,205,142,.08) 48%,transparent 76%);filter:blur(7px);pointer-events:none}
+.stw-city-landmarks{opacity:.96}
 @keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
-.stw-snowfall{position:fixed;inset:0;z-index:70;overflow:hidden;pointer-events:none;contain:strict;isolation:isolate}
-.stw-snowfall-layer{position:absolute;left:0;right:0;top:-100vh;height:300vh;pointer-events:none;background-repeat:repeat-y;background-size:100% 50vh;will-change:transform;animation:stwSnowTravel 20s linear infinite}
-.stw-snowfall-layer:nth-child(1){
-  opacity:.78;animation-duration:19s;
-  background-image:
-    radial-gradient(circle at 4% 8%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 17% 29%,rgba(255,255,255,.82) 0 1.2px,transparent 2.2px),
-    radial-gradient(circle at 31% 13%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 45% 42%,rgba(255,255,255,.78) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 58% 7%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 72% 31%,rgba(255,255,255,.8) 0 1.2px,transparent 2.2px),
-    radial-gradient(circle at 88% 16%,rgba(255,255,255,.9) 0 1px,transparent 2px),
-    radial-gradient(circle at 96% 45%,rgba(255,255,255,.75) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 10% 73%,rgba(255,255,255,.78) 0 1px,transparent 2px),
-    radial-gradient(circle at 25% 88%,rgba(255,255,255,.84) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 40% 66%,rgba(255,255,255,.8) 0 1px,transparent 2px),
-    radial-gradient(circle at 54% 94%,rgba(255,255,255,.82) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 67% 68%,rgba(255,255,255,.86) 0 1px,transparent 2px),
-    radial-gradient(circle at 82% 84%,rgba(255,255,255,.8) 0 1.1px,transparent 2.1px),
-    radial-gradient(circle at 93% 62%,rgba(255,255,255,.82) 0 1px,transparent 2px)
-}
-.stw-snowfall-layer:nth-child(2){
-  opacity:.5;animation-duration:29s;animation-delay:-13s
-  ;background-image:
-    radial-gradient(circle at 9% 22%,rgba(255,255,255,.85) 0 1.7px,transparent 3px),
-    radial-gradient(circle at 28% 51%,rgba(255,255,255,.78) 0 1.5px,transparent 2.8px),
-    radial-gradient(circle at 49% 18%,rgba(255,255,255,.85) 0 1.8px,transparent 3px),
-    radial-gradient(circle at 64% 76%,rgba(255,255,255,.76) 0 1.5px,transparent 2.8px),
-    radial-gradient(circle at 79% 39%,rgba(255,255,255,.82) 0 1.7px,transparent 3px),
-    radial-gradient(circle at 94% 91%,rgba(255,255,255,.8) 0 1.5px,transparent 2.8px)
-}
-.stw-snowfall-layer:nth-child(3){
-  opacity:.34;animation-duration:38s;animation-delay:-21s
-  ;background-image:
-    radial-gradient(circle at 14% 61%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
-    radial-gradient(circle at 37% 34%,rgba(255,255,255,.68) 0 2px,transparent 3.6px),
-    radial-gradient(circle at 57% 87%,rgba(255,255,255,.72) 0 2.2px,transparent 3.8px),
-    radial-gradient(circle at 74% 11%,rgba(255,255,255,.7) 0 2px,transparent 3.6px),
-    radial-gradient(circle at 91% 57%,rgba(255,255,255,.7) 0 2.1px,transparent 3.7px)
-}
-@keyframes stwSnowTravel{to{transform:translate3d(0,33.333333%,0)}}
-@media(max-width:680px){.stw-snowfall{opacity:.88}.stw-snowfall-layer:nth-child(3){opacity:.24}}
-@media(prefers-reduced-motion:reduce){.stw-snowfall-layer{animation:none!important;transform:none!important}}
+.stw-snow-canvas{position:fixed;inset:0;z-index:30;width:100%;height:100%;pointer-events:none;contain:strict;display:block}
+@media(prefers-reduced-motion:reduce){.stw-snow-canvas{opacity:.72}}
 @media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
-@media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.stw-bg::before{animation:none!important}.stw-atmosphere{transition:none}}
+
+.stw-city-control{display:grid;gap:6px;margin:12px 0}
+.stw-city-control>label{font-size:.82rem;font-weight:650;color:var(--text)}
+.stw-city-control select{
+  width:100%;min-height:42px;padding:9px 38px 9px 12px;border:1px solid var(--line);
+  border-radius:12px;background:var(--surface);color:var(--text);font:inherit
+}
+.stw-city-control .stackd-admin-note{margin:0}
 `;
   const UI_CSS = `
 .st-music{position:relative;display:none!important;place-items:center;flex:none}
@@ -129,7 +97,22 @@ html.st-winter body{background:transparent!important}
   const pine = (x, y, s, body, snow) => `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) scale(${s.toFixed(2)})"><rect x="-4" y="-8" width="8" height="16" fill="#3a2a22"/><path d="M0-104 L28-60 H14 L36-30 H18 L44 0 H-44 L-18-30 H-36 L-14-60 H-28Z" fill="${body}"/><path d="M0-104 L12-85 Q0-79-12-85Z M-15-60 Q0-53 15-60 L9-70 Q0-65-9-70Z M-22-30 Q0-22 22-30 L14-42 Q0-36-14-42Z M-30 0 Q0 8 30 0 L22-12 Q0-5-22-12Z" fill="${snow}"/></g>`;
   const fence = (x0, x1, y, col) => { let d = ''; for (let x = x0; x <= x1; x += 26) d += `M${x} ${y}v-34l4-5 4 5v34Z`; return `<path d="${d}" fill="${col}"/><path d="M${x0} ${y - 24}H${x1 + 8}M${x0} ${y - 10}H${x1 + 8}" stroke="${col}" stroke-width="4"/>`; };
 
-  function darkScene() {
+
+  const CITY_SVG = {
+    baku: '<g><path d="M650 790c-8-74 7-145 45-206 18 72 27 133 22 206Z" fill="CITYSTONE"/><path d="M735 790c-6-107 18-200 68-277 23 92 30 185 22 277Z" fill="CITYSTONE"/><path d="M840 790c-7-126 23-222 75-310 26 99 32 212 23 310Z" fill="CITYSTONE" stroke="CITYEDGE" stroke-opacity=".24" stroke-width="3"/><path d="M651 790c16-78 25-135 44-187M741 790c17-105 30-185 61-259M847 790c20-121 39-214 68-285" stroke="CITYEDGE" stroke-width="5" opacity=".7" fill="none"/><path d="M963 790V655c0-34 17-58 43-58s43 24 43 58v135Z" fill="CITYSTONE" stroke="CITYEDGE" stroke-opacity=".4" stroke-width="3"/><path d="M955 655q51-28 102 0M964 639h84" stroke="CITYEDGE" stroke-width="4" opacity=".6"/><g fill="CITYLIGHT"><rect x="675" y="686" width="7" height="13"/><rect x="758" y="672" width="7" height="13"/><rect x="862" y="650" width="7" height="13"/><rect x="981" y="690" width="7" height="13"/></g></g>',
+    'new-york': '<g><path d="M650 790V566h74v224M690 790V494h76v296M960 790V530h92v260M1045 790V603h70v187" fill="CITYSTONE"/><path d="M790 790V443h28v-50h14v-42h10v-46h8v46h10v42h14v50h22v347Z" fill="CITYSTONE" stroke="CITYEDGE" stroke-opacity=".4" stroke-width="3"/><path d="M790 443h116M804 393h88M818 351h60M840 305v-62l4-16 4 16v62" fill="none" stroke="CITYEDGE" stroke-width="4" opacity=".65"/><g fill="CITYLIGHT" opacity=".75"><rect x="675" y="596" width="7" height="12"/><rect x="704" y="596" width="7" height="12"/><rect x="716" y="531" width="7" height="12"/><rect x="745" y="531" width="7" height="12"/><rect x="816" y="476" width="7" height="12"/><rect x="844" y="476" width="7" height="12"/><rect x="870" y="476" width="7" height="12"/><rect x="979" y="565" width="8" height="13"/><rect x="1010" y="565" width="8" height="13"/></g></g>',
+    tokyo: '<g><path d="M620 790V615h100v175M690 790V535h95v255M965 790V572h120v218M1080 790V642h72v148" fill="CITYSTONE"/><path d="M800 790 840 330 880 790Z" fill="#aa4a42" stroke="#f0a181" stroke-width="5"/><path d="M811 674h58M818 590h44M825 506h30M832 422h16M838 352h4M810 680l60-70M818 585l52-62M825 495l45-54M870 680l-60-70M862 585l-52-62M855 495l-45-54" stroke="#f4b18c" stroke-width="3" opacity=".78"/><path d="M840 320v-34M827 286h26M615 705h95M968 690h110" stroke="#ffb27a" stroke-width="4" opacity=".68"/><g fill="CITYLIGHT"><rect x="700" y="654" width="6" height="11"/><rect x="737" y="606" width="6" height="11"/><rect x="989" y="620" width="6" height="11"/><rect x="1030" y="650" width="6" height="11"/></g></g>',
+    london: '<g><path d="M620 790V640l46-35 46 35v150M930 790V632l55-40 55 40v158" fill="CITYSTONE"/><path d="M790 790V397h24v-58h11v-42h40v42h11v58h24v393Z" fill="CITYSTONE" stroke="CITYEDGE" stroke-opacity=".4" stroke-width="3"/><path d="M825 298l20-31 20 31Z" fill="CITYSTONE" stroke="CITYEDGE" stroke-opacity=".5" stroke-width="2"/><path d="M825 339h80M830 397h70M832 485h66M832 540h66M832 605h66M832 675h66" stroke="CITYEDGE" stroke-opacity=".34" stroke-width="3"/><circle cx="845" cy="447" r="24" fill="#e8e0cf" stroke="CITYEDGE" stroke-width="4"/><circle cx="845" cy="447" r="18" fill="none" stroke="#81725b" stroke-width="2"/><path d="M845 447v-13M845 447l11 5" stroke="#756448" stroke-width="3" stroke-linecap="round"/><g fill="CITYLIGHT"><rect x="641" y="662" width="8" height="12"/><rect x="690" y="662" width="8" height="12"/><rect x="955" y="663" width="8" height="12"/><rect x="1000" y="663" width="8" height="12"/></g></g>',
+    paris: '<g><path d="M620 790h480M760 790l84-420 84 420M797 790l47-288 47 288M810 655h68M793 713h101M778 756h132" fill="none" stroke="CITYSTONE" stroke-width="13" stroke-linejoin="round"/><path d="M844 368v-45M831 323h27M610 650v-43h28v-24h35v24h27v43M1010 658v-45h26v-24h34v24h27v45" fill="CITYSTONE"/><path d="M608 606l47-26 47 26M1008 613l45-25 44 25" stroke="CITYEDGE" stroke-width="4" fill="none" opacity=".65"/><g fill="CITYLIGHT"><rect x="624" y="628" width="7" height="12"/><rect x="661" y="628" width="7" height="12"/><rect x="1025" y="633" width="7" height="12"/><rect x="1060" y="633" width="7" height="12"/></g></g>'
+  };
+  function cityLandmarks(city, dark) {
+    return (CITY_SVG[city] || CITY_SVG.baku)
+      .replaceAll('CITYSTONE', dark ? '#101a2d' : '#6b8299')
+      .replaceAll('CITYEDGE', dark ? '#667d9d' : '#f0f2f4')
+      .replaceAll('CITYLIGHT', dark ? '#ffd99a' : '#fff0c8');
+  }
+
+  function darkScene(city = site.winterCity) {
     const r = rng(7); let stars = '', win = '';
     for (let i = 0; i < 90; i++) stars += `<circle cx="${(r() * 1600).toFixed(0)}" cy="${(r() * 440).toFixed(0)}" r="${(0.5 + r() * 1.2).toFixed(2)}" opacity="${(0.25 + r() * 0.65).toFixed(2)}"/>`;
     const far = town(r, 470, 600, 60, 130, -20, 1620), near = town(r, 560, 680, 90, 170, -20, 1620);
@@ -156,6 +139,7 @@ html.st-winter body{background:transparent!important}
 ${blocks(far, '#131c38')}${snowCaps(far, '#4a5677')}
 ${chimneys}
 ${blocks(near, '#0a1124')}${snowCaps(near, '#c9d3ea')}
+<g class="stw-city-landmarks">${cityLandmarks(city, true)}</g>
 <g fill="#ffcf72" opacity=".75">${win}</g>
 <path d="M360 547 Q800 667 1240 547" fill="none" stroke="#05080f" stroke-width="2"/>
 <g filter="url(#glow)" opacity=".9">${lights}</g><g>${lights}</g>
@@ -171,7 +155,7 @@ ${fg}
 </svg>`;
   }
 
-  function morningScene() {
+  function morningScene(city = site.winterCity) {
     const r = rng(11); let trees = '';
     for (let i = 0; i < 22; i++) { const x = r() * 1600; trees += pine(x, 694 + r() * 30, .4 + r() * .4, '#4f7d74', '#fff'); }
     const house = (x, y, s, wall, roof) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-46" y="-56" width="92" height="56" fill="${wall}"/><rect x="18" y="-92" width="14" height="30" fill="#7a5a4e"/><path d="M25 -96 c-16 -20 14 -32 0 -54 c-12 -18 12 -28 4 -44" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".55"/><path d="M-58 -52 L0 -98 L58 -52Z" fill="${roof}"/><path d="M-62 -50 L0 -102 L62 -50 L54 -46 L0 -90 L-54 -46Z" fill="#ffffff"/><rect x="-30" y="-40" width="18" height="18" rx="2" fill="#ffd27a"/><rect x="10" y="-40" width="18" height="18" rx="2" fill="#ffd27a"/><rect x="-10" y="-26" width="18" height="26" rx="2" fill="#7a4f3e"/><rect x="-50" y="-4" width="100" height="8" rx="4" fill="#fff"/></g>`;
@@ -192,6 +176,7 @@ ${fg}
 <path d="M150 520 L196 556 L172 552 L150 570 L130 550 L106 556Z M420 470 L468 510 L442 506 L420 526 L398 504 L374 508Z M760 500 L806 536 L780 532 L760 550 L740 530 L716 536Z M1090 480 L1138 518 L1112 514 L1090 532 L1068 512 L1044 516Z M1410 520 L1454 554 L1430 550 L1410 568 L1390 548 L1368 552Z" fill="#fff4ee"/>
 <path d="M-20 708 C220 668 420 708 640 684 S1100 660 1320 692 S1560 678 1620 672 V900 H-20Z" fill="url(#snow)"/>
 ${trees}
+<g class="stw-city-landmarks">${cityLandmarks(city, false)}</g>
 ${houses}
 <path d="M-20 774 C240 748 460 786 720 766 S1180 746 1400 770 S1580 764 1620 760 V900 H-20Z" fill="url(#snow2)"/>
 <path d="M-20 774 C240 748 460 786 720 766 S1180 746 1400 770" fill="none" stroke="#ffe4cf" stroke-width="3" opacity=".8"/>
@@ -218,21 +203,24 @@ ${fg}
   function applySceneBlur(value = site.winterBlur) {
     const amount = clamp(Math.round(Number(value) || 0), 0, 18);
     site.winterBlur = amount;
-    if (bg) bg.style.setProperty('--stw-scene-blur', amount + 'px');
+    if (bg) {
+      bg.style.setProperty('--stw-scene-blur', amount + 'px');
+      bg.querySelector('.stw-atmosphere')?.style.setProperty('--stw-scene-blur', amount + 'px');
+    }
     return amount;
   }
   function buildScene() {
     const dark = isDark();
     if (!bg) { bg = document.createElement('div'); bg.className = 'stw-bg'; bg.setAttribute('aria-hidden', 'true'); document.body.prepend(bg); }
     bg.dataset.dark = String(dark);
+    bg.dataset.city = site.winterCity;
+    const key = site.winterCity + '-' + (dark ? 'd' : 'l');
+    cache[key] ||= svgUrl(dark ? darkScene(site.winterCity) : morningScene(site.winterCity));
+    cache['lamp-' + (dark ? 'd' : 'l')] ||= svgUrl(lampSvg(dark));
+    bg.innerHTML = '<div class="stw-atmosphere"><img class="stw-scene" alt="" decoding="async" src="' + cache[key] + '"><div class="stw-lamp">' + (dark ? '<div class="stw-halo"></div>' : '') + '<img alt="" decoding="async" src="' + cache['lamp-' + (dark ? 'd' : 'l')] + '"></div></div>';
     applySceneBlur(site.winterBlur);
-    const key = dark ? 'd' : 'l';
-    cache[key] ||= svgUrl(dark ? darkScene() : morningScene());
-    cache['lamp' + key] ||= svgUrl(lampSvg(dark));
-    bg.innerHTML = `<img class="stw-scene" alt="" decoding="async" src="${cache[key]}"><div class="stw-lamp">${dark ? '<div class="stw-pool"></div><div class="stw-cone"></div><div class="stw-halo"></div>' : ''}<img alt="" decoding="async" src="${cache['lamp' + key]}"></div>`;
     layout();
   }
-
   /* the lamp stands on the scene's ground line (the image is anchored to the bottom and scaled to cover) */
   function layout() {
     const w = innerWidth, h = innerHeight, scale = Math.max(w / 1600, h / 900);
@@ -244,9 +232,168 @@ ${fg}
     lampEl.style.setProperty('--stw-lh', lh + 'px'); lampEl.style.setProperty('--stw-lb', lb + 'px'); lampEl.style.setProperty('--stw-lx', lx + 'px');
   }
 
-  /* ═════════════ decorative snowfall ═════════════ */
-  let on = false, snowLayer = null;
-  const onResize = () => { layout(); };
+
+  /* ═════════════ snow: layered, non-colliding particles ═════════════ */
+  let on = false, snowCanvas = null, snowCtx = null, snowRaf = 0;
+  let snowParticles = [], snowWidth = 0, snowHeight = 0, snowDpr = 1;
+  let snowLast = 0, snowNextFrame = 0, snowResizeTimer = 0, snowWind = 0;
+  const snowPointer = { x: -1000, y: -1000, vx: 0, vy: 0, last: 0 };
+  const snowMedia = matchMedia('(prefers-reduced-motion: reduce)');
+  const onResize = () => {
+    layout();
+    clearTimeout(snowResizeTimer);
+    snowResizeTimer = setTimeout(resizeSnow, 110);
+  };
+  function makeSnowParticle(initial = false) {
+    const depth = Math.random();
+    return {
+      x: Math.random() * snowWidth,
+      y: initial ? Math.random() * snowHeight : -10 - Math.random() * 50,
+      depth,
+      radius: .55 + depth * 2.1,
+      speed: 18 + depth * 56,
+      drift: 5 + depth * 25,
+      phase: Math.random() * Math.PI * 2,
+      frequency: .00028 + Math.random() * .00072,
+      opacity: .2 + depth * .68,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - .5) * (.18 + depth * .8),
+      crystal: depth > .74 && Math.random() > .3,
+      cursorForce: 0
+    };
+  }
+  function resizeSnow() {
+    if (!snowCanvas || !snowCtx) return;
+    const w = Math.max(1, Math.round(innerWidth));
+    const h = Math.max(1, Math.round(innerHeight));
+    const area = w * h;
+    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.55 : 1.8);
+    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt(6000000 / area)));
+    snowWidth = w;
+    snowHeight = h;
+    snowCanvas.width = Math.round(w * snowDpr);
+    snowCanvas.height = Math.round(h * snowDpr);
+    snowCanvas.style.width = w + 'px';
+    snowCanvas.style.height = h + 'px';
+    snowCtx.setTransform(snowDpr, 0, 0, snowDpr, 0, 0);
+    const target = coarse
+      ? Math.round(clamp(area / 3600, 125, 250))
+      : Math.round(clamp(area / 4700, 210, 430));
+    while (snowParticles.length < target) snowParticles.push(makeSnowParticle(true));
+    if (snowParticles.length > target) snowParticles.length = target;
+    drawSnow(0, performance.now());
+  }
+  function drawSnow(dt, now) {
+    if (!snowCtx) return;
+    const ctx = snowCtx;
+    ctx.clearRect(0, 0, snowWidth, snowHeight);
+    const motionOff = snowMedia.matches;
+    const gust = motionOff ? 0 : Math.sin(now * .00017) * 8 + Math.sin(now * .000071 + 2.1) * 5;
+    snowWind += (gust - snowWind) * Math.min(1, dt * .8);
+
+    for (const flake of snowParticles) {
+      if (!motionOff) {
+        const dx = flake.x - snowPointer.x;
+        const dy = flake.y - snowPointer.y;
+        const distance = Math.hypot(dx, dy);
+        let cursorPush = 0;
+        if (!coarse && snowPointer.last && now - snowPointer.last < 260 && distance < 175) {
+          const falloff = 1 - distance / 175;
+          const pointerVelocity = clamp(snowPointer.vx * .45 + snowPointer.vy * .12, -42, 42);
+          cursorPush = pointerVelocity * falloff * falloff * .62;
+        }
+        flake.cursorForce += (cursorPush - flake.cursorForce) * Math.min(1, dt * 2.2);
+        const localSway = Math.sin(now * flake.frequency + flake.phase) * flake.drift;
+        const microGust = Math.sin(now * .00031 + flake.phase * 1.7) * (2 + flake.depth * 5);
+        flake.x += (snowWind + localSway + microGust + flake.cursorForce) * dt;
+        flake.y += flake.speed * dt;
+        flake.rotation += flake.spin * dt;
+        if (flake.y > snowHeight + 12) {
+          flake.y = -8 - Math.random() * 60;
+          flake.x = Math.random() * snowWidth;
+        }
+        if (flake.x < -18) flake.x = snowWidth + 10;
+        else if (flake.x > snowWidth + 18) flake.x = -10;
+      }
+      const depth = flake.depth;
+      ctx.save();
+      ctx.translate(flake.x, flake.y);
+      ctx.rotate(flake.rotation);
+      ctx.globalAlpha = flake.opacity;
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = 'rgba(255,255,255,.92)';
+      ctx.lineCap = 'round';
+      if (depth < .25) ctx.filter = 'blur(.8px)';
+      if (flake.crystal && !motionOff) {
+        const radius = flake.radius * 1.6;
+        ctx.lineWidth = Math.max(.45, flake.radius * .25);
+        ctx.beginPath();
+        for (let arm = 0; arm < 6; arm++) {
+          const angle = arm * Math.PI / 3;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          const branch = radius * .34;
+          ctx.moveTo(0, 0);
+          ctx.lineTo(x, y);
+          ctx.moveTo(x * .58, y * .58);
+          ctx.lineTo(x * .58 - Math.sin(angle) * branch, y * .58 + Math.cos(angle) * branch);
+          ctx.moveTo(x * .58, y * .58);
+          ctx.lineTo(x * .58 + Math.sin(angle) * branch, y * .58 - Math.cos(angle) * branch);
+        }
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, flake.radius * .48, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, flake.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+  function stepSnow(now) {
+    snowRaf = 0;
+    if (!on || !snowCtx || document.hidden) return;
+    const interval = 1000 / (coarse ? 42 : 60);
+    if (now < snowNextFrame) {
+      snowRaf = requestAnimationFrame(stepSnow);
+      return;
+    }
+    snowNextFrame = now + interval;
+    const dt = Math.min(.045, (now - (snowLast || now)) / 1000);
+    snowLast = now;
+    drawSnow(dt, now);
+    if (!snowMedia.matches) snowRaf = requestAnimationFrame(stepSnow);
+  }
+  function kickSnow() {
+    if (!on || !snowCtx || document.hidden || snowMedia.matches || snowRaf) return;
+    snowLast = 0;
+    snowRaf = requestAnimationFrame(stepSnow);
+  }
+  function onSnowPointer(event) {
+    if (coarse) return;
+    const now = performance.now();
+    const elapsed = Math.max(.008, (now - (snowPointer.last || now)) / 1000);
+    snowPointer.vx = clamp((event.clientX - snowPointer.x) / elapsed, -1600, 1600);
+    snowPointer.vy = clamp((event.clientY - snowPointer.y) / elapsed, -1600, 1600);
+    snowPointer.x = event.clientX;
+    snowPointer.y = event.clientY;
+    snowPointer.last = now;
+  }
+  const onSnowVisibility = () => {
+    if (document.hidden) {
+      cancelAnimationFrame(snowRaf);
+      snowRaf = 0;
+    } else kickSnow();
+  };
+  const onSnowMotionPreference = () => {
+    if (!on) return;
+    cancelAnimationFrame(snowRaf);
+    snowRaf = 0;
+    drawSnow(0, performance.now());
+    kickSnow();
+  };
   function enable() {
     if (on) return;
     on = true;
@@ -254,25 +401,48 @@ ${fg}
     root.classList.add('st-winter');
     buildScene();
     addEventListener('resize', onResize, { passive: true });
-
-    // This is a visual overlay only: no canvas, particle simulation, collisions or sensors.
-    snowLayer = document.createElement('div');
-    snowLayer.className = 'stw-snowfall';
-    snowLayer.setAttribute('aria-hidden', 'true');
-    snowLayer.innerHTML = '<i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i><i class="stw-snowfall-layer"></i>';
-    document.documentElement.append(snowLayer);
+    snowCanvas = document.createElement('canvas');
+    snowCanvas.className = 'stw-snow-canvas';
+    snowCanvas.setAttribute('aria-hidden', 'true');
+    snowCtx = snowCanvas.getContext('2d', { alpha: true, desynchronized: true });
+    if (snowCtx) {
+      document.body.append(snowCanvas);
+      resizeSnow();
+      snowLast = 0;
+      snowNextFrame = 0;
+      if (!coarse) addEventListener('pointermove', onSnowPointer, { passive: true });
+      document.addEventListener('visibilitychange', onSnowVisibility);
+      if (snowMedia.addEventListener) snowMedia.addEventListener('change', onSnowMotionPreference);
+      else snowMedia.addListener?.(onSnowMotionPreference);
+      kickSnow();
+    } else {
+      snowCanvas.remove();
+      snowCanvas = null;
+    }
   }
   function disable() {
     if (!on) return;
     on = false;
     root.classList.remove('st-winter');
     removeEventListener('resize', onResize);
-    snowLayer?.remove();
-    snowLayer = null;
+    removeEventListener('pointermove', onSnowPointer);
+    document.removeEventListener('visibilitychange', onSnowVisibility);
+    if (snowMedia.removeEventListener) snowMedia.removeEventListener('change', onSnowMotionPreference);
+    else snowMedia.removeListener?.(onSnowMotionPreference);
+    clearTimeout(snowResizeTimer);
+    cancelAnimationFrame(snowRaf);
+    snowRaf = 0;
+    snowCanvas?.remove();
+    snowCanvas = null;
+    snowCtx = null;
+    snowParticles = [];
     bg?.remove();
     bg = null;
   }
-  new MutationObserver(() => { if (on && bg && bg.dataset.dark !== String(isDark())) buildScene(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+  new MutationObserver(() => {
+    if (!on || !bg) return;
+    if (bg.dataset.dark !== String(isDark()) || bg.dataset.city !== site.winterCity) buildScene();
+  }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
   /* visitor switch in Settings: shown only while the admin has the theme on */
   const userToggle = $('#winterToggle'), userSec = userToggle?.closest('.settings-sec');
@@ -281,7 +451,10 @@ ${fg}
     const allowed = site.winter === 'on';
     if (userSec) userSec.hidden = !allowed;
     if (userToggle) userToggle.checked = allowed && userWants();
-    if (allowed && userWants()) enable(); else disable();
+    if (allowed && userWants()) {
+      if (!on) enable();
+      else if (bg && (bg.dataset.dark !== String(isDark()) || bg.dataset.city !== site.winterCity)) buildScene();
+    } else disable();
   }
   userToggle?.addEventListener('change', () => {
     try { localStorage.setItem(LOCAL, userToggle.checked ? '1' : '0'); } catch { /* storage blocked */ }
@@ -332,6 +505,7 @@ ${fg}
   function readRows(rows) {
     const m = Object.fromEntries((rows || []).map((r) => [r.key, r.value]));
     site.winter = m.winter_mode === 'on' ? 'on' : 'off';
+    site.winterCity = CITY_IDS.includes(m.winter_city) ? m.winter_city : (CITY_IDS.includes(site.winterCity) ? site.winterCity : 'baku');
     site.winterBlur = clamp(Number(m.winter_blur ?? site.winterBlur ?? 0) || 0, 0, 18);
     site.musicUrl = /^https:\/\//.test(m.music_url || '') ? m.music_url : '';
     site.musicTitle = String(m.music_title || '').slice(0, 80);
@@ -340,7 +514,7 @@ ${fg}
   }
   async function load() {
     try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
+      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_city', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
       if (error) throw error;
       readRows(data);
     } catch { /* keep the last known state */ }
@@ -359,6 +533,17 @@ ${fg}
       <div class="stackd-section-head"><h3 data-stw="admin"></h3><span>SEASON</span></div>
       <label class="st-switch"><input type="checkbox" id="stwAdminWinter"><span class="st-switch-ui" aria-hidden="true"></span><span data-stw="winter"></span></label>
       <p class="stackd-admin-note" data-stw="winterHelp"></p>
+      <div class="stw-city-control">
+        <label for="stwAdminCity" data-stw="city"></label>
+        <select id="stwAdminCity">
+          <option value="baku" data-stw="cityBaku"></option>
+          <option value="new-york" data-stw="cityNewYork"></option>
+          <option value="tokyo" data-stw="cityTokyo"></option>
+          <option value="london" data-stw="cityLondon"></option>
+          <option value="paris" data-stw="cityParis"></option>
+        </select>
+        <p class="stackd-admin-note" data-stw="cityHelp"></p>
+      </div>
       <div class="stw-blur-control">
         <label for="stwAdminBlur"><span data-stw="blur"></span> <b id="stwAdminBlurVal">0 px</b></label>
         <input type="range" id="stwAdminBlur" min="0" max="18" step="1" value="0" aria-label="Winter background blur">
@@ -381,6 +566,12 @@ ${fg}
     tab.append(adminBox);
     const vol = $('#stwAdminVol'), volVal = $('#stwAdminVolVal');
     vol.addEventListener('input', () => { volVal.textContent = vol.value + '%'; if (audio) audio.volume = vol.value / 100; });
+    const citySelect = $('#stwAdminCity');
+    citySelect.addEventListener('change', () => {
+      site.winterCity = CITY_IDS.includes(citySelect.value) ? citySelect.value : 'baku';
+      try { localStorage.setItem('stacked.site', JSON.stringify(site)); } catch { /* */ }
+      if (on) buildScene();
+    });
     const blur = $('#stwAdminBlur'), blurVal = $('#stwAdminBlurVal');
     blur.addEventListener('input', () => {
       const amount = applySceneBlur(blur.value);
@@ -395,6 +586,7 @@ ${fg}
     if (!adminBox) return;
     adminBox.querySelectorAll('[data-stw]').forEach((el) => { el.textContent = t(el.dataset.stw); });
     $('#stwAdminWinter').checked = site.winter === 'on';
+    $('#stwAdminCity').value = CITY_IDS.includes(site.winterCity) ? site.winterCity : 'baku';
     $('#stwAdminBlur').value = String(site.winterBlur);
     $('#stwAdminBlurVal').textContent = site.winterBlur + ' px';
     applySceneBlur(site.winterBlur);
@@ -422,6 +614,7 @@ ${fg}
       if (url && !/^https:\/\//.test(url)) { toastMsg(t('badUrl')); return; }
       const rows = [
         { key: 'winter_mode', value: $('#stwAdminWinter').checked ? 'on' : 'off' },
+        { key: 'winter_city', value: CITY_IDS.includes($('#stwAdminCity').value) ? $('#stwAdminCity').value : 'baku' },
         { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) },
         { key: 'music_url', value: url },
         { key: 'music_title', value: $('#stwAdminTitle').value.trim().slice(0, 80) },

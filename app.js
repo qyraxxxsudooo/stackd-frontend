@@ -228,24 +228,65 @@ function updateChipsSlider() {
 }
 function renderAll() {
   const L = live();
-  const categories = ['All', ...new Set([...CATS, ...L.map(p => p.category).filter(Boolean)])].filter(c => c === 'All' || L.some(p => p.category === c));
+  const categories = ['All', ...new Set([...CATS, ...L.map(p => p.category).filter(Boolean)])]
+    .filter(category => category === 'All' || L.some(product => product.category === category));
   if (!categories.includes(S.cat)) S.cat = 'All';
+
   if ($('#chips')) {
-    $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(c =>
-      `<button type="button" data-act="cat" data-cat="${esc(c)}" aria-pressed="${S.cat === c}">${c === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(c)}</button>`
+    $('#chips').innerHTML = '<div class="chips-slider" id="chipsSlider"></div>' + categories.map(category =>
+      `<button type="button" data-act="cat" data-cat="${esc(category)}" aria-pressed="${S.cat === category}">${category === 'All' ? (S.lang === 'en' ? 'All' : S.lang === 'az' ? 'Hamısı' : 'Все') : esc(category)}</button>`
     ).join('');
     requestAnimationFrame(updateChipsSlider);
   }
+
   const q = normalizeSearch(S.q);
-  const list = L.filter(p => (S.cat === 'All' || p.category === S.cat) && (!q || normalizeSearch([p.name, p.description, p.category].join(' ')).includes(q)));
-  if ($('#grid')) $('#grid').innerHTML = list.length ? list.map(card).join('') : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
-  // Fade cards in only when the visible set changed (first load, category, search), never on stock or cart updates.
-  const gridKey = S.cat + '|' + list.map(p => p.id).join(',');
-  S.gridKey = gridKey;
+  const list = L.filter(product =>
+    (S.cat === 'All' || product.category === S.cat) &&
+    (!q || normalizeSearch([product.name, product.description, product.category].join(' ')).includes(q))
+  );
+  const nextGridKey = S.cat + '|' + list.map(product => product.id).join(',');
+  const gridChanged = nextGridKey !== S.gridKey;
+  const grid = $('#grid');
+
+  if (grid) {
+    const markup = list.length
+      ? list.map(card).join('')
+      : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
+    const animateCards = () => {
+      if (!gridChanged || reduce()) return;
+      grid.querySelectorAll('.card').forEach((element, index) => {
+        element.style.setProperty('--stagger-index', String(Math.min(index, 10)));
+        element.classList.add('st-card-enter');
+      });
+    };
+
+    clearTimeout(S.gridRenderTimer);
+    S.gridRenderToken = (S.gridRenderToken || 0) + 1;
+    const renderToken = S.gridRenderToken;
+
+    if (gridChanged && grid.children.length && !reduce()) {
+      // Fade the outgoing set first; token guards discard stale results when
+      // the user changes category or search again before the transition ends.
+      grid.classList.remove('st-grid-exit');
+      void grid.offsetHeight;
+      grid.classList.add('st-grid-exit');
+      S.gridRenderTimer = setTimeout(() => {
+        if (S.gridRenderToken !== renderToken) return;
+        grid.innerHTML = markup;
+        grid.classList.remove('st-grid-exit');
+        animateCards();
+      }, 125);
+    } else {
+      grid.classList.remove('st-grid-exit');
+      grid.innerHTML = markup;
+      animateCards();
+    }
+  }
+
+  S.gridKey = nextGridKey;
   renderCart();
   if ($('#editor')?.open) renderAdmin();
 }
-
 const searchInput = $('#q'), suggestionsBox = $('#searchSuggestions');
 searchInput?.addEventListener('input', e => {
   const val = String(e.target.value || '').trim();
@@ -290,13 +331,37 @@ function updateThemeSlider() {
 }
 function applyTheme() {
   const root = document.documentElement;
-  root.classList.add('theme-switching'); clearTimeout(applyTheme.timer); applyTheme.timer = setTimeout(() => root.classList.remove('theme-switching'), 320);
-  let t = 'system';
-  try { t = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-  document.documentElement.dataset.theme = t === 'system' ? (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light') : t;
-  $$('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === t));
+  root.classList.add('theme-switching');
+  clearTimeout(applyTheme.timer);
+  applyTheme.timer = setTimeout(() => root.classList.remove('theme-switching'), 320);
+
+  let preference = 'system';
+  try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
+  const resolved = preference === 'system'
+    ? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : preference;
+
+  // Keep the data attribute and legacy class in lockstep. A stale dark class
+  // previously prevented the winter background from following a theme change.
+  root.dataset.theme = resolved;
+  root.classList.toggle('stacked-dark', resolved === 'dark');
+  const browserTheme = document.querySelector('meta[name="theme-color"]');
+  if (browserTheme) browserTheme.setAttribute('content', resolved === 'dark' ? '#141311' : '#f7f3ec');
+
+  $('.seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.v === preference));
   setTimeout(updateThemeSlider, 50);
 }
+
+
+ // Re-evaluate the system theme only while the user's preference is Auto.
+const systemThemePreference = window.matchMedia?.('(prefers-color-scheme: dark)');
+const syncSystemTheme = () => {
+  let preference = 'system';
+  try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
+  if (preference === 'system') applyTheme();
+};
+if (systemThemePreference?.addEventListener) systemThemePreference.addEventListener('change', syncSystemTheme);
+else systemThemePreference?.addListener?.(syncSystemTheme);
 
 const lines = () => S.cart.map(c => ({ p: find(c.id), qty: c.qty })).filter(l => l.p);
 function renderCart() {
