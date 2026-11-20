@@ -33,16 +33,22 @@ html.st-winter{background:#070b17}
 html.st-winter:not(.stacked-dark):not([data-theme=dark]){background:#f6dccb}
 html.st-winter body{background:transparent!important}
 .stw-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
-.stw-scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none}
-.stw-lamp{position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
+.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none}
+.stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
+.stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
+.stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
+.stw-bg[data-dark="false"]::before{background:radial-gradient(ellipse 46% 35% at 70% 70%,rgba(255,211,159,.25),transparent 75%),radial-gradient(ellipse 55% 22% at 20% 15%,rgba(255,255,255,.25),transparent 78%);opacity:.8}
+.stw-bg[data-dark="false"]::after{background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 28%,rgba(255,226,211,.12));opacity:.8}
+.stw-lamp{z-index:2;position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
 .stw-lamp img{position:absolute;inset:0;width:100%;height:100%}
 .stw-halo{position:absolute;left:50%;top:13.6%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,140,.55),rgba(255,196,100,.16) 45%,transparent 72%)}
 .stw-cone{position:absolute;left:50%;top:21.6%;width:230%;bottom:0;transform:translateX(-50%);background:radial-gradient(ellipse 50% 100% at 50% 0,rgba(255,212,130,.38),rgba(255,200,110,.16) 45%,rgba(255,200,110,.04) 70%,transparent 82%);will-change:opacity;animation:stwFlicker 7s steps(1) infinite}
 .stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
 @keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
+@keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
 .stw-snow{position:fixed;left:0;top:0;z-index:25;pointer-events:none}
-@media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important}}
-@media (prefers-reduced-motion:reduce){.stw-cone{animation:none}}
+@media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
+@media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
 `;
   const UI_CSS = `
 .st-music{position:relative;display:none!important;place-items:center;flex:none}
@@ -192,8 +198,10 @@ ${fg}
   const flakes = [], surf = new Map();
   let W = 0, H = 0, DPR = 1, last = 0, wind = 0, tilt = 0, fall = 1, shake = 0, lastY = scrollY, vScroll = 0, want = 0, slow = 0, frames = 0, lowQ = false;
   const ptr = { x: -999, y: -999, vx: 0, t: 0 };
-  const COL = 4, LOOSE_MAX = coarse ? 110 : 360;
-  let looseCount = 0;
+  const COL = 4, SURFACE_CELL = 96, LOOSE_MAX = coarse ? 90 : 300;
+  const collisionBuckets = new Map();
+  const visibleCards = new Set();
+  let cardObserver = null, nextFrameAt = 0, looseCount = 0;
 
   function resize(force) {
     if (!cv) return;
@@ -202,12 +210,12 @@ ${fg}
     // phone browsers resize the viewport while their toolbars slide: reallocate only when the width changes or it grows a lot
     const needH = coarse ? view.maxH + 40 : h;
     if (force === true || w !== W || needH > H + 60 || (!coarse && needH !== H)) {
-      DPR = Math.min(devicePixelRatio || 1, coarse ? 1.25 : 1.6);
+      DPR = Math.min(devicePixelRatio || 1, coarse ? 1.05 : 1.5);
       W = w; H = needH;
       cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
       cv.style.width = W + 'px'; cv.style.height = H + 'px';
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      want = Math.round(clamp(W * h / 6500, 60, 260) * (coarse ? .55 : 1));
+      want = coarse ? Math.round(clamp(W * h / 7800, 42, 170) * .48) : Math.round(clamp(W * h / 6500, 60, 260));
       fitFlakes();
     }
     layout(); measure();
@@ -228,7 +236,7 @@ ${fg}
   const capAt = (s, i) => { const x = i * COL + COL / 2, e = Math.min(x, s.w - x); return e >= s.rad ? s.cap : s.cap * Math.max(0, e / s.rad) ** 1.6; };
   function measure() {
     const sy = scrollY, bar = $('.st-tabbar');
-    const els = [...document.querySelectorAll('#grid .card')]; if (bar) els.push(bar);
+    const els = cardObserver ? [...visibleCards] : [...document.querySelectorAll('#grid .card')]; if (bar) els.push(bar);
     const seen = new Set();
     for (const el of els) {
       const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
@@ -254,6 +262,8 @@ ${fg}
 
   function step(now) {
     raf = 0; if (!on || !ctx) return;
+    if (coarse && now < nextFrameAt) { raf = requestAnimationFrame(step); return; }
+    nextFrameAt = coarse ? now + 1000 / 30 : now;
     const dtRaw = (now - (last || now)) / 1000, dt = Math.min(.05, dtRaw); last = now;
     // adaptive quality: if frames keep running long, use fewer flakes and simpler drawing
     if (dtRaw > .026 && dtRaw < .2) slow++;
@@ -265,7 +275,19 @@ ${fg}
 
     ctx.clearRect(0, 0, W, H);
     const list = [...surf.values()];
-    for (const s of list) { s.vtop = s.fixed ? s.top : s.top - sy; s.vis = s.vtop > -30 && s.vtop < vh + 20; }
+    collisionBuckets.clear();
+    for (const s of list) {
+      s.vtop = s.fixed ? s.top : s.top - sy;
+      s.vis = s.vtop > -30 && s.vtop < vh + 20;
+      if (!s.vis) continue;
+      const firstCell = Math.floor(s.l / SURFACE_CELL);
+      const lastCell = Math.floor((s.l + s.w) / SURFACE_CELL);
+      for (let cell = firstCell; cell <= lastCell; cell++) {
+        let bucket = collisionBuckets.get(cell);
+        if (!bucket) collisionBuckets.set(cell, bucket = []);
+        bucket.push(s);
+      }
+    }
 
     const sp = Math.abs(vScroll);
     if (sp > 450 || shake > 0) {
@@ -282,7 +304,7 @@ ${fg}
       if (now - ptr.t < 600) { const dx = f.x - ptr.x, dy = f.y - ptr.y, d2 = dx * dx + dy * dy; if (d2 < 7000) { const d = Math.sqrt(d2) || 1, p = (1 - d / 84) * 260 * dt; f.x += dx / d * p; f.y += dy / d * p * .5; } }
       f.x += f.vx * dt; f.y += f.vy * dt;
       let gone = f.y > vh + 8 || f.x < -60 || f.x > W + 60;
-      if (!gone) for (const s of list) {
+      if (!gone) for (const s of (collisionBuckets.get(Math.floor(f.x / SURFACE_CELL)) || [])) {
         if (!s.vis || f.x < s.l || f.x >= s.l + s.w) continue;
         const c = ((f.x - s.l) / COL) | 0, surface = s.vtop - s.cols[c];
         if (py <= surface && f.y >= surface) {
@@ -341,6 +363,15 @@ ${fg}
   const remeasure = () => { clearTimeout(mt); mt = setTimeout(measure, 150); };
   const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); resize(); }, 140); };
   const kick = () => { if (on && cv && !raf && !document.hidden) { last = 0; raf = requestAnimationFrame(step); } };
+  const onVisibility = () => {
+    if (document.hidden) {
+      cancelAnimationFrame(raf); raf = 0; clearInterval(iv); iv = 0;
+      return;
+    }
+    last = 0; measure();
+    if (on && !iv) iv = setInterval(measure, 4000);
+    kick();
+  };
 
   function enable() {
     if (on) return; on = true;
@@ -353,12 +384,38 @@ ${fg}
     ctx = cv.getContext('2d', { alpha: true, desynchronized: true });
     document.body.append(cv);
     flakes.length = 0; looseCount = 0; W = 0; H = 0; lowQ = false; resize(true);
-    addEventListener('pointermove', onPointer, { passive: true });
+    if (!coarse) addEventListener('pointermove', onPointer, { passive: true });
     addEventListener('deviceorientation', onOrient, { passive: true });
     addEventListener('devicemotion', onMotion, { passive: true });
-    document.addEventListener('visibilitychange', kick);
-    const grid = $('#grid'); mo = new MutationObserver(remeasure); if (grid) mo.observe(grid, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
-    iv = setInterval(measure, 2000);
+    document.addEventListener('visibilitychange', onVisibility);
+    const grid = $('#grid');
+    if (grid && 'IntersectionObserver' in window) {
+      cardObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visibleCards.add(entry.target);
+          else visibleCards.delete(entry.target);
+        }
+        remeasure();
+      }, { rootMargin: '180px 0px' });
+      grid.querySelectorAll('.card').forEach((card) => cardObserver.observe(card));
+    }
+    mo = new MutationObserver((records) => {
+      if (cardObserver) for (const record of records) {
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.matches?.('.card')) cardObserver.observe(node);
+          node.querySelectorAll?.('.card').forEach((card) => cardObserver.observe(card));
+        });
+        record.removedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.matches?.('.card')) { cardObserver.unobserve(node); visibleCards.delete(node); surf.delete(node); }
+          node.querySelectorAll?.('.card').forEach((card) => { cardObserver.unobserve(card); visibleCards.delete(card); surf.delete(card); });
+        });
+      }
+      remeasure();
+    });
+    if (grid) mo.observe(grid, { childList: true });
+    iv = setInterval(measure, 4000);
     kick();
   }
   function disable() {
@@ -368,8 +425,9 @@ ${fg}
     cv?.remove(); cv = null; ctx = null; bg?.remove(); bg = null; surf.clear(); flakes.length = 0; looseCount = 0;
     removeEventListener('resize', onResize); removeEventListener('pointermove', onPointer);
     removeEventListener('deviceorientation', onOrient); removeEventListener('devicemotion', onMotion);
-    document.removeEventListener('visibilitychange', kick);
-    mo?.disconnect(); clearInterval(iv);
+    document.removeEventListener('visibilitychange', onVisibility);
+    mo?.disconnect(); cardObserver?.disconnect(); cardObserver = null; visibleCards.clear(); collisionBuckets.clear();
+    clearInterval(iv); iv = 0; nextFrameAt = 0;
   }
   new MutationObserver(() => { if (on && bg && bg.dataset.dark !== String(isDark())) buildScene(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
