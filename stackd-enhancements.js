@@ -1551,11 +1551,7 @@
     window.addEventListener('resize', placeMobileCartButton, { passive: true });
     const langLabel = $('#currentLangLabel');
     if (langLabel && 'MutationObserver' in window) new MutationObserver(placeMobileCartButton).observe(langLabel, { childList: true, characterData: true, subtree: true });
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
-      let preference = 'system';
-      try { preference = localStorage.getItem('pdd.theme') || 'system'; } catch {}
-      if (preference === 'system') applyTheme();
-    });
+    // The core app owns the single system-appearance listener.
     const productForm = $('#pform');
     productForm?.addEventListener('submit', saveProductWithExtras, true);
     $('#saveSettingsBtn')?.addEventListener('click', saveHeroSettings, true);
