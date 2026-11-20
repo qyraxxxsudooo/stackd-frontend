@@ -137,6 +137,7 @@ function applyLanguage(lang) {
   document.documentElement.lang = selected;
   if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
   $('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
+  $('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
   $$('[data-i18n]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18n] ?? translations.ru[element.dataset.i18n];
     if (value !== undefined) element.textContent = value;
@@ -918,7 +919,7 @@ function renderPromoUI() {
     const status = $(selector);
     if (status) status.innerHTML = promoView;
   });
-  $('[data-promo-input]').forEach(input => {
+  $$('[data-promo-input]').forEach(input => {
     if (input !== document.activeElement && !input.value && S.pendingPromoCode) input.value = S.pendingPromoCode;
   });
   const showSum = Boolean(S.promo) && est.discount > 0;
@@ -939,7 +940,7 @@ async function applyPromo(raw) {
     return;
   }
 
-  const buttons = $('[data-promo-apply]');
+  const buttons = $$('[data-promo-apply]');
   S.promoBusy = true;
   buttons.forEach(button => { button.disabled = true; });
   try {
@@ -1013,7 +1014,7 @@ async function applyPromo(raw) {
     S.promoMsg = { text: tr('promo_applied'), error: false };
     S.pendingPromoCode = null;
     try { localStorage.removeItem('pdd.pendingPromo'); } catch {}
-    $('[data-promo-input]').forEach(input => { input.value = ''; });
+    $$('[data-promo-input]').forEach(input => { input.value = ''; });
     renderCart();
   } catch (error) {
     console.error('Promo preview failed:', error);
