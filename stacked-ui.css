@@ -585,6 +585,7 @@ input,textarea,select,[contenteditable=true],[data-selectable=true],pre,code{
   box-shadow:var(--glass-shadow),var(--glass-inset);
 }
 #langSelector .lang-dropdown.active{
+  animation:none!important;
   opacity:1;
   visibility:visible;
   pointer-events:auto;
@@ -610,3 +611,5 @@ input,textarea,select,[contenteditable=true],[data-selectable=true],pre,code{
   #langSelector .lang-dropdown,#langSelector .lang-dropdown button{transition:none!important}
   #langSelector .lang-dropdown{transform:none}
 }
+
+#stackdProfileMenu .stackd-profile-history-action{gap:10px!important;justify-content:flex-start!important}
