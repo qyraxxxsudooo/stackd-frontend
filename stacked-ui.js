@@ -36,13 +36,25 @@
     (this.querySelector('[autofocus]') || this.querySelector('[data-act="close"]'))?.focus({ preventScroll: true });
   };
   let syncT = 0;
+  const profileIsOpen = () => Boolean(profileMenu && !profileMenu.hidden && !profileMenu.classList.contains('is-closing'));
   const syncScrim = () => { clearTimeout(syncT); syncT = setTimeout(() => {
-    const on = !!openPanel(); scrim.classList.toggle('is-on', on); document.body.classList.toggle('st-locked', on);
+    const on = !!openPanel() || profileIsOpen();
+    scrim.classList.toggle('is-on', on);
+    document.body.classList.toggle('st-locked', on);
   }, 30); };
   PANELS.forEach((id) => { const d = document.getElementById(id); if (d) new MutationObserver(syncScrim).observe(d, { attributes: true, attributeFilter: ['open', 'class'] }); });
-  const dismiss = () => { const d = openPanel(); if (d) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
+  if (profileMenu) new MutationObserver(syncScrim).observe(profileMenu, { attributes: true, attributeFilter: ['hidden', 'class'] });
+  const dismiss = () => {
+    const d = openPanel();
+    if (d) (typeof closeDlg === 'function' ? closeDlg(d) : d.close());
+    else if (profileIsOpen()) window.stakedSetProfileMenuOpen?.(false);
+  };
   scrim.addEventListener('click', dismiss);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.querySelector('dialog:modal') && openPanel()) { e.preventDefault(); dismiss(); } });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !document.querySelector('dialog:modal') && (openPanel() || profileIsOpen())) {
+      e.preventDefault(); dismiss();
+    }
+  });
 
   /* ───────── tab bar ───────── */
   const ICONS = {
@@ -78,9 +90,8 @@
     row.querySelector('button').textContent = S.lang === 'en' ? 'Top up' : S.lang === 'az' ? 'Artır' : 'Пополнить';
     menu.insertBefore(row, menu.querySelector('#myOrdersBtn') || menu.firstChild);
     row.querySelector('button').addEventListener('click', () => {
-      menu.hidden = true;
-      menu.setAttribute('aria-hidden', 'true');
-      profileTrigger?.setAttribute('aria-expanded', 'false');
+      if (typeof window.stakedSetProfileMenuOpen === 'function') window.stakedSetProfileMenuOpen(false);
+      else { menu.hidden = true; menu.setAttribute('aria-hidden', 'true'); profileTrigger?.setAttribute('aria-expanded', 'false'); }
       setActive('topup');
       const dialog = $('#topup');
       if (dialog && !dialog.open) dialog.showModal();
@@ -99,9 +110,8 @@
   function labels() {
     bar.querySelectorAll('.st-tab').forEach((b) => {
       const k = b.dataset.tab, el = b.querySelector('.st-tab-label');
-      const money = k === 'topup' && S.user && $('#userBalance');
-      el.textContent = money ? `${$('#userBalance').textContent} ₼` : t(k);
-      b.setAttribute('aria-label', money ? `${t('topup')}: ${el.textContent}` : t(k));
+      el.textContent = t(k);
+      b.setAttribute('aria-label', t(k));
     });
   }
   function setActive(k) {
@@ -271,7 +281,7 @@
     if (writing) return;
     const target = Number(bal.textContent);
     if (!Number.isFinite(target) || target === shown) return;
-    const from = shown; shown = target; labels();
+    const from = shown; shown = target;
     if (from === null) return;
     const box = bal.closest('.balance-display');
     if (box) { box.classList.remove('is-up', 'is-down'); void box.offsetWidth; box.classList.add(target > from ? 'is-up' : 'is-down'); }
@@ -280,7 +290,7 @@
     const t0 = performance.now(), D = 700;
     const step = (now) => {
       const p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3);
-      writing = true; bal.textContent = (from + (target - from) * e).toFixed(2); writing = false; labels();
+      writing = true; bal.textContent = (from + (target - from) * e).toFixed(2); writing = false;
       if (p < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
