@@ -659,6 +659,7 @@
     const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
     renderPromotionTargetOptions(); renderNewsAdmin();
     syncProfilePreferences();
+    syncProfileQuickActions();
   }
 
   function applyBrandAccent(value) {
@@ -1245,10 +1246,10 @@
     const orders = $('#myOrdersBtn', menu);
     menu.insertBefore(row, orders || menu.firstChild);
     $('#stackdProfileTopup')?.addEventListener('click', () => {
-      menu.hidden = true;
-      $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
+      setProfileMenuOpen(false);
       window.stakedSetTabActive?.('topup');
-      $('#topup')?.showModal();
+      const dialog = $('#topup');
+      if (dialog && !dialog.open) dialog.showModal();
     });
     const source = $('#userBalance');
     if (source && 'MutationObserver' in window) {
@@ -1290,8 +1291,7 @@
       button.className = 'stackd-profile-action';
       button.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
       button.addEventListener('click', () => {
-        menu.hidden = true;
-        $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
+        setProfileMenuOpen(false);
         openTopupHistory();
       });
       const logoutButton = $('#logoutBtn', menu);
@@ -1459,53 +1459,157 @@
     syncProfilePreferences();
   }
 
+  function syncProfileQuickActions() {
+    const language = ['ru','en','az'].includes(S.lang) ? S.lang : 'ru';
+    const copy = {
+      ru:{heading:'Быстрый доступ',orders:'Мои заказы',ordersNote:'Статусы, детали и QR-коды',history:'История пополнений',historyNote:'Заявки и зачисления',balance:'Баланс',topup:'Пополнить'},
+      en:{heading:'Quick access',orders:'My orders',ordersNote:'Status, details and QR codes',history:'Top-up history',historyNote:'Requests and credits',balance:'Balance',topup:'Add funds'},
+      az:{heading:'Sürətli keçidlər',orders:'Sifarişlərim',ordersNote:'Status, detallar və QR kodlar',history:'Balans tarixçəsi',historyNote:'Müraciətlər və köçürmələr',balance:'Balans',topup:'Artır'}
+    }[language];
+    const heading=$('#stackdProfileQuickTitle');
+    if(heading) heading.textContent=copy.heading;
+    const setAction=(id,title,note)=>{
+      const button=$('#'+id);
+      if(!button)return;
+      const titleNode=button.querySelector('[data-profile-action-title]');
+      const noteNode=button.querySelector('[data-profile-action-note]');
+      if(titleNode)titleNode.textContent=title;
+      if(noteNode)noteNode.textContent=note;
+    };
+    setAction('myOrdersBtn',copy.orders,copy.ordersNote);
+    setAction('stackdTopupHistoryOpen',copy.history,copy.historyNote);
+    const balanceLabel=$('#stackdProfileBalanceLabel');
+    const topupButton=$('#stackdProfileTopup');
+    if(balanceLabel)balanceLabel.textContent=copy.balance;
+    if(topupButton)topupButton.textContent=copy.topup;
+  }
+
+  function buildProfileQuickActions() {
+    const menu=$('#stackdProfileMenu');
+    if(!menu)return;
+    let section=$('#stackdProfileQuickActions');
+    if(!section){
+      section=document.createElement('section');
+      section.id='stackdProfileQuickActions';
+      section.className='stackd-profile-quick-section';
+      section.innerHTML='<div class="stackd-profile-quick-heading"><span>STAKED / ACCOUNT</span><strong id="stackdProfileQuickTitle"></strong></div><div class="stackd-profile-quick-grid"></div>';
+    }
+    const grid=$('.stackd-profile-quick-grid',section);
+    const orders=$('#myOrdersBtn',menu);
+    const history=$('#stackdTopupHistoryOpen',menu);
+    if(orders){
+      orders.classList.add('stackd-profile-quick-action');
+      orders.innerHTML='<span class="stackd-profile-quick-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.8h10a2 2 0 0 1 2 2v14.4l-3.4-2-3.6 2-3.6-2-3.4 2V5.8a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6"/></svg></span><span class="stackd-profile-quick-copy"><strong data-profile-action-title></strong><small data-profile-action-note></small></span><svg class="stackd-profile-quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      grid.append(orders);
+    }
+    if(history){
+      history.classList.add('stackd-profile-quick-action');
+      history.innerHTML='<span class="stackd-profile-quick-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></svg></span><span class="stackd-profile-quick-copy"><strong data-profile-action-title></strong><small data-profile-action-note></small></span><svg class="stackd-profile-quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+      grid.append(history);
+    }
+    const balance=$('#stackdProfileBalanceRow',menu);
+    const preferences=$('#stackdProfilePreferences',menu);
+    const logout=$('#logoutBtn',menu);
+    if(balance)balance.after(section);
+    else menu.insertBefore(section,preferences||logout||null);
+    if(preferences)section.after(preferences);
+    if(logout)menu.append(logout);
+    syncProfileQuickActions();
+  }
+
+  let profileCloseTimer=null;
+  function setProfileMenuOpen(open) {
+    const menu=$('#stackdProfileMenu');
+    const trigger=$('#stackdProfileTrigger');
+    if(!menu)return false;
+    if(profileCloseTimer!==null){clearTimeout(profileCloseTimer);profileCloseTimer=null;}
+    if(open){
+      menu.hidden=false;
+      menu.inert=false;
+      menu.setAttribute('aria-hidden','false');
+      menu.classList.remove('is-closing','is-visible');
+      void menu.offsetWidth;
+      menu.classList.add('is-visible');
+      trigger?.setAttribute('aria-expanded','true');
+      requestAnimationFrame(()=>updateThemeSlider());
+      return true;
+    }
+    if(menu.hidden||menu.classList.contains('is-closing')){
+      trigger?.setAttribute('aria-expanded','false');
+      return false;
+    }
+    menu.inert=true;
+    menu.setAttribute('aria-hidden','true');
+    menu.classList.remove('is-visible');
+    menu.classList.add('is-closing');
+    trigger?.setAttribute('aria-expanded','false');
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if(reduced){
+      menu.hidden=true;
+      menu.classList.remove('is-closing');
+    }else{
+      profileCloseTimer=window.setTimeout(()=>{
+        menu.hidden=true;
+        menu.classList.remove('is-closing');
+        profileCloseTimer=null;
+      },220);
+    }
+    return true;
+  }
+  window.stakedSetProfileMenuOpen=setProfileMenuOpen;
+
   function initProfileMenu() {
     buildProfileBalanceRow();
     makeTopupHistoryUI();
     buildProfilePreferences();
-    const trigger = $('#stackdProfileTrigger');
-    const menu = $('#stackdProfileMenu');
-    if (!trigger || !menu || trigger.dataset.bound === '1') return;
-    const head = $('.stackd-profile-head', menu);
-    if (head && !$('#stackdProfileClose', head)) {
-      const closeButton = document.createElement('button');
-      closeButton.id = 'stackdProfileClose';
-      closeButton.type = 'button';
-      closeButton.setAttribute('aria-label', S.lang === 'en' ? 'Close profile' : S.lang === 'az' ? 'Profili bağla' : 'Закрыть профиль');
-      closeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
-      closeButton.addEventListener('click', () => {
-        menu.hidden = true;
-        trigger.setAttribute('aria-expanded', 'false');
+    buildProfileQuickActions();
+    const trigger=$('#stackdProfileTrigger');
+    const menu=$('#stackdProfileMenu');
+    if(!trigger||!menu||trigger.dataset.bound==='1')return;
+    const head=$('.stackd-profile-head',menu);
+    if(head&&!$('#stackdProfileClose',head)){
+      const closeButton=document.createElement('button');
+      closeButton.id='stackdProfileClose';
+      closeButton.type='button';
+      closeButton.setAttribute('aria-label',S.lang==='en'?'Close profile':S.lang==='az'?'Profili bağla':'Закрыть профиль');
+      closeButton.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+      closeButton.addEventListener('click',()=>{
+        setProfileMenuOpen(false);
         window.stakedSetTabActive?.('shop');
       });
       head.append(closeButton);
     }
-    trigger.dataset.bound = '1';
-    const toggle = () => {
-      menu.hidden = !menu.hidden;
-      trigger.setAttribute('aria-expanded', String(!menu.hidden));
-      if (!menu.hidden) requestAnimationFrame(updateThemeSlider);
-    };
-    trigger.addEventListener('click', toggle);
-    document.addEventListener('click', event => {
-      if (event.target.closest('.stackd-profile-anchor') || event.target.closest('.stackd-profile-menu') || event.target.closest('.st-tab[data-tab="profile"]')) return;
-      // Only reset navigation when this listener actually closes an open menu.
-      // Previously every click outside the hidden header anchor reset the active tab to Shop,
-      // overwriting the Cart tab's state immediately after stacked-ui.js selected it.
-      if (menu.hidden) return;
-      menu.hidden = true;
-      trigger.setAttribute('aria-expanded', 'false');
+    trigger.dataset.bound='1';
+    trigger.addEventListener('click',()=>{
+      const opening=menu.hidden||menu.classList.contains('is-closing');
+      setProfileMenuOpen(opening);
+      window.stakedSetTabActive?.(opening?'profile':'shop');
+    });
+    document.addEventListener('click',event=>{
+      if(event.target.closest('.stackd-profile-anchor')||event.target.closest('.stackd-profile-menu')||event.target.closest('.st-tab[data-tab="profile"]'))return;
+      if(menu.hidden||menu.classList.contains('is-closing'))return;
+      setProfileMenuOpen(false);
+      // Preserve the selected destination when the tap belongs to another tab.
+      if(!event.target.closest('.st-tab'))window.stakedSetTabActive?.('shop');
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&!menu.hidden&&!menu.classList.contains('is-closing')){
+        setProfileMenuOpen(false);
+        window.stakedSetTabActive?.('shop');
+      }
+    });
+    $('#myOrdersBtn')?.addEventListener('click',()=>{
+      setProfileMenuOpen(false);
+      window.stakedSetTabActive?.('orders');
+    });
+    const logout=$('#logoutBtn');
+    if(logout)logout.addEventListener('click',()=>{
+      setProfileMenuOpen(false);
       window.stakedSetTabActive?.('shop');
     });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
-    });
-    $('#myOrdersBtn')?.addEventListener('click', () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); window.stakedSetTabActive?.('orders'); });
-    const logout = $('#logoutBtn');
-    if (logout) logout.addEventListener('click', () => { menu.hidden = true; window.stakedSetTabActive?.('shop'); });
     syncProfileMenu();
-    _supabase.auth.onAuthStateChange((_event, session) => {
-      setTimeout(() => { S.user = session?.user || null; syncProfileMenu(); }, 0);
+    _supabase.auth.onAuthStateChange((_event,session)=>{
+      setTimeout(()=>{S.user=session?.user||null;syncProfileMenu();},0);
     });
   }
   function syncProfileMenu() {
@@ -1516,10 +1620,11 @@
       profileHead.dataset.initial = String(displayName).trim().charAt(0).toUpperCase() || 'S';
     }
     syncProfilePreferences();
+    syncProfileQuickActions();
     const avatar = $('#userAvatar');
     if (avatar) avatar.alt = 'Profile';
     const historyButton = $('#stackdTopupHistoryOpen');
-    if (historyButton) historyButton.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+    if (historyButton && !historyButton.querySelector('[data-profile-action-title]')) historyButton.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
     const historyTitle = $('#stackdTopupHistoryTitle');
     if (historyTitle) historyTitle.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
     const historyNote = $('#stackdTopupHistoryNote');
