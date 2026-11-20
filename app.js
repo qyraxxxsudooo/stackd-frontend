@@ -171,27 +171,47 @@ $('#signUpBtn')?.addEventListener('click', async () => {
     closeDlg($('#auth')); toast('Аккаунт создан!'); await checkAuth();
   }
 });
-$('#googleLoginBtn')?.addEventListener('click', async () => {
+$('#googleLoginBtn')?.addEventListener('click', async (event) => {
+  event.preventDefault();
   const button = $('#googleLoginBtn');
   if (button?.disabled) return;
   const originalText = button?.textContent;
-  if (button) { button.disabled = true; button.textContent = S.lang === 'en' ? 'Connecting to Google…' : S.lang === 'az' ? 'Google-a qoşulur…' : 'Подключение к Google…'; }
+  if (button) {
+    button.disabled = true;
+    button.textContent = S.lang === 'en' ? 'Connecting to Google…' : S.lang === 'az' ? 'Google-a qoşulur…' : 'Подключение к Google…';
+  }
+
   try {
-    const { error } = await _supabase.auth.signInWithOAuth({
+    // Ask Supabase for the OAuth URL, then navigate explicitly. This avoids
+    // relying on the SDK's implicit browser redirect and always displays
+    // Google's account chooser for users with an existing Google session.
+    const { data, error } = await _supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Always finish OAuth on the canonical origin. Never derive this from
-        // window.location.origin: users may start from www or a preview host.
-        redirectTo: 'https://staked.food/'
+        redirectTo: 'https://staked.food/',
+        skipBrowserRedirect: true,
+        queryParams: { prompt: 'select_account' }
       }
     });
     if (error) throw error;
+    if (!data?.url) throw new Error('Supabase не вернул адрес Google OAuth.');
+
+    const authUrl = new URL(data.url);
+    const expectedOrigin = new URL(SUPABASE_URL).origin;
+    if (authUrl.origin !== expectedOrigin || authUrl.pathname !== '/auth/v1/authorize') {
+      throw new Error('Получен неожиданный адрес авторизации. Вход остановлен для безопасности.');
+    }
+
+    window.location.assign(authUrl.href);
   } catch (error) {
-    console.error('Google sign-in failed:', error);
+    console.error('Google sign-in failed:', error?.message || 'Unknown error');
     const message = error?.message || 'Не удалось открыть вход Google.';
     if ($('#authMsg')) $('#authMsg').textContent = message;
     else toast('Ошибка Google: ' + message);
-    if (button) { button.disabled = false; button.textContent = originalText || tr('auth_google'); }
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText || tr('auth_google');
+    }
   }
 });
 $('#logoutBtn')?.addEventListener('click', async () => {
