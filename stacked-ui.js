@@ -12,9 +12,9 @@
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const L = () => (['ru', 'en', 'az'].includes(S.lang) ? S.lang : 'ru');
   const TX = {
-    ru: { shop: 'Магазин', orders: 'Заказы', topup: 'Пополнить', cart: 'Корзина', pending: 'Пополнение на проверке', credited: 'Баланс пополнен', pick: 'Выбрать', nofile: 'Скриншот не выбран' },
-    en: { shop: 'Shop', orders: 'Orders', topup: 'Top up', cart: 'Cart', pending: 'Top-up under review', credited: 'Balance topped up', pick: 'Choose', nofile: 'No screenshot selected' },
-    az: { shop: 'Mağaza', orders: 'Sifarişlər', topup: 'Artır', cart: 'Səbət', pending: 'Balans yoxlanılır', credited: 'Balans artırıldı', pick: 'Seç', nofile: 'Skrinşot seçilməyib' }
+    ru: { shop: 'Магазин', orders: 'Заказы', topup: 'Пополнить', cart: 'Корзина', profile: 'Профиль', pending: 'Пополнение на проверке', credited: 'Баланс пополнен', pick: 'Выбрать', nofile: 'Скриншот не выбран' },
+    en: { shop: 'Shop', orders: 'Orders', topup: 'Top up', cart: 'Cart', profile: 'Profile', pending: 'Top-up under review', credited: 'Balance topped up', pick: 'Choose', nofile: 'No screenshot selected' },
+    az: { shop: 'Mağaza', orders: 'Sifarişlər', topup: 'Artır', cart: 'Səbət', profile: 'Profil', pending: 'Balans yoxlanılır', credited: 'Balans artırıldı', pick: 'Seç', nofile: 'Skrinşot seçilməyib' }
   };
   const t = (k) => TX[L()][k];
 
@@ -49,9 +49,10 @@
     shop: '<path d="M4 9.5V20h16V9.5"/><path d="M3 9.5 4.6 4h14.8L21 9.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M10 20v-5h4v5"/>',
     orders: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/>',
     topup: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><path d="M16 14.5h2"/><path d="M12 2v3M10.5 3.5 12 2l1.5 1.5"/>',
-    cart: '<path d="M3 4h2.2l2.1 10.4a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.2L20 8H6.1"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>'
+    cart: '<path d="M3 4h2.2l2.1 10.4a1.6 1.6 0 0 0 1.6 1.3h7.9a1.6 1.6 0 0 0 1.6-1.2L20 8H6.1"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
+    profile: '<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>'
   };
-  const TABS = ['shop', 'orders', 'topup', 'cart'];
+  const TABS = ['shop', 'orders', 'topup', 'cart', 'profile'];
   const bar = document.createElement('nav');
   bar.className = 'st-tabbar'; bar.setAttribute('aria-label', 'STAKED');
   bar.innerHTML = `<span class="st-tab-ind" aria-hidden="true"></span>${TABS.map((k) => `<button type="button" class="st-tab" data-tab="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg><span class="st-tab-label"></span>${k === 'cart' ? '<b class="st-tab-badge" hidden>0</b>' : '<b class="st-tab-dot" hidden></b>'}</button>`).join('')}`;
@@ -78,17 +79,50 @@
   }
   const close = (d) => { if (d?.open) (typeof closeDlg === 'function' ? closeDlg(d) : d.close()); };
   function go(k) {
-    if (k === 'cart') { const dr = $('#drawer'); if (dr?.open && !dr.classList.contains('closing')) { close(dr); return; } setActive('cart'); if (typeof A !== 'undefined' && A['cart-open']) A['cart-open'](); else dr?.showModal(); return; }
+    const profileMenu = $('#stackdProfileMenu');
+    const profileTrigger = $('#stackdProfileTrigger');
+    if (k === 'profile') {
+      if (!S.user) { $('#auth')?.showModal(); return; }
+      const opening = Boolean(profileMenu?.hidden);
+      const currentPanel = openPanel();
+      if (currentPanel) close(currentPanel);
+      if (profileMenu) profileMenu.hidden = !opening;
+      profileTrigger?.setAttribute('aria-expanded', String(opening));
+      setActive(opening ? 'profile' : 'shop');
+      return;
+    }
+    if (profileMenu && !profileMenu.hidden) {
+      profileMenu.hidden = true;
+      profileTrigger?.setAttribute('aria-expanded', 'false');
+    }
+    if (k === 'cart') {
+      const dr = $('#drawer');
+      if (dr?.open && !dr.classList.contains('closing')) { close(dr); return; }
+      setActive('cart');
+      if (typeof A !== 'undefined' && A['cart-open']) A['cart-open']();
+      else dr?.showModal();
+      return;
+    }
     if (k === active && k !== 'shop') { const cur = sheets[k]?.(); if (cur?.open) close(cur); return; }
     if (k !== 'shop' && !S.user) { $('#auth')?.showModal(); return; }
-    const current = sheets[active]?.();
     setActive(k);
-    if (k === 'shop') { const any = openPanel(); if (any) { close(any); return; } $('#catalog')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' }); return; }
+    if (k === 'shop') {
+      const any = openPanel();
+      if (any) { close(any); return; }
+      $('#catalog')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+      return;
+    }
     const next = sheets[k]();
-    const open = () => { if (k === 'orders' && typeof openOrders === 'function') openOrders(); else if (next && !next.open) next.showModal(); };
-    open();
+    if (k === 'orders' && typeof openOrders === 'function') openOrders();
+    else if (next && !next.open) next.showModal();
   }
+  window.stakedSetTabActive = (key) => setActive(key);
   bar.addEventListener('click', (e) => { const b = e.target.closest('.st-tab'); if (b) go(b.dataset.tab); });
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('.st-tab[data-tab="profile"]') || event.target.closest('.stackd-profile-anchor')) return;
+    const menu = $('#stackdProfileMenu');
+    if (menu && !menu.hidden) { menu.hidden = true; $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false'); if (active === 'profile') setActive('shop'); }
+  });
   // A modal sheet sits in the top layer above the bar; a tap where the bar is drawn reaches the dialog's backdrop.
   window.addEventListener('click', (e) => {
     const d = document.querySelector('dialog[open]');
