@@ -523,3 +523,45 @@ input,textarea,select,[contenteditable=true],[data-selectable=true],pre,code{
   #grid .card.st-card-enter{animation:none!important;opacity:1!important;transform:none!important}
   .st-tab svg,.st-tabbar,.settings-panel,.stackd-profile-menu{transition:none!important}
 }
+
+
+/* Stable controls and figures: no layout shifts while values update. */
+#userBalance{
+  display:inline-block;
+  min-width:7ch;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+}
+#stackdProfileBalanceValue{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+  white-space:nowrap;
+}
+.stackd-card-qty button:active,
+.stackd-card-qty button:active:not(:disabled){
+  transform:none!important;
+  filter:brightness(.94);
+}
+.stackd-card-qty button{
+  transition:background-color .14s ease,color .14s ease,filter .14s ease!important;
+  touch-action:manipulation;
+}
+
+/* The selected theme is always legible in both light and dark settings. */
+#settingsPanel #profileThemeSeg{
+  color:var(--text)!important;
+  background:var(--raised)!important;
+  border-color:var(--line)!important;
+}
+#settingsPanel #profileThemeSeg .seg-slider{
+  background:var(--accent)!important;
+  border:1px solid color-mix(in srgb,var(--accent) 72%,var(--line))!important;
+  box-shadow:none!important;
+}
+#settingsPanel #profileThemeSeg button{
+  color:var(--muted)!important;
+}
+#settingsPanel #profileThemeSeg button[aria-pressed="true"]{
+  color:var(--accent-ink)!important;
+}
