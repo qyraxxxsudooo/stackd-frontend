@@ -67,8 +67,9 @@
       const value = current.querySelector('span');
       if (value && value.textContent !== String(qty)) value.textContent = String(qty);
       const inc = current.querySelector('[data-act="inc"]');
+      const stockKnown = p.stock !== undefined && p.stock !== null && p.stock !== '';
       const stock = Number(p.stock);
-      if (inc) inc.disabled = Number.isFinite(stock) && stock > 0 && qty >= stock;
+      if (inc) inc.disabled = stockKnown && Number.isFinite(stock) && qty >= stock;
       return;
     }
     const tpl = document.createElement('template');
