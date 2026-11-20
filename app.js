@@ -1266,7 +1266,7 @@ async function checkout() {
     if (error) throw error;
     const orderId = typeof data === 'string' ? data : (data?.id || data?.order_id || data?.orderId || data?.[0]?.id);
     if (!orderId) throw new Error('checkout_order не вернул ID заказа.');
-    S.cart = []; S.promo = null; S.pendingPromoCode = null; try { localStorage.removeItem('pdd.pendingPromo'); } catch {} S.checkoutRequestId = null; saveCart(); renderCart(); closeDlg($('#drawer')); document.dispatchEvent(new Event('stacked:cart-cleared'));
+    S.cart = []; S.promo = null; S.promoMsg = null; S.pendingPromoCode = null; try { localStorage.removeItem('pdd.pendingPromo'); } catch {} S.checkoutRequestId = null; saveCart(); renderCart(); closeDlg($('#drawer')); document.dispatchEvent(new Event('stacked:cart-cleared'));
     let telegramOk = false;
     try {
       const { data: notifyData, error: notifyError } = await _supabase.functions.invoke('notify-telegram', { body: { orderId } });
@@ -1291,8 +1291,8 @@ async function checkout() {
 const A = {
   add: id => { const p = find(id); if (p && isAvailable(p)) { setQty(id, 1); toast(p.name + ' ' + translations[S.lang].added_to_cart); } },
   inc: id => setQty(id, 1), dec: id => setQty(id, -1),
-  rm: id => { S.cart = S.cart.filter(c => c.id !== id); saveCart(); renderCart(); bump(); },
-  clear: () => { S.cart = []; saveCart(); renderCart(); toast(translations[S.lang].cart_cleared); },
+  rm: id => { S.cart = S.cart.filter(c => c.id !== id); if (!S.cart.length) { S.promo = null; S.promoMsg = null; } saveCart(); renderCart(); bump(); },
+  clear: () => { S.cart = []; S.promo = null; S.promoMsg = null; S.pendingPromoCode = null; try { localStorage.removeItem('pdd.pendingPromo'); } catch {} saveCart(); renderCart(); document.dispatchEvent(new Event('stacked:cart-cleared')); toast(translations[S.lang].cart_cleared); },
   checkout, orders: openOrders,
   'toggle-qr': (_, button) => { const card = button.closest('.order-card'); if (!card) return; const open = card.classList.toggle('qr-open'); button.setAttribute('aria-expanded', String(open)); },
   'cancel-order': id => cancelOrder(id), detail: openDetail, reload: () => load(),
