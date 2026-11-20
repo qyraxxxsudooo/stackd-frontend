@@ -198,15 +198,15 @@ try{
   </div>
 
   <div class="lang-selector" id="langSelector">
-    <button class="btn btn-ghost lang-btn" data-act="toggle-lang" type="button">
+    <button class="btn btn-ghost lang-btn" data-act="toggle-lang" type="button" aria-haspopup="menu" aria-controls="langDropdown" aria-expanded="false">
       <span id="currentLangLabel">RU</span>
       <svg class="ic" width="16" height="16"><use href="#i-chevron"/></svg>
     </button>
 
-    <div class="lang-dropdown glass" id="langDropdown">
-      <button type="button" data-lang="ru">Русский</button>
-      <button type="button" data-lang="en">English</button>
-      <button type="button" data-lang="az">Azərbaycan</button>
+    <div class="lang-dropdown glass" id="langDropdown" role="menu" aria-label="Language">
+      <button type="button" role="menuitemradio" data-lang="ru" aria-pressed="true">Русский</button>
+      <button type="button" role="menuitemradio" data-lang="en" aria-pressed="false">English</button>
+      <button type="button" role="menuitemradio" data-lang="az" aria-pressed="false">Azərbaycan</button>
     </div>
   </div>
 
@@ -280,14 +280,6 @@ try{
         <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
       </div>
     </section>
-    <section class="settings-sec">
-      <h3 data-i18n="promo_title">Промокод</h3>
-      <form id="promoForm" class="promo-form" autocomplete="off">
-        <input id="promoInput" type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" data-i18n-placeholder="promo_placeholder" placeholder="Введите промокод">
-        <button class="btn btn-primary" type="submit" id="promoApplyBtn" data-i18n="promo_apply">Применить</button>
-      </form>
-      <div id="promoStatus" class="promo-status" aria-live="polite"></div>
-    </section>
     <section class="settings-sec st-winter-sec" hidden>
       <h3 data-i18n="set_winter">Новогодняя тема</h3>
       <label class="st-switch"><input type="checkbox" id="winterToggle"><span class="st-switch-ui" aria-hidden="true"></span><span data-i18n="set_winter_label">Снег, огни и зимняя улица</span></label>
@@ -329,18 +321,12 @@ try{
     <div>
       <strong>STAKED</strong>
       <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
-      <div class="social-links">
-        <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-          <svg class="ic"><use href="#i-tg"/></svg>
-          @sharkiff
-        </a>
-      </div>
     </div>
 
     <div>
       <strong data-i18n="footer_support">Поддержка</strong>
       <p>
-        <a href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer" style="color:var(--text);text-decoration:none;">
+        <a class="footer-telegram-link" href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer">
           Telegram: @sharkiff
         </a>
       </p>
