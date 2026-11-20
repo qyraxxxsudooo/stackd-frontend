@@ -18,14 +18,14 @@
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const lang = () => { try { return (typeof S !== 'undefined' && S.lang) || localStorage.getItem('pdd.lang') || 'ru'; } catch { return 'ru'; } };
   const TXT = {
-    ru: { admin: 'Зима и музыка', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
-    en: { admin: 'Winter and music', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
-    az: { admin: 'Qış və musiqi', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
+    ru: { admin: 'Зима и музыка', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
+    en: { admin: 'Winter and music', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
+    az: { admin: 'Qış və musiqi', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
   };
   const t = (k) => (TXT[lang()] || TXT.ru)[k] || TXT.ru[k];
   const toastMsg = (m) => { try { if (typeof toast === 'function') toast(m); } catch { /* no toast */ } };
 
-  const site = { winter: 'off', musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
+  const site = { winter: 'off', winterBlur: 0, musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
 
   /* ═════════════ styles (injected once) ═════════════ */
   const CSS = `
@@ -33,7 +33,7 @@ html.st-winter{background:#070b17}
 html.st-winter:not(.stacked-dark):not([data-theme=dark]){background:#f6dccb}
 html.st-winter body{background:transparent!important}
 .stw-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
-.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none}
+.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .18s ease-out}
 .stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
 .stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
 .stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
@@ -68,6 +68,10 @@ html.st-winter body{background:transparent!important}
 .stw-admin audio{width:100%;margin-top:8px}
 .stw-admin .stw-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .stw-admin input[type=range]{width:100%;accent-color:var(--accent)}
+.stw-admin .stw-blur-control{display:grid;gap:5px;margin:12px 0 4px;padding:13px;border:1px solid color-mix(in srgb,var(--text) 9%,transparent);border-radius:15px;background:color-mix(in srgb,var(--surface) 68%,transparent)}
+.stw-admin .stw-blur-control label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.84rem;font-weight:650}
+.stw-admin .stw-blur-control label b{font-variant-numeric:tabular-nums;color:var(--accent)}
+.stw-admin .stw-blur-control .stackd-admin-note{margin:0;font-size:.73rem}
 .stw-admin .stw-now{margin-top:8px;font-size:.84rem;color:var(--muted);word-break:break-all}
 @media (prefers-reduced-motion:reduce){.st-music .st-eq i,.st-music.hint::after{animation:none!important}}
 `;
@@ -169,10 +173,17 @@ ${fg}
   const svgUrl = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   const cache = {};
   let bg = null;
+  function applySceneBlur(value = site.winterBlur) {
+    const amount = clamp(Math.round(Number(value) || 0), 0, 18);
+    site.winterBlur = amount;
+    if (bg) bg.style.setProperty('--stw-scene-blur', amount + 'px');
+    return amount;
+  }
   function buildScene() {
     const dark = isDark();
     if (!bg) { bg = document.createElement('div'); bg.className = 'stw-bg'; bg.setAttribute('aria-hidden', 'true'); document.body.prepend(bg); }
     bg.dataset.dark = String(dark);
+    applySceneBlur(site.winterBlur);
     const key = dark ? 'd' : 'l';
     cache[key] ||= svgUrl(dark ? darkScene() : morningScene());
     cache['lamp' + key] ||= svgUrl(lampSvg(dark));
@@ -490,6 +501,7 @@ ${fg}
   function readRows(rows) {
     const m = Object.fromEntries((rows || []).map((r) => [r.key, r.value]));
     site.winter = m.winter_mode === 'on' ? 'on' : 'off';
+    site.winterBlur = clamp(Number(m.winter_blur ?? site.winterBlur ?? 0) || 0, 0, 18);
     site.musicUrl = /^https:\/\//.test(m.music_url || '') ? m.music_url : '';
     site.musicTitle = String(m.music_title || '').slice(0, 80);
     site.musicVolume = clamp(Number(m.music_volume ?? 40) || 0, 0, 100);
@@ -497,7 +509,7 @@ ${fg}
   }
   async function load() {
     try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
+      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
       if (error) throw error;
       readRows(data);
     } catch { /* keep the last known state */ }
@@ -516,6 +528,11 @@ ${fg}
       <div class="stackd-section-head"><h3 data-stw="admin"></h3><span>SEASON</span></div>
       <label class="st-switch"><input type="checkbox" id="stwAdminWinter"><span class="st-switch-ui" aria-hidden="true"></span><span data-stw="winter"></span></label>
       <p class="stackd-admin-note" data-stw="winterHelp"></p>
+      <div class="stw-blur-control">
+        <label for="stwAdminBlur"><span data-stw="blur"></span> <b id="stwAdminBlurVal">0 px</b></label>
+        <input type="range" id="stwAdminBlur" min="0" max="18" step="1" value="0" aria-label="Winter background blur">
+        <p class="stackd-admin-note" data-stw="blurHelp"></p>
+      </div>
       <h4 style="margin:18px 0 6px" data-stw="music"></h4>
       <label for="stwAdminFile" data-stw="file"></label>
       <input type="file" id="stwAdminFile" class="st-file-input" accept="audio/mpeg,audio/mp4,audio/aac,audio/x-m4a,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.ogg,.wav">
@@ -533,6 +550,11 @@ ${fg}
     tab.append(adminBox);
     const vol = $('#stwAdminVol'), volVal = $('#stwAdminVolVal');
     vol.addEventListener('input', () => { volVal.textContent = vol.value + '%'; if (audio) audio.volume = vol.value / 100; });
+    const blur = $('#stwAdminBlur'), blurVal = $('#stwAdminBlurVal');
+    blur.addEventListener('input', () => {
+      const amount = applySceneBlur(blur.value);
+      blurVal.textContent = amount + ' px';
+    });
     $('#stwAdminFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; $('#stwAdminFileName').textContent = f ? f.name : t('nofile'); const p = $('#stwAdminPreview'); if (f) { p.src = URL.createObjectURL(f); p.hidden = false; if (!$('#stwAdminTitle').value) $('#stwAdminTitle').value = f.name.replace(/\.[a-z0-9]+$/i, '').slice(0, 80); } });
     $('#stwAdminSave').addEventListener('click', () => saveAdmin(false));
     $('#stwAdminRemove').addEventListener('click', () => { $('#stwAdminUrl').value = ''; $('#stwAdminFile').value = ''; $('#stwAdminTitle').value = ''; saveAdmin(true); });
@@ -542,6 +564,9 @@ ${fg}
     if (!adminBox) return;
     adminBox.querySelectorAll('[data-stw]').forEach((el) => { el.textContent = t(el.dataset.stw); });
     $('#stwAdminWinter').checked = site.winter === 'on';
+    $('#stwAdminBlur').value = String(site.winterBlur);
+    $('#stwAdminBlurVal').textContent = site.winterBlur + ' px';
+    applySceneBlur(site.winterBlur);
     $('#stwAdminUrl').value = site.musicUrl; $('#stwAdminTitle').value = site.musicTitle;
     $('#stwAdminVol').value = site.musicVolume; $('#stwAdminVolVal').textContent = site.musicVolume + '%';
     $('#stwAdminAuto').checked = site.musicAutoplay;
@@ -566,6 +591,7 @@ ${fg}
       if (url && !/^https:\/\//.test(url)) { toastMsg(t('badUrl')); return; }
       const rows = [
         { key: 'winter_mode', value: $('#stwAdminWinter').checked ? 'on' : 'off' },
+        { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) },
         { key: 'music_url', value: url },
         { key: 'music_title', value: $('#stwAdminTitle').value.trim().slice(0, 80) },
         { key: 'music_volume', value: String($('#stwAdminVol').value) },
