@@ -168,7 +168,7 @@ $('#signUpBtn')?.addEventListener('click', async () => {
   }
 });
 $('#googleLoginBtn')?.addEventListener('click', async () => {
-  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: 'https://staked.food/' } });
   if (error) toast('Ошибка Google: ' + error.message);
 });
 $('#logoutBtn')?.addEventListener('click', async () => {
