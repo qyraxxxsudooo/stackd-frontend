@@ -1,0 +1,78 @@
+/* STAKED polish layer — restrained glass, mobile-first rendering and profile navigation. */
+.st-tabbar{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.st-tab-ind{width:calc((100% - 10px)/5)!important;transition:transform .28s cubic-bezier(.2,.75,.25,1)!important}
+.st-tab{min-width:0;padding-inline:2px}
+.st-tab-label{font-size:.66rem;letter-spacing:-.015em}
+.stackd-profile-trigger{display:none!important}
+.stackd-profile-anchor{position:static!important}
+.stackd-profile-menu{
+  position:fixed!important;top:auto!important;right:max(12px,calc((100vw - min(520px,100vw - 32px))/2))!important;
+  bottom:calc(64px + 30px + env(safe-area-inset-bottom))!important;
+  width:min(340px,calc(100vw - 24px))!important;max-height:min(68dvh,520px)!important;
+  overflow:auto;overscroll-behavior:contain;z-index:95!important;
+}
+#stackdProfileMenu .stackd-profile-head{gap:6px}
+#stackdProfileMenu .stackd-profile-note{margin:0;line-height:1.45}
+#stackdProfileBalanceRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid var(--glass-edge);border-radius:16px;background:var(--glass-card)}
+#stackdProfileBalanceRow>div{display:grid;gap:3px;min-width:0}
+#stackdProfileBalanceRow small{color:var(--muted);font-size:.75rem}
+#stackdProfileBalanceRow strong{font-size:1.1rem;font-variant-numeric:tabular-nums}
+#stackdProfileBalanceRow button{flex:none;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);padding:9px 12px;font:inherit;font-weight:700}
+.stw-bg[data-custom="true"] .stw-lamp{display:none!important}
+.stw-bg[data-custom="true"] .stw-scene{object-fit:cover!important;object-position:center!important}
+
+/* Scroll areas stay fully scrollable without showing a browser-default gutter. */
+html,body,*{scrollbar-width:none}
+*::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+
+/* Cards and category chips: material depth without a stack of tiny animations. */
+.card{border-radius:22px;box-shadow:var(--glass-shadow),inset 0 1px 0 var(--glass-highlight)}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;border:1px solid rgba(255,255,255,.035)}
+.chips-wrapper{scrollbar-width:none;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+.chips{padding:4px;border:1px solid var(--glass-divider);border-radius:18px;background:var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight)}
+.chips button{border-radius:13px;padding-inline:14px;min-height:38px;transition:background-color .16s,color .16s,border-color .16s}
+.chips button[aria-pressed=true]{background:var(--glass-selected-bg);color:var(--text);border-color:var(--glass-edge);box-shadow:0 2px 8px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.32)}
+
+/* Quiet, readable empty and validation states. */
+.state,.orders-empty,.orders-error,.suggestion-empty{border-radius:18px;padding:22px 18px;background:var(--glass-card);border:1px solid var(--glass-divider);color:var(--muted);text-align:center}
+#topupMsg,.msg{display:block;min-height:1.2em;margin:10px 0 0;padding:0;border:0;background:transparent;color:var(--muted);font-size:.86rem;line-height:1.45}
+#topup .payment-instructions{border-radius:16px;background:var(--glass-card);border-color:var(--glass-divider)}
+#topup input,#topup select,#topup textarea{border-radius:13px}
+
+/* Admin background editor. */
+.staked-background-settings{display:grid;gap:14px;margin-top:18px;padding:18px;border:1px solid var(--glass-divider);border-radius:22px;background:var(--glass-card)}
+.staked-background-settings .stackd-section-head{margin:0}
+.staked-background-settings>.stackd-admin-note{margin:-6px 0 2px;line-height:1.5}
+.staked-bg-field{display:grid;gap:7px;padding:13px;border:1px solid var(--glass-divider);border-radius:16px;background:var(--glass-panel)}
+.staked-bg-field>label,.staked-bg-colors label{font-size:.84rem;font-weight:700;color:var(--text)}
+.staked-bg-field input[type=url]{width:100%;min-width:0}
+.staked-bg-field small{font-size:.75rem;color:var(--muted)}
+.staked-bg-field input[type=file]{width:100%;font-size:.8rem;color:var(--muted)}
+.staked-bg-field input[type=file]::file-selector-button{margin-right:10px;padding:8px 12px;border:1px solid var(--glass-edge);border-radius:10px;background:var(--glass-selected-bg);color:var(--text);font:inherit;font-weight:650}
+.staked-file-name{font-size:.75rem;color:var(--muted);overflow-wrap:anywhere}
+.staked-bg-colors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.staked-bg-colors>div{display:grid;gap:8px;padding:12px;border:1px solid var(--glass-divider);border-radius:15px;background:var(--glass-panel)}
+.staked-bg-colors input[type=color]{width:100%;height:40px;padding:3px;border:1px solid var(--glass-edge);border-radius:10px;background:transparent}
+.staked-save-all-row{display:grid;gap:7px;padding:12px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--glass-divider));border-radius:17px;background:color-mix(in srgb,var(--accent) 7%,var(--glass-panel))}
+.staked-save-all-row button{width:100%}
+.staked-save-all-row small{color:var(--muted);font-size:.75rem;line-height:1.4}
+.staked-background-settings .msg{overflow-wrap:anywhere}
+@media(max-width:430px){.st-tab-label{font-size:.61rem}.st-tab svg{width:21px;height:21px}.staked-bg-colors{grid-template-columns:1fr}}
+@media (pointer:coarse){
+  .card,.card-body,.card .badge-popular,.card .stackd-sale-badge,
+  .nav.glass,.settings-panel,.stackd-profile-menu,.st-tabbar,.stacked-dock-main{
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important
+  }
+  .card{background:var(--glass-card);box-shadow:0 5px 18px rgba(0,0,0,.08),inset 0 1px 0 var(--glass-highlight)}
+  .card-body{background:var(--glass-card-strong)}
+  .card .badge-popular,.card .stackd-sale-badge{background:var(--glass-panel);box-shadow:inset 0 1px 0 var(--glass-highlight)}
+  .nav.glass,.settings-panel,.stackd-profile-menu,.st-tabbar,.stacked-dock-main{background:var(--glass-panel-strong)}
+  html.st-winter .stw-atmosphere{filter:none!important;transform:none!important}
+  html.st-winter .stw-scene{will-change:auto}
+  .st-tab.is-bump svg{animation-duration:.22s}
+  .card:hover .card-media img{transform:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .st-tab-ind,.chips button{transition:none!important}
+  .st-tab.is-bump svg,.st-tab-dot,.st-tab-badge.is-pop{animation:none!important}
+}
