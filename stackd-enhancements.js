@@ -658,7 +658,7 @@
     const save = $('#stackdPromoSave'); if (save) save.textContent = t('discountSave');
     const add = $('#stackdNewsAdd'); if (add) add.textContent = t('newsAdd');
     renderPromotionTargetOptions(); renderNewsAdmin();
-    syncProfilePreferences();
+
   }
 
   function applyBrandAccent(value) {
