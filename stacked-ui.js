@@ -136,19 +136,25 @@
         return;
       }
       ensureProfileBalanceRow();
-      const opening = profileMenu.hidden;
+      const opening = profileMenu.hidden || profileMenu.classList.contains('is-closing');
       const currentPanel = openPanel();
       if (currentPanel) close(currentPanel);
-      profileMenu.hidden = !opening;
-      profileMenu.setAttribute('aria-hidden', String(!opening));
-      profileTrigger?.setAttribute('aria-expanded', String(opening));
+      if (typeof window.stakedSetProfileMenuOpen === 'function') window.stakedSetProfileMenuOpen(opening);
+      else {
+        profileMenu.hidden = !opening;
+        profileMenu.setAttribute('aria-hidden', String(!opening));
+        profileTrigger?.setAttribute('aria-expanded', String(opening));
+      }
       setActive(opening ? 'profile' : 'shop');
       return;
     }
     if (profileMenu && !profileMenu.hidden) {
-      profileMenu.hidden = true;
-      profileMenu.setAttribute('aria-hidden', 'true');
-      profileTrigger?.setAttribute('aria-expanded', 'false');
+      if (typeof window.stakedSetProfileMenuOpen === 'function') window.stakedSetProfileMenuOpen(false);
+      else {
+        profileMenu.hidden = true;
+        profileMenu.setAttribute('aria-hidden', 'true');
+        profileTrigger?.setAttribute('aria-expanded', 'false');
+      }
     }
     if (k === 'cart') {
       const dr = $('#drawer');
@@ -193,7 +199,11 @@
   document.addEventListener('click', (event) => {
     if (event.target.closest('.st-tab[data-tab="profile"]') || event.target.closest('.stackd-profile-anchor') || event.target.closest('.stackd-profile-menu')) return;
     const menu = $('#stackdProfileMenu');
-    if (menu && !menu.hidden) { menu.hidden = true; $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false'); if (active === 'profile') setActive('shop'); }
+    if (menu && !menu.hidden) {
+      if (typeof window.stakedSetProfileMenuOpen === 'function') window.stakedSetProfileMenuOpen(false);
+      else { menu.hidden = true; $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false'); }
+      if (active === 'profile' && !event.target.closest('.st-tab')) setActive('shop');
+    }
   });
   // A modal sheet sits in the top layer above the bar; a tap where the bar is drawn reaches the dialog's backdrop.
   window.addEventListener('click', (e) => {
