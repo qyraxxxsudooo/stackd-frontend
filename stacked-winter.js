@@ -18,14 +18,14 @@
   const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   const lang = () => { try { return (typeof S !== 'undefined' && S.lang) || localStorage.getItem('pdd.lang') || 'ru'; } catch { return 'ru'; } };
   const TXT = {
-    ru: { admin: 'Зима и музыка', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
-    en: { admin: 'Winter and music', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
-    az: { admin: 'Qış və musiqi', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
+    ru: { admin: 'Зима и музыка', winter: 'Новогодняя тема на сайте', winterHelp: 'Снег, огни и зимняя улица у всех посетителей. Каждый может отключить её у себя в настройках.', music: 'Музыка на сайте', file: 'Загрузить трек (MP3, M4A, OGG, до 20 МБ)', blur: 'Размытие зимнего фона', blurHelp: 'Настройте силу размытия сцены отдельно от карточек и интерфейса. Изменение видно сразу, сохранение — кнопкой ниже.', url: 'Или ссылка на трек (https://…)', title: 'Название трека', volume: 'Громкость', autoplay: 'Включать при первом касании страницы', save: 'Сохранить', remove: 'Убрать музыку', saved: 'Сохранено', uploading: 'Загрузка трека…', err: 'Не удалось сохранить', badUrl: 'Ссылка должна начинаться с https://', play: 'Включить музыку', pause: 'Выключить музыку', pick: 'Выбрать', nofile: 'Файл не выбран' },
+    en: { admin: 'Winter and music', winter: 'New Year theme on the site', winterHelp: 'Snow, lights and a winter street for every visitor. Anyone can switch it off in their settings.', music: 'Site music', file: 'Upload a track (MP3, M4A, OGG, up to 20 MB)', blur: 'Winter background blur', blurHelp: 'Adjust the scene blur without blurring cards or controls. Preview updates instantly; use Save below to keep it.', url: 'Or a link to a track (https://…)', title: 'Track title', volume: 'Volume', autoplay: 'Start on the first tap on the page', save: 'Save', remove: 'Remove music', saved: 'Saved', uploading: 'Uploading track…', err: 'Could not save', badUrl: 'The link must start with https://', play: 'Play music', pause: 'Pause music', pick: 'Choose', nofile: 'No file selected' },
+    az: { admin: 'Qış və musiqi', winter: 'Saytda Yeni il mövzusu', winterHelp: 'Bütün ziyarətçilər üçün qar, işıqlar və qış küçəsi. Hər kəs öz parametrlərində söndürə bilər.', music: 'Saytda musiqi', file: 'Trek yüklə (MP3, M4A, OGG, 20 MB-a qədər)', blur: 'Qış fonunun bulanıqlığı', blurHelp: 'Yalnız qış səhnəsini bulanıqlaşdırın. Ön baxış dərhal yenilənir, saxlamaq üçün aşağıdakı düyməni basın.', url: 'Və ya trek linki (https://…)', title: 'Trekin adı', volume: 'Səs', autoplay: 'Səhifəyə ilk toxunuşda başlasın', save: 'Yadda saxla', remove: 'Musiqini sil', saved: 'Yadda saxlanıldı', uploading: 'Trek yüklənir…', err: 'Yadda saxlamaq olmadı', badUrl: 'Link https:// ilə başlamalıdır', play: 'Musiqini aç', pause: 'Musiqini dayandır', pick: 'Seç', nofile: 'Fayl seçilməyib' }
   };
   const t = (k) => (TXT[lang()] || TXT.ru)[k] || TXT.ru[k];
   const toastMsg = (m) => { try { if (typeof toast === 'function') toast(m); } catch { /* no toast */ } };
 
-  const site = { winter: 'off', musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
+  const site = { winter: 'off', winterBlur: 0, musicUrl: '', musicTitle: '', musicVolume: 40, musicAutoplay: false };
 
   /* ═════════════ styles (injected once) ═════════════ */
   const CSS = `
@@ -33,16 +33,22 @@ html.st-winter{background:#070b17}
 html.st-winter:not(.stacked-dark):not([data-theme=dark]){background:#f6dccb}
 html.st-winter body{background:transparent!important}
 .stw-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
-.stw-scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none}
-.stw-lamp{position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
+.stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .18s ease-out}
+.stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
+.stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
+.stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
+.stw-bg[data-dark="false"]::before{background:radial-gradient(ellipse 46% 35% at 70% 70%,rgba(255,211,159,.25),transparent 75%),radial-gradient(ellipse 55% 22% at 20% 15%,rgba(255,255,255,.25),transparent 78%);opacity:.8}
+.stw-bg[data-dark="false"]::after{background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 28%,rgba(255,226,211,.12));opacity:.8}
+.stw-lamp{z-index:2;position:absolute;left:var(--stw-lx,40px);bottom:var(--stw-lb,80px);height:var(--stw-lh,60vh);aspect-ratio:300/560}
 .stw-lamp img{position:absolute;inset:0;width:100%;height:100%}
 .stw-halo{position:absolute;left:50%;top:13.6%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,140,.55),rgba(255,196,100,.16) 45%,transparent 72%)}
 .stw-cone{position:absolute;left:50%;top:21.6%;width:230%;bottom:0;transform:translateX(-50%);background:radial-gradient(ellipse 50% 100% at 50% 0,rgba(255,212,130,.38),rgba(255,200,110,.16) 45%,rgba(255,200,110,.04) 70%,transparent 82%);will-change:opacity;animation:stwFlicker 7s steps(1) infinite}
 .stw-pool{position:absolute;left:50%;bottom:-5%;width:260%;height:13%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,206,120,.38),rgba(255,206,120,.12) 55%,transparent)}
 @keyframes stwFlicker{0%,100%{opacity:1}31%{opacity:.93}33%{opacity:1}61%{opacity:.97}64%{opacity:1}}
-.stw-snow{position:fixed;left:0;top:0;z-index:25;pointer-events:none}
-@media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(16px) saturate(160%)!important;backdrop-filter:blur(16px) saturate(160%)!important}}
-@media (prefers-reduced-motion:reduce){.stw-cone{animation:none}}
+@keyframes stwAuroraDrift{from{transform:translate3d(-1.5%,0,0) scale(1)}to{transform:translate3d(1.5%,1.2%,0) scale(1.04)}}
+.stw-snow{position:fixed;left:0;top:0;z-index:19;pointer-events:none}
+@media (pointer:coarse){html.st-winter .st-tabbar{-webkit-backdrop-filter:blur(12px) saturate(140%)!important;backdrop-filter:blur(12px) saturate(140%)!important}.stw-bg[data-dark="true"]::before{animation:none;opacity:.72}}
+@media (prefers-reduced-motion:reduce){.stw-cone,.stw-bg::before{animation:none!important}}
 `;
   const UI_CSS = `
 .st-music{position:relative;display:none!important;place-items:center;flex:none}
@@ -62,6 +68,10 @@ html.st-winter body{background:transparent!important}
 .stw-admin audio{width:100%;margin-top:8px}
 .stw-admin .stw-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .stw-admin input[type=range]{width:100%;accent-color:var(--accent)}
+.stw-admin .stw-blur-control{display:grid;gap:5px;margin:12px 0 4px;padding:13px;border:1px solid color-mix(in srgb,var(--text) 9%,transparent);border-radius:15px;background:color-mix(in srgb,var(--surface) 68%,transparent)}
+.stw-admin .stw-blur-control label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.84rem;font-weight:650}
+.stw-admin .stw-blur-control label b{font-variant-numeric:tabular-nums;color:var(--accent)}
+.stw-admin .stw-blur-control .stackd-admin-note{margin:0;font-size:.73rem}
 .stw-admin .stw-now{margin-top:8px;font-size:.84rem;color:var(--muted);word-break:break-all}
 @media (prefers-reduced-motion:reduce){.st-music .st-eq i,.st-music.hint::after{animation:none!important}}
 `;
@@ -163,10 +173,17 @@ ${fg}
   const svgUrl = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   const cache = {};
   let bg = null;
+  function applySceneBlur(value = site.winterBlur) {
+    const amount = clamp(Math.round(Number(value) || 0), 0, 18);
+    site.winterBlur = amount;
+    if (bg) bg.style.setProperty('--stw-scene-blur', amount + 'px');
+    return amount;
+  }
   function buildScene() {
     const dark = isDark();
     if (!bg) { bg = document.createElement('div'); bg.className = 'stw-bg'; bg.setAttribute('aria-hidden', 'true'); document.body.prepend(bg); }
     bg.dataset.dark = String(dark);
+    applySceneBlur(site.winterBlur);
     const key = dark ? 'd' : 'l';
     cache[key] ||= svgUrl(dark ? darkScene() : morningScene());
     cache['lamp' + key] ||= svgUrl(lampSvg(dark));
@@ -192,8 +209,10 @@ ${fg}
   const flakes = [], surf = new Map();
   let W = 0, H = 0, DPR = 1, last = 0, wind = 0, tilt = 0, fall = 1, shake = 0, lastY = scrollY, vScroll = 0, want = 0, slow = 0, frames = 0, lowQ = false;
   const ptr = { x: -999, y: -999, vx: 0, t: 0 };
-  const COL = 4, LOOSE_MAX = coarse ? 110 : 360;
-  let looseCount = 0;
+  const COL = 4, SURFACE_CELL = 96, LOOSE_MAX = coarse ? 90 : 300;
+  const collisionBuckets = new Map();
+  const visibleCards = new Set();
+  let cardObserver = null, nextFrameAt = 0, looseCount = 0;
 
   function resize(force) {
     if (!cv) return;
@@ -202,12 +221,12 @@ ${fg}
     // phone browsers resize the viewport while their toolbars slide: reallocate only when the width changes or it grows a lot
     const needH = coarse ? view.maxH + 40 : h;
     if (force === true || w !== W || needH > H + 60 || (!coarse && needH !== H)) {
-      DPR = Math.min(devicePixelRatio || 1, coarse ? 1.25 : 1.6);
+      DPR = Math.min(devicePixelRatio || 1, coarse ? 1.05 : 1.5);
       W = w; H = needH;
       cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
       cv.style.width = W + 'px'; cv.style.height = H + 'px';
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      want = Math.round(clamp(W * h / 6500, 60, 260) * (coarse ? .55 : 1));
+      want = coarse ? Math.round(clamp(W * h / 7800, 42, 170) * .48) : Math.round(clamp(W * h / 6500, 60, 260));
       fitFlakes();
     }
     layout(); measure();
@@ -228,16 +247,24 @@ ${fg}
   const capAt = (s, i) => { const x = i * COL + COL / 2, e = Math.min(x, s.w - x); return e >= s.rad ? s.cap : s.cap * Math.max(0, e / s.rad) ** 1.6; };
   function measure() {
     const sy = scrollY, bar = $('.st-tabbar');
-    const els = [...document.querySelectorAll('#grid .card')]; if (bar) els.push(bar);
+    const els = cardObserver ? [...visibleCards] : [...document.querySelectorAll('#grid .card')];
+    // Treat fixed chrome and category filters as real snow-catching surfaces too.
+    const chrome = [...document.querySelectorAll('.nav, .chips, .settings-panel:not([hidden]), dialog[open]')];
+    for (const el of chrome) if (el.getClientRects().length && !els.includes(el)) els.push(el);
+    if (bar && !els.includes(bar)) els.push(bar);
     const seen = new Set();
     for (const el of els) {
       const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
       const isBar = el === bar;
       let s = surf.get(el);
-      if (!s) { s = { el, fixed: isBar, cap: isBar ? 11 : 12, rad: isBar ? 24 : 18, top: 0, l: 0, w: 0, cols: new Float32Array(0), vis: false, vtop: 0, fresh: !isBar }; surf.set(el, s); }
+      const pinned = isBar || el.matches('.nav, .settings-panel, dialog[open]');
+      if (!s) { s = { el, fixed: pinned, cap: isBar ? 11 : pinned ? 9 : 12, rad: isBar ? 24 : pinned ? 16 : 18, top: 0, l: 0, w: 0, cols: new Float32Array(0), vis: false, vtop: 0, fresh: !isBar }; surf.set(el, s); }
+      s.fixed = pinned;
+      s.cap = isBar ? 11 : pinned ? 9 : 12;
+      s.rad = isBar ? 24 : pinned ? 16 : 18;
       const n = Math.max(2, Math.ceil(r.width / COL));
       if (s.cols.length !== n) { const c = new Float32Array(n); c.set(s.cols.subarray(0, Math.min(n, s.cols.length))); s.cols = c; }
-      s.l = r.left; s.w = r.width; s.top = isBar ? r.top : r.top + sy;
+      s.l = r.left; s.w = r.width; s.top = pinned ? r.top : r.top + sy;
       if (s.fresh) { s.fresh = false; for (let i = 0; i < n; i++) s.cols[i] = capAt(s, i) * (.5 + Math.sin(i * .31 + r.left) * .12 + Math.sin(i * .9) * .05 + Math.random() * .06); }
       seen.add(el);
     }
@@ -254,6 +281,8 @@ ${fg}
 
   function step(now) {
     raf = 0; if (!on || !ctx) return;
+    if (coarse && now < nextFrameAt) { raf = requestAnimationFrame(step); return; }
+    nextFrameAt = coarse ? now + 1000 / 30 : now;
     const dtRaw = (now - (last || now)) / 1000, dt = Math.min(.05, dtRaw); last = now;
     // adaptive quality: if frames keep running long, use fewer flakes and simpler drawing
     if (dtRaw > .026 && dtRaw < .2) slow++;
@@ -265,7 +294,19 @@ ${fg}
 
     ctx.clearRect(0, 0, W, H);
     const list = [...surf.values()];
-    for (const s of list) { s.vtop = s.fixed ? s.top : s.top - sy; s.vis = s.vtop > -30 && s.vtop < vh + 20; }
+    collisionBuckets.clear();
+    for (const s of list) {
+      s.vtop = s.fixed ? s.top : s.top - sy;
+      s.vis = s.vtop > -30 && s.vtop < vh + 20;
+      if (!s.vis) continue;
+      const firstCell = Math.floor(s.l / SURFACE_CELL);
+      const lastCell = Math.floor((s.l + s.w) / SURFACE_CELL);
+      for (let cell = firstCell; cell <= lastCell; cell++) {
+        let bucket = collisionBuckets.get(cell);
+        if (!bucket) collisionBuckets.set(cell, bucket = []);
+        bucket.push(s);
+      }
+    }
 
     const sp = Math.abs(vScroll);
     if (sp > 450 || shake > 0) {
@@ -276,17 +317,21 @@ ${fg}
     }
 
     for (let i = flakes.length - 1; i >= 0; i--) {
-      const f = flakes[i], py = f.y;
+      const f = flakes[i];
       if (f.loose) { f.vy = Math.min(240, f.vy + 420 * dt); f.vx *= 1 - dt * 1.2; }
       else { f.ph += dt * f.sp; f.vy += ((20 + f.r * 16) * fall - f.vy) * dt * 2; f.vx = wind * (.35 + f.r * .18) + Math.sin(f.ph) * 4.5 * f.r; }
       if (now - ptr.t < 600) { const dx = f.x - ptr.x, dy = f.y - ptr.y, d2 = dx * dx + dy * dy; if (d2 < 7000) { const d = Math.sqrt(d2) || 1, p = (1 - d / 84) * 260 * dt; f.x += dx / d * p; f.y += dy / d * p * .5; } }
       f.x += f.vx * dt; f.y += f.vy * dt;
       let gone = f.y > vh + 8 || f.x < -60 || f.x > W + 60;
-      if (!gone) for (const s of list) {
+      if (!gone) for (const s of (collisionBuckets.get(Math.floor(f.x / SURFACE_CELL)) || [])) {
         if (!s.vis || f.x < s.l || f.x >= s.l + s.w) continue;
         const c = ((f.x - s.l) / COL) | 0, surface = s.vtop - s.cols[c];
-        if (py <= surface && f.y >= surface) {
-          if (f.loose || Math.random() < (s.fixed ? .9 : .75)) { const cap = capAt(s, c); if (s.cols[c] < cap) s.cols[c] = Math.min(cap, s.cols[c] + f.r * (f.loose ? .6 : 1.1)); gone = true; }
+        if (f.y + f.r >= surface) {
+          // Catch particles that cross the edge and particles initially spawned
+          // inside a card. A full snow cap must still block the particle.
+          const cap = capAt(s, c);
+          if (s.cols[c] < cap) s.cols[c] = Math.min(cap, s.cols[c] + f.r * (f.loose ? .6 : 1.1));
+          gone = true;
           break;
         }
       }
@@ -341,6 +386,15 @@ ${fg}
   const remeasure = () => { clearTimeout(mt); mt = setTimeout(measure, 150); };
   const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); resize(); }, 140); };
   const kick = () => { if (on && cv && !raf && !document.hidden) { last = 0; raf = requestAnimationFrame(step); } };
+  const onVisibility = () => {
+    if (document.hidden) {
+      cancelAnimationFrame(raf); raf = 0; clearInterval(iv); iv = 0;
+      return;
+    }
+    last = 0; measure();
+    if (on && !iv) iv = setInterval(measure, 4000);
+    kick();
+  };
 
   function enable() {
     if (on) return; on = true;
@@ -353,12 +407,38 @@ ${fg}
     ctx = cv.getContext('2d', { alpha: true, desynchronized: true });
     document.body.append(cv);
     flakes.length = 0; looseCount = 0; W = 0; H = 0; lowQ = false; resize(true);
-    addEventListener('pointermove', onPointer, { passive: true });
+    if (!coarse) addEventListener('pointermove', onPointer, { passive: true });
     addEventListener('deviceorientation', onOrient, { passive: true });
     addEventListener('devicemotion', onMotion, { passive: true });
-    document.addEventListener('visibilitychange', kick);
-    const grid = $('#grid'); mo = new MutationObserver(remeasure); if (grid) mo.observe(grid, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
-    iv = setInterval(measure, 2000);
+    document.addEventListener('visibilitychange', onVisibility);
+    const grid = $('#grid');
+    if (grid && 'IntersectionObserver' in window) {
+      cardObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visibleCards.add(entry.target);
+          else visibleCards.delete(entry.target);
+        }
+        remeasure();
+      }, { rootMargin: '180px 0px' });
+      grid.querySelectorAll('.card').forEach((card) => cardObserver.observe(card));
+    }
+    mo = new MutationObserver((records) => {
+      if (cardObserver) for (const record of records) {
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.matches?.('.card')) cardObserver.observe(node);
+          node.querySelectorAll?.('.card').forEach((card) => cardObserver.observe(card));
+        });
+        record.removedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.matches?.('.card')) { cardObserver.unobserve(node); visibleCards.delete(node); surf.delete(node); }
+          node.querySelectorAll?.('.card').forEach((card) => { cardObserver.unobserve(card); visibleCards.delete(card); surf.delete(card); });
+        });
+      }
+      remeasure();
+    });
+    if (grid) mo.observe(grid, { childList: true });
+    iv = setInterval(measure, 4000);
     kick();
   }
   function disable() {
@@ -368,8 +448,9 @@ ${fg}
     cv?.remove(); cv = null; ctx = null; bg?.remove(); bg = null; surf.clear(); flakes.length = 0; looseCount = 0;
     removeEventListener('resize', onResize); removeEventListener('pointermove', onPointer);
     removeEventListener('deviceorientation', onOrient); removeEventListener('devicemotion', onMotion);
-    document.removeEventListener('visibilitychange', kick);
-    mo?.disconnect(); clearInterval(iv);
+    document.removeEventListener('visibilitychange', onVisibility);
+    mo?.disconnect(); cardObserver?.disconnect(); cardObserver = null; visibleCards.clear(); collisionBuckets.clear();
+    clearInterval(iv); iv = 0; nextFrameAt = 0;
   }
   new MutationObserver(() => { if (on && bg && bg.dataset.dark !== String(isDark())) buildScene(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
@@ -432,6 +513,7 @@ ${fg}
   function readRows(rows) {
     const m = Object.fromEntries((rows || []).map((r) => [r.key, r.value]));
     site.winter = m.winter_mode === 'on' ? 'on' : 'off';
+    site.winterBlur = clamp(Number(m.winter_blur ?? site.winterBlur ?? 0) || 0, 0, 18);
     site.musicUrl = /^https:\/\//.test(m.music_url || '') ? m.music_url : '';
     site.musicTitle = String(m.music_title || '').slice(0, 80);
     site.musicVolume = clamp(Number(m.music_volume ?? 40) || 0, 0, 100);
@@ -439,7 +521,7 @@ ${fg}
   }
   async function load() {
     try {
-      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
+      const { data, error } = await _supabase.from('site_settings').select('key,value').in('key', ['winter_mode', 'winter_blur', 'music_url', 'music_title', 'music_volume', 'music_autoplay']);
       if (error) throw error;
       readRows(data);
     } catch { /* keep the last known state */ }
@@ -458,6 +540,11 @@ ${fg}
       <div class="stackd-section-head"><h3 data-stw="admin"></h3><span>SEASON</span></div>
       <label class="st-switch"><input type="checkbox" id="stwAdminWinter"><span class="st-switch-ui" aria-hidden="true"></span><span data-stw="winter"></span></label>
       <p class="stackd-admin-note" data-stw="winterHelp"></p>
+      <div class="stw-blur-control">
+        <label for="stwAdminBlur"><span data-stw="blur"></span> <b id="stwAdminBlurVal">0 px</b></label>
+        <input type="range" id="stwAdminBlur" min="0" max="18" step="1" value="0" aria-label="Winter background blur">
+        <p class="stackd-admin-note" data-stw="blurHelp"></p>
+      </div>
       <h4 style="margin:18px 0 6px" data-stw="music"></h4>
       <label for="stwAdminFile" data-stw="file"></label>
       <input type="file" id="stwAdminFile" class="st-file-input" accept="audio/mpeg,audio/mp4,audio/aac,audio/x-m4a,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.ogg,.wav">
@@ -475,6 +562,11 @@ ${fg}
     tab.append(adminBox);
     const vol = $('#stwAdminVol'), volVal = $('#stwAdminVolVal');
     vol.addEventListener('input', () => { volVal.textContent = vol.value + '%'; if (audio) audio.volume = vol.value / 100; });
+    const blur = $('#stwAdminBlur'), blurVal = $('#stwAdminBlurVal');
+    blur.addEventListener('input', () => {
+      const amount = applySceneBlur(blur.value);
+      blurVal.textContent = amount + ' px';
+    });
     $('#stwAdminFile').addEventListener('change', (e) => { const f = e.target.files?.[0]; $('#stwAdminFileName').textContent = f ? f.name : t('nofile'); const p = $('#stwAdminPreview'); if (f) { p.src = URL.createObjectURL(f); p.hidden = false; if (!$('#stwAdminTitle').value) $('#stwAdminTitle').value = f.name.replace(/\.[a-z0-9]+$/i, '').slice(0, 80); } });
     $('#stwAdminSave').addEventListener('click', () => saveAdmin(false));
     $('#stwAdminRemove').addEventListener('click', () => { $('#stwAdminUrl').value = ''; $('#stwAdminFile').value = ''; $('#stwAdminTitle').value = ''; saveAdmin(true); });
@@ -484,6 +576,9 @@ ${fg}
     if (!adminBox) return;
     adminBox.querySelectorAll('[data-stw]').forEach((el) => { el.textContent = t(el.dataset.stw); });
     $('#stwAdminWinter').checked = site.winter === 'on';
+    $('#stwAdminBlur').value = String(site.winterBlur);
+    $('#stwAdminBlurVal').textContent = site.winterBlur + ' px';
+    applySceneBlur(site.winterBlur);
     $('#stwAdminUrl').value = site.musicUrl; $('#stwAdminTitle').value = site.musicTitle;
     $('#stwAdminVol').value = site.musicVolume; $('#stwAdminVolVal').textContent = site.musicVolume + '%';
     $('#stwAdminAuto').checked = site.musicAutoplay;
@@ -508,6 +603,7 @@ ${fg}
       if (url && !/^https:\/\//.test(url)) { toastMsg(t('badUrl')); return; }
       const rows = [
         { key: 'winter_mode', value: $('#stwAdminWinter').checked ? 'on' : 'off' },
+        { key: 'winter_blur', value: String(clamp(Number($('#stwAdminBlur').value) || 0, 0, 18)) },
         { key: 'music_url', value: url },
         { key: 'music_title', value: $('#stwAdminTitle').value.trim().slice(0, 80) },
         { key: 'music_volume', value: String($('#stwAdminVol').value) },

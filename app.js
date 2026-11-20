@@ -168,7 +168,7 @@ $('#signUpBtn')?.addEventListener('click', async () => {
   }
 });
 $('#googleLoginBtn')?.addEventListener('click', async () => {
-  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+  const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: 'https://staked.food/' } });
   if (error) toast('Ошибка Google: ' + error.message);
 });
 $('#logoutBtn')?.addEventListener('click', async () => {
@@ -734,23 +734,97 @@ async function applyPromo(raw) {
   const code = String(raw || '').trim().toUpperCase();
   if (!code || S.promoBusy) return;
   if (!S.user) { setPromoMsg(tr('promo_need_login'), true); return; }
+  if (!lines().length) { setPromoMsg(tr('promo_not_applicable'), true); return; }
+
   const button = $('#promoApplyBtn');
-  S.promoBusy = true; if (button) button.disabled = true;
+  S.promoBusy = true;
+  if (button) button.disabled = true;
   try {
-    const { data, error } = await _supabase.rpc('stackd_promo_preview', { p_code: code, p_items: S.cart.map(item => ({ id: item.id, qty: item.qty })) });
-    if (error) { console.error('promo_validate failed:', error); setPromoMsg(tr('promo_invalid'), true); return; }
-    if (!data?.ok) { setPromoMsg(tr('promo_' + (['already_used', 'not_applicable', 'rate_limited'].includes(data?.reason) ? data.reason : 'invalid')), true); return; }
-    data.kind = data.type; data.value = data.type === 'percent' ? data.percent : data.amount;
-    data.product_id = data.product?.id ?? null; data.add_product = data.type === 'free_product' && data.product?.purchasable;
-    if (data.add_product && data.product_id && !S.cart.some(x => String(x.id) === String(data.product_id) && x.qty > 0)) {
-      setQty(data.product_id, 1);   // the free unit comes out of the cart, so the product has to be there
-      if (!S.cart.some(x => String(x.id) === String(data.product_id) && x.qty > 0)) { setPromoMsg(tr('promo_not_applicable'), true); return; }
+    const cartItems = S.cart
+      .filter(item => item && Number.isInteger(Number(item.qty)) && Number(item.qty) > 0)
+      .map(item => ({ id: String(item.id), qty: Number(item.qty) }));
+
+    const { data, error } = await _supabase.rpc('stackd_promo_preview', {
+      p_code: code,
+      p_items: cartItems
+    });
+    if (error) throw error;
+    if (!data || typeof data !== 'object') throw new Error('The promo service returned an empty response.');
+
+    if (!data.ok) {
+      const reason = ['already_used', 'not_applicable', 'rate_limited'].includes(data.reason) ? data.reason : 'invalid';
+      setPromoMsg(tr('promo_' + reason), true);
+      return;
     }
-    S.promo = { code: data.code, title: data.title, kind: data.kind, value: data.value, scope: data.scope, product_id: data.product_id, ends_at: data.ends_at, remaining: data.remaining };
+
+    const kind = data.type;
+    const productId = data.product?.id == null ? null : String(data.product.id);
+    const needsFreeProduct = kind === 'free_product' && data.applicable === false;
+
+    // A free-product code may preview as not applicable until its complimentary item is added.
+    if (needsFreeProduct) {
+      if (!productId || data.product?.purchasable !== true) {
+        setPromoMsg(tr('promo_not_applicable'), true);
+        return;
+      }
+      if (!S.cart.some(item => String(item.id) === productId && Number(item.qty) > 0)) {
+        const product = find(productId);
+        if (!product || !isAvailable(product)) {
+          setPromoMsg(tr('promo_not_applicable'), true);
+          return;
+        }
+        setQty(productId, 1);
+        if (!S.cart.some(item => String(item.id) === productId && Number(item.qty) > 0)) {
+          setPromoMsg(tr('promo_not_applicable'), true);
+          return;
+        }
+      }
+    } else if (data.applicable === false) {
+      setPromoMsg(tr('promo_not_applicable'), true);
+      return;
+    }
+
+    const value = kind === 'percent' ? Number(data.percent) : Number(data.amount);
+    if (!['percent', 'fixed', 'free_product'].includes(kind) || (kind !== 'free_product' && (!Number.isFinite(value) || value <= 0))) {
+      throw new Error('The promo service returned an invalid discount.');
+    }
+
+    const nextPromo = {
+      code: String(data.code || code),
+      title: String(data.title || data.code || code),
+      kind,
+      value: Number.isFinite(value) ? value : 0,
+      scope: data.scope || 'cart',
+      product_id: productId,
+      ends_at: data.ends_at || null,
+      remaining: data.remaining ?? null
+    };
+    S.promo = nextPromo;
+    const estimate = promoEstimate(nextPromo);
+    if (!estimate.applicable) {
+      S.promo = null;
+      setPromoMsg(tr('promo_not_applicable'), true);
+      return;
+    }
+
     S.promoMsg = { text: tr('promo_applied'), error: false };
     if ($('#promoInput')) $('#promoInput').value = '';
     renderCart();
-  } finally { S.promoBusy = false; if (button) button.disabled = false; }
+  } catch (error) {
+    console.error('Promo preview failed:', error);
+    const code = String(error?.code || '');
+    const status = Number(error?.status || error?.statusCode || 0);
+    if (code === '42501' || status === 401 || status === 403) {
+      setPromoMsg('Не удалось проверить промокод: сервис временно недоступен. Попробуйте позже.', true);
+    } else if (status === 429 || /rate.?limit/i.test(String(error?.message || ''))) {
+      setPromoMsg(tr('promo_rate_limited'), true);
+    } else {
+      setPromoMsg('Не удалось проверить промокод. Проверьте соединение и попробуйте ещё раз.', true);
+    }
+  } finally {
+    S.promoBusy = false;
+    if (button) button.disabled = false;
+  }
 }
 $('#promoForm')?.addEventListener('submit', e => { e.preventDefault(); applyPromo($('#promoInput')?.value); });
 document.addEventListener('click', e => {
@@ -873,21 +947,72 @@ PROMO_FORM()?.addEventListener('change', syncPromoFormFields);
 PROMO_FORM()?.addEventListener('submit', async e => {
   e.preventDefault();
   if (!isAdmin()) { toast('Недостаточно прав.'); return; }
+
   const f = e.currentTarget, msg = $('#promoMsg'), free = f.kind.value === 'free_product';
-  const num = v => (v === '' ? null : Number(v));
+  const kind = f.kind.value;
+  const scope = free ? 'product' : f.scope.value;
+  const code = String(f.code.value || '').trim().toUpperCase();
+  const title = String(f.title.value || '').trim() || code;
+  const productId = free || scope === 'product' ? String(f.product_id.value || '') : '';
+  const value = f.value.value === '' ? null : Number(f.value.value);
+  const maxUses = f.max_uses.value === '' ? null : Number(f.max_uses.value);
+  const perUserLimit = f.per_user_limit.value === '' ? 1 : Number(f.per_user_limit.value);
+  const startsAt = f.starts_at.value ? new Date(f.starts_at.value) : null;
+  const endsAt = f.ends_at.value ? new Date(f.ends_at.value) : null;
+
+  const fail = message => { if (msg) msg.textContent = message; };
+  if (!/^[^\s]{3,32}$/.test(code)) { fail('Код должен содержать 3–32 символа без пробелов.'); return; }
+  if (title.length < 1 || title.length > 80) { fail('Название должно содержать от 1 до 80 символов.'); return; }
+  if (!['percent', 'fixed', 'free_product'].includes(kind)) { fail('Выберите корректный тип промокода.'); return; }
+  if (!free && (!Number.isFinite(value) || value <= 0)) { fail('Укажите положительный размер скидки.'); return; }
+  if (kind === 'percent' && value > 100) { fail('Процент скидки не может превышать 100%.'); return; }
+  if (kind === 'fixed' && value > 100000) { fail('Фиксированная скидка слишком большая.'); return; }
+  if (scope === 'product' && !productId) { fail('Выберите товар для этого промокода.'); return; }
+  if (maxUses !== null && (!Number.isInteger(maxUses) || maxUses < 1)) { fail('Общий лимит должен быть целым числом больше нуля.'); return; }
+  if (!Number.isInteger(perUserLimit) || perUserLimit < 1) { fail('Лимит на пользователя должен быть целым числом больше нуля.'); return; }
+  if (startsAt && Number.isNaN(startsAt.getTime())) { fail('Проверьте дату начала.'); return; }
+  if (endsAt && Number.isNaN(endsAt.getTime())) { fail('Проверьте дату окончания.'); return; }
+  if (startsAt && endsAt && endsAt.getTime() <= startsAt.getTime()) { fail('Дата окончания должна быть позже даты начала.'); return; }
+
   const payload = {
-    code: f.code.value.trim().toUpperCase(), title: f.title.value.trim(), discount_type: f.kind.value,
-    percent_off: !free && f.kind.value === 'percent' ? num(f.value.value) : null, amount_off: !free && f.kind.value === 'fixed' ? num(f.value.value) : null, scope: free ? 'product' : f.scope.value,
-    product_id: free || f.scope.value === 'product' ? f.product_id.value || null : null,
-    max_uses: num(f.max_uses.value), max_uses_per_user: num(f.per_user_limit.value) || 1,
-    starts_at: f.starts_at.value ? new Date(f.starts_at.value).toISOString() : null,
-    ends_at: f.ends_at.value ? new Date(f.ends_at.value).toISOString() : null, active: f.active.checked
+    code,
+    title: title.slice(0, 80),
+    discount_type: kind,
+    percent_off: kind === 'percent' ? value : null,
+    amount_off: kind === 'fixed' ? value : null,
+    scope,
+    product_id: productId || null,
+    max_uses: maxUses,
+    max_uses_per_user: perUserLimit,
+    starts_at: startsAt ? startsAt.toISOString() : null,
+    ends_at: endsAt ? endsAt.toISOString() : null,
+    active: f.active.checked
   };
+
   msg.textContent = '';
-  const q = f.dataset.id ? _supabase.from('promo_codes').update(payload).eq('id', f.dataset.id) : _supabase.from('promo_codes').insert(payload);
-  const { error } = await q;
-  if (error) { msg.textContent = error.code === '23505' ? tr('pr_exists') : (error.message || 'Error'); return; }
-  f.hidden = true; toast(tr('pr_saved')); loadPromos();
+  const button = f.querySelector('button[type="submit"]');
+  if (button) button.disabled = true;
+  try {
+    const query = f.dataset.id
+      ? _supabase.from('promo_codes').update(payload).eq('id', f.dataset.id)
+      : _supabase.from('promo_codes').insert(payload);
+    const { error } = await query;
+    if (error) {
+      console.error('Promo save failed:', error);
+      if (error.code === '23505') fail(tr('pr_exists'));
+      else if (error.code === '23514') fail('Проверьте тип скидки, значение, выбранный товар и даты.');
+      else fail(error.message || 'Не удалось сохранить промокод.');
+      return;
+    }
+    f.hidden = true;
+    toast(tr('pr_saved'));
+    await loadPromos();
+  } catch (error) {
+    console.error('Promo save request failed:', error);
+    fail('Не удалось сохранить промокод. Проверьте соединение и попробуйте ещё раз.');
+  } finally {
+    if (button) button.disabled = false;
+  }
 });
 $('#promoList')?.addEventListener('click', async e => {
   const b = e.target.closest('[data-pa]'); if (!b || !isAdmin()) return;
