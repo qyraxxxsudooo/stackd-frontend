@@ -451,7 +451,10 @@ ${fg}
     const allowed = site.winter === 'on';
     if (userSec) userSec.hidden = !allowed;
     if (userToggle) userToggle.checked = allowed && userWants();
-    if (allowed && userWants()) enable(); else disable();
+    if (allowed && userWants()) {
+      if (!on) enable();
+      else if (bg && (bg.dataset.dark !== String(isDark()) || bg.dataset.city !== site.winterCity)) buildScene();
+    } else disable();
   }
   userToggle?.addEventListener('change', () => {
     try { localStorage.setItem(LOCAL, userToggle.checked ? '1' : '0'); } catch { /* storage blocked */ }
