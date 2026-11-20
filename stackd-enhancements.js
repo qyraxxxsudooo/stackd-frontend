@@ -1082,6 +1082,7 @@
         message.style.color = 'var(--success, #287a46)';
       }
       toast(tr('saved'));
+      return true;
     } catch (error) {
       for (const path of uploadedPaths) {
         const { error: cleanupError } = await _supabase.storage.from(PRODUCT_BUCKET).remove([path]);
@@ -1089,8 +1090,12 @@
       }
       console.error('Site settings save failed:', error);
       if (message) { message.textContent = error?.message || 'Не удалось сохранить настройки.'; message.style.color = 'var(--danger, #b42318)'; }
+      return false;
     } finally { if (button) button.disabled = false; }
   }
+
+  window.stakedSaveHeroSettings = () => saveHeroSettings({ preventDefault() {}, stopImmediatePropagation() {} });
+  window.stakedCanManage = () => Boolean(S.user && isAdmin());
 
   function buildCartGuide() {
     const drawer = $('#drawer');
