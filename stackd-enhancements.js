@@ -1381,7 +1381,7 @@
     };
     trigger.addEventListener('click', toggle);
     document.addEventListener('click', event => {
-      if (!event.target.closest('.stackd-profile-anchor') && !event.target.closest('.st-tab[data-tab="profile"]')) {
+      if (!event.target.closest('.stackd-profile-anchor') && !event.target.closest('.stackd-profile-menu') && !event.target.closest('.st-tab[data-tab="profile"]')) {
         menu.hidden = true;
         trigger.setAttribute('aria-expanded', 'false');
         window.stakedSetTabActive?.('shop');
