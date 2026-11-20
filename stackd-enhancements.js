@@ -1287,15 +1287,39 @@
       const button = document.createElement('button');
       button.id = 'stackdTopupHistoryOpen';
       button.type = 'button';
-      button.className = 'stackd-profile-action';
-      button.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+      button.className = 'stackd-profile-action stackd-profile-history-action';
+      button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg><span data-profile-action-title></span>';
+      button.querySelector('[data-profile-action-title]').textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
       button.addEventListener('click', () => {
         setProfileMenuOpen(false);
         openTopupHistory();
       });
+      const balanceRow = $('#stackdProfileBalanceRow', menu);
       const logoutButton = $('#logoutBtn', menu);
-      menu.insertBefore(button, logoutButton || null);
+      menu.insertBefore(button, balanceRow?.nextElementSibling || logoutButton || null);
     }
+  }
+
+  function buildProfilePromoUI() {
+    const menu = $('#stackdProfileMenu');
+    if (!menu || $('#stackdProfilePromo')) return;
+    const copy = {
+      ru: { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' },
+      en: { title: 'Promo code', placeholder: 'Enter promo code', apply: 'Apply' },
+      az: { title: 'Promokod', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
+    }[S.lang] || { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' };
+    const section = document.createElement('section');
+    section.id = 'stackdProfilePromo';
+    section.className = 'stackd-profile-promo';
+    section.innerHTML = `
+      <strong class="stackd-profile-promo-title" data-i18n="promo_title">${copy.title}</strong>
+      <form id="profilePromoForm" class="promo-form stackd-profile-promo-form" data-promo-form autocomplete="off">
+        <input id="profilePromoInput" data-promo-input type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" data-i18n-placeholder="promo_placeholder" placeholder="${copy.placeholder}">
+        <button class="btn btn-primary" type="submit" id="profilePromoApplyBtn" data-promo-apply data-i18n="promo_apply">${copy.apply}</button>
+      </form>
+      <div id="profilePromoStatus" class="promo-status" aria-live="polite"></div>`;
+    menu.insertBefore(section, $('#myOrdersBtn', menu) || null);
+    if (typeof renderPromoUI === 'function') renderPromoUI();
   }
 
   function topupStatusLabel(status) {
@@ -1367,97 +1391,6 @@
     }, 12000);
   }
 
-  function syncProfilePreferences() {
-    const panel = $('#stackdProfilePreferences');
-    if (!panel) return;
-    const language = S.lang === 'en' ? 'en' : S.lang === 'az' ? 'az' : 'ru';
-    const copy = {
-      ru: { title:'Настройки', appearance:'Тема', language:'Язык', system:'Авто', light:'Светлая', dark:'Тёмная', hint:'' },
-      en: { title:'Settings', appearance:'Theme', language:'Language', system:'Auto', light:'Light', dark:'Dark', hint:'' },
-      az: { title:'Ayarlar', appearance:'Mövzu', language:'Dil', system:'Avto', light:'Açıq', dark:'Tünd', hint:'' }
-    }[language];
-    panel.querySelector('[data-profile-copy="title"]').textContent = copy.title;
-    panel.querySelector('[data-profile-copy="appearance"]').textContent = copy.appearance;
-    panel.querySelector('[data-profile-copy="language"]').textContent = copy.language;
-    panel.querySelector('[data-profile-copy="hint"]').textContent = copy.hint;
-    panel.querySelector('#stackdProfileThemeSeg [data-v="system"]').textContent = copy.system;
-    panel.querySelector('#stackdProfileThemeSeg [data-v="light"]').textContent = copy.light;
-    panel.querySelector('#stackdProfileThemeSeg [data-v="dark"]').textContent = copy.dark;
-    panel.querySelectorAll('[data-profile-lang]').forEach(button => {
-      const selected = button.dataset.profileLang === language;
-      button.setAttribute('aria-pressed', String(selected));
-      button.classList.toggle('is-selected', selected);
-    });
-    try {
-      const selectedTheme = localStorage.getItem('pdd.theme') || 'system';
-      panel.querySelectorAll('#stackdProfileThemeSeg [data-v]').forEach(button => {
-        const selected = button.dataset.v === selectedTheme;
-        button.setAttribute('aria-pressed', String(selected));
-        button.classList.toggle('is-selected', selected);
-      });
-    } catch {}
-    const syncSlider = (selector, sliderSelector, activeSelector) => {
-      const group = panel.querySelector(selector);
-      const slider = panel.querySelector(sliderSelector);
-      const activeButton = group?.querySelector(activeSelector);
-      if (!group || !slider || !activeButton) return;
-      slider.style.width = activeButton.offsetWidth + 'px';
-      slider.style.transform = 'translateX(' + (activeButton.offsetLeft - 3) + 'px)';
-    };
-    const closeButton = $('#stackdProfileClose');
-    if (closeButton) closeButton.setAttribute('aria-label', language === 'en' ? 'Close profile' : language === 'az' ? 'Profili bağla' : 'Закрыть профиль');
-    requestAnimationFrame(() => {
-      syncSlider('#stackdProfileThemeSeg', '#stackdProfileThemeSlider', 'button[aria-pressed="true"]');
-      syncSlider('#stackdProfileLanguageSeg', '#stackdProfileLanguageSlider', 'button[aria-pressed="true"]');
-    });
-  }
-
-  function buildProfilePreferences() {
-    const menu = $('#stackdProfileMenu');
-    if (!menu || $('#stackdProfilePreferences')) return;
-    const panel = document.createElement('section');
-    panel.id = 'stackdProfilePreferences';
-    panel.className = 'stackd-profile-preferences';
-    panel.innerHTML = `
-      <div class="stackd-profile-pref-heading"><strong data-profile-copy="title"></strong><small data-profile-copy="hint" hidden></small></div>
-      <div class="stackd-profile-pref-group">
-        <span class="stackd-profile-pref-label" data-profile-copy="appearance"></span>
-        <div class="seg stackd-profile-segment" id="stackdProfileThemeSeg" role="group" aria-label="Theme">
-          <span class="seg-slider" id="stackdProfileThemeSlider" aria-hidden="true"></span>
-          <button type="button" data-act="theme" data-v="system">Авто</button>
-          <button type="button" data-act="theme" data-v="light">Светлая</button>
-          <button type="button" data-act="theme" data-v="dark">Тёмная</button>
-        </div>
-      </div>
-      <div class="stackd-profile-pref-group">
-        <span class="stackd-profile-pref-label" data-profile-copy="language"></span>
-        <div class="seg stackd-profile-segment" id="stackdProfileLanguageSeg" role="group" aria-label="Language">
-          <span class="seg-slider" id="stackdProfileLanguageSlider" aria-hidden="true"></span>
-          <button type="button" data-profile-lang="ru">RU</button>
-          <button type="button" data-profile-lang="en">EN</button>
-          <button type="button" data-profile-lang="az">AZ</button>
-        </div>
-      </div>`;
-    const orders = $('#myOrdersBtn', menu);
-    menu.insertBefore(panel, orders || null);
-    panel.addEventListener('click', event => {
-      const languageButton = event.target.closest('[data-profile-lang]');
-      if (languageButton) {
-        const nextLanguage = languageButton.dataset.profileLang;
-        if (['ru','en','az'].includes(nextLanguage) && typeof applyLanguage === 'function') {
-          applyLanguage(nextLanguage);
-          refreshPromotionNewsLabels();
-          syncProfilePreferences();
-        }
-        return;
-      }
-      if (event.target.closest('#stackdProfileThemeSeg button[data-v]')) {
-        requestAnimationFrame(syncProfilePreferences);
-      }
-    });
-    syncProfilePreferences();
-  }
-
   let profileCloseTimer=null;
   function setProfileMenuOpen(open) {
     const menu=$('#stackdProfileMenu');
@@ -1472,7 +1405,6 @@
       void menu.offsetWidth;
       menu.classList.add('is-visible');
       trigger?.setAttribute('aria-expanded','true');
-      requestAnimationFrame(()=>updateThemeSlider());
       return true;
     }
     if(menu.hidden||menu.classList.contains('is-closing')){
@@ -1502,7 +1434,7 @@
   function initProfileMenu() {
     buildProfileBalanceRow();
     makeTopupHistoryUI();
-    buildProfilePreferences();
+    buildProfilePromoUI();
     const trigger = $('#stackdProfileTrigger');
     const menu = $('#stackdProfileMenu');
     if (!trigger || !menu || trigger.dataset.bound === '1') return;
@@ -1557,7 +1489,6 @@
   }
   function syncProfileMenu() {
     if ($('#stackdProfileEmail')) $('#stackdProfileEmail').textContent = S.user?.email || '';
-    syncProfilePreferences();
     const avatar = $('#userAvatar');
     const profileAvatar = $('#stackdProfileAvatar');
     const avatarUrl = S.user?.user_metadata?.avatar_url ||
@@ -1573,7 +1504,11 @@
       profileAvatar.alt = S.lang === 'en' ? 'Google account photo' : S.lang === 'az' ? 'Google hesabının şəkli' : 'Фото аккаунта Google';
     }
     const historyButton = $('#stackdTopupHistoryOpen');
-    if (historyButton && !historyButton.querySelector('[data-profile-action-title]')) historyButton.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+    if (historyButton) {
+      const title = historyButton.querySelector('[data-profile-action-title]');
+      if (title) title.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+      else historyButton.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
+    }
     const historyTitle = $('#stackdTopupHistoryTitle');
     if (historyTitle) historyTitle.textContent = S.lang === 'en' ? 'Top-up history' : S.lang === 'az' ? 'Balans tarixçəsi' : 'История пополнений';
     const historyNote = $('#stackdTopupHistoryNote');
