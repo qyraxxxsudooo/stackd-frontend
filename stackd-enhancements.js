@@ -1241,6 +1241,7 @@
     $('#stackdProfileTopup')?.addEventListener('click', () => {
       menu.hidden = true;
       $('#stackdProfileTrigger')?.setAttribute('aria-expanded', 'false');
+      window.stakedSetTabActive?.('topup');
       $('#topup')?.showModal();
     });
     const source = $('#userBalance');
@@ -1380,9 +1381,9 @@
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
     });
-    $('#myOrdersBtn')?.addEventListener('click', () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); });
+    $('#myOrdersBtn')?.addEventListener('click', () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); window.stakedSetTabActive?.('orders'); });
     const logout = $('#logoutBtn');
-    if (logout) logout.addEventListener('click', () => { menu.hidden = true; });
+    if (logout) logout.addEventListener('click', () => { menu.hidden = true; window.stakedSetTabActive?.('shop'); });
     syncProfileMenu();
     _supabase.auth.onAuthStateChange((_event, session) => {
       setTimeout(() => { S.user = session?.user || null; syncProfileMenu(); }, 0);
