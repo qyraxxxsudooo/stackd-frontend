@@ -61,29 +61,13 @@ html.st-winter body{background:transparent!important}
 .stw-city-control .stackd-admin-note{margin:0}
 `;
   const UI_CSS = `
-.st-music{position:relative;display:none!important;place-items:center;flex:none}
-.st-music.has-track{display:grid!important}
-.st-music .st-eq{display:flex;align-items:flex-end;gap:2px;height:16px}
-.st-music .st-eq i{display:block;width:3px;height:100%;border-radius:2px;background:currentColor;transform-origin:50% 100%;transform:scaleY(.3);transition:transform .3s}
-.st-music .st-eq i:nth-child(1){transform:scaleY(.45)}.st-music .st-eq i:nth-child(2){transform:scaleY(.85)}.st-music .st-eq i:nth-child(3){transform:scaleY(.6)}.st-music .st-eq i:nth-child(4){transform:scaleY(.35)}
-.st-music.is-playing{color:var(--accent)}
-.st-music.is-playing .st-eq i{animation:stEq 1s ease-in-out infinite}
-.st-music.is-playing .st-eq i:nth-child(2){animation-delay:-.4s;animation-duration:.8s}
-.st-music.is-playing .st-eq i:nth-child(3){animation-delay:-.7s;animation-duration:1.15s}
-.st-music.is-playing .st-eq i:nth-child(4){animation-delay:-.2s;animation-duration:.9s}
-@keyframes stEq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
-.st-music.hint::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2px solid var(--accent);animation:stHint 1.8s ease-out infinite;pointer-events:none}
-@keyframes stHint{from{opacity:.8;transform:scale(.9)}to{opacity:0;transform:scale(1.35)}}
 .stw-admin .st-switch{margin:6px 0 4px}
-.stw-admin audio{width:100%;margin-top:8px}
 .stw-admin .stw-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .stw-admin input[type=range]{width:100%;accent-color:var(--accent)}
 .stw-admin .stw-blur-control{display:grid;gap:5px;margin:12px 0 4px;padding:13px;border:1px solid color-mix(in srgb,var(--text) 9%,transparent);border-radius:15px;background:color-mix(in srgb,var(--surface) 68%,transparent)}
 .stw-admin .stw-blur-control label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.84rem;font-weight:650}
 .stw-admin .stw-blur-control label b{font-variant-numeric:tabular-nums;color:var(--accent)}
 .stw-admin .stw-blur-control .stackd-admin-note{margin:0;font-size:.73rem}
-.stw-admin .stw-now{margin-top:8px;font-size:.84rem;color:var(--muted);word-break:break-all}
-@media (prefers-reduced-motion:reduce){.st-music .st-eq i,.st-music.hint::after{animation:none!important}}
 `;
   const addStyle = (id, css) => { if (document.getElementById(id)) return; const s = document.createElement('style'); s.id = id; s.textContent = css; document.head.append(s); };
 
@@ -267,8 +251,8 @@ ${fg}
     const w = Math.max(1, Math.round(innerWidth));
     const h = Math.max(1, Math.round(innerHeight));
     const area = w * h;
-    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.1 : 1.8);
-    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt((coarse ? 2200000 : 6000000) / area)));
+    const deviceDpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.1 : 1.6);
+    snowDpr = Math.min(deviceDpr, Math.max(1, Math.sqrt((coarse ? 2200000 : 4000000) / area)));
     snowWidth = w;
     snowHeight = h;
     snowCanvas.width = Math.round(w * snowDpr);
@@ -278,7 +262,7 @@ ${fg}
     snowCtx.setTransform(snowDpr, 0, 0, snowDpr, 0, 0);
     const target = coarse
       ? Math.round(clamp(area / 22000, 28, 56))
-      : Math.round(clamp(area / 4700, 210, 430));
+      : Math.round(clamp(area / 12000, 100, 180));
     while (snowParticles.length < target) snowParticles.push(makeSnowParticle(true));
     if (snowParticles.length > target) snowParticles.length = target;
     drawSnow(0, performance.now());
@@ -378,7 +362,7 @@ ${fg}
   function stepSnow(now) {
     snowRaf = 0;
     if (!on || !snowCtx || document.hidden) return;
-    const interval = 1000 / (coarse ? 30 : 60);
+    const interval = 1000 / (coarse ? 30 : 45);
     if (now < snowNextFrame) {
       snowRaf = requestAnimationFrame(stepSnow);
       return;
@@ -484,12 +468,6 @@ ${fg}
     applyWinter();
   });
 
-  /* Site music was removed. This hook removes stale controls from cached markup. */
-  function setupMusic() {
-    document.querySelectorAll('.st-music').forEach(button => button.remove());
-    const preview = document.getElementById('stwAdminPreview');
-    if (preview) { preview.pause(); preview.removeAttribute('src'); preview.load(); preview.remove(); }
-  }
 
   /* ═════════════ settings from the database ═════════════ */
   function readRows(rows) {
@@ -505,14 +483,14 @@ ${fg}
       readRows(data);
     } catch { /* keep the last known state */ }
     try { localStorage.setItem('stacked.site', JSON.stringify(site)); } catch { /* */ }
-    applyWinter(); setupMusic(); syncAdmin();
+    applyWinter(); syncAdmin();
   }
 
   /* ═════════════ admin: Каталог → Настройки → «Зима и музыка» ═════════════ */
   let adminBox = null;
   function buildAdmin() {
     const tab = $('#tab-settings'); if (!tab || adminBox) return;
-    addStyle('st-music-style', UI_CSS);
+    addStyle('stw-admin-style', UI_CSS);
     adminBox = document.createElement('section');
     adminBox.className = 'stackd-settings-section stw-admin'; adminBox.id = 'stwAdmin';
     adminBox.innerHTML = `
