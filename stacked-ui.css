@@ -528,7 +528,7 @@ input,textarea,select,[contenteditable=true],[data-selectable=true],pre,code{
 /* Stable controls and figures: no layout shifts while values update. */
 #userBalance{
   display:inline-block;
-  min-width:7ch;
+  min-width:8ch;
   text-align:right;
   font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum" 1;
@@ -613,3 +613,11 @@ input,textarea,select,[contenteditable=true],[data-selectable=true],pre,code{
 }
 
 #stackdProfileMenu .stackd-profile-history-action{gap:10px!important;justify-content:flex-start!important}
+
+/* Theme changes interpolate colours only; do not animate or relayout the catalogue. */
+body{transition:background-color .18s ease,color .18s ease!important}
+#settingsPanel #profileThemeSeg .seg-slider{
+  transition:transform .22s cubic-bezier(.22,.72,.18,1),width .22s cubic-bezier(.22,.72,.18,1)!important;
+}
+#settingsPanel #profileThemeSeg button{transition:color .14s ease!important}
+@media(prefers-reduced-motion:reduce){body{transition:none!important}}
