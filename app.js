@@ -136,6 +136,7 @@ function applyLanguage(lang) {
   try { localStorage.setItem('pdd.lang', selected); } catch {}
   document.documentElement.lang = selected;
   if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
+  $('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
   $$('[data-i18n]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18n] ?? translations.ru[element.dataset.i18n];
     if (value !== undefined) element.textContent = value;
@@ -905,10 +906,10 @@ function renderPromoUI() {
   if (box) {
     box.hidden = !lines().length;
     if (!$('#cartPromoForm', box)) {
-      box.innerHTML = `<div class="cart-promo-title">${esc(tr('promo_cart_hint'))}</div>
+      box.innerHTML = `<div class="cart-promo-title" data-i18n="promo_cart_hint">${esc(tr('promo_cart_hint'))}</div>
         <form id="cartPromoForm" class="promo-form cart-promo-form" data-promo-form autocomplete="off">
-          <input id="cartPromoInput" data-promo-input type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="${esc(tr('promo_placeholder'))}">
-          <button class="btn btn-primary" type="submit" id="cartPromoApplyBtn" data-promo-apply>${esc(tr('promo_apply'))}</button>
+          <input id="cartPromoInput" data-promo-input data-i18n-placeholder="promo_placeholder" type="text" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="${esc(tr('promo_placeholder'))}">
+          <button class="btn btn-primary" type="submit" id="cartPromoApplyBtn" data-promo-apply data-i18n="promo_apply">${esc(tr('promo_apply'))}</button>
         </form>
         <div id="cartPromoStatus" class="promo-status" aria-live="polite"></div>`;
     }
