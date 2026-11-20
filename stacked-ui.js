@@ -22,6 +22,12 @@
 
   /* ───────── centred panels: orders, top-up, cart ─────────
      They open non-modally above a blurred scrim, so the tab bar stays on top and clickable. */
+  // Keep the profile flyout outside #userProfile, which starts hidden until
+  // the auth UI refreshes. This prevents the hidden header wrapper hiding it.
+  const profileMenu = $('#stackdProfileMenu');
+  const profileTrigger = $('#stackdProfileTrigger');
+  if (profileMenu && profileMenu.parentElement !== document.body) document.body.append(profileMenu);
+
   const PANELS = ['orders', 'topup', 'drawer'];
   const scrim = document.createElement('div'); scrim.className = 'st-scrim'; scrim.setAttribute('aria-hidden', 'true');
   document.body.append(scrim);
@@ -71,12 +77,6 @@
   document.body.append(bar);
   document.body.classList.add('has-tabbar');
   const sheets = { orders: () => $('#orders'), topup: () => $('#topup') };
-
-  // Keep the profile flyout outside #userProfile, which starts hidden until
-  // the auth UI refreshes. This prevents the hidden header wrapper hiding it.
-  const profileMenu = $('#stackdProfileMenu');
-  const profileTrigger = $('#stackdProfileTrigger');
-  if (profileMenu && profileMenu.parentElement !== document.body) document.body.append(profileMenu);
 
   function ensureProfileBalanceRow() {
     const menu = $('#stackdProfileMenu');
