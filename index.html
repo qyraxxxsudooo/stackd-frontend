@@ -12,7 +12,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
 <title>STAKED Baku - Food Deals, Discounts &amp; Online Orders</title>
-<meta name="description" content="STAKED Baku - платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте онлайн-заказы с QR-кодами.">
+<meta name="description" content="STAKED Baku - платформа предложений и скидок на еду в Баку. Изучайте каталог, находите выгодные предложения и оформляйте заказы онлайн.">
 <meta name="application-name" content="STAKED">
 <meta name="author" content="STAKED">
 <meta name="theme-color" content="#f7f3ec">
@@ -23,7 +23,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="STAKED">
 <meta property="og:title" content="STAKED Baku - Food Deals, Discounts &amp; Online Orders">
-<meta property="og:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды для подтверждённых заказов.">
+<meta property="og:description" content="Предложения и скидки на еду в Баку. Каталог, онлайн-заказы и код для автомата после подтверждения.">
 <meta property="og:url" content="https://staked.food/">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:locale:alternate" content="en_US">
@@ -31,7 +31,7 @@
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="STAKED Baku - Food Deals, Discounts &amp; Online Orders">
-<meta name="twitter:description" content="Предложения и скидки на еду в Баку. Каталог товаров, онлайн-заказы и QR-коды.">
+<meta name="twitter:description" content="Предложения и скидки на еду в Баку. Каталог и онлайн-заказы.">
 
 <script type="application/ld+json">
 {
@@ -62,6 +62,7 @@ try {
 <link rel="stylesheet" href="stacked-shop.css">
 <link rel="stylesheet" href="stacked-ui.css">
 <link rel="stylesheet" href="staked-polish.css">
+<link rel="stylesheet" href="staked-glass.css">
 <style>
 /* STAKED splash: painted on the first frame; a CSS-only failsafe removes it after 4 s even if JS fails. */
 #stackedSplash{position:fixed;inset:0;z-index:2147483000;background:#f7f3ec;pointer-events:none;animation:stackedSplashSafe .01s linear 3.6s forwards}
@@ -423,7 +424,7 @@ try{
     </a>
   </div>
   <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">
-    Отправка заявки не означает автоматическое зачисление. Поступление средств проверяется отдельно.
+    Баланс пополнится, когда оператор проверит перевод.
   </p>
   <form id="topupForm">
     <label data-i18n="topup_amount">Сумма (AZN)</label>
@@ -433,7 +434,7 @@ try{
     <label class="check terms-check">
       <input type="checkbox" id="termsCheck" required>
       <span data-i18n="topup_terms">
-        Я подтверждаю, что данные заявки верны. Зачисление выполняется только после проверки платежа.
+        Сумма в заявке совпадает с переводом, чек настоящий и мой.
       </span>
     </label>
     <p class="msg" id="topupMsg"></p>
@@ -546,6 +547,7 @@ try{
 <script src="stacked-ui.js" defer></script>
 <script src="stacked-winter.js" defer></script>
 <script src="staked-polish.js" defer></script>
+<script src="staked-glass.js" defer></script>
 
 </body>
 </html>

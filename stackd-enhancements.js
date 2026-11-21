@@ -15,9 +15,9 @@
       center: 'По центру', top: 'Сверху', bottom: 'Снизу', save: 'Сохранить настройки',
       guideTitle: 'Перед покупкой', guide1: 'Проверьте состав, цену и количество выбранных товаров.',
       guide2: 'Количество можно изменить кнопками «+» и «−» прямо в карточке или корзине.',
-      guide3: 'Заказ отправляется оператору. QR-код появится в разделе «Мои заказы» после подтверждения.',
+      guide3: 'После оформления оператор проверит заказ, и в «Моих заказах» появится код для автомата.',
       swipe: 'Проведите, чтобы оформить заказ', preparing: 'Готовим заказ',
-      preparingText: 'Отправляем заказ оператору. QR-код появится в «Моих заказах» после подтверждения.',
+      preparingText: 'Отправляем заказ оператору.',
       swipeAgain: 'Сдвиньте ползунок до конца', rateLimited: 'Слишком много запросов. Попробуйте немного позже.',
       stockError: 'Количество должно быть целым числом от 0 и выше.',
       unlimitedNote: 'Оставьте пустым, если ограничение остатка не требуется.',
@@ -46,9 +46,9 @@
       center: 'Center', top: 'Top', bottom: 'Bottom', save: 'Save settings',
       guideTitle: 'Before you order', guide1: 'Check item details, prices and selected quantities.',
       guide2: 'Change quantities with the “+” and “−” controls on product cards or in the cart.',
-      guide3: 'Your order is sent to an operator. The QR code appears in “My orders” after confirmation.',
+      guide3: 'After checkout the operator checks your order, and a kiosk code appears in “My orders”.',
       swipe: 'Swipe to place your order', preparing: 'Preparing your order',
-      preparingText: 'Sending the order to the operator. The QR code will appear in “My orders” after confirmation.',
+      preparingText: 'Sending your order to the operator.',
       swipeAgain: 'Move the slider all the way', rateLimited: 'Too many requests. Please try again shortly.',
       stockError: 'Stock must be a whole number equal to or greater than zero.',
       unlimitedNote: 'Leave empty when stock is not limited.',
@@ -77,9 +77,9 @@
       center: 'Mərkəz', top: 'Yuxarı', bottom: 'Aşağı', save: 'Ayarları saxla',
       guideTitle: 'Sifarişdən əvvəl', guide1: 'Məhsulun tərkibini, qiymətini və sayını yoxlayın.',
       guide2: 'Miqdarı məhsul kartında və ya səbətdə «+» və «−» düymələri ilə dəyişin.',
-      guide3: 'Sifariş operatora göndərilir. Təsdiqdən sonra QR kod «Sifarişlərim» bölməsində görünəcək.',
+      guide3: 'Sifarişdən sonra operator onu yoxlayır və «Sifarişlərim» bölməsində avtomat üçün kod görünür.',
       swipe: 'Sifariş üçün sürüşdürün', preparing: 'Sifariş hazırlanır',
-      preparingText: 'Sifariş operatora göndərilir. Təsdiqdən sonra QR kod «Sifarişlərim» bölməsində görünəcək.',
+      preparingText: 'Sifarişdən sonra operator onu yoxlayır və «Sifarişlərim» bölməsində avtomat üçün kod görünür.',
       swipeAgain: 'Sürüşdürməni sona qədər aparın', rateLimited: 'Sorğular çoxdur. Bir az sonra yenidən cəhd edin.',
       stockError: 'Stok 0 və ya daha böyük tam ədəd olmalıdır.',
       unlimitedNote: 'Stok məhdudiyyəti yoxdursa, sahəni boş saxlayın.',
@@ -913,7 +913,7 @@
       <img class="stackd-showcase-image" alt="" decoding="async">
       <div class="stackd-showcase-shade" aria-hidden="true"></div>
       <div class="stackd-showcase-copy">
-        <span class="stackd-showcase-kicker">STAKED / SPECIAL OFFERS</span>
+        <span class="stackd-showcase-kicker" data-st-kicker>STAKED</span>
         <h1 id="stackdShowcaseTitle"></h1>
         <p id="stackdShowcaseSubtitle"></p>
         <a class="stackd-showcase-cta" href="#catalog"><span id="stackdShowcaseCta"></span><span aria-hidden="true">↘</span></a>
@@ -1188,7 +1188,7 @@
       const control = event.target.closest('[data-act]');
       if (!control) return;
       const action = control.dataset.act;
-      if (!['orders', 'auth', 'manage', 'toggle-qr', 'clear'].includes(action)) return;
+      if (!['orders', 'auth', 'manage', 'clear'].includes(action)) return;
       const now = Date.now(), last = cooldowns.get(action) || 0;
       if (now - last < 500) { event.preventDefault(); event.stopImmediatePropagation(); }
       else cooldowns.set(action, now);
@@ -1354,7 +1354,7 @@
         host.innerHTML = rows.map(row => {
           const id = String(row.id || '');
           const date = row.created_at ? new Date(row.created_at) : null;
-          const dateText = date && !Number.isNaN(date.getTime()) ? date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+          const dateText = date && !Number.isNaN(date.getTime()) ? (window.stakedFmtDate ? window.stakedFmtDate(date) : date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' })) : '-';
           const amount = Number(row.amount);
           const amountText = Number.isFinite(amount) ? `${amount.toFixed(2)} AZN` : '- AZN';
           const status = ['pending','approved','rejected'].includes(String(row.status)) ? String(row.status) : 'pending';

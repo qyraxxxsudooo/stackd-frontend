@@ -1,0 +1,250 @@
+/* STAKED glass layer. Loaded last.
+   One material for every surface that floats over the background: translucent tint, a 1px light edge,
+   a top highlight and a soft shadow. Real backdrop blur is kept for the few fixed chrome elements
+   (header, tab bar, panels). Product cards do NOT blur what is behind them: with a fixed background,
+   each blurred card is recomputed on every scroll frame, which is what made Android phones stutter.
+   The winter scene is already blurred once, so a translucent card over it still reads as frosted glass. */
+
+:root{
+  --g-fill:rgba(255,253,249,.70);
+  --g-fill-strong:rgba(255,253,249,.86);
+  --g-edge:rgba(255,255,255,.78);
+  --g-line:rgba(37,31,25,.09);
+  --g-hi:rgba(255,255,255,.85);
+  --g-shadow:0 14px 34px rgba(46,32,18,.12),0 2px 6px rgba(46,32,18,.06);
+  --g-pill:color-mix(in srgb,var(--accent) 14%,rgba(255,255,255,.7));
+  --g-pill-edge:color-mix(in srgb,var(--accent) 34%,rgba(255,255,255,.6));
+  --g-pill-text:color-mix(in srgb,var(--accent) 86%,#3a1a05);
+  --g-ease:cubic-bezier(.2,.8,.2,1);
+  --g-spring:cubic-bezier(.32,1.28,.42,1);
+}
+html[data-theme="dark"],html.stacked-dark{
+  --g-fill:rgba(30,28,26,.62);
+  --g-fill-strong:rgba(30,28,26,.84);
+  --g-edge:rgba(255,255,255,.11);
+  --g-line:rgba(255,255,255,.08);
+  --g-hi:rgba(255,255,255,.10);
+  --g-shadow:0 16px 40px rgba(0,0,0,.34),0 2px 8px rgba(0,0,0,.18);
+  --g-pill:color-mix(in srgb,var(--accent) 22%,rgba(60,40,26,.55));
+  --g-pill-edge:color-mix(in srgb,var(--accent) 38%,rgba(255,255,255,.12));
+  --g-pill-text:color-mix(in srgb,var(--accent) 70%,#fff);
+}
+
+/* ── product cards ── */
+.card{
+  background:var(--g-fill)!important;
+  border:1px solid var(--g-edge)!important;
+  box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  border-radius:22px!important;
+}
+.card::before{background:linear-gradient(160deg,rgba(255,255,255,.10),transparent 30%)!important}
+.card-body{
+  background:transparent!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  border-top:1px solid var(--g-line)!important;
+}
+.card-media{margin:6px 6px 0;border-radius:17px!important;overflow:hidden}
+.card-media::after{background:linear-gradient(180deg,transparent 70%,rgba(0,0,0,.10))!important}
+.card .tag{letter-spacing:.02em;text-transform:none!important;font-weight:650;font-size:.72rem;color:var(--muted)!important}
+.card .badge-popular,.card .stackd-sale-badge{
+  text-transform:none!important;letter-spacing:0!important;font-weight:700;
+  background:var(--g-fill-strong)!important;border:1px solid var(--g-edge)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+.card .stackd-card-qty{background:var(--g-fill-strong)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.card .btn-ghost{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+@media(hover:hover) and (pointer:fine){
+  .card{transition:border-color .25s var(--g-ease),box-shadow .25s var(--g-ease)!important}
+  .card:hover{border-color:color-mix(in srgb,var(--accent) 34%,var(--g-edge))!important}
+}
+
+/* ── one capsule style for the tab bar, categories and segmented controls ── */
+.chips,.settings-panel .seg,#profileThemeSeg{
+  background:var(--g-fill-strong)!important;
+  border:1px solid var(--g-edge)!important;
+  box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(160%)!important;backdrop-filter:blur(18px) saturate(160%)!important;
+  border-radius:999px!important;padding:4px!important;
+}
+.chips-slider,.settings-panel .seg-slider,#themeSlider,.st-tab-ind{
+  background:var(--g-pill)!important;
+  border:1px solid var(--g-pill-edge)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+  border-radius:999px!important;
+  transition:transform .46s var(--g-spring),width .46s var(--g-spring)!important;
+}
+.st-tab-ind{border-radius:19px!important}
+.chips button,.settings-panel .seg button{
+  color:var(--muted)!important;font-weight:600!important;
+  transition:color .25s var(--g-ease)!important;
+}
+.chips button[aria-pressed=true],.settings-panel .seg button[aria-pressed=true],#profileThemeSeg button[aria-pressed=true]{
+  color:var(--g-pill-text)!important;font-weight:700!important;
+}
+.st-tab[aria-current=page]{color:var(--accent)!important}
+.st-tab[aria-current=page] .st-tab-label{color:var(--g-pill-text)!important}
+
+/* section headings: sentence case, no tracked capitals */
+.settings-panel .settings-sec h3{text-transform:none!important;letter-spacing:0!important;font-size:.92rem!important;font-weight:700!important;color:var(--text)!important}
+
+/* ── header profile button (desktop): same material as the tab bar, label on the right ── */
+@media (min-width:681px){
+  #userProfile{display:flex;align-items:center;gap:10px}
+  #stackdProfileTrigger.st-profile-pill{
+    display:inline-flex!important;align-items:center;gap:9px;height:44px;padding:4px 16px 4px 4px;
+    border-radius:999px;border:1px solid var(--g-edge);background:var(--g-fill-strong);color:var(--text);
+    box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+    cursor:pointer;font:650 .86rem/1 var(--font,inherit);transition:border-color .2s var(--g-ease),background-color .2s var(--g-ease)
+  }
+  #stackdProfileTrigger.st-profile-pill img{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
+  #stackdProfileTrigger.st-profile-pill strong{font:inherit;color:inherit;white-space:nowrap;display:inline!important}
+  #stackdProfileTrigger.st-profile-pill small{display:none!important}
+  #stackdProfileTrigger.st-profile-pill:hover{border-color:var(--g-pill-edge)}
+  #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--g-pill);border-color:var(--g-pill-edge);color:var(--g-pill-text)}
+  #stackdProfileTrigger.st-profile-pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+}
+
+/* ── pickup code in My orders ── */
+.order-code{display:grid;gap:8px;padding:14px;border-radius:18px;border:1px solid var(--g-pill-edge);background:var(--g-pill)}
+.order-code-label{font-size:.8rem;font-weight:650;color:var(--muted)}
+.order-code-row{display:flex;align-items:center;gap:10px}
+.order-code-value{flex:1;min-width:0;font:800 clamp(1.7rem,7vw,2.3rem)/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--text);overflow-wrap:anywhere;-webkit-user-select:all;user-select:all}
+.order-code-copy{display:inline-flex;align-items:center;gap:6px;flex:none;height:38px;padding:0 13px;border-radius:12px;border:1px solid var(--g-edge);background:var(--g-fill-strong);color:var(--text);font:650 .82rem/1 inherit;cursor:pointer;transition:transform .15s var(--g-ease),border-color .2s}
+.order-code-copy:hover{border-color:var(--g-pill-edge)}
+.order-code-copy:active{transform:scale(.96)}
+.order-code-copy .ic{width:16px;height:16px}
+.order-code-hint{margin:0;font-size:.84rem;color:var(--muted)}
+.order-code .order-qr-expiry{font-size:.8rem;font-weight:650;color:var(--g-pill-text);font-variant-numeric:tabular-nums}
+.order-wait{display:block!important}
+.st-qr-wait,.order-qr,.order-qr-toggle{display:none!important}
+
+/* ── scrollbars: thin and tinted where scrolling is useful, hidden in compact panels ── */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--text) 22%,transparent) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{border-radius:8px;background:color-mix(in srgb,var(--text) 20%,transparent);border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--text) 34%,transparent)}
+#topup,#drawer,#orders,#ordersList,.settings-panel,.stackd-profile-menu,#detail,#auth{scrollbar-width:none!important}
+#topup::-webkit-scrollbar,#drawer::-webkit-scrollbar,#orders::-webkit-scrollbar,#ordersList::-webkit-scrollbar,.settings-panel::-webkit-scrollbar,.stackd-profile-menu::-webkit-scrollbar,#detail::-webkit-scrollbar,#auth::-webkit-scrollbar{display:none!important;width:0!important}
+/* native number spinners look out of place next to the quick-amount buttons */
+#topupAmount::-webkit-outer-spin-button,#topupAmount::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#topupAmount{-moz-appearance:textfield;appearance:textfield}
+
+/* ── field validation: our own message instead of the browser bubble ── */
+.st-invalid{border-color:#d4502b!important;box-shadow:0 0 0 3px rgba(212,80,43,.16)!important}
+.st-field-error{display:flex;align-items:center;gap:7px;margin:6px 2px 2px;font-size:.82rem;font-weight:600;color:#d4502b;animation:stErrIn .22s var(--g-ease)}
+html[data-theme="dark"] .st-field-error,html.stacked-dark .st-field-error{color:#ff8a65}
+.st-field-error::before{content:"";flex:none;width:16px;height:16px;border-radius:50%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat}
+.terms-check.st-invalid-check{color:#d4502b}
+@keyframes stErrIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.st-shake{animation:stShake .32s var(--g-ease)}
+@keyframes stShake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+
+/* ── cart: quieter guide and a proper empty state ── */
+#drawer .stackd-purchase-guide{background:transparent!important;border:1px dashed var(--g-line)!important}
+#drawer .stackd-purchase-guide strong,#drawer .stackd-purchase-guide b{text-transform:none!important;letter-spacing:0!important}
+#lines li.st-empty{display:grid!important;justify-items:center;gap:6px;padding:34px 12px!important;text-align:center;border:0!important}
+#lines li.st-empty .st-empty-ic{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--g-pill);color:var(--g-pill-text);border:1px solid var(--g-pill-edge)}
+#lines li.st-empty .st-empty-ic svg{width:24px;height:24px}
+#lines li.st-empty strong{font-size:1rem;color:var(--text)}
+#lines li.st-empty span{font-size:.86rem;color:var(--muted);max-width:30ch}
+#lines li.st-empty button{margin-top:6px}
+
+/* ── a site background picked in the admin stays fixed instead of stretching over the whole page ── */
+body.st-has-site-bg{background-attachment:scroll!important;background-image:none!important}
+.st-site-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;background-size:cover;background-position:center;opacity:0;transition:opacity .45s var(--g-ease)}
+.st-site-bg.is-on{opacity:1}
+
+/* ── theme change: a short cross-fade instead of colours snapping one by one ── */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.38s;animation-timing-function:var(--g-ease)}
+
+/* ── admin: the "save everything" bar sticks to the bottom of the settings tab ── */
+#tab-settings .staked-save-all-row{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px -4px 0;padding:12px 14px;border-radius:16px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+#tab-settings .staked-save-all-row small{color:var(--muted);font-size:.8rem}
+#tab-settings .stackd-section-head span{display:none}
+
+@media (prefers-reduced-motion:reduce){
+  .chips-slider,.settings-panel .seg-slider,#themeSlider,.st-tab-ind,.st-site-bg{transition:none!important}
+  .st-field-error,.st-shake{animation:none!important}
+  ::view-transition-old(root),::view-transition-new(root){animation:none!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .card,.chips,.settings-panel .seg,#profileThemeSeg,#stackdProfileTrigger.st-profile-pill{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+}
+
+/* Sliding pill like the tab bar (beats the earlier rules that hid the slider and painted the button). */
+html body #chips .chips-slider,html body #profileThemeSeg #themeSlider{
+  display:block!important;position:absolute!important;top:4px!important;bottom:4px!important;left:0;z-index:0!important;
+  background:var(--g-pill)!important;border:1px solid var(--g-pill-edge)!important;border-radius:999px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+  transition:transform .46s var(--g-spring),width .46s var(--g-spring)!important;pointer-events:none
+}
+html body #chips button,html body #profileThemeSeg button{background:transparent!important;box-shadow:none!important;border-color:transparent!important;position:relative;z-index:1}
+html body #chips button[aria-pressed=true],html body #profileThemeSeg button[aria-pressed=true]{color:var(--g-pill-text)!important}
+html body #chips{position:relative!important}
+.card .badge-popular{color:var(--text)!important}
+html body #settingsPanel #profileThemeSeg #themeSlider{background:var(--g-pill)!important;border:1px solid var(--g-pill-edge)!important}
+html body #settingsPanel #profileThemeSeg button{color:var(--muted)!important;background:transparent!important}
+html body #settingsPanel #profileThemeSeg button[aria-pressed=true]{color:var(--g-pill-text)!important;font-weight:700!important}
+
+/* empty cart: one centred column; guide, totals and checkout hide while there is nothing to buy */
+html body #lines li.st-empty{display:flex!important;flex-direction:column;align-items:center;grid-template-columns:none!important;grid-template-areas:none!important}
+html body #lines li.st-empty>*{grid-area:auto!important}
+#drawer:has(#lines li.st-empty) .stackd-purchase-guide,
+#drawer:has(#lines li.st-empty) footer{display:none!important}
+
+/* the code stays on one line; long codes shrink instead of breaking */
+.order-code-row{flex-wrap:wrap}
+.order-code-value{white-space:nowrap;letter-spacing:.08em;font-size:clamp(1.45rem,6.4vw,2.1rem)}
+@media (max-width:380px){.order-code-copy span{display:none}.order-code-copy{width:38px;padding:0;justify-content:center}}
+
+/* checkbox error: outline the box, keep the sentence readable */
+.terms-check.st-invalid-check{color:inherit!important}
+.terms-check.st-invalid-check input{outline:2px solid #d4502b;outline-offset:2px}
+.card .badge-popular,.card .badge-popular *{text-transform:none!important;letter-spacing:0!important}
+
+/* ── admin settings: menu + one section + sticky save bar ── */
+#tab-settings{display:grid!important;grid-template-columns:220px minmax(0,1fr);grid-template-areas:"nav body" "bar bar";gap:18px;align-items:start;padding:18px 0 0!important}
+#tab-settings[style*="display: none"],#tab-settings[style*="display:none"]{display:none!important}
+.st-admin-nav{grid-area:nav;position:sticky;top:0;display:grid;gap:4px;padding:6px;border-radius:18px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow)}
+.st-admin-nav button{position:relative;text-align:left;padding:10px 12px;border:0;border-radius:12px;background:transparent;color:var(--muted);font:600 .86rem/1.25 inherit;cursor:pointer;transition:background-color .2s var(--g-ease),color .2s var(--g-ease)}
+.st-admin-nav button:hover{color:var(--text);background:color-mix(in srgb,var(--text) 5%,transparent)}
+.st-admin-nav button[aria-current=true]{background:var(--g-pill);color:var(--g-pill-text);box-shadow:inset 0 0 0 1px var(--g-pill-edge)}
+.st-admin-nav button.is-failed::after{content:"";position:absolute;right:10px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:#d4502b}
+.st-admin-body{grid-area:body;min-width:0}
+.st-admin-body>section{margin:0!important;animation:stSecIn .28s var(--g-ease)}
+@keyframes stSecIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.st-admin-bar{grid-area:bar;position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border-radius:16px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.st-admin-bar-msg{font-size:.86rem;font-weight:600;color:var(--muted)}
+.st-admin-bar-msg[data-state=ok]{color:#2f9e6a}
+.st-admin-bar-msg[data-state=error]{color:#d4502b}
+@media (max-width:760px){
+  #tab-settings{grid-template-columns:minmax(0,1fr);grid-template-areas:"nav" "body" "bar"}
+  .st-admin-nav{position:static;display:flex;overflow-x:auto;scrollbar-width:none;padding:4px;border-radius:999px}
+  .st-admin-nav::-webkit-scrollbar{display:none}
+  .st-admin-nav button{flex:none;white-space:nowrap;border-radius:999px;padding:8px 13px}
+}
+@media (prefers-reduced-motion:reduce){.st-admin-body>section{animation:none}}
+html body #editor #tab-settings{grid-template-columns:230px minmax(0,1fr)!important;grid-template-areas:"nav body" "bar bar"!important;column-gap:18px!important}
+html body #editor #tab-settings .st-admin-body>section[hidden]{display:none!important}
+html body #editor #tab-settings .st-admin-body>section{width:auto!important;max-width:none!important;grid-column:auto!important}
+html body #editor #tab-settings>.st-admin-nav{grid-area:nav!important;width:auto!important}
+html body #editor #tab-settings>.st-admin-body{grid-area:body!important}
+html body #editor #tab-settings>.st-admin-bar{grid-area:bar!important}
+@media (max-width:760px){html body #editor #tab-settings{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"nav" "body" "bar"!important}}
+@media (min-width:681px){
+  html body #stackdProfileTrigger.st-profile-pill{
+    display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:9px!important;
+    width:auto!important;min-width:0!important;height:44px!important;min-height:44px!important;padding:4px 16px 4px 4px!important;
+    border-radius:999px!important;border:1px solid var(--g-edge)!important;background:var(--g-fill-strong)!important;
+    box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;overflow:visible!important
+  }
+  html body #stackdProfileTrigger.st-profile-pill img{width:34px!important;height:34px!important;max-width:34px!important;border-radius:50%!important;flex:none}
+  html body #stackdProfileTrigger.st-profile-pill strong{position:static!important;display:inline!important;font:650 .86rem/1 inherit!important;color:var(--text)!important;clip:auto!important;width:auto!important;height:auto!important;opacity:1!important;transform:none!important;white-space:nowrap}
+  html body #stackdProfileTrigger.st-profile-pill small{display:none!important}
+  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--g-pill)!important;border-color:var(--g-pill-edge)!important}
+  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true] strong{color:var(--g-pill-text)!important}
+}
+.balance-display .b-label{text-transform:none!important;letter-spacing:0!important;font-weight:600!important}

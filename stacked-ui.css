@@ -301,12 +301,10 @@ body.has-tabbar #stackdOrdersShortcut{display:none!important}
 @keyframes stEmptyPop{from{opacity:0;transform:scale(.86) translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.st-tab-ind,.st-switch-ui::after{transition:none!important}}
 
-/* header on phones: room for the music button next to settings */
+/* header on phones */
 @media (max-width:680px){
-  .nav{grid-template-columns:minmax(0,1fr) auto auto auto auto!important;grid-template-areas:"brand lang music account settings" "search search search search search" "admin admin admin admin admin"!important}
-  .nav>.st-music{grid-area:music}
-  .nav>#settingsBtn{grid-area:settings}
-  .nav>.st-music,.nav>#settingsBtn{width:40px;height:40px}
+  .nav{grid-template-columns:minmax(0,1fr) auto auto auto!important;grid-template-areas:"brand lang account settings" "search search search search" "admin admin admin admin"!important}
+  .nav>#settingsBtn{grid-area:settings;width:40px;height:40px}
 }
 
  

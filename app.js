@@ -16,7 +16,7 @@ const CATS = ['Burgers', 'Sides', 'Drinks', 'Desserts'];
 const S = {
   products: [], cart: [], cat: 'All', q: '', adminQ: '', user: null, profile: null,
   draft: null, lang: 'ru', catalogError: null, ordersTimer: null, ordersBusy: false,
-  checkoutBusy: false, topupRequestId: crypto.randomUUID(), pendingPromoCode: null, qrCache: new Map()
+  checkoutBusy: false, topupRequestId: crypto.randomUUID(), pendingPromoCode: null, 
 };
 
 try {
@@ -38,14 +38,14 @@ function safeImageUrl(value) {
 
 const translations = {
   ru: {
-    search_placeholder: 'Поиск в STAKED', how_title: 'Как работает STAKED', how_sub: 'Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.', logout_confirm: 'Выйти из аккаунта?', promo_waiting_cart: 'Код сохранён. Добавьте товар в корзину, чтобы проверить его.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
+    search_placeholder: 'Поиск в STAKED', how_title: 'Как работает STAKED', how_sub: 'Выберите предложение, оформите заказ и введите код из «Моих заказов» в автомате.', logout_confirm: 'Выйти из аккаунта?', promo_waiting_cart: 'Код сохранён. Добавьте товар в корзину, чтобы проверить его.', theme_light: 'Светлая', theme_dark: 'Тёмная', theme_system: 'Авто',
     login_btn: 'Войти', logout_btn: 'Выйти', catalog_btn: 'Каталог', orders_btn: 'Мои заказы', menu_title: 'Меню', balance_label: 'Баланс',
-    footer_desc: 'Выбирайте предложения, оформляйте заказ онлайн и забирайте его после подтверждения.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'STAKED собирает предложения ресторанов в одном каталоге. Здесь можно оформить заказ и следить за его подтверждением.',
+    footer_desc: 'Выбирайте предложения, оплачивайте с баланса и получайте код для автомата.', footer_support: 'Поддержка', footer_about: 'О проекте', footer_about_text: 'STAKED собирает выгодные предложения ресторанов Баку. Заказ оплачивается с баланса, а код для автомата приходит в «Мои заказы».',
     cart_title: 'Корзина', cart_total: 'Итого', cart_checkout: 'Оформить заказ', cart_clear: 'Очистить', cart_empty: 'Корзина пуста', cart_remove: 'Удалить',
     auth_title: 'Добро пожаловать', auth_sub: 'Войдите или создайте аккаунт', auth_google: 'Продолжить с Google', auth_or: 'или', auth_login_btn: 'Войти', auth_register_btn: 'Регистрация',
-    topup_title: 'Пополнение', topup_card_warn: 'Заявка проверяется оператором. Баланс пополнится только после подтверждения платежа.', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
-    topup_instructions: 'Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.', topup_channel: 'Открыть Telegram-канал', topup_terms: 'Я подтверждаю, что указал верную сумму и приложил подтверждение оплаты. Отправка заявки не означает автоматическое зачисление: баланс обновится только после проверки платежа.',
-    topup_terms_required: 'Подтвердите правильность данных заявки.',
+    topup_title: 'Пополнение', topup_card_warn: 'Баланс пополнится, когда оператор проверит перевод.', topup_amount: 'Сумма (AZN)', topup_check: 'Скриншот чека', topup_btn: 'Отправить чек',
+    topup_instructions: 'Реквизиты для перевода лежат в закреплённом сообщении Telegram-канала. Переведите сумму и прикрепите скриншот чека ниже.', topup_channel: 'Открыть Telegram-канал', topup_terms: 'Сумма в заявке совпадает с переводом, чек настоящий и мой.',
+    topup_terms_required: 'Отметьте, что сумма и чек верные.',
     topup_amount_invalid: 'Укажите сумму от 1 до 100 AZN с точностью до копеек.',
     topup_file_required: 'Прикрепите изображение чека.',
     topup_session_expired: 'Сессия истекла. Войдите в аккаунт снова.',
@@ -63,19 +63,19 @@ const translations = {
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
     added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.',
-    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'QR-код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия QR истёк', orders_show_qr: 'Нажмите, чтобы открыть QR-код', orders_pending_note: 'Оператор проверяет заказ. QR-код появится здесь после ответа в Telegram.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок QR-кода истёк. Обратитесь в поддержку.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть QR-код', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Как только он подтвердит, ваш QR-код появится в разделе «Мои заказы». Откройте его и покажите на выдаче.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть', settings_title: 'Настройки', set_appearance: 'Оформление', set_language: 'Язык', set_winter: 'Новогодняя тема', set_winter_label: 'Снег, огни и зимняя улица', set_motion: 'Анимации', set_motion_label: 'Отключить декоративные анимации', promo_title: 'Промокод', promo_enter: 'Введите промокод', promo_placeholder: 'Введите промокод', promo_apply: 'Применить', promo_remove: 'Убрать', promo_invalid: 'Промокод недействителен или недоступен.', promo_already_used: 'Вы уже использовали этот промокод.', promo_not_applicable: 'Промокод не подходит к товарам в корзине.', promo_rate_limited: 'Слишком много попыток. Подождите минуту.', promo_applied: 'Промокод применён', promo_free_line: 'Бесплатно по промокоду', promo_free_tag: 'Бесплатно', promo_need_login: 'Войдите в аккаунт, чтобы применить промокод.', promo_discount_pct: 'Скидка {v}%', promo_discount_fix: 'Скидка {v}', promo_free_prod: 'Бесплатно: {name}', promo_scope_product: 'на «{name}»', promo_until: 'до {date}', promo_left: 'осталось {n}', promo_cart_hint: 'Есть промокод?', cart_subtotal: 'Сумма', cart_discount: 'Скидка', tg_title: 'Telegram', tg_hint: 'Получайте QR-код заказа в личные сообщения.', tg_connect: 'Подключить уведомления', tg_open: 'Открыть Telegram', tg_connected: 'Telegram подключён', tg_error: 'Не удалось создать ссылку. Попробуйте позже.', admin_tab_promos: 'Промокоды', pr_new: 'Новый', pr_code: 'Код', pr_title: 'Название', pr_type: 'Тип', pr_percent: 'Процент', pr_fixed: 'Фиксированная сумма', pr_free: 'Бесплатный товар', pr_value: 'Размер скидки', pr_scope: 'Применяется к', pr_scope_all: 'Всему меню', pr_scope_product: 'Выбранному товару', pr_product: 'Товар', pr_max_uses: 'Общий лимит (пусто = без лимита)', pr_per_user: 'Лимит на пользователя', pr_starts: 'Начало', pr_ends: 'Окончание', pr_active: 'Активен', pr_save: 'Сохранить', pr_cancel: 'Отмена', pr_edit: 'Изменить', pr_archive: 'В архив', pr_restore: 'Вернуть', pr_delete: 'Удалить', pr_used: 'Использовано', pr_left: 'Осталось', pr_unlimited: 'без лимита', pr_empty: 'Промокодов пока нет.', pr_saved: 'Сохранено', pr_exists: 'Такой код уже существует.', pr_delete_blocked: 'У промокода есть история применений. Отправьте его в архив.', pr_confirm_delete: 'Удалить промокод?', pr_s_active: 'Активен', pr_s_off: 'Выключен', pr_s_expired: 'Истёк', pr_s_scheduled: 'Ещё не начался', pr_s_exhausted: 'Лимит исчерпан', pr_s_archived: 'В архиве',
-    cancel_confirm: 'Отменить заказ? Возврат средств выполняется сервером.', checkout_busy: 'Оформляем заказ…', checkout_success: 'Заказ создан. QR-код появится здесь после ответа оператора в Telegram.', checkout_notify_error: 'Заказ создан, но уведомление Telegram не отправлено. Обратитесь в поддержку.',
+    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'Код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия кода истёк', orders_show_qr: 'Показать код', orders_pending_note: 'Оператор проверяет заказ. Код для автомата появится здесь.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок действия кода истёк. Напишите в поддержку, и мы выдадим новый.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть код', orders_code_label: 'Код для автомата', orders_code_hint: 'Введите этот код в автомате заказа.', orders_copy: 'Скопировать', orders_copied: 'Код скопирован', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Когда он подтвердит, в «Моих заказах» появится код. Введите его в автомате.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть', settings_title: 'Настройки', set_appearance: 'Оформление', set_language: 'Язык', set_winter: 'Новогодняя тема', set_winter_label: 'Снег, огни и зимняя улица', set_motion: 'Анимации', set_motion_label: 'Отключить декоративные анимации', promo_title: 'Промокод', promo_enter: 'Введите промокод', promo_placeholder: 'Введите промокод', promo_apply: 'Применить', promo_remove: 'Убрать', promo_invalid: 'Промокод недействителен или недоступен.', promo_already_used: 'Вы уже использовали этот промокод.', promo_not_applicable: 'Промокод не подходит к товарам в корзине.', promo_rate_limited: 'Слишком много попыток. Подождите минуту.', promo_applied: 'Промокод применён', promo_free_line: 'Бесплатно по промокоду', promo_free_tag: 'Бесплатно', promo_need_login: 'Войдите в аккаунт, чтобы применить промокод.', promo_discount_pct: 'Скидка {v}%', promo_discount_fix: 'Скидка {v}', promo_free_prod: 'Бесплатно: {name}', promo_scope_product: 'на «{name}»', promo_until: 'до {date}', promo_left: 'осталось {n}', promo_cart_hint: 'Есть промокод?', cart_subtotal: 'Сумма', cart_discount: 'Скидка', tg_title: 'Telegram', tg_hint: 'Получайте код заказа в личные сообщения.', tg_connect: 'Подключить уведомления', tg_open: 'Открыть Telegram', tg_connected: 'Telegram подключён', tg_error: 'Не удалось создать ссылку. Попробуйте позже.', admin_tab_promos: 'Промокоды', pr_new: 'Новый', pr_code: 'Код', pr_title: 'Название', pr_type: 'Тип', pr_percent: 'Процент', pr_fixed: 'Фиксированная сумма', pr_free: 'Бесплатный товар', pr_value: 'Размер скидки', pr_scope: 'Применяется к', pr_scope_all: 'Всему меню', pr_scope_product: 'Выбранному товару', pr_product: 'Товар', pr_max_uses: 'Общий лимит (пусто = без лимита)', pr_per_user: 'Лимит на пользователя', pr_starts: 'Начало', pr_ends: 'Окончание', pr_active: 'Активен', pr_save: 'Сохранить', pr_cancel: 'Отмена', pr_edit: 'Изменить', pr_archive: 'В архив', pr_restore: 'Вернуть', pr_delete: 'Удалить', pr_used: 'Использовано', pr_left: 'Осталось', pr_unlimited: 'без лимита', pr_empty: 'Промокодов пока нет.', pr_saved: 'Сохранено', pr_exists: 'Такой код уже существует.', pr_delete_blocked: 'У промокода есть история применений. Отправьте его в архив.', pr_confirm_delete: 'Удалить промокод?', pr_s_active: 'Активен', pr_s_off: 'Выключен', pr_s_expired: 'Истёк', pr_s_scheduled: 'Ещё не начался', pr_s_exhausted: 'Лимит исчерпан', pr_s_archived: 'В архиве',
+    cancel_confirm: 'Отменить заказ? Возврат средств выполняется сервером.', checkout_busy: 'Оформляем заказ…', checkout_success: 'Заказ оформлен. Код для автомата появится в «Моих заказах».', checkout_notify_error: 'Заказ создан, но уведомление Telegram не отправлено. Обратитесь в поддержку.',
     search_empty: 'Ничего не найдено.'
   },
   en: {
-    search_placeholder: 'Search STAKED', how_title: 'How STAKED works', how_sub: 'Choose an offer, place an order, wait for processing and pick it up at the restaurant.', logout_confirm: 'Log out of your account?', promo_waiting_cart: 'Code saved. Add an item to your cart to check it.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
+    search_placeholder: 'Search STAKED', how_title: 'How STAKED works', how_sub: 'Pick an offer, place your order and enter the code from "My orders" at the kiosk.', logout_confirm: 'Log out of your account?', promo_waiting_cart: 'Code saved. Add an item to your cart to check it.', theme_light: 'Light', theme_dark: 'Dark', theme_system: 'Auto',
     login_btn: 'Log in', logout_btn: 'Log out', catalog_btn: 'Admin panel', orders_btn: 'My orders', menu_title: 'Catalog', balance_label: 'Balance',
-    footer_desc: 'Choose an offer, place your order online, and collect it after confirmation.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'STAKED brings restaurant offers into one catalogue. Place an order here and follow its confirmation status.',
+    footer_desc: 'Pick offers, pay from your balance and get a code for the kiosk.', footer_support: 'Support', footer_about: 'About', footer_about_text: 'STAKED collects restaurant deals in Baku. You pay from your balance, and the kiosk code arrives in "My orders".',
     cart_title: 'Cart', cart_total: 'Total', cart_checkout: 'Checkout', cart_clear: 'Clear', cart_empty: 'Your cart is empty', cart_remove: 'Remove',
     auth_title: 'Welcome', auth_sub: 'Log in or create an account', auth_google: 'Continue with Google', auth_or: 'or', auth_login_btn: 'Log in', auth_register_btn: 'Sign up',
-    topup_title: 'Add balance', topup_card_warn: 'Your request is reviewed by an operator. Funds are added only after payment confirmation.', topup_amount: 'Amount (AZN)', topup_check: 'Payment receipt screenshot', topup_btn: 'Submit receipt',
-    topup_instructions: 'Transfer details are in the pinned message of our Telegram channel. Attach your receipt screenshot after payment.', topup_channel: 'Open Telegram channel', topup_terms: 'I confirm that the amount is correct and that I attached proof of payment. Submitting a request does not credit the balance automatically; the payment must be verified first.',
-    topup_terms_required: 'Confirm that the request details are correct.',
+    topup_title: 'Add balance', topup_card_warn: 'Your balance is topped up once the operator checks the transfer.', topup_amount: 'Amount (AZN)', topup_check: 'Payment receipt screenshot', topup_btn: 'Submit receipt',
+    topup_instructions: 'Transfer details are in the pinned message of our Telegram channel. Send the amount and attach a screenshot of the receipt below.', topup_channel: 'Open Telegram channel', topup_terms: 'The amount matches my transfer, and the receipt is genuine and mine.',
+    topup_terms_required: 'Confirm that the amount and receipt are correct.',
     topup_amount_invalid: 'Enter an amount from 1 to 100 AZN, with up to two decimal places.',
     topup_file_required: 'Attach an image of the receipt.',
     topup_session_expired: 'Your session has expired. Sign in again.',
@@ -93,19 +93,19 @@ const translations = {
     settings_title: 'Homepage settings', settings_hero_title: 'Homepage title', settings_hero_sub: 'Subtitle / description', settings_save: 'Save settings',
     form_new: 'New product', form_edit: 'Edit product', form_name: 'Name', form_desc: 'Description', form_cat: 'Category', form_price: 'Price (AZN)', form_image: 'Image (from device)', form_save: 'Save',
     added_to_cart: 'added to cart', cart_cleared: 'Cart cleared', checkout_msg: 'Order created!', product_deleted: 'Deleted', saved: 'Saved', out_of_stock: 'Out of stock', add_to_cart: 'Add to cart', no_results: 'No results found.', empty_catalog: 'No products yet.',
-    orders_title: 'My orders', orders_empty: 'You have no orders yet.', orders_pending: 'Awaiting confirmation', orders_ready: 'QR code ready', orders_cancelled: 'Cancelled', orders_completed: 'Completed', orders_expired: 'QR code expired', orders_show_qr: 'Tap to reveal the QR code', orders_pending_note: 'The operator is reviewing your order. The QR will appear here after a Telegram reply.', orders_cancel: 'Cancel order', orders_time_left: 'Remaining', orders_expired_note: 'The QR code expired. Contact support.', orders_load_error: 'Could not load orders. Please try again.', orders_hide_qr: 'Hide QR code', wave_title: 'Order sent', wave_text: 'The operator is reviewing your order. Once confirmed, your QR code will appear in "My orders". Open it and show it at pickup.', wave_open: 'Open my orders', wave_close: 'Close', settings_title: 'Settings', set_appearance: 'Appearance', set_language: 'Language', set_winter: 'New Year theme', set_winter_label: 'Snow, lights and a winter street', set_motion: 'Motion', set_motion_label: 'Turn off decorative animations', promo_title: 'Promo code', promo_enter: 'Enter promo code', promo_placeholder: 'Enter promo code', promo_apply: 'Apply', promo_remove: 'Remove', promo_invalid: 'This promo code is invalid or unavailable.', promo_already_used: 'You have already used this promo code.', promo_not_applicable: 'This promo code does not fit the items in your cart.', promo_rate_limited: 'Too many attempts. Please wait a minute.', promo_applied: 'Promo code applied', promo_free_line: 'Free with promo code', promo_free_tag: 'Free', promo_need_login: 'Sign in to apply a promo code.', promo_discount_pct: '{v}% off', promo_discount_fix: '{v} off', promo_free_prod: 'Free: {name}', promo_scope_product: 'on "{name}"', promo_until: 'until {date}', promo_left: '{n} left', promo_cart_hint: 'Have a promo code?', cart_subtotal: 'Subtotal', cart_discount: 'Discount', tg_title: 'Telegram', tg_hint: 'Get your order QR code in a private message.', tg_connect: 'Connect notifications', tg_open: 'Open Telegram', tg_connected: 'Telegram connected', tg_error: 'Could not create the link. Please try later.', admin_tab_promos: 'Promo codes', pr_new: 'New', pr_code: 'Code', pr_title: 'Title', pr_type: 'Type', pr_percent: 'Percentage', pr_fixed: 'Fixed amount', pr_free: 'Free product', pr_value: 'Discount value', pr_scope: 'Applies to', pr_scope_all: 'Whole menu', pr_scope_product: 'Selected product', pr_product: 'Product', pr_max_uses: 'Total limit (empty = unlimited)', pr_per_user: 'Limit per user', pr_starts: 'Starts', pr_ends: 'Ends', pr_active: 'Active', pr_save: 'Save', pr_cancel: 'Cancel', pr_edit: 'Edit', pr_archive: 'Archive', pr_restore: 'Restore', pr_delete: 'Delete', pr_used: 'Used', pr_left: 'Left', pr_unlimited: 'unlimited', pr_empty: 'No promo codes yet.', pr_saved: 'Saved', pr_exists: 'This code already exists.', pr_delete_blocked: 'This promo code has usage history. Archive it instead.', pr_confirm_delete: 'Delete this promo code?', pr_s_active: 'Active', pr_s_off: 'Off', pr_s_expired: 'Expired', pr_s_scheduled: 'Not started', pr_s_exhausted: 'Limit reached', pr_s_archived: 'Archived',
-    cancel_confirm: 'Cancel this order? Any refund is processed by the server.', checkout_busy: 'Placing order…', checkout_success: 'Order created. The QR will appear here after the operator replies in Telegram.', checkout_notify_error: 'Order created, but Telegram notification failed. Contact support.',
+    orders_title: 'My orders', orders_empty: 'You have no orders yet.', orders_pending: 'Awaiting confirmation', orders_ready: 'Code ready', orders_cancelled: 'Cancelled', orders_completed: 'Completed', orders_expired: 'Code expired', orders_show_qr: 'Show code', orders_pending_note: 'The operator is checking your order. Your kiosk code will appear here.', orders_cancel: 'Cancel order', orders_time_left: 'Remaining', orders_expired_note: 'This code has expired. Message support and we will issue a new one.', orders_load_error: 'Could not load orders. Please try again.', orders_hide_qr: 'Hide code', orders_code_label: 'Kiosk code', orders_code_hint: 'Enter this code at the ordering kiosk.', orders_copy: 'Copy', orders_copied: 'Code copied', wave_title: 'Order sent', wave_text: 'The operator is checking your order. Once confirmed, a code appears in "My orders". Enter it at the kiosk.', wave_open: 'Open my orders', wave_close: 'Close', settings_title: 'Settings', set_appearance: 'Appearance', set_language: 'Language', set_winter: 'New Year theme', set_winter_label: 'Snow, lights and a winter street', set_motion: 'Motion', set_motion_label: 'Turn off decorative animations', promo_title: 'Promo code', promo_enter: 'Enter promo code', promo_placeholder: 'Enter promo code', promo_apply: 'Apply', promo_remove: 'Remove', promo_invalid: 'This promo code is invalid or unavailable.', promo_already_used: 'You have already used this promo code.', promo_not_applicable: 'This promo code does not fit the items in your cart.', promo_rate_limited: 'Too many attempts. Please wait a minute.', promo_applied: 'Promo code applied', promo_free_line: 'Free with promo code', promo_free_tag: 'Free', promo_need_login: 'Sign in to apply a promo code.', promo_discount_pct: '{v}% off', promo_discount_fix: '{v} off', promo_free_prod: 'Free: {name}', promo_scope_product: 'on "{name}"', promo_until: 'until {date}', promo_left: '{n} left', promo_cart_hint: 'Have a promo code?', cart_subtotal: 'Subtotal', cart_discount: 'Discount', tg_title: 'Telegram', tg_hint: 'Get your order code in a private message.', tg_connect: 'Connect notifications', tg_open: 'Open Telegram', tg_connected: 'Telegram connected', tg_error: 'Could not create the link. Please try later.', admin_tab_promos: 'Promo codes', pr_new: 'New', pr_code: 'Code', pr_title: 'Title', pr_type: 'Type', pr_percent: 'Percentage', pr_fixed: 'Fixed amount', pr_free: 'Free product', pr_value: 'Discount value', pr_scope: 'Applies to', pr_scope_all: 'Whole menu', pr_scope_product: 'Selected product', pr_product: 'Product', pr_max_uses: 'Total limit (empty = unlimited)', pr_per_user: 'Limit per user', pr_starts: 'Starts', pr_ends: 'Ends', pr_active: 'Active', pr_save: 'Save', pr_cancel: 'Cancel', pr_edit: 'Edit', pr_archive: 'Archive', pr_restore: 'Restore', pr_delete: 'Delete', pr_used: 'Used', pr_left: 'Left', pr_unlimited: 'unlimited', pr_empty: 'No promo codes yet.', pr_saved: 'Saved', pr_exists: 'This code already exists.', pr_delete_blocked: 'This promo code has usage history. Archive it instead.', pr_confirm_delete: 'Delete this promo code?', pr_s_active: 'Active', pr_s_off: 'Off', pr_s_expired: 'Expired', pr_s_scheduled: 'Not started', pr_s_exhausted: 'Limit reached', pr_s_archived: 'Archived',
+    cancel_confirm: 'Cancel this order? Any refund is processed by the server.', checkout_busy: 'Placing order…', checkout_success: 'Order placed. Your kiosk code will appear in "My orders".', checkout_notify_error: 'Order created, but Telegram notification failed. Contact support.',
     search_empty: 'No results found.'
   },
   az: {
-    search_placeholder: 'STAKED-də axtar', how_title: 'STAKED necə işləyir', how_sub: 'Təklifi seçin, sifariş verin, emalı gözləyin və restoranda götürün.', logout_confirm: 'Hesabdan çıxmaq istəyirsiniz?', promo_waiting_cart: 'Kod saxlanıldı. Yoxlamaq üçün səbətə məhsul əlavə edin.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
+    search_placeholder: 'STAKED-də axtar', how_title: 'STAKED necə işləyir', how_sub: 'Təklifi seçin, sifariş verin və «Sifarişlərim» bölməsindəki kodu avtomata daxil edin.', logout_confirm: 'Hesabdan çıxmaq istəyirsiniz?', promo_waiting_cart: 'Kod saxlanıldı. Yoxlamaq üçün səbətə məhsul əlavə edin.', theme_light: 'Açıq', theme_dark: 'Tünd', theme_system: 'Avto',
     login_btn: 'Daxil ol', logout_btn: 'Çıxış', catalog_btn: 'İdarəetmə', orders_btn: 'Sifarişlərim', menu_title: 'Kataloq', balance_label: 'Balans',
-    footer_desc: 'Təklifi seçin, onlayn sifariş edin və təsdiqdən sonra restorandan götürün.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'STAKED restoran təkliflərini bir kataloqda toplayır. Buradan sifariş verib təsdiq statusunu izləyə bilərsiniz.',
+    footer_desc: 'Təklifləri seçin, balansdan ödəyin və avtomat üçün kod alın.', footer_support: 'Dəstək', footer_about: 'Layihə haqqında', footer_about_text: 'STAKED Bakı restoranlarının sərfəli təkliflərini toplayır. Sifariş balansdan ödənilir, avtomat üçün kod «Sifarişlərim» bölməsinə gəlir.',
     cart_title: 'Səbət', cart_total: 'Cəmi', cart_checkout: 'Sifarişi rəsmiləşdir', cart_clear: 'Təmizlə', cart_empty: 'Səbət boşdur', cart_remove: 'Sil',
     auth_title: 'Xoş gəlmisiniz', auth_sub: 'Daxil olun və ya hesab yaradın', auth_google: 'Google ilə davam et', auth_or: 'və ya', auth_login_btn: 'Daxil ol', auth_register_btn: 'Qeydiyyat',
-    topup_title: 'Balansı artır', topup_card_warn: 'Müraciət operator tərəfindən yoxlanılır. Vəsait yalnız ödəniş təsdiqləndikdən sonra əlavə olunur.', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbzin ekran görüntüsü', topup_btn: 'Qəbzi göndər',
-    topup_instructions: 'Köçürmə rekvizitləri Telegram kanalının sabitlənmiş mesajındadır. Ödənişdən sonra qəbzin şəklini əlavə edin.', topup_channel: 'Telegram kanalını aç', topup_terms: 'Məbləğin düzgün olduğunu və ödəniş təsdiqini əlavə etdiyimi təsdiq edirəm. Müraciətin göndərilməsi balansın avtomatik artırılması demək deyil; əvvəlcə ödəniş yoxlanılır.',
-    topup_terms_required: 'Müraciət məlumatlarının düzgünlüyünü təsdiqləyin.',
+    topup_title: 'Balansı artır', topup_card_warn: 'Operator köçürməni yoxladıqdan sonra balans artırılacaq.', topup_amount: 'Məbləğ (AZN)', topup_check: 'Qəbzin ekran görüntüsü', topup_btn: 'Qəbzi göndər',
+    topup_instructions: 'Köçürmə rekvizitləri Telegram kanalının sabitlənmiş mesajındadır. Məbləği köçürün və aşağıda çekin skrinşotunu əlavə edin.', topup_channel: 'Telegram kanalını aç', topup_terms: 'Müraciətdəki məbləğ köçürməyə uyğundur, çek həqiqidir və mənimdir.',
+    topup_terms_required: 'Məbləğin və çekin düzgün olduğunu təsdiqləyin.',
     topup_amount_invalid: '1–100 AZN aralığında, qəpik dəqiqliyi ilə məbləğ daxil edin.',
     topup_file_required: 'Çekin şəklini əlavə edin.',
     topup_session_expired: 'Sessiyanın müddəti bitib. Hesaba yenidən daxil olun.',
@@ -123,11 +123,24 @@ const translations = {
     settings_title: 'Ana səhifə ayarları', settings_hero_title: 'Ana səhifə başlığı', settings_hero_sub: 'Alt başlıq / təsvir', settings_save: 'Ayarları saxla',
     form_new: 'Yeni məhsul', form_edit: 'Məhsulu redaktə et', form_name: 'Ad', form_desc: 'Təsvir', form_cat: 'Kateqoriya', form_price: 'Qiymət (AZN)', form_image: 'Şəkil (cihazdan)', form_save: 'Saxla',
     added_to_cart: 'səbətə əlavə edildi', cart_cleared: 'Səbət təmizləndi', checkout_msg: 'Sifariş yaradıldı!', product_deleted: 'Silindi', saved: 'Saxlanıldı', out_of_stock: 'Stokda yoxdur', add_to_cart: 'Səbətə əlavə et', no_results: 'Nəticə tapılmadı.', empty_catalog: 'Hələ məhsul yoxdur.',
-    orders_title: 'Sifarişlərim', orders_empty: 'Hələ sifarişiniz yoxdur.', orders_pending: 'Təsdiq gözləyir', orders_ready: 'QR kod hazırdır', orders_cancelled: 'Ləğv edildi', orders_completed: 'Tamamlandı', orders_expired: 'QR kodun müddəti bitib', orders_show_qr: 'QR kodu açmaq üçün toxunun', orders_pending_note: 'Operator sifarişi yoxlayır. Telegram cavabından sonra QR burada görünəcək.', orders_cancel: 'Sifarişi ləğv et', orders_time_left: 'Qalıb', orders_expired_note: 'QR kodun müddəti bitib. Dəstəyə müraciət edin.', orders_load_error: 'Sifarişləri yükləmək mümkün olmadı. Yenidən cəhd edin.', orders_hide_qr: 'QR kodu gizlət', wave_title: 'Sifariş göndərildi', wave_text: 'Operator sifarişi yoxlayır. Təsdiqləndikdən sonra QR kodunuz "Sifarişlərim" bölməsində görünəcək. Onu açıb təhvil zamanı göstərin.', wave_open: 'Sifarişlərimi aç', wave_close: 'Bağla', settings_title: 'Parametrlər', set_appearance: 'Görünüş', set_language: 'Dil', set_winter: 'Yeni il mövzusu', set_winter_label: 'Qar, işıqlar və qış küçəsi', set_motion: 'Animasiya', set_motion_label: 'Dekorativ animasiyaları söndür', promo_title: 'Promokod', promo_enter: 'Promokodu daxil edin', promo_placeholder: 'Promokodu daxil edin', promo_apply: 'Tətbiq et', promo_remove: 'Sil', promo_invalid: 'Promokod etibarsızdır və ya mövcud deyil.', promo_already_used: 'Bu promokodu artıq istifadə etmisiniz.', promo_not_applicable: 'Promokod səbətdəki məhsullara uyğun deyil.', promo_rate_limited: 'Çox cəhd edildi. Bir dəqiqə gözləyin.', promo_applied: 'Promokod tətbiq olundu', promo_free_line: 'Promokodla pulsuz', promo_free_tag: 'Pulsuz', promo_need_login: 'Promokod üçün hesaba daxil olun.', promo_discount_pct: '{v}% endirim', promo_discount_fix: '{v} endirim', promo_free_prod: 'Pulsuz: {name}', promo_scope_product: '"{name}" üçün', promo_until: '{date} tarixinədək', promo_left: '{n} qalıb', promo_cart_hint: 'Promokodunuz var?', cart_subtotal: 'Məbləğ', cart_discount: 'Endirim', tg_title: 'Telegram', tg_hint: 'Sifarişin QR kodunu şəxsi mesajda alın.', tg_connect: 'Bildirişləri qoş', tg_open: 'Telegram-ı aç', tg_connected: 'Telegram qoşulub', tg_error: 'Link yaradıla bilmədi. Sonra yenidən cəhd edin.', admin_tab_promos: 'Promokodlar', pr_new: 'Yeni', pr_code: 'Kod', pr_title: 'Ad', pr_type: 'Növ', pr_percent: 'Faiz', pr_fixed: 'Sabit məbləğ', pr_free: 'Pulsuz məhsul', pr_value: 'Endirim həcmi', pr_scope: 'Tətbiq sahəsi', pr_scope_all: 'Bütün menyu', pr_scope_product: 'Seçilmiş məhsul', pr_product: 'Məhsul', pr_max_uses: 'Ümumi limit (boş = limitsiz)', pr_per_user: 'İstifadəçi limiti', pr_starts: 'Başlanğıc', pr_ends: 'Bitmə', pr_active: 'Aktiv', pr_save: 'Yadda saxla', pr_cancel: 'Ləğv et', pr_edit: 'Dəyiş', pr_archive: 'Arxivə', pr_restore: 'Qaytar', pr_delete: 'Sil', pr_used: 'İstifadə', pr_left: 'Qalıb', pr_unlimited: 'limitsiz', pr_empty: 'Hələ promokod yoxdur.', pr_saved: 'Yadda saxlanıldı', pr_exists: 'Bu kod artıq mövcuddur.', pr_delete_blocked: 'Promokodun istifadə tarixçəsi var. Arxivə göndərin.', pr_confirm_delete: 'Promokod silinsin?', pr_s_active: 'Aktiv', pr_s_off: 'Söndürülüb', pr_s_expired: 'Müddəti bitib', pr_s_scheduled: 'Başlamayıb', pr_s_exhausted: 'Limit bitib', pr_s_archived: 'Arxivdə',
-    cancel_confirm: 'Sifarişi ləğv etmək istəyirsiniz? Geri ödənişi server həyata keçirir.', checkout_busy: 'Sifariş hazırlanır…', checkout_success: 'Sifariş yaradıldı. Operator Telegram-da cavab verdikdən sonra QR burada görünəcək.', checkout_notify_error: 'Sifariş yaradıldı, lakin Telegram bildirişi göndərilmədi. Dəstəklə əlaqə saxlayın.',
+    orders_title: 'Sifarişlərim', orders_empty: 'Hələ sifarişiniz yoxdur.', orders_pending: 'Təsdiq gözləyir', orders_ready: 'Kod hazırdır', orders_cancelled: 'Ləğv edildi', orders_completed: 'Tamamlandı', orders_expired: 'Kodun müddəti bitib', orders_show_qr: 'Kodu göstər', orders_pending_note: 'Operator sifarişi yoxlayır. Avtomat üçün kod burada görünəcək.', orders_cancel: 'Sifarişi ləğv et', orders_time_left: 'Qalıb', orders_expired_note: 'Kodun müddəti bitib. Dəstəyə yazın, yeni kod verək.', orders_load_error: 'Sifarişləri yükləmək mümkün olmadı. Yenidən cəhd edin.', orders_hide_qr: 'Kodu gizlət', orders_code_label: 'Avtomat üçün kod', orders_code_hint: 'Bu kodu sifariş avtomatına daxil edin.', orders_copy: 'Köçür', orders_copied: 'Kod köçürüldü', wave_title: 'Sifariş göndərildi', wave_text: 'Operator sifarişi yoxlayır. Təsdiqdən sonra «Sifarişlərim» bölməsində kod görünəcək. Onu avtomata daxil edin.', wave_open: 'Sifarişlərimi aç', wave_close: 'Bağla', settings_title: 'Parametrlər', set_appearance: 'Görünüş', set_language: 'Dil', set_winter: 'Yeni il mövzusu', set_winter_label: 'Qar, işıqlar və qış küçəsi', set_motion: 'Animasiya', set_motion_label: 'Dekorativ animasiyaları söndür', promo_title: 'Promokod', promo_enter: 'Promokodu daxil edin', promo_placeholder: 'Promokodu daxil edin', promo_apply: 'Tətbiq et', promo_remove: 'Sil', promo_invalid: 'Promokod etibarsızdır və ya mövcud deyil.', promo_already_used: 'Bu promokodu artıq istifadə etmisiniz.', promo_not_applicable: 'Promokod səbətdəki məhsullara uyğun deyil.', promo_rate_limited: 'Çox cəhd edildi. Bir dəqiqə gözləyin.', promo_applied: 'Promokod tətbiq olundu', promo_free_line: 'Promokodla pulsuz', promo_free_tag: 'Pulsuz', promo_need_login: 'Promokod üçün hesaba daxil olun.', promo_discount_pct: '{v}% endirim', promo_discount_fix: '{v} endirim', promo_free_prod: 'Pulsuz: {name}', promo_scope_product: '"{name}" üçün', promo_until: '{date} tarixinədək', promo_left: '{n} qalıb', promo_cart_hint: 'Promokodunuz var?', cart_subtotal: 'Məbləğ', cart_discount: 'Endirim', tg_title: 'Telegram', tg_hint: 'Sifarişin kodunu şəxsi mesajda alın.', tg_connect: 'Bildirişləri qoş', tg_open: 'Telegram-ı aç', tg_connected: 'Telegram qoşulub', tg_error: 'Link yaradıla bilmədi. Sonra yenidən cəhd edin.', admin_tab_promos: 'Promokodlar', pr_new: 'Yeni', pr_code: 'Kod', pr_title: 'Ad', pr_type: 'Növ', pr_percent: 'Faiz', pr_fixed: 'Sabit məbləğ', pr_free: 'Pulsuz məhsul', pr_value: 'Endirim həcmi', pr_scope: 'Tətbiq sahəsi', pr_scope_all: 'Bütün menyu', pr_scope_product: 'Seçilmiş məhsul', pr_product: 'Məhsul', pr_max_uses: 'Ümumi limit (boş = limitsiz)', pr_per_user: 'İstifadəçi limiti', pr_starts: 'Başlanğıc', pr_ends: 'Bitmə', pr_active: 'Aktiv', pr_save: 'Yadda saxla', pr_cancel: 'Ləğv et', pr_edit: 'Dəyiş', pr_archive: 'Arxivə', pr_restore: 'Qaytar', pr_delete: 'Sil', pr_used: 'İstifadə', pr_left: 'Qalıb', pr_unlimited: 'limitsiz', pr_empty: 'Hələ promokod yoxdur.', pr_saved: 'Yadda saxlanıldı', pr_exists: 'Bu kod artıq mövcuddur.', pr_delete_blocked: 'Promokodun istifadə tarixçəsi var. Arxivə göndərin.', pr_confirm_delete: 'Promokod silinsin?', pr_s_active: 'Aktiv', pr_s_off: 'Söndürülüb', pr_s_expired: 'Müddəti bitib', pr_s_scheduled: 'Başlamayıb', pr_s_exhausted: 'Limit bitib', pr_s_archived: 'Arxivdə',
+    cancel_confirm: 'Sifarişi ləğv etmək istəyirsiniz? Geri ödənişi server həyata keçirir.', checkout_busy: 'Sifariş hazırlanır…', checkout_success: 'Sifariş verildi. Avtomat üçün kod «Sifarişlərim» bölməsində görünəcək.', checkout_notify_error: 'Sifariş yaradıldı, lakin Telegram bildirişi göndərilmədi. Dəstəklə əlaqə saxlayın.',
     search_empty: 'Nəticə tapılmadı.'
   }
 };
+const AZ_MONTHS = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avqust','sentyabr','oktyabr','noyabr','dekabr'];
+// Chrome ships no Azerbaijani month names, so az dates are built by hand.
+function fmtDate(date, withTime = true) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+  if (S.lang === 'az') {
+    const hm = withTime ? `, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` : '';
+    return `${date.getDate()} ${AZ_MONTHS[date.getMonth()]} ${date.getFullYear()}${hm}`;
+  }
+  const loc = S.lang === 'en' ? 'en-US' : 'ru-RU';
+  return withTime ? date.toLocaleString(loc, { dateStyle: 'medium', timeStyle: 'short' }) : date.toLocaleDateString(loc);
+}
+window.stakedFmtDate = fmtDate;
+const L3 = (ru, en, az) => (S.lang === 'en' ? en : S.lang === 'az' ? az : ru);
 const tr = key => translations[S.lang]?.[key] || translations.ru[key] || key;
 try { S.pendingPromoCode = String(localStorage.getItem('pdd.pendingPromo') || '').trim().toUpperCase() || null; } catch { S.pendingPromoCode = null; }
 function applyLanguage(lang) {
@@ -193,7 +206,7 @@ async function checkAuth({ loadData = false } = {}) {
     }
   } catch (error) {
     console.error('Authentication/profile loading failed:', error);
-    toast('Не удалось загрузить профиль. Обновите страницу.');
+    toast(L3('Не удалось загрузить профиль. Обновите страницу.', 'Could not load your profile. Refresh the page.', 'Profili yükləmək olmadı. Səhifəni yeniləyin.'));
   }
   if (loadData && !authDataLoaded) {
     await Promise.allSettled([load(), loadSettings()]);
@@ -211,23 +224,23 @@ async function loadSettings() {
 
 $('#authForm')?.addEventListener('submit', async e => {
   e.preventDefault();
-  $('#authMsg').textContent = 'Загрузка...';
+  $('#authMsg').textContent = L3('Подождите…', 'Please wait…', 'Gözləyin…');
   const email = $('#emailInput').value, pass = $('#passInput').value;
-  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
+  if (!email || !pass) return $('#authMsg').textContent = L3('Введите email и пароль.', 'Enter your email and password.', 'Email və şifrəni daxil edin.');
   const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-  if (error) return $('#authMsg').textContent = 'Не удалось войти. Проверьте данные и настройки подтверждения email.';
-  closeDlg($('#auth')); toast('Вы вошли!'); await checkAuth();
+  if (error) return $('#authMsg').textContent = L3('Неверный email или пароль. Если вы только зарегистрировались, подтвердите адрес по ссылке из письма.', 'Wrong email or password. If you just signed up, confirm your address using the link in the email.', 'Email və ya şifrə yanlışdır. Yeni qeydiyyatdan keçmisinizsə, məktubdakı linklə ünvanı təsdiqləyin.');
+  closeDlg($('#auth')); toast(L3('Вы вошли в аккаунт', 'You are signed in', 'Hesaba daxil oldunuz')); await checkAuth();
 });
 $('#signUpBtn')?.addEventListener('click', async () => {
-  $('#authMsg').textContent = 'Загрузка...';
+  $('#authMsg').textContent = L3('Подождите…', 'Please wait…', 'Gözləyin…');
   const email = $('#emailInput').value, pass = $('#passInput').value;
-  if (!email || !pass) return $('#authMsg').textContent = 'Заполните все поля';
-  if (pass.length < 6) return $('#authMsg').textContent = 'Пароль должен быть не менее 6 символов';
+  if (!email || !pass) return $('#authMsg').textContent = L3('Введите email и пароль.', 'Enter your email and password.', 'Email və şifrəni daxil edin.');
+  if (pass.length < 6) return $('#authMsg').textContent = L3('Пароль должен быть не короче 6 символов.', 'The password must be at least 6 characters.', 'Şifrə ən azı 6 simvol olmalıdır.');
   const { data, error } = await _supabase.auth.signUp({ email, password: pass });
-  if (error) return $('#authMsg').textContent = 'Ошибка: ' + error.message;
+  if (error) return $('#authMsg').textContent = L3('Не удалось зарегистрироваться: ', 'Could not sign up: ', 'Qeydiyyat alınmadı: ') + error.message;
   if (data.user) {
-    if (!data.session) { $('#authMsg').textContent = 'Проверьте почту и подтвердите адрес, затем войдите.'; return; }
-    closeDlg($('#auth')); toast('Аккаунт создан!'); await checkAuth();
+    if (!data.session) { $('#authMsg').textContent = L3('Мы отправили письмо. Подтвердите адрес по ссылке и войдите.', 'We sent you an email. Confirm your address with the link, then sign in.', 'Sizə məktub göndərdik. Linklə ünvanı təsdiqləyin və daxil olun.'); return; }
+    closeDlg($('#auth')); toast(L3('Аккаунт создан', 'Account created', 'Hesab yaradıldı')); await checkAuth();
   }
 });
 $('#googleLoginBtn')?.addEventListener('click', async (event) => {
@@ -266,7 +279,7 @@ $('#googleLoginBtn')?.addEventListener('click', async (event) => {
     console.error('Google sign-in failed:', error?.message || 'Unknown error');
     const message = error?.message || 'Не удалось открыть вход Google.';
     if ($('#authMsg')) $('#authMsg').textContent = message;
-    else toast('Ошибка Google: ' + message);
+    else toast(L3('Вход через Google не удался: ', 'Google sign-in failed: ', 'Google ilə giriş alınmadı: ') + message);
     if (button) {
       button.disabled = false;
       button.textContent = originalText || tr('auth_google');
@@ -301,7 +314,7 @@ async function load() {
   if (productResult.error) {
     console.error('Products load failed:', productResult.error);
     S.products = [];
-    S.catalogError = 'Не удалось загрузить каталог. Проверьте подключение и права доступа.';
+    S.catalogError = L3('Не удалось загрузить меню. Проверьте интернет и обновите страницу.', 'Could not load the menu. Check your connection and refresh the page.', 'Menyunu yükləmək olmadı. İnterneti yoxlayıb səhifəni yeniləyin.');
   } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
   renderAll();
 }
@@ -315,7 +328,7 @@ function card(p) {
   const stock = stockKnown ? Math.max(0, Number(p.stock) || 0) : null;
   const available = isAvailable(p);
   return `<article class="card ${available ? '' : 'is-out'}" data-id="${esc(p.id)}">
-    ${p.featured ? '<span class="badge-popular">ХИТ</span>' : ''}
+    ${p.featured ? `<span class="badge-popular">${L3('Хит', 'Popular', 'Populyar')}</span>` : ''}
     <button class="card-media" type="button" data-act="detail" aria-label="${esc(p.name || 'Товар')}">
       <img src="${esc(imgSrc(p))}" alt="${esc(p.name || '')}" loading="lazy" decoding="async">
     </button>
@@ -323,7 +336,7 @@ function card(p) {
       <span class="tag">${esc(p.category || '')}</span>
       <h3>${esc(p.name || 'Товар')}</h3>
       <p>${esc(p.description || '')}</p>
-      ${stockKnown ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock} шт.</span>` : ''}
+      ${stockKnown ? `<span class="stock-info ${stock < 5 ? 'stock-low' : ''}">${stock} ${L3('шт.', 'pcs', 'əd.')}</span>` : ''}
       <div class="card-foot">
         <strong>${fmt(p.price)}</strong>
         <button class="btn btn-primary sm" type="button" data-act="add" ${available ? '' : 'disabled'}>${available ? tr('add_to_cart') : tr('out_of_stock')}</button>
@@ -545,7 +558,7 @@ function initSlider(slides) {
   if (sliderTimer) { clearInterval(sliderTimer); sliderTimer = null; }
   const validSlides = (Array.isArray(slides) ? slides : []).filter(slide => slide && typeof slide.title === 'string' && typeof slide.image_url === 'string');
   const source = validSlides.length ? validSlides : [{
-    title: 'Добро пожаловать в STAKED', description: 'Подборка предложений',
+    title: L3('Добро пожаловать в STAKED', 'Welcome to STAKED', 'STAKED-ə xoş gəlmisiniz'), description: L3('Подборка предложений', 'Selected offers', 'Seçilmiş təkliflər'),
     image_url: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200&auto=format&fit=crop&q=85'
   }];
   container.innerHTML = source.map((slide, index) => `
@@ -681,7 +694,7 @@ $('#saveSettingsBtn')?.addEventListener('click', async () => {
   }
 });
 
-// Orders and private QR storage.
+// Orders.
 function statusText(status) {
   return tr(({ pending: 'orders_pending', ready: 'orders_ready', cancelled: 'orders_cancelled', completed: 'orders_completed' })[status] || 'orders_pending');
 }
@@ -691,28 +704,8 @@ function remainingText(expiry) {
   const seconds = Math.floor(ms / 1000);
   return `${tr('orders_time_left')}: ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
-async function resolveOrderQr(order) {
-  const raw = String(order.qr_code_url || '');
-  if (!raw) return '';
-  if (/^https:\/\//i.test(raw)) return safeImageUrl(raw);
-  const ownerPrefix = `${S.user.id}/`;
-  if (!raw.startsWith(ownerPrefix)) {
-    return _supabase.storage.from('product-images').getPublicUrl(raw).data.publicUrl || '';
-  }
-  const expiresAt = order.qr_expires_at ? new Date(order.qr_expires_at).getTime() : Date.now() + 30 * 60 * 1000;
-  const remaining = Math.floor((expiresAt - Date.now()) / 1000);
-  if (!Number.isFinite(remaining) || remaining <= 0) return '';
-  const cacheKey = `${raw}:${order.qr_expires_at || ''}`;
-  const cached = S.qrCache.get(cacheKey);
-  if (cached && cached.until > Date.now()) return cached.url;
-  const ttl = Math.max(60, Math.min(1800, remaining));
-  const { data, error } = await _supabase.storage.from('order-qrs').createSignedUrl(raw, ttl);
-  if (error) throw error;
-  const url = data?.signedUrl || '';
-  if (url) S.qrCache.set(cacheKey, { url, until: Date.now() + Math.max(30000, Math.min(ttl * 1000 - 30000, 10 * 60 * 1000)) });
-  return url;
-}
-const QR_ICON = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3m4 0v4h-4m0-4h-3v4"/></svg>';
+const COPY_ICON = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+const PICKUP_CODE_RE = /^[A-Za-z0-9-]{3,32}$/;
 function orderItemsHtml(items) {
   if (!Array.isArray(items)) return '';
   const rows = items.map(item => {
@@ -727,29 +720,30 @@ function describeOrder(order) {
   const created = order.created_at ? new Date(order.created_at) : null;
   const createdOk = created && !Number.isNaN(created.getTime());
   const expiry = order.qr_expires_at ? new Date(order.qr_expires_at).getTime() : 0;
-  const qrIsExpired = Boolean(order.qr_code_url && expiry && expiry <= Date.now());
-  const qrIsReady = Boolean(order.qr_code_url) && status === 'ready' && !qrIsExpired;
+  const code = PICKUP_CODE_RE.test(String(order.pickup_code || '')) ? String(order.pickup_code) : '';
+  const qrIsExpired = Boolean(code && expiry && expiry <= Date.now());
+  const qrIsReady = Boolean(code) && status === 'ready' && !qrIsExpired;
   const canCancel = status === 'pending' && createdOk && Date.now() - created.getTime() < 120000;
-  return { id, status, created: createdOk ? created : null, qrIsExpired, qrIsReady, canCancel };
+  return { id, status, created: createdOk ? created : null, qrIsExpired, qrIsReady, canCancel, code };
 }
-function orderCardHtml(order, d, qr) {
+function orderCardHtml(order, d) {
   const short = esc(d.id.slice(0, 8).toUpperCase());
-  const createdText = d.created ? d.created.toLocaleString(S.lang === 'az' ? 'az-AZ' : S.lang === 'en' ? 'en-US' : 'ru-RU', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const createdText = d.created ? fmtDate(d.created) : '';
   const itemCount = Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + Math.max(0, Number(item.qty) || 0), 0) : 0;
   const unit = S.lang === 'en' ? 'items' : S.lang === 'az' ? 'ədəd' : 'поз.';
   let body = '';
-  if (d.qrIsReady && qr) {
-    body = `<div class="order-qr"><button type="button" class="order-qr-toggle" data-act="toggle-qr" aria-expanded="false">${QR_ICON}<span class="order-qr-label order-qr-label-show">${esc(tr('orders_show_qr'))}</span><span class="order-qr-label order-qr-label-hide">${esc(tr('orders_hide_qr'))}</span><svg class="ic order-qr-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="order-qr-panel"><div class="order-qr-inner"><div class="order-qr-frame"><img class="order-qr-image" src="${esc(qr)}" alt="QR ${short}" decoding="async"></div><div class="order-qr-expiry" data-expiry="${esc(order.qr_expires_at || '')}">${esc(order.qr_expires_at ? remainingText(order.qr_expires_at) : '')}</div></div></div></div>`;
+  if (d.qrIsReady) {
+    body = `<div class="order-code"><span class="order-code-label">${esc(tr('orders_code_label'))}</span><div class="order-code-row"><output class="order-code-value" data-selectable="true">${esc(d.code)}</output><button type="button" class="order-code-copy" data-act="copy-code" data-code="${esc(d.code)}" aria-label="${esc(tr('orders_copy'))}">${COPY_ICON}<span>${esc(tr('orders_copy'))}</span></button></div><p class="order-code-hint">${esc(tr('orders_code_hint'))}</p>${order.qr_expires_at ? `<div class="order-qr-expiry" data-expiry="${esc(order.qr_expires_at)}">${esc(remainingText(order.qr_expires_at))}</div>` : ''}</div>`;
   } else if (d.qrIsExpired) {
     body = `<p class="order-note order-note-expired">${esc(tr('orders_expired_note'))}</p>`;
   } else if (d.status === 'pending') {
-    body = `<div class="order-wait"><span class="st-qr-wait" aria-hidden="true"><i></i></span><p class="order-note">${esc(tr('orders_pending_note'))}</p></div>${d.canCancel ? `<button type="button" class="btn btn-ghost order-cancel" data-act="cancel-order" data-id="${esc(d.id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
+    body = `<div class="order-wait"><p class="order-note">${esc(tr('orders_pending_note'))}</p></div>${d.canCancel ? `<button type="button" class="btn btn-ghost order-cancel" data-act="cancel-order" data-id="${esc(d.id)}">${esc(tr('orders_cancel'))}</button>` : ''}`;
   } else if (d.status !== 'completed' && d.status !== 'cancelled') {
     body = `<p class="order-note">${esc(statusText(d.status))}</p>`;
   }
   return `<div class="order-card-head"><div class="order-id"><strong>№ ${short}</strong>${createdText ? `<small>${esc(createdText)}</small>` : ''}</div><span class="order-status order-status-${esc(d.status)}">${esc(statusText(d.status))}</span></div>${orderItemsHtml(order.items)}${Number(order.discount_amount) > 0 ? `<div class="order-card-discount"><span>${esc(order.promo_code || '')}</span><span>−${fmt(order.discount_amount)}</span></div>` : ''}<div class="order-card-total"><span>${itemCount ? `${itemCount} ${unit}` : ''}</span><strong>${fmt(order.total)}</strong></div>${body ? `<div class="order-card-body">${body}</div>` : ''}`;
 }
-// Keyed update: untouched cards stay in the DOM, so scroll position, an open QR and running animations survive each poll.
+// Keyed update: untouched cards stay in the DOM, so scroll position and timers survive each poll.
 async function renderOrders(rows) {
   const host = $('#ordersList');
   if (!host) return;
@@ -758,10 +752,8 @@ async function renderOrders(rows) {
   if (!rows.length) { host.innerHTML = `<div class="orders-empty">${esc(tr('orders_empty'))}</div>`; host.dataset.ready = '1'; return; }
   const prepared = await Promise.all(rows.map(async order => {
     const d = describeOrder(order);
-    let qr = '';
-    if (d.qrIsReady) { try { qr = await resolveOrderQr(order); } catch (error) { console.error('QR signed URL failed:', error); } }
-    const sig = [S.lang, d.status, order.total, order.discount_amount || 0, order.qr_code_url || '', order.qr_expires_at || '', d.qrIsReady && qr ? 'qr' : '', d.qrIsExpired ? 'x' : '', d.canCancel ? 'c' : '', JSON.stringify(order.items || [])].join('|');
-    return { order, d, qr, sig };
+    const sig = [S.lang, d.status, order.total, order.discount_amount || 0, d.code, order.qr_expires_at || '', d.qrIsReady ? 'ready' : '', d.qrIsExpired ? 'x' : '', d.canCancel ? 'c' : '', JSON.stringify(order.items || [])].join('|');
+    return { order, d, sig };
   }));
   if (host.dataset.owner !== (S.user?.id || '')) return;
   host.querySelectorAll(':scope > .orders-empty, :scope > .orders-error').forEach(node => node.remove());
@@ -769,7 +761,7 @@ async function renderOrders(rows) {
   const scrollTop = host.scrollTop;
   const existing = new Map(Array.from(host.querySelectorAll(':scope > .order-card')).map(node => [node.dataset.order, node]));
   let prev = null;
-  prepared.forEach(({ order, d, qr, sig }) => {
+  prepared.forEach(({ order, d, sig }) => {
     let node = existing.get(d.id);
     existing.delete(d.id);
     if (!node) {
@@ -777,15 +769,11 @@ async function renderOrders(rows) {
       node.className = 'order-card';
       node.dataset.order = d.id;
       if (!firstRender) { node.classList.add('is-new'); node.addEventListener('animationend', () => node.classList.remove('is-new'), { once: true }); }
-      node.innerHTML = orderCardHtml(order, d, qr);
+      node.innerHTML = orderCardHtml(order, d);
       node.dataset.sig = sig;
     } else if (node.dataset.sig !== sig) {
-      const wasOpen = node.classList.contains('qr-open');
-      node.innerHTML = orderCardHtml(order, d, qr);
+      node.innerHTML = orderCardHtml(order, d);
       node.dataset.sig = sig;
-      const toggle = node.querySelector('.order-qr-toggle');
-      node.classList.toggle('qr-open', Boolean(wasOpen && toggle));
-      if (toggle && wasOpen) toggle.setAttribute('aria-expanded', 'true');
     }
     node.dataset.status = d.status;
     const ref = prev ? prev.nextSibling : host.firstChild;
@@ -811,7 +799,7 @@ async function loadOrders() {
   S.ordersBusy = true;
   const host = $('#ordersList');
   try {
-    const { data, error } = await _supabase.from('orders').select('id,user_id,total,items,status,created_at,qr_code_url,qr_expires_at,discount_amount,promo_code').eq('user_id', S.user.id).order('created_at', { ascending: false }).limit(50);
+    const { data, error } = await _supabase.from('orders').select('id,user_id,total,items,status,created_at,pickup_code,qr_expires_at,discount_amount,promo_code').eq('user_id', S.user.id).order('created_at', { ascending: false }).limit(50);
     if (error) throw error;
     await renderOrders(Array.isArray(data) ? data : []);
   } catch (error) {
@@ -858,7 +846,7 @@ function showOrderWave(withWarning) {
       if (button.dataset.wave === 'open') openOrders();
     });
   }
-  d.innerHTML = `<div class="order-wave-sheet"><svg class="order-wave-edge" viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C100 6 200 6 300 26S500 46 600 26S800 6 900 26S1100 46 1200 26V48H0Z" fill="currentColor"/></svg><div class="order-wave-body"><span class="order-wave-icon">${QR_ICON}</span><h2 id="orderWaveTitle">${esc(tr('wave_title'))}</h2><p>${esc(tr('wave_text'))}</p>${withWarning ? `<p class="order-wave-warn">${esc(tr('checkout_notify_error'))}</p>` : ''}<div class="order-wave-actions"><button type="button" class="btn order-wave-primary" data-wave="open">${esc(tr('wave_open'))}</button><button type="button" class="btn order-wave-secondary" data-wave="close">${esc(tr('wave_close'))}</button></div></div></div>`;
+  d.innerHTML = `<div class="order-wave-sheet"><svg class="order-wave-edge" viewBox="0 0 1200 48" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C100 6 200 6 300 26S500 46 600 26S800 6 900 26S1100 46 1200 26V48H0Z" fill="currentColor"/></svg><div class="order-wave-body"><span class="order-wave-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><h2 id="orderWaveTitle">${esc(tr('wave_title'))}</h2><p>${esc(tr('wave_text'))}</p>${withWarning ? `<p class="order-wave-warn">${esc(tr('checkout_notify_error'))}</p>` : ''}<div class="order-wave-actions"><button type="button" class="btn order-wave-primary" data-wave="open">${esc(tr('wave_open'))}</button><button type="button" class="btn order-wave-secondary" data-wave="close">${esc(tr('wave_close'))}</button></div></div></div>`;
   if (!d.open) d.showModal();
   d.querySelector('[data-wave="open"]')?.focus({ preventScroll: true });
 }
@@ -905,7 +893,7 @@ function promoDescription(p) {
   const name = find(p.product_id)?.name || '';
   let text = p.kind === 'percent' ? trf('promo_discount_pct', { v: Number(p.value) }) : p.kind === 'fixed' ? trf('promo_discount_fix', { v: fmt(p.value) }) : trf('promo_free_prod', { name });
   if (p.kind !== 'free_product' && p.scope === 'product') text += ' ' + trf('promo_scope_product', { name });
-  if (p.ends_at) text += ' · ' + trf('promo_until', { date: new Date(p.ends_at).toLocaleDateString(S.lang === 'az' ? 'az-AZ' : S.lang === 'en' ? 'en-US' : 'ru-RU') });
+  if (p.ends_at) text += ' · ' + trf('promo_until', { date: fmtDate(new Date(p.ends_at), false) });
   if (p.remaining !== null && p.remaining !== undefined) text += ' · ' + trf('promo_left', { n: p.remaining });
   return text;
 }
@@ -1036,11 +1024,11 @@ async function applyPromo(raw) {
     const code = String(error?.code || '');
     const status = Number(error?.status || error?.statusCode || 0);
     if (code === '42501' || status === 401 || status === 403) {
-      setPromoMsg('Не удалось проверить промокод: сервис временно недоступен. Попробуйте позже.', true);
+      setPromoMsg(L3('Не удалось проверить промокод. Попробуйте позже.', 'Could not check the promo code. Try again later.', 'Promokodu yoxlamaq olmadı. Bir az sonra yenidən cəhd edin.'), true);
     } else if (status === 429 || /rate.?limit/i.test(String(error?.message || ''))) {
       setPromoMsg(tr('promo_rate_limited'), true);
     } else {
-      setPromoMsg('Не удалось проверить промокод. Проверьте соединение и попробуйте ещё раз.', true);
+      setPromoMsg(L3('Не удалось проверить промокод. Проверьте интернет и попробуйте ещё раз.', 'Could not check the promo code. Check your connection and try again.', 'Promokodu yoxlamaq olmadı. İnterneti yoxlayıb yenidən cəhd edin.'), true);
     }
   } finally {
     S.promoBusy = false;
@@ -1281,7 +1269,7 @@ async function checkout() {
     console.error('Checkout failed:', error);
     const promoFail = /promo_(invalid|already_used|not_applicable|rate_limited)/i.exec(String(error?.message || ''));
     if (promoFail) { S.promo = null; S.promoMsg = null; renderCart(); toast(tr('promo_' + promoFail[1].toLowerCase())); return; }
-    toast('Не удалось оформить заказ: ' + (error.message || 'ошибка сервера'));
+    toast(L3('Не удалось оформить заказ: ', 'Could not place the order: ', 'Sifariş vermək olmadı: ') + (error.message || L3('ошибка сервера', 'server error', 'server xətası')));
   } finally {
     S.checkoutBusy = false;
     if (button) { button.disabled = false; button.textContent = oldText; }
@@ -1295,7 +1283,12 @@ const A = {
   rm: id => { S.cart = S.cart.filter(c => c.id !== id); if (!S.cart.length) { S.promo = null; S.promoMsg = null; } saveCart(); renderCart(); bump(); },
   clear: () => { S.cart = []; S.promo = null; S.promoMsg = null; S.pendingPromoCode = null; try { localStorage.removeItem('pdd.pendingPromo'); } catch {} saveCart(); renderCart(); document.dispatchEvent(new Event('stacked:cart-cleared')); toast(translations[S.lang].cart_cleared); },
   checkout, orders: openOrders,
-  'toggle-qr': (_, button) => { const card = button.closest('.order-card'); if (!card) return; const open = card.classList.toggle('qr-open'); button.setAttribute('aria-expanded', String(open)); },
+  'copy-code': async (_, button) => {
+    const code = String(button.dataset.code || '');
+    if (!PICKUP_CODE_RE.test(code)) return;
+    try { await navigator.clipboard.writeText(code); toast(tr('orders_copied')); }
+    catch { const out = button.closest('.order-code')?.querySelector('.order-code-value'); if (out) { const r = document.createRange(); r.selectNodeContents(out); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } }
+  },
   'cancel-order': id => cancelOrder(id), detail: openDetail, reload: () => load(),
   'cart-open': () => { const d = $('#drawer'); if (d && !d.open) d.showModal(); },
   manage: () => { if (!isAdmin()) { toast('Доступ только владельцу проекта.'); return; } const d = $('#editor'); if (!d) return; if (!d.open) { d.showModal(); setDraft(null); } renderAdmin(); },

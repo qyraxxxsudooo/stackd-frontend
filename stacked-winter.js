@@ -1,4 +1,4 @@
-/* STAKED — New Year theme and site music.
+/* STAKED — New Year theme.
    • The admin turns the theme on or off for the whole site (Каталог → Настройки → «Зима и музыка», site_settings.winter_mode).
      When it is on, each visitor can still switch it off for themselves in Settings.
    • Dark theme: a night street with a lit lamp, a decorated tree and snowy roofs. Light theme: a winter morning at sunrise.
@@ -37,7 +37,7 @@ html.st-winter body{background:transparent!important}
 .stw-atmosphere{position:absolute;inset:-28px;z-index:0;overflow:hidden;filter:blur(var(--stw-scene-blur,0px));transform:scale(1.035);transition:filter .2s ease-out}
 .stw-scene{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block;user-select:none;filter:none!important;transform:none!important}
 .stw-bg::before,.stw-bg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none}
-.stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;animation:stwAuroraDrift 26s ease-in-out infinite alternate}
+.stw-bg[data-dark="true"]::before{background:radial-gradient(ellipse 48% 30% at 24% 19%,rgba(49,205,172,.23),transparent 72%),radial-gradient(ellipse 40% 28% at 62% 15%,rgba(91,116,234,.24),transparent 74%),radial-gradient(ellipse 28% 24% at 88% 30%,rgba(102,207,192,.16),transparent 74%);background-size:110% 110%;mix-blend-mode:screen;opacity:.9;}
 .stw-bg[data-dark="true"]::after{background:radial-gradient(ellipse at 50% 48%,transparent 35%,rgba(3,7,18,.3) 100%),radial-gradient(1px 1px at 14% 19%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1.5px 1.5px at 29% 11%,rgba(255,255,255,.75) 60%,transparent 100%),radial-gradient(1px 1px at 73% 22%,rgba(255,255,255,.8) 60%,transparent 100%),radial-gradient(1px 1px at 91% 13%,rgba(255,255,255,.7) 60%,transparent 100%);opacity:.72}
 .stw-bg[data-dark="false"]::before{background:radial-gradient(ellipse 46% 35% at 70% 70%,rgba(255,211,159,.25),transparent 75%),radial-gradient(ellipse 55% 22% at 20% 15%,rgba(255,255,255,.25),transparent 78%);opacity:.8}
 .stw-bg[data-dark="false"]::after{background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 28%,rgba(255,226,211,.12));opacity:.8}
@@ -242,7 +242,6 @@ ${fg}
       opacity: .2 + depth * .68,
       rotation: Math.random() * Math.PI * 2,
       spin: (Math.random() - .5) * (.18 + depth * .8),
-      crystal: depth > .74 && Math.random() > .3,
       cursorForce: 0
     };
   }
@@ -260,13 +259,17 @@ ${fg}
     snowCanvas.style.width = w + 'px';
     snowCanvas.style.height = h + 'px';
     snowCtx.setTransform(snowDpr, 0, 0, snowDpr, 0, 0);
-    const target = coarse
-      ? Math.round(clamp(area / 22000, 28, 56))
-      : Math.round(clamp(area / 12000, 100, 180));
+    const weak = coarse || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+    const target = weak
+      ? Math.round(clamp(area / 16000, 24, 60))
+      : Math.round(clamp(area / 11000, 80, 150));
     while (snowParticles.length < target) snowParticles.push(makeSnowParticle(true));
     if (snowParticles.length > target) snowParticles.length = target;
     drawSnow(0, performance.now());
   }
+  /* One pass per frame: positions update, then all flakes go into three alpha buckets drawn as single paths.
+     No canvas filters, no per-flake save/restore/rotate: those made each frame cost tens of milliseconds. */
+  const snowBuckets = [[], [], []];
   function drawSnow(dt, now) {
     if (!snowCtx) return;
     const ctx = snowCtx;
@@ -274,95 +277,42 @@ ${fg}
     const motionOff = snowMedia.matches;
     const gust = motionOff ? 0 : Math.sin(now * .00017) * 8 + Math.sin(now * .000071 + 2.1) * 5;
     snowWind += (gust - snowWind) * Math.min(1, dt * .8);
-
-    // Touch GPUs use a low-cost circle-only renderer; skip per-flake transforms and trigonometry.
-    if (coarse) {
-      for (const flake of snowParticles) {
-        if (!motionOff) {
-          flake.x += (snowWind + flake.drift * .12) * dt;
-          flake.y += flake.speed * dt;
-          if (flake.y > snowHeight + 12) {
-            flake.y = -8 - Math.random() * 36;
-            flake.x = Math.random() * snowWidth;
-          }
-          if (flake.x < -12) flake.x = snowWidth + 8;
-          else if (flake.x > snowWidth + 12) flake.x = -8;
-        }
-        ctx.globalAlpha = flake.opacity;
-        ctx.beginPath();
-        ctx.arc(flake.x, flake.y, Math.max(.65, flake.radius * .82), 0, Math.PI * 2);
-        ctx.fillStyle = '#fff';
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    for (const flake of snowParticles) {
+    const pointerLive = !coarse && snowPointer.last && now - snowPointer.last < 260;
+    const b0 = snowBuckets[0], b1 = snowBuckets[1], b2 = snowBuckets[2];
+    b0.length = b1.length = b2.length = 0;
+    for (let i = 0; i < snowParticles.length; i++) {
+      const flake = snowParticles[i];
       if (!motionOff) {
-        const dx = flake.x - snowPointer.x;
-        const dy = flake.y - snowPointer.y;
-        const distance = Math.hypot(dx, dy);
-        let cursorPush = 0;
-        if (!coarse && snowPointer.last && now - snowPointer.last < 260 && distance < 175) {
-          const falloff = 1 - distance / 175;
-          const pointerVelocity = clamp(snowPointer.vx * .45 + snowPointer.vy * .12, -42, 42);
-          cursorPush = pointerVelocity * falloff * falloff * .62;
+        let push = 0;
+        if (pointerLive) {
+          const dx = flake.x - snowPointer.x, dy = flake.y - snowPointer.y, d2 = dx * dx + dy * dy;
+          if (d2 < 30625) { const f = 1 - Math.sqrt(d2) / 175; push = clamp(snowPointer.vx * .45 + snowPointer.vy * .12, -42, 42) * f * f * .62; }
         }
-        flake.cursorForce += (cursorPush - flake.cursorForce) * Math.min(1, dt * 2.2);
-        const localSway = Math.sin(now * flake.frequency + flake.phase) * flake.drift;
-        const microGust = Math.sin(now * .00031 + flake.phase * 1.7) * (2 + flake.depth * 5);
-        flake.x += (snowWind + localSway + microGust + flake.cursorForce) * dt;
+        flake.cursorForce += (push - flake.cursorForce) * Math.min(1, dt * 2.2);
+        flake.phase += dt * flake.frequency * 1000;
+        flake.x += (snowWind + Math.sin(flake.phase) * flake.drift + flake.cursorForce) * dt;
         flake.y += flake.speed * dt;
-        flake.rotation += flake.spin * dt;
-        if (flake.y > snowHeight + 12) {
-          flake.y = -8 - Math.random() * 60;
-          flake.x = Math.random() * snowWidth;
-        }
-        if (flake.x < -18) flake.x = snowWidth + 10;
-        else if (flake.x > snowWidth + 18) flake.x = -10;
+        if (flake.y > snowHeight + 12) { flake.y = -8 - Math.random() * 60; flake.x = Math.random() * snowWidth; }
+        if (flake.x < -18) flake.x = snowWidth + 10; else if (flake.x > snowWidth + 18) flake.x = -10;
       }
-      const depth = flake.depth;
-      ctx.save();
-      ctx.translate(flake.x, flake.y);
-      ctx.rotate(flake.rotation);
-      ctx.globalAlpha = flake.opacity;
-      ctx.fillStyle = '#fff';
-      ctx.strokeStyle = 'rgba(255,255,255,.92)';
-      ctx.lineCap = 'round';
-      if (depth < .25) ctx.filter = 'blur(.8px)';
-      if (flake.crystal && !motionOff) {
-        const radius = flake.radius * 1.6;
-        ctx.lineWidth = Math.max(.45, flake.radius * .25);
-        ctx.beginPath();
-        for (let arm = 0; arm < 6; arm++) {
-          const angle = arm * Math.PI / 3;
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-          const branch = radius * .34;
-          ctx.moveTo(0, 0);
-          ctx.lineTo(x, y);
-          ctx.moveTo(x * .58, y * .58);
-          ctx.lineTo(x * .58 - Math.sin(angle) * branch, y * .58 + Math.cos(angle) * branch);
-          ctx.moveTo(x * .58, y * .58);
-          ctx.lineTo(x * .58 + Math.sin(angle) * branch, y * .58 - Math.cos(angle) * branch);
-        }
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0, 0, flake.radius * .48, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.beginPath();
-        ctx.arc(0, 0, flake.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
+      (flake.depth < .34 ? b0 : flake.depth < .7 ? b1 : b2).push(flake);
     }
+    ctx.fillStyle = '#fff';
+    const alphas = [.32, .56, .86];
+    for (let k = 0; k < 3; k++) {
+      const list = snowBuckets[k];
+      if (!list.length) continue;
+      ctx.globalAlpha = alphas[k];
+      ctx.beginPath();
+      for (let i = 0; i < list.length; i++) { const f = list[i]; ctx.moveTo(f.x + f.radius, f.y); ctx.arc(f.x, f.y, f.radius, 0, 6.2832); }
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   }
   function stepSnow(now) {
     snowRaf = 0;
     if (!on || !snowCtx || document.hidden) return;
-    const interval = 1000 / (coarse ? 30 : 45);
+    const interval = 1000 / (coarse ? 40 : 60);
     if (now < snowNextFrame) {
       snowRaf = requestAnimationFrame(stepSnow);
       return;
