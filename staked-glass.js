@@ -145,7 +145,9 @@
   ['pointerdown', 'pointerup', 'click', 'mousedown'].forEach((t) => window.addEventListener(t, guard, true));
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act="theme"]');
-    if (!b || b.dataset.stDirect || fading || reduced() || typeof document.startViewTransition !== 'function') return;
+    if (!b || b.dataset.stDirect) return;
+    if (e.isTrusted) queued = null; // a real tap that reached the button is newer than anything queued
+    if (fading || reduced() || typeof document.startViewTransition !== 'function') return;
     let current = 'system'; try { current = localStorage.getItem('pdd.theme') || 'system'; } catch { /* storage blocked */ }
     if (b.dataset.v === current) return;
     e.preventDefault(); e.stopImmediatePropagation();
@@ -308,5 +310,27 @@
     hist.addEventListener('click', () => { const orig = $('#stackdTopupHistoryOpen'); if (orig) orig.click(); });
     topup.append(hist);
     document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(paintHist, 60); });
+  }
+
+  /* ── admin on phones: tap a product row to edit it; the form scrolls into view ── */
+  const phone = () => matchMedia('(max-width:680px)').matches;
+  document.addEventListener('click', (e) => {
+    const editor = e.target.closest('#editor');
+    if (!editor) return;
+    const row = e.target.closest('#adminList li[data-id]');
+    if (row && !e.target.closest('button')) { row.querySelector('[data-act=edit]')?.click(); return; }
+    if (phone() && e.target.closest('[data-act=edit],[data-act=new]')) {
+      setTimeout(() => $('#pform')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' }), 60);
+    }
+  });
+
+  /* product form: the Save button lives in a bar that sticks to the bottom while the long form scrolls */
+  const pform = $('#pform');
+  if (pform) {
+    const save = pform.querySelector('button[type=submit]');
+    if (save && !save.parentElement.classList.contains('st-form-save')) {
+      const bar = document.createElement('div'); bar.className = 'st-form-save';
+      pform.append(bar); bar.append(save);
+    }
   }
 })();
