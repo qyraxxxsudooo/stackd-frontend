@@ -303,7 +303,7 @@ html body #topup .terms-check{display:flex!important;align-items:flex-start;gap:
 html body #topup .terms-check input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent);flex:none}
 html body #topup button[type=submit]{height:48px!important;border-radius:14px!important;font-size:.98rem!important;margin-top:4px!important}
 html body #topup .st-topup-note{margin:2px 2px 0;font-size:.8rem;color:var(--muted);text-align:center}
-html body #topup .st-topup-history{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px;padding:12px 14px;border-radius:var(--m-r-group);background:var(--m-group);border:1px solid var(--m-edge);color:var(--text);font:500 .92rem/1.2 inherit;cursor:pointer;transition:background-color .15s var(--m-ease),transform .12s var(--m-ease)}
+html body #topup .st-topup-history{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:8px;padding:12px 14px;border-radius:var(--m-r-group);background:var(--m-group);border:1px solid var(--m-edge);color:var(--text);font:500 .92rem/1.2 inherit;cursor:pointer;transition:background-color .15s var(--m-ease),transform .12s var(--m-ease)}
 html body #topup .st-topup-history:hover{background:var(--m-fill-2)}
 html body #topup .st-topup-history:active{transform:scale(.99)}
 html body #topup .st-topup-history::after{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg);opacity:.7}
@@ -312,6 +312,7 @@ html body #topupMsg:not(:empty){border-radius:var(--m-r-ctl)!important}
 /* cart */
 html body #drawer>header,html body #drawer>footer{background:transparent!important;border-color:var(--m-sep)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html body #drawer .stackd-purchase-guide{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;box-shadow:none!important}
+html body #drawer .stackd-purchase-guide p{margin:0!important;font-size:.88rem!important;line-height:1.45!important;color:var(--text)!important}
 html body #drawer .stackd-purchase-guide strong{text-transform:none!important;letter-spacing:0!important;font-weight:600!important}
 html body #drawer .cart-promo{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html body #drawer .cart-promo-title{font-size:.8rem!important;font-weight:600!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important}

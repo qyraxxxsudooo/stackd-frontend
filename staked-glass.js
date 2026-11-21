@@ -308,7 +308,9 @@
     const paintHist = () => { hist.textContent = t('history'); };
     paintHist();
     hist.addEventListener('click', () => { const orig = $('#stackdTopupHistoryOpen'); if (orig) orig.click(); });
-    topup.append(hist);
+    // right under the Telegram block, so it is visible without scrolling
+    const instr = $('.payment-instructions', topup);
+    if (instr) instr.after(hist); else topup.append(hist);
     document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(paintHist, 60); });
   }
 

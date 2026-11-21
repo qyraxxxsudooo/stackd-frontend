@@ -13,7 +13,7 @@
       hero: 'Первый экран', heroImage: 'Фото первого экрана', brandTitle: 'Бренд и контакты', brandHelp: 'Название проекта, описание и Telegram-ссылки в шапке и подвале сайта.', brandName: 'Название сайта', brandTagline: 'Короткое описание', supportTelegram: 'Telegram поддержки (без @)', channelTelegram: 'Telegram-канал (без @)', brandLogo: 'Логотип сайта', brandLogoReset: 'Вернуть исходный логотип', brandPreview: 'Предпросмотр логотипа', heroFit: 'Заполнение фото', heroPosition: 'Положение фото',
       heroHeight: 'Высота, px', heroRatio: 'Соотношение сторон', cover: 'Заполнить', contain: 'Показать целиком',
       center: 'По центру', top: 'Сверху', bottom: 'Снизу', save: 'Сохранить настройки',
-      guideTitle: 'Перед покупкой', guide1: 'Проверьте состав, цену и количество выбранных товаров.',
+      guideTitle: 'Перед покупкой', guide1: 'После заказа вам придёт код. Введите его в автомат в ресторане, и вы получите на экране бесплатный товар.',
       guide2: 'Количество можно изменить кнопками «+» и «−» прямо в карточке или корзине.',
       guide3: 'После оформления оператор проверит заказ, и в «Моих заказах» появится код для автомата.',
       swipe: 'Проведите, чтобы оформить заказ', preparing: 'Готовим заказ',
@@ -44,7 +44,7 @@
       hero: 'Hero section', heroImage: 'Hero image', brandTitle: 'Brand and contacts', brandHelp: 'Project name, short description and Telegram links shown in the header and footer.', brandName: 'Site name', brandTagline: 'Short description', supportTelegram: 'Support Telegram username', channelTelegram: 'Telegram channel username', brandLogo: 'Site logo', brandLogoReset: 'Restore original logo', brandPreview: 'Logo preview', heroFit: 'Image fit', heroPosition: 'Image position',
       heroHeight: 'Height, px', heroRatio: 'Aspect ratio', cover: 'Cover', contain: 'Contain',
       center: 'Center', top: 'Top', bottom: 'Bottom', save: 'Save settings',
-      guideTitle: 'Before you order', guide1: 'Check item details, prices and selected quantities.',
+      guideTitle: 'Before you order', guide1: 'After you order, you will get a code. Enter it at the kiosk in the restaurant and the free item will appear on the screen.',
       guide2: 'Change quantities with the “+” and “−” controls on product cards or in the cart.',
       guide3: 'After checkout the operator checks your order, and a kiosk code appears in “My orders”.',
       swipe: 'Swipe to place your order', preparing: 'Preparing your order',
@@ -75,7 +75,7 @@
       hero: 'Ana ekran', heroImage: 'Ana ekran şəkli', brandTitle: 'Brend və əlaqə', brandHelp: 'Layihənin adı, qısa təsviri və saytda göstərilən Telegram keçidləri.', brandName: 'Saytın adı', brandTagline: 'Qısa təsvir', supportTelegram: 'Dəstək Telegram istifadəçi adı', channelTelegram: 'Telegram kanalının istifadəçi adı', brandLogo: 'Saytın loqosu', brandLogoReset: 'İlkin loqoya qaytar', brandPreview: 'Loqoya baxış', heroFit: 'Şəklin yerləşməsi', heroPosition: 'Şəklin mövqeyi',
       heroHeight: 'Hündürlük, px', heroRatio: 'Tərəflərin nisbəti', cover: 'Doldur', contain: 'Tam göstər',
       center: 'Mərkəz', top: 'Yuxarı', bottom: 'Aşağı', save: 'Ayarları saxla',
-      guideTitle: 'Sifarişdən əvvəl', guide1: 'Məhsulun tərkibini, qiymətini və sayını yoxlayın.',
+      guideTitle: 'Sifarişdən əvvəl', guide1: 'Sifarişdən sonra sizə kod gələcək. Onu restorandakı terminala daxil edin və ekranda pulsuz məhsulu alacaqsınız.',
       guide2: 'Miqdarı məhsul kartında və ya səbətdə «+» və «−» düymələri ilə dəyişin.',
       guide3: 'Sifarişdən sonra operator onu yoxlayır və «Sifarişlərim» bölməsində avtomat üçün kod görünür.',
       swipe: 'Sifariş üçün sürüşdürün', preparing: 'Sifariş hazırlanır',
@@ -1106,7 +1106,7 @@
     const checkoutButton = $('#checkoutBtn');
     const guide = document.createElement('section');
     guide.id = 'stackdPurchaseGuide'; guide.className = 'stackd-purchase-guide';
-    guide.innerHTML = `<strong>${esc(t('guideTitle'))}</strong><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
+    guide.innerHTML = `<p>${esc(t('guide1'))}</p>`;
     if (list) list.before(guide);
     if (checkoutButton) checkoutButton.hidden = true;
     if (footer && !$('#stackdSwipe')) {
@@ -1127,7 +1127,7 @@
 
   function renderGuideText() {
     const guide = $('#stackdPurchaseGuide');
-    if (guide) guide.innerHTML = `<strong>${esc(t('guideTitle'))}</strong><p>${esc(t('guide1'))}</p><p>${esc(t('guide2'))}</p><p>${esc(t('guide3'))}</p>`;
+    if (guide) guide.innerHTML = `<p>${esc(t('guide1'))}</p>`;
     const label = $('.stackd-swipe-label'); if (label) label.textContent = t('swipe');
     const state = $('#stackdPreparing');
     if (state) state.innerHTML = `<span class="stackd-spinner" aria-hidden="true"></span><strong>${esc(t('preparing'))}</strong><p>${esc(t('preparingText'))}</p>`;
