@@ -1,0 +1,30 @@
+# STAKED
+
+> STAKED (staked.food) is a food-deals service in Baku, Azerbaijan. Customers pick a discounted offer from fast-food restaurants, pay from their STAKED balance, and receive a short pickup code. They type the code at the self-service kiosk in the restaurant to collect the order.
+
+The site is available in Russian, English and Azerbaijani. Prices are in Azerbaijani manat (AZN).
+
+## How it works
+
+1. Choose an offer in the menu (burgers, sides, combos).
+2. Top up the balance: transfer the amount using the details in the pinned message of the STAKED Telegram channel, then upload a screenshot of the receipt. An operator checks it and credits the balance.
+3. Place the order. An operator confirms it and sends a pickup code, which appears under "My orders".
+4. Enter the code at the restaurant's self-service kiosk and collect the food. The code is valid for a limited time.
+
+## Links
+
+- [Website](https://staked.food/): menu, balance top-up and orders
+- [Telegram channel](https://t.me/stackdbaku): payment details and news
+- [Support](https://t.me/sharkiff): questions about orders and payments
+
+---
+
+# STAKED (на русском)
+
+> STAKED (staked.food) — сервис скидок на еду в Баку. Выберите предложение в меню, оплатите с баланса и получите короткий код. Введите его в автомате в ресторане и заберите заказ.
+
+Пополнение: переведите сумму по реквизитам из закреплённого сообщения Telegram-канала @stackdbaku и прикрепите скриншот чека. Баланс пополнится после проверки оператором. Поддержка: @sharkiff.
+
+# STAKED (Azərbaycan dilində)
+
+> STAKED (staked.food) Bakıda yemək endirimləri xidmətidir. Menyudan təklif seçin, balansdan ödəyin və qısa kod alın. Kodu restoranın özünəxidmət terminalına daxil edin və sifarişi götürün.

@@ -8,13 +8,13 @@
   const T = {
     ru: { profile: 'Профиль', required: 'Заполните это поле', reqAmount: 'Введите сумму', reqEmail: 'Введите email', reqPass: 'Введите пароль', min: 'Минимум {v}', max: 'Максимум {v}', step: 'Не больше двух знаков после запятой',
       number: 'Введите число', email: 'Введите email, например name@mail.com', short: 'Минимум {v} символов', file: 'Прикрепите скриншот чека',
-      check: 'Отметьте, что данные верны', emptyTitle: 'В корзине пока ничего нет', emptyText: 'Добавьте товары из меню, и они появятся здесь.', toMenu: 'Перейти в меню' },
+      check: 'Отметьте, что данные верны', emptyTitle: 'Корзина пуста', emptyText: 'Выберите что-нибудь в меню.', toMenu: 'Открыть меню', history: 'История пополнений' },
     en: { profile: 'Profile', required: 'Fill in this field', reqAmount: 'Enter an amount', reqEmail: 'Enter your email', reqPass: 'Enter your password', min: 'At least {v}', max: 'No more than {v}', step: 'Use at most two decimal places',
       number: 'Enter a number', email: 'Enter an email such as name@mail.com', short: 'At least {v} characters', file: 'Attach a screenshot of the receipt',
-      check: 'Confirm that the details are correct', emptyTitle: 'Your cart is empty', emptyText: 'Add items from the menu and they will show up here.', toMenu: 'Go to menu' },
+      check: 'Confirm that the details are correct', emptyTitle: 'Your cart is empty', emptyText: 'Pick something from the menu.', toMenu: 'Open menu', history: 'Top-up history' },
     az: { profile: 'Profil', required: 'Bu xananı doldurun', reqAmount: 'Məbləği daxil edin', reqEmail: 'E-poçtu daxil edin', reqPass: 'Şifrəni daxil edin', min: 'Minimum {v}', max: 'Maksimum {v}', step: 'Vergüldən sonra ən çox iki rəqəm',
       number: 'Rəqəm daxil edin', email: 'Email daxil edin, məsələn name@mail.com', short: 'Minimum {v} simvol', file: 'Çekin skrinşotunu əlavə edin',
-      check: 'Məlumatların düzgün olduğunu təsdiqləyin', emptyTitle: 'Səbət hələ boşdur', emptyText: 'Menyudan məhsul əlavə edin, burada görünəcək.', toMenu: 'Menyuya keç' }
+      check: 'Məlumatların düzgün olduğunu təsdiqləyin', emptyTitle: 'Səbət boşdur', emptyText: 'Menyudan bir şey seçin.', toMenu: 'Menyunu aç', history: 'Balans tarixçəsi' }
   };
   const t = (k, v) => String((T[lang()] || T.ru)[k] || T.ru[k]).replace('{v}', v ?? '');
 
@@ -90,13 +90,12 @@
 
   /* ── cart empty state ── */
   const lines = $('#lines');
-  const CART_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L19 8H6.2"/><circle cx="9" cy="19.5" r="1"/><circle cx="17" cy="19.5" r="1"/></svg>';
   function paintEmpty() {
     if (!lines || lines.querySelector('li[data-id]')) return;
     const li = lines.querySelector('li:not([data-id])');
     if (!li || li.classList.contains('st-empty')) return;
     li.className = 'st-empty';
-    li.innerHTML = `<span class="st-empty-ic">${CART_IC}</span><strong>${t('emptyTitle')}</strong><span>${t('emptyText')}</span><button type="button" class="btn btn-ghost" data-st-to-menu>${t('toMenu')}</button>`;
+    li.innerHTML = `<strong>${t('emptyTitle')}</strong><span>${t('emptyText')}</span><button type="button" class="btn btn-ghost" data-st-to-menu>${t('toMenu')}</button>`;
   }
   if (lines) {
     new MutationObserver(paintEmpty).observe(lines, { childList: true });
@@ -127,17 +126,36 @@
   new MutationObserver(syncBg).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   syncBg();
 
-  /* ── theme change: cross-fade the whole page once instead of colours snapping one by one ── */
-  let fading = false;
+  /* ── theme change: one short cross-fade. While it runs the browser hit-tests the whole page as <html>,
+        so a tap would land "outside" the settings panel and close it. Taps on theme buttons during the fade
+        are matched by position and replayed when it ends; other taps on <html> are swallowed. ── */
+  let fading = null;
+  const root = document.documentElement;
+  function themeButtonAt(x, y) {
+    return [...document.querySelectorAll('#settingsPanel [data-act="theme"]')].find((b) => {
+      const r = b.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+  }
+  let queued = null;
+  const guard = (e) => {
+    if (!fading || e.target !== root) return;
+    e.stopImmediatePropagation(); e.preventDefault();
+    if (e.type === 'pointerdown') queued = themeButtonAt(e.clientX, e.clientY) || queued;
+  };
+  ['pointerdown', 'pointerup', 'click', 'mousedown'].forEach((t) => window.addEventListener(t, guard, true));
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act="theme"]');
-    if (!b || fading || reduced() || typeof document.startViewTransition !== 'function') return;
+    if (!b || b.dataset.stDirect || fading || reduced() || typeof document.startViewTransition !== 'function') return;
     let current = 'system'; try { current = localStorage.getItem('pdd.theme') || 'system'; } catch { /* storage blocked */ }
     if (b.dataset.v === current) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    fading = true;
-    const vt = document.startViewTransition(() => new Promise((done) => { b.click(); setTimeout(done, 40); }));
-    vt.finished.finally(() => { fading = false; });
+    const apply = () => { b.dataset.stDirect = '1'; b.click(); delete b.dataset.stDirect; };
+    fading = document.startViewTransition(apply);
+    fading.finished.finally(() => {
+      fading = null;
+      const next = queued; queued = null;
+      if (next) next.click();
+    });
   }, true);
 
   /* labels follow the language switch */
@@ -277,4 +295,18 @@
   }
   setTimeout(translateAttrs, 300);
   document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(translateAttrs, 150); });
+
+  /* ── top-up: the review note sits under the submit button, history is the last row ── */
+  const topup = $('#topup');
+  if (topup) {
+    const form = $('#topupForm', topup), submit = form?.querySelector('button[type=submit]'), warn = $('.warn', topup);
+    if (warn && submit) { warn.removeAttribute('style'); submit.after(warn); }
+    const hist = document.createElement('button');
+    hist.type = 'button'; hist.className = 'st-topup-history';
+    const paintHist = () => { hist.textContent = t('history'); };
+    paintHist();
+    hist.addEventListener('click', () => { const orig = $('#stackdTopupHistoryOpen'); if (orig) orig.click(); });
+    topup.append(hist);
+    document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(paintHist, 60); });
+  }
 })();

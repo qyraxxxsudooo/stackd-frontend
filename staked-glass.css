@@ -1,250 +1,391 @@
-/* STAKED glass layer. Loaded last.
-   One material for every surface that floats over the background: translucent tint, a 1px light edge,
-   a top highlight and a soft shadow. Real backdrop blur is kept for the few fixed chrome elements
-   (header, tab bar, panels). Product cards do NOT blur what is behind them: with a fixed background,
-   each blurred card is recomputed on every scroll frame, which is what made Android phones stutter.
-   The winter scene is already blurred once, so a translucent card over it still reads as frosted glass. */
+/* STAKED material layer. Loaded last; it is the single source for surfaces, controls and motion.
+   Values and roles are documented in DESIGN.md.
+   Rules are prefixed with `html body` because older layers (styles, enhancements, ui, polish) use
+   !important on the same selectors; this file must win without touching their logic. */
 
+/* ── tokens ─────────────────────────────────────────────────────────────── */
 :root{
-  --g-fill:rgba(255,253,249,.70);
-  --g-fill-strong:rgba(255,253,249,.86);
-  --g-edge:rgba(255,255,255,.78);
-  --g-line:rgba(37,31,25,.09);
-  --g-hi:rgba(255,255,255,.85);
-  --g-shadow:0 14px 34px rgba(46,32,18,.12),0 2px 6px rgba(46,32,18,.06);
-  --g-pill:color-mix(in srgb,var(--accent) 14%,rgba(255,255,255,.7));
-  --g-pill-edge:color-mix(in srgb,var(--accent) 34%,rgba(255,255,255,.6));
-  --g-pill-text:color-mix(in srgb,var(--accent) 86%,#3a1a05);
-  --g-ease:cubic-bezier(.2,.8,.2,1);
-  --g-spring:cubic-bezier(.32,1.28,.42,1);
+  --m-bar:rgba(250,250,251,.74);
+  --m-panel:rgba(250,250,251,.86);
+  --m-card:rgba(255,255,255,.92);
+  --m-group:rgba(255,255,255,.78);
+  --m-fill:rgba(120,120,128,.12);
+  --m-fill-2:rgba(120,120,128,.08);
+  --m-edge:rgba(0,0,0,.07);
+  --m-sep:rgba(60,60,67,.12);
+  --m-hi:rgba(255,255,255,.75);
+  --m-blur:saturate(180%) blur(24px);
+  --m-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.06);
+  --m-shadow-hover:0 2px 4px rgba(0,0,0,.05),0 14px 34px rgba(0,0,0,.10);
+  --m-shadow-float:0 1px 3px rgba(0,0,0,.06),0 18px 50px rgba(0,0,0,.16);
+  --m-tint:color-mix(in srgb,var(--accent) 13%,transparent);
+  --m-tint-edge:color-mix(in srgb,var(--accent) 24%,transparent);
+  --m-tint-text:color-mix(in srgb,var(--accent) 88%,#000);
+  --m-danger:#d70015;
+  --m-ok:#248a3d;
+  --m-ease:cubic-bezier(.2,.8,.2,1);
+  --m-spring:cubic-bezier(.3,1.25,.45,1);
+  --m-r-card:22px;--m-r-panel:24px;--m-r-group:16px;--m-r-ctl:12px;
+  --wrap-inner:1120px;
+  /* legacy names still read by older files */
+  --g-fill:var(--m-card);--g-fill-strong:var(--m-panel);--g-edge:var(--m-edge);--g-line:var(--m-sep);--g-hi:var(--m-hi);
+  --g-shadow:var(--m-shadow);--g-pill:var(--m-tint);--g-pill-edge:var(--m-tint-edge);--g-pill-text:var(--m-tint-text);
+  --g-ease:var(--m-ease);--g-spring:var(--m-spring);
 }
 html[data-theme="dark"],html.stacked-dark{
-  --g-fill:rgba(30,28,26,.62);
-  --g-fill-strong:rgba(30,28,26,.84);
-  --g-edge:rgba(255,255,255,.11);
-  --g-line:rgba(255,255,255,.08);
-  --g-hi:rgba(255,255,255,.10);
-  --g-shadow:0 16px 40px rgba(0,0,0,.34),0 2px 8px rgba(0,0,0,.18);
-  --g-pill:color-mix(in srgb,var(--accent) 22%,rgba(60,40,26,.55));
-  --g-pill-edge:color-mix(in srgb,var(--accent) 38%,rgba(255,255,255,.12));
-  --g-pill-text:color-mix(in srgb,var(--accent) 70%,#fff);
+  --m-bar:rgba(24,24,26,.72);
+  --m-panel:rgba(30,30,32,.86);
+  --m-card:rgba(38,38,40,.88);
+  --m-group:rgba(255,255,255,.05);
+  --m-fill:rgba(118,118,128,.24);
+  --m-fill-2:rgba(118,118,128,.14);
+  --m-edge:rgba(255,255,255,.08);
+  --m-sep:rgba(255,255,255,.08);
+  --m-hi:rgba(255,255,255,.06);
+  --m-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+  --m-shadow-hover:0 2px 4px rgba(0,0,0,.3),0 16px 36px rgba(0,0,0,.4);
+  --m-shadow-float:0 1px 3px rgba(0,0,0,.4),0 24px 60px rgba(0,0,0,.5);
+  --m-tint:color-mix(in srgb,var(--accent) 20%,transparent);
+  --m-tint-edge:color-mix(in srgb,var(--accent) 30%,transparent);
+  --m-tint-text:color-mix(in srgb,var(--accent) 80%,#fff);
+  --m-danger:#ff453a;
+  --m-ok:#30d158;
 }
 
-/* ── product cards ── */
-.card{
-  background:var(--g-fill)!important;
-  border:1px solid var(--g-edge)!important;
-  box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  border-radius:22px!important;
-}
-.card::before{background:linear-gradient(160deg,rgba(255,255,255,.10),transparent 30%)!important}
-.card-body{
-  background:transparent!important;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  border-top:1px solid var(--g-line)!important;
-}
-.card-media{margin:6px 6px 0;border-radius:17px!important;overflow:hidden}
-.card-media::after{background:linear-gradient(180deg,transparent 70%,rgba(0,0,0,.10))!important}
-.card .tag{letter-spacing:.02em;text-transform:none!important;font-weight:650;font-size:.72rem;color:var(--muted)!important}
-.card .badge-popular,.card .stackd-sale-badge{
-  text-transform:none!important;letter-spacing:0!important;font-weight:700;
-  background:var(--g-fill-strong)!important;border:1px solid var(--g-edge)!important;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-}
-.card .stackd-card-qty{background:var(--g-fill-strong)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-.card .btn-ghost{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-@media(hover:hover) and (pointer:fine){
-  .card{transition:border-color .25s var(--g-ease),box-shadow .25s var(--g-ease)!important}
-  .card:hover{border-color:color-mix(in srgb,var(--accent) 34%,var(--g-edge))!important}
-}
+/* the icon sprite sits inline before the header and pushed it down by a line */
+html body>svg[aria-hidden=true]{position:absolute!important;width:0!important;height:0!important;overflow:hidden!important}
+html body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html body h1,html body h2,html body h3{letter-spacing:-.018em}
 
-/* ── one capsule style for the tab bar, categories and segmented controls ── */
-.chips,.settings-panel .seg,#profileThemeSeg{
-  background:var(--g-fill-strong)!important;
-  border:1px solid var(--g-edge)!important;
-  box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(160%)!important;backdrop-filter:blur(18px) saturate(160%)!important;
-  border-radius:999px!important;padding:4px!important;
+/* ── header: one full-width bar, content aligned to the page column ───────── */
+html body header.nav{
+  position:sticky!important;top:0!important;z-index:60!important;
+  display:flex!important;align-items:center!important;gap:10px!important;
+  min-height:60px!important;margin:0!important;border-radius:0!important;
+  padding:8px max(clamp(16px,4vw,40px),calc((100vw - var(--wrap-inner)) / 2))!important;
+  background:var(--m-bar)!important;border:0!important;border-bottom:1px solid var(--m-edge)!important;
+  box-shadow:none!important;-webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important;
 }
-.chips-slider,.settings-panel .seg-slider,#themeSlider,.st-tab-ind{
-  background:var(--g-pill)!important;
-  border:1px solid var(--g-pill-edge)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px color-mix(in srgb,var(--accent) 18%,transparent)!important;
-  border-radius:999px!important;
-  transition:transform .46s var(--g-spring),width .46s var(--g-spring)!important;
+html body header.nav::before,html body header.nav::after{display:none!important}
+html body header.nav .brand{order:0;display:inline-flex!important;align-items:center;gap:9px;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;margin-right:auto}
+html body header.nav .search-container{order:1;flex:0 1 380px!important;max-width:380px!important;margin:0 auto 0 0!important}
+html body header.nav .search{height:38px!important;border-radius:var(--m-r-ctl)!important;background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;padding:0 12px!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:background-color .2s var(--m-ease),box-shadow .2s var(--m-ease)!important}
+html body header.nav .search:focus-within{background:var(--m-card)!important;box-shadow:0 0 0 3px var(--m-tint)!important;border-color:var(--m-tint-edge)!important}
+html body header.nav .search input{font-size:.92rem!important;background:transparent!important}
+html body header.nav #adminBtn{order:2}
+html body header.nav .lang-selector{order:3}
+html body header.nav #userProfile{order:4;display:flex;align-items:center;gap:8px}
+html body header.nav #loginBtn{order:4}
+html body header.nav #settingsBtn{order:6}
+/* every control on the right is the same 38px quiet button */
+html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.nav #loginBtn,html body header.nav #settingsBtn,html body header.nav .balance-display{
+  height:38px!important;min-height:38px!important;border-radius:var(--m-r-ctl)!important;
+  background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;color:var(--text)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;font-weight:600!important;font-size:.88rem!important;
+  transition:background-color .2s var(--m-ease),transform .15s var(--m-ease)!important;
 }
-.st-tab-ind{border-radius:19px!important}
-.chips button,.settings-panel .seg button{
-  color:var(--muted)!important;font-weight:600!important;
-  transition:color .25s var(--g-ease)!important;
-}
-.chips button[aria-pressed=true],.settings-panel .seg button[aria-pressed=true],#profileThemeSeg button[aria-pressed=true]{
-  color:var(--g-pill-text)!important;font-weight:700!important;
-}
-.st-tab[aria-current=page]{color:var(--accent)!important}
-.st-tab[aria-current=page] .st-tab-label{color:var(--g-pill-text)!important}
-
-/* section headings: sentence case, no tracked capitals */
-.settings-panel .settings-sec h3{text-transform:none!important;letter-spacing:0!important;font-size:.92rem!important;font-weight:700!important;color:var(--text)!important}
-
-/* ── header profile button (desktop): same material as the tab bar, label on the right ── */
+html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.nav #loginBtn{padding:0 12px!important}
+html body header.nav #settingsBtn{width:38px!important;padding:0!important;display:grid!important;place-items:center!important}
+html body header.nav .lang-btn:hover,html body header.nav #adminBtn:hover,html body header.nav #loginBtn:hover,html body header.nav #settingsBtn:hover{background:color-mix(in srgb,var(--text) 10%,transparent)!important}
+html body header.nav .lang-btn:active,html body header.nav #adminBtn:active,html body header.nav #settingsBtn:active{transform:scale(.96)}
+html body header.nav #settingsBtn[aria-expanded=true],html body header.nav #settingsBtn.is-open{background:var(--m-tint)!important;color:var(--m-tint-text)!important}
+html body header.nav .balance-group{height:38px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;display:flex!important;align-items:center;gap:0;position:relative}
+html body header.nav .balance-display{display:inline-flex!important;align-items:center;gap:6px;padding:0 44px 0 12px!important;font-variant-numeric:tabular-nums;min-width:0!important}
+html body header.nav .balance-display .b-label{display:none!important}
+html body header.nav .balance-display .b-amount{font-weight:700!important;font-size:.9rem!important;color:var(--text)!important}
+html body header.nav #topupBtn{position:absolute!important;right:4px!important;top:4px!important;bottom:auto!important;width:30px!important;height:30px!important;min-width:30px!important;border-radius:9px!important;margin:0!important;padding:0!important;background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important;font-size:1.05rem!important;line-height:30px!important;transition:transform .15s var(--m-ease),filter .2s!important}
+html body header.nav #topupBtn:hover{filter:brightness(1.07)}
+html body header.nav #topupBtn:active{transform:scale(.92)}
+html body header.nav .stackd-orders-shortcut,html body header.nav .cart-btn{display:none!important}
+/* profile: avatar and the word, same height as the rest */
 @media (min-width:681px){
-  #userProfile{display:flex;align-items:center;gap:10px}
-  #stackdProfileTrigger.st-profile-pill{
-    display:inline-flex!important;align-items:center;gap:9px;height:44px;padding:4px 16px 4px 4px;
-    border-radius:999px;border:1px solid var(--g-edge);background:var(--g-fill-strong);color:var(--text);
-    box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi);
-    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
-    cursor:pointer;font:650 .86rem/1 var(--font,inherit);transition:border-color .2s var(--g-ease),background-color .2s var(--g-ease)
+  html body #stackdProfileTrigger.st-profile-pill{
+    display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;
+    width:auto!important;min-width:0!important;height:38px!important;min-height:38px!important;padding:0 12px 0 4px!important;
+    border-radius:var(--m-r-ctl)!important;border:1px solid transparent!important;background:var(--m-fill)!important;
+    box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:visible!important;
+    transition:background-color .2s var(--m-ease),transform .15s var(--m-ease)!important;cursor:pointer
   }
-  #stackdProfileTrigger.st-profile-pill img{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
-  #stackdProfileTrigger.st-profile-pill strong{font:inherit;color:inherit;white-space:nowrap;display:inline!important}
-  #stackdProfileTrigger.st-profile-pill small{display:none!important}
-  #stackdProfileTrigger.st-profile-pill:hover{border-color:var(--g-pill-edge)}
-  #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--g-pill);border-color:var(--g-pill-edge);color:var(--g-pill-text)}
-  #stackdProfileTrigger.st-profile-pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  html body #stackdProfileTrigger.st-profile-pill:hover{background:color-mix(in srgb,var(--text) 10%,transparent)!important}
+  html body #stackdProfileTrigger.st-profile-pill:active{transform:scale(.97)}
+  html body #stackdProfileTrigger.st-profile-pill img{width:30px!important;height:30px!important;max-width:30px!important;border-radius:9px!important;border:0!important;flex:none;object-fit:cover}
+  html body #stackdProfileTrigger.st-profile-pill strong{position:static!important;display:inline!important;font:600 .88rem/1 inherit!important;color:var(--text)!important;clip:auto!important;width:auto!important;height:auto!important;opacity:1!important;transform:none!important;white-space:nowrap}
+  html body #stackdProfileTrigger.st-profile-pill small{display:none!important}
+  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--m-tint)!important}
+  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true] strong{color:var(--m-tint-text)!important}
 }
+html body .lang-dropdown{background:var(--m-panel)!important;border:1px solid var(--m-edge)!important;border-radius:14px!important;box-shadow:var(--m-shadow-float)!important;-webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important;padding:5px!important}
+html body .lang-dropdown button{border-radius:9px!important;font-weight:500!important}
+html body .lang-dropdown button[aria-pressed=true]{background:var(--m-tint)!important;color:var(--m-tint-text)!important}
+html body .search-suggestions{background:var(--m-panel)!important;border:1px solid var(--m-edge)!important;border-radius:16px!important;box-shadow:var(--m-shadow-float)!important;-webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important}
+
+@media (max-width:680px){
+  html body header.nav{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;grid-template-areas:"brand lang account settings" "search search search search" "admin admin admin admin"!important;gap:8px!important;padding:8px 14px 10px!important;min-height:0!important}
+  html body header.nav .brand{grid-area:brand;margin:0}
+  html body header.nav .lang-selector{grid-area:lang}
+  html body header.nav #userProfile,html body header.nav #loginBtn{grid-area:account}
+  html body header.nav #settingsBtn{grid-area:settings}
+  html body header.nav .search-container{grid-area:search;max-width:none!important;flex:none!important;margin:0!important;width:100%}
+  html body header.nav #adminBtn{grid-area:admin;justify-self:stretch}
+  html body header.nav .balance-display{padding:0 42px 0 10px!important}
+}
+
+/* ── capsule controls: categories, theme switch and the tab bar share one look ── */
+html body #chips,html body #settingsPanel #profileThemeSeg{position:relative!important}
+html body #chips,html body #settingsPanel #profileThemeSeg,html body .st-tabbar{
+  background:var(--m-bar)!important;border:1px solid var(--m-edge)!important;
+  box-shadow:var(--m-shadow)!important;
+  -webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important;
+}
+html body #chips,html body #settingsPanel #profileThemeSeg{border-radius:999px!important;padding:4px!important;gap:2px!important}
+html body .st-tabbar::before,html body .st-tabbar::after{display:none!important;content:none!important}
+html body .st-tabbar{border-radius:26px!important}
+html body #chips .chips-slider,html body #settingsPanel #profileThemeSeg #themeSlider,html body .st-tab-ind{
+  display:block!important;position:absolute!important;z-index:0!important;pointer-events:none;
+  background:var(--m-tint)!important;border:1px solid var(--m-tint-edge)!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html body #chips .chips-slider,html body #settingsPanel #profileThemeSeg #themeSlider{top:4px!important;bottom:4px!important;border-radius:999px!important;transition:transform .42s var(--m-spring),width .42s var(--m-spring)!important}
+html body .st-tab-ind{border-radius:21px!important;transition:transform .42s var(--m-spring)!important}
+html body #chips button,html body #settingsPanel #profileThemeSeg button{
+  position:relative;z-index:1;background:transparent!important;border:0!important;box-shadow:none!important;
+  color:var(--muted)!important;font-weight:600!important;font-size:.88rem!important;border-radius:999px!important;
+  transition:color .25s var(--m-ease)!important;
+}
+html body #chips button:hover,html body #settingsPanel #profileThemeSeg button:hover{color:var(--text)!important}
+html body #chips button[aria-pressed=true],html body #settingsPanel #profileThemeSeg button[aria-pressed=true]{color:var(--m-tint-text)!important}
+html body .st-tab{color:var(--muted)!important}
+html body .st-tab[aria-current=page],html body .st-tab[aria-current=page] .st-tab-label{color:var(--m-tint-text)!important}
+html body .st-tab-label{font-weight:600!important}
+
+/* ── product cards: an opaque-enough sheet, image edge to edge ───────────── */
+html body .card{
+  background:var(--m-card)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-card)!important;
+  box-shadow:var(--m-shadow)!important;overflow:hidden!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html body .card::before,html body .card::after{display:none!important;content:none!important}
+html body .card .card-media{margin:0!important;border-radius:0!important;overflow:hidden;background:var(--m-fill-2)}
+html body .card .card-media::after{display:none!important}
+html body .card .card-media img{transition:transform .5s var(--m-ease)!important}
+html body .card .card-body{background:transparent!important;border:0!important;padding:14px 16px 16px!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body .card .tag{font-size:.76rem!important;font-weight:500!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;background:none!important;padding:0!important}
+html body .card h3{font-size:1rem!important;font-weight:600!important;line-height:1.3!important}
+html body .card .stock-info{font-size:.78rem!important;font-weight:500!important}
+html body .card .card-foot{border-top:0!important;padding-top:6px!important}
+html body .card .card-foot>strong{font-size:1.05rem!important;font-weight:700!important;font-variant-numeric:tabular-nums}
+html body .card .btn-primary.sm,html body .card .stackd-card-actions .btn{height:34px!important;min-height:34px!important;padding:0 14px!important;border-radius:999px!important;font-size:.84rem!important;font-weight:600!important;box-shadow:none!important}
+html body .card .stackd-card-qty{background:var(--m-fill)!important;border:0!important;border-radius:999px!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body .card .badge-popular,html body .card .stackd-sale-badge{
+  top:10px!important;left:10px!important;padding:4px 9px!important;border-radius:999px!important;border:0!important;
+  background:rgba(0,0,0,.58)!important;color:#fff!important;font-size:.72rem!important;font-weight:600!important;
+  letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;
+  -webkit-backdrop-filter:blur(8px)!important;backdrop-filter:blur(8px)!important;
+}
+html body .card .badge-popular::before,html body .card .badge-popular *{display:none!important}
+@media (hover:hover) and (pointer:fine){
+  html body .card{transition:transform .3s var(--m-ease),box-shadow .3s var(--m-ease)!important}
+  html body .card:hover{transform:translateY(-2px);box-shadow:var(--m-shadow-hover)!important;border-color:var(--m-edge)!important}
+  html body .card:hover .card-media img{transform:scale(1.03)}
+}
+
+/* ── buttons and fields ───────────────────────────────────────────────── */
+html body .btn{border-radius:var(--m-r-ctl);font-weight:600}
+html body .btn-primary{background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important;transition:filter .2s var(--m-ease),transform .15s var(--m-ease)!important}
+html body .btn-primary:hover{filter:brightness(1.06)}
+html body .btn-primary:active{transform:scale(.98)}
+html body .btn-primary:disabled{filter:none;opacity:.5}
+html body .btn-ghost:not(.lang-btn):not(#adminBtn):not(#loginBtn){background:var(--m-fill)!important;border:0!important;color:var(--text)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body dialog input[type=text],html body dialog input[type=email],html body dialog input[type=password],html body dialog input[type=number],html body dialog input[type=url],html body dialog textarea,html body .stackd-profile-menu input{
+  background:var(--m-fill-2)!important;border:1px solid transparent!important;border-radius:var(--m-r-ctl)!important;box-shadow:none!important;color:var(--text)!important;
+  transition:border-color .2s var(--m-ease),box-shadow .2s var(--m-ease),background-color .2s var(--m-ease)!important;
+}
+html body dialog input:focus,html body dialog textarea:focus,html body .stackd-profile-menu input:focus{outline:none!important;background:var(--m-card)!important;border-color:var(--m-tint-edge)!important;box-shadow:0 0 0 3px var(--m-tint)!important}
+
+/* ── floating panels: settings, profile, dialogs ───────────────────────── */
+html body .settings-panel,html body .stackd-profile-menu,html body dialog.modal,html body dialog.drawer,html body dialog#stackdTopupHistory{
+  background:var(--m-panel)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-panel)!important;
+  box-shadow:var(--m-shadow-float)!important;color:var(--text);
+  -webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important;
+}
+html body .settings-panel::before,html body .settings-panel::after,html body .stackd-profile-menu::before,html body .stackd-profile-menu::after,html body dialog.modal::before,html body dialog.drawer::before{display:none!important;content:none!important}
+html body dialog::backdrop{background:rgba(0,0,0,.28)!important;-webkit-backdrop-filter:blur(6px)!important;backdrop-filter:blur(6px)!important}
+html body dialog h2,html body .settings-panel h2{font-size:1.2rem!important;font-weight:700!important}
+html body dialog .icon-btn,html body .settings-panel .icon-btn,html body #stackdProfileClose{width:32px!important;height:32px!important;min-width:32px!important;border-radius:50%!important;background:var(--m-fill)!important;border:0!important;box-shadow:none!important;color:var(--muted)!important;display:grid!important;place-items:center!important;transition:background-color .2s var(--m-ease),transform .15s var(--m-ease)!important}
+html body dialog .icon-btn:hover,html body .settings-panel .icon-btn:hover,html body #stackdProfileClose:hover{background:color-mix(in srgb,var(--text) 12%,transparent)!important;color:var(--text)!important}
+html body dialog .icon-btn:active,html body #stackdProfileClose:active{transform:scale(.92)}
+html body dialog .icon-btn svg,html body .settings-panel .icon-btn svg,html body #stackdProfileClose svg{width:15px!important;height:15px!important}
+
+/* settings: two grouped rows */
+html body .settings-panel{padding:16px!important}
+html body .settings-panel .settings-head{padding:0 2px 12px!important;border:0!important}
+html body .settings-panel .settings-body{display:grid;gap:10px}
+html body .settings-panel .settings-sec{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;padding:14px!important;box-shadow:none!important}
+html body .settings-panel .settings-sec h3{font-size:.8rem!important;font-weight:600!important;color:var(--muted)!important;letter-spacing:0!important;text-transform:none!important;margin:0 0 10px!important}
+html body #settingsPanel #profileThemeSeg{box-shadow:none!important;background:var(--m-fill-2)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* profile: avatar header, then grouped rows */
+html body .stackd-profile-menu{padding:16px!important;gap:10px!important}
+html body #stackdProfileMenu .stackd-profile-head{border:0!important;padding:2px 2px 6px!important;gap:2px 12px!important}
+html body #stackdProfileMenu .stackd-profile-head img{width:44px!important;height:44px!important;border-radius:50%!important;border:0!important}
+html body #stackdProfileMenu .stackd-profile-head strong{font-size:1.05rem!important;font-weight:700!important}
+html body #stackdProfileMenu .stackd-profile-head small{font-size:.82rem!important;color:var(--muted)!important}
+html body #stackdProfileMenu .stackd-profile-note{display:none!important}
+html body #stackdProfileMenu #stackdTopupHistoryOpen{display:none!important}
+html body #stackdProfileBalanceRow,html body #stackdProfilePromo{
+  background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html body #stackdProfileBalanceRow{display:flex!important;align-items:center!important;justify-content:space-between;padding:14px 14px 14px 16px!important}
+html body #stackdProfileBalanceRow small{font-size:.8rem!important;color:var(--muted)!important;font-weight:500!important}
+html body #stackdProfileBalanceRow strong{font-size:1.35rem!important;font-weight:700!important;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+html body #stackdProfileBalanceRow button{height:34px!important;padding:0 14px!important;border-radius:999px!important;background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important;font-weight:600!important;font-size:.85rem!important;transition:filter .2s,transform .15s var(--m-ease)!important}
+html body #stackdProfileBalanceRow button:active{transform:scale(.96)}
+html body #stackdProfilePromo{padding:14px!important}
+html body #stackdProfilePromo .stackd-profile-promo-title{font-size:.8rem!important;font-weight:600!important;color:var(--muted)!important;margin-bottom:8px!important;display:block}
+html body .promo-form{display:flex!important;gap:8px!important;align-items:stretch}
+html body .promo-form input{flex:1;min-width:0;height:40px!important;padding:0 12px!important}
+html body .promo-form .btn{height:40px!important;padding:0 16px!important;border-radius:var(--m-r-ctl)!important;flex:none}
+html body #stackdProfileMenu #myOrdersBtn,html body #stackdProfileMenu #logoutBtn{
+  display:flex!important;align-items:center;justify-content:space-between;width:100%;min-height:46px;margin:0!important;padding:0 16px!important;
+  background:var(--m-group)!important;border:1px solid var(--m-edge)!important;box-shadow:none!important;color:var(--text)!important;font-weight:500!important;font-size:.94rem!important;text-align:left;
+  border-radius:var(--m-r-group)!important;transition:background-color .15s var(--m-ease)!important;
+}
+html body #stackdProfileMenu #myOrdersBtn:not([style*="none"]){border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
+html body #stackdProfileMenu #myOrdersBtn:not([style*="none"])+#logoutBtn{margin-top:-11px!important;border-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;box-shadow:inset 0 1px 0 var(--m-sep)!important}
+html body #stackdProfileMenu #myOrdersBtn::after{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg);opacity:.7}
+html body #stackdProfileMenu #myOrdersBtn:hover,html body #stackdProfileMenu #logoutBtn:hover{background:var(--m-fill-2)!important}
+html body #stackdProfileMenu #logoutBtn{color:var(--m-danger)!important}
+
+/* top-up: three steps, one primary action, history at the bottom */
+html body #topup{padding:20px!important;width:min(440px,calc(100vw - 24px))!important}
+html body #topup h2{margin:0 0 14px!important}
+html body #topup .payment-instructions{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;padding:14px!important;box-shadow:none!important;display:grid;gap:12px}
+html body #topup .payment-instructions p{margin:0!important;font-size:.88rem!important;line-height:1.45!important;color:var(--muted)!important}
+html body #topup .tg-channel-btn{display:flex!important;align-items:center;justify-content:center;gap:8px;height:42px!important;border-radius:var(--m-r-ctl)!important;background:#2aabee!important;color:#fff!important;border:0!important;box-shadow:none!important;font-weight:600!important;font-size:.9rem!important;transition:filter .2s,transform .15s var(--m-ease)!important}
+html body #topup .tg-channel-btn:hover{filter:brightness(1.06)}
+html body #topup .tg-channel-btn:active{transform:scale(.98)}
+html body #topup .warn{margin:2px 4px 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;font-size:.8rem!important;line-height:1.4!important;color:var(--muted)!important;text-align:center}
+html body #topup .warn::before{display:none!important}
+html body #topup #topupForm{display:grid;gap:8px;margin-top:16px}
+html body #topup #topupForm>label:not(.check):not(.st-file){font-size:.8rem!important;font-weight:600!important;color:var(--muted)!important;margin:6px 2px 0!important}
+html body #topup #topupAmount{height:52px!important;font-size:1.35rem!important;font-weight:700!important;font-variant-numeric:tabular-nums;padding:0 14px!important}
+html body #topup .st-amounts{display:grid!important;grid-template-columns:repeat(4,1fr);gap:6px!important;margin:0!important}
+html body #topup .st-amounts button{height:36px!important;border-radius:10px!important;background:var(--m-fill-2)!important;border:1px solid transparent!important;color:var(--text)!important;font-weight:600!important;font-size:.88rem!important;box-shadow:none!important;transition:background-color .2s var(--m-ease),border-color .2s var(--m-ease),color .2s,transform .12s var(--m-ease)!important}
+html body #topup .st-amounts button:hover{background:var(--m-fill)!important}
+html body #topup .st-amounts button:active{transform:scale(.95)}
+html body #topup .st-amounts button[aria-pressed=true]{background:var(--m-tint)!important;border-color:var(--m-tint-edge)!important;color:var(--m-tint-text)!important}
+html body #topup .st-file{display:flex!important;align-items:center;gap:10px;min-height:48px;padding:6px 6px 6px 6px!important;border-radius:var(--m-r-ctl)!important;border:1px dashed color-mix(in srgb,var(--text) 22%,transparent)!important;background:transparent!important;box-shadow:none!important;cursor:pointer;transition:border-color .2s var(--m-ease),background-color .2s var(--m-ease)!important}
+html body #topup .st-file:hover{border-color:var(--m-tint-edge)!important;background:var(--m-fill-2)!important}
+html body #topup .st-file b{flex:none;height:36px;display:inline-grid;place-items:center;padding:0 14px;border-radius:9px;background:var(--m-fill)!important;color:var(--text)!important;font-weight:600;font-size:.86rem}
+html body #topup .st-file span{font-size:.86rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #topup .st-file.has-file{border-style:solid!important;border-color:var(--m-tint-edge)!important;background:var(--m-tint)!important}
+html body #topup .st-file.has-file span{color:var(--text);animation:stFadeIn .25s var(--m-ease)}
+html body #topup .terms-check{display:flex!important;align-items:flex-start;gap:10px;margin:8px 2px 4px!important;font-size:.86rem!important;line-height:1.4;color:var(--muted)!important;cursor:pointer}
+html body #topup .terms-check input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+html body #topup button[type=submit]{height:48px!important;border-radius:14px!important;font-size:.98rem!important;margin-top:4px!important}
+html body #topup .st-topup-note{margin:2px 2px 0;font-size:.8rem;color:var(--muted);text-align:center}
+html body #topup .st-topup-history{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:14px;padding:12px 14px;border-radius:var(--m-r-group);background:var(--m-group);border:1px solid var(--m-edge);color:var(--text);font:500 .92rem/1.2 inherit;cursor:pointer;transition:background-color .15s var(--m-ease),transform .12s var(--m-ease)}
+html body #topup .st-topup-history:hover{background:var(--m-fill-2)}
+html body #topup .st-topup-history:active{transform:scale(.99)}
+html body #topup .st-topup-history::after{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg);opacity:.7}
+html body #topupMsg:not(:empty){border-radius:var(--m-r-ctl)!important}
+
+/* cart */
+html body #drawer>header,html body #drawer>footer{background:transparent!important;border-color:var(--m-sep)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body #drawer .stackd-purchase-guide{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;box-shadow:none!important}
+html body #drawer .stackd-purchase-guide strong{text-transform:none!important;letter-spacing:0!important;font-weight:600!important}
+html body #drawer .cart-promo{background:var(--m-group)!important;border:1px solid var(--m-edge)!important;border-radius:var(--m-r-group)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body #drawer .cart-promo-title{font-size:.8rem!important;font-weight:600!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important}
+html body #drawer #lines li[data-id]{border-color:var(--m-sep)!important}
+html body #drawer #lines li[data-id] img{border-radius:12px!important}
+html body #drawer .qty{background:var(--m-fill-2)!important;border:0!important;border-radius:999px!important}
+html body #drawer footer #clearBtn.btn.btn-ghost{background:transparent!important;color:var(--m-danger)!important}
+html body #drawer footer #clearBtn.btn.btn-ghost:hover{background:color-mix(in srgb,var(--m-danger) 8%,transparent)!important}
+/* empty cart: two lines and one action, no illustration */
+html body #lines li.st-empty{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:48px 16px 40px!important;text-align:center;border:0!important;background:none!important;grid-template-columns:none!important;grid-template-areas:none!important;animation:stFadeIn .35s var(--m-ease)}
+html body #lines li.st-empty>*{grid-area:auto!important}
+html body #lines li.st-empty strong{font-size:1.05rem;font-weight:600;color:var(--text)}
+html body #lines li.st-empty span{font-size:.88rem;color:var(--muted);max-width:28ch;line-height:1.45}
+html body #lines li.st-empty button{margin-top:12px;height:38px;padding:0 18px;border-radius:999px!important}
+#drawer:has(#lines li.st-empty) .stackd-purchase-guide,#drawer:has(#lines li.st-empty) footer{display:none!important}
 
 /* ── pickup code in My orders ── */
-.order-code{display:grid;gap:8px;padding:14px;border-radius:18px;border:1px solid var(--g-pill-edge);background:var(--g-pill)}
-.order-code-label{font-size:.8rem;font-weight:650;color:var(--muted)}
-.order-code-row{display:flex;align-items:center;gap:10px}
-.order-code-value{flex:1;min-width:0;font:800 clamp(1.7rem,7vw,2.3rem)/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--text);overflow-wrap:anywhere;-webkit-user-select:all;user-select:all}
-.order-code-copy{display:inline-flex;align-items:center;gap:6px;flex:none;height:38px;padding:0 13px;border-radius:12px;border:1px solid var(--g-edge);background:var(--g-fill-strong);color:var(--text);font:650 .82rem/1 inherit;cursor:pointer;transition:transform .15s var(--g-ease),border-color .2s}
-.order-code-copy:hover{border-color:var(--g-pill-edge)}
-.order-code-copy:active{transform:scale(.96)}
+.order-code{display:grid;gap:8px;padding:14px;border-radius:var(--m-r-group);border:1px solid var(--m-tint-edge);background:var(--m-tint)}
+.order-code-label{font-size:.8rem;font-weight:600;color:var(--muted)}
+.order-code-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.order-code-value{flex:1;min-width:0;white-space:nowrap;font:700 clamp(1.45rem,6.4vw,2.1rem)/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em;color:var(--text);-webkit-user-select:all;user-select:all}
+.order-code-copy{display:inline-flex;align-items:center;gap:6px;flex:none;height:36px;padding:0 13px;border-radius:999px;border:0;background:var(--m-card);color:var(--text);font:600 .82rem/1 inherit;cursor:pointer;transition:transform .15s var(--m-ease),background-color .2s}
+.order-code-copy:active{transform:scale(.95)}
 .order-code-copy .ic{width:16px;height:16px}
 .order-code-hint{margin:0;font-size:.84rem;color:var(--muted)}
-.order-code .order-qr-expiry{font-size:.8rem;font-weight:650;color:var(--g-pill-text);font-variant-numeric:tabular-nums}
+.order-code .order-qr-expiry{font-size:.8rem;font-weight:600;color:var(--m-tint-text);font-variant-numeric:tabular-nums}
 .order-wait{display:block!important}
 .st-qr-wait,.order-qr,.order-qr-toggle{display:none!important}
+@media (max-width:380px){.order-code-copy span{display:none}.order-code-copy{width:36px;padding:0;justify-content:center}}
 
-/* ── scrollbars: thin and tinted where scrolling is useful, hidden in compact panels ── */
+/* ── scrollbars ── */
 *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--text) 22%,transparent) transparent}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{border-radius:8px;background:color-mix(in srgb,var(--text) 20%,transparent);border:2px solid transparent;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--text) 34%,transparent)}
-#topup,#drawer,#orders,#ordersList,.settings-panel,.stackd-profile-menu,#detail,#auth{scrollbar-width:none!important}
-#topup::-webkit-scrollbar,#drawer::-webkit-scrollbar,#orders::-webkit-scrollbar,#ordersList::-webkit-scrollbar,.settings-panel::-webkit-scrollbar,.stackd-profile-menu::-webkit-scrollbar,#detail::-webkit-scrollbar,#auth::-webkit-scrollbar{display:none!important;width:0!important}
-/* native number spinners look out of place next to the quick-amount buttons */
+#topup,#drawer,#orders,#ordersList,.settings-panel,.stackd-profile-menu,#detail,#auth,#stackdTopupHistory{scrollbar-width:none!important}
+#topup::-webkit-scrollbar,#drawer::-webkit-scrollbar,#orders::-webkit-scrollbar,#ordersList::-webkit-scrollbar,.settings-panel::-webkit-scrollbar,.stackd-profile-menu::-webkit-scrollbar,#detail::-webkit-scrollbar,#auth::-webkit-scrollbar,#stackdTopupHistory::-webkit-scrollbar{display:none!important;width:0!important}
 #topupAmount::-webkit-outer-spin-button,#topupAmount::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 #topupAmount{-moz-appearance:textfield;appearance:textfield}
 
-/* ── field validation: our own message instead of the browser bubble ── */
-.st-invalid{border-color:#d4502b!important;box-shadow:0 0 0 3px rgba(212,80,43,.16)!important}
-.st-field-error{display:flex;align-items:center;gap:7px;margin:6px 2px 2px;font-size:.82rem;font-weight:600;color:#d4502b;animation:stErrIn .22s var(--g-ease)}
-html[data-theme="dark"] .st-field-error,html.stacked-dark .st-field-error{color:#ff8a65}
-.st-field-error::before{content:"";flex:none;width:16px;height:16px;border-radius:50%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat}
-.terms-check.st-invalid-check{color:#d4502b}
-@keyframes stErrIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
-.st-shake{animation:stShake .32s var(--g-ease)}
-@keyframes stShake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+/* ── field validation ── */
+.st-invalid{border-color:var(--m-danger)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--m-danger) 16%,transparent)!important}
+.st-field-error{display:flex;align-items:center;gap:6px;margin:2px 2px 0;font-size:.8rem;font-weight:500;color:var(--m-danger);animation:stFadeIn .2s var(--m-ease)}
+.st-field-error::before{content:"";flex:none;width:14px;height:14px;border-radius:50%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0Zm0 10.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM8 3.2c-.6 0-1 .5-1 1l.3 4.7a.7.7 0 0 0 1.4 0L9 4.2c0-.5-.4-1-1-1Z'/%3E%3C/svg%3E") center/contain no-repeat}
+.terms-check.st-invalid-check input{outline:2px solid var(--m-danger);outline-offset:2px}
+.st-shake{animation:stShake .3s var(--m-ease)}
+@keyframes stShake{25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-1px)}}
+@keyframes stFadeIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
 
-/* ── cart: quieter guide and a proper empty state ── */
-#drawer .stackd-purchase-guide{background:transparent!important;border:1px dashed var(--g-line)!important}
-#drawer .stackd-purchase-guide strong,#drawer .stackd-purchase-guide b{text-transform:none!important;letter-spacing:0!important}
-#lines li.st-empty{display:grid!important;justify-items:center;gap:6px;padding:34px 12px!important;text-align:center;border:0!important}
-#lines li.st-empty .st-empty-ic{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--g-pill);color:var(--g-pill-text);border:1px solid var(--g-pill-edge)}
-#lines li.st-empty .st-empty-ic svg{width:24px;height:24px}
-#lines li.st-empty strong{font-size:1rem;color:var(--text)}
-#lines li.st-empty span{font-size:.86rem;color:var(--muted);max-width:30ch}
-#lines li.st-empty button{margin-top:6px}
-
-/* ── a site background picked in the admin stays fixed instead of stretching over the whole page ── */
+/* ── site background picked in the admin: a fixed layer ── */
 body.st-has-site-bg{background-attachment:scroll!important;background-image:none!important}
-.st-site-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;background-size:cover;background-position:center;opacity:0;transition:opacity .45s var(--g-ease)}
+.st-site-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;background-size:cover;background-position:center;opacity:0;transition:opacity .45s var(--m-ease)}
 .st-site-bg.is-on{opacity:1}
 
-/* ── theme change: a short cross-fade instead of colours snapping one by one ── */
-::view-transition-old(root),::view-transition-new(root){animation-duration:.38s;animation-timing-function:var(--g-ease)}
-
-/* ── admin: the "save everything" bar sticks to the bottom of the settings tab ── */
-#tab-settings .staked-save-all-row{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px -4px 0;padding:12px 14px;border-radius:16px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-#tab-settings .staked-save-all-row small{color:var(--muted);font-size:.8rem}
-#tab-settings .stackd-section-head span{display:none}
-
-@media (prefers-reduced-motion:reduce){
-  .chips-slider,.settings-panel .seg-slider,#themeSlider,.st-tab-ind,.st-site-bg{transition:none!important}
-  .st-field-error,.st-shake{animation:none!important}
-  ::view-transition-old(root),::view-transition-new(root){animation:none!important}
-}
-@media (prefers-reduced-transparency:reduce){
-  .card,.chips,.settings-panel .seg,#profileThemeSeg,#stackdProfileTrigger.st-profile-pill{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-}
-
-/* Sliding pill like the tab bar (beats the earlier rules that hid the slider and painted the button). */
-html body #chips .chips-slider,html body #profileThemeSeg #themeSlider{
-  display:block!important;position:absolute!important;top:4px!important;bottom:4px!important;left:0;z-index:0!important;
-  background:var(--g-pill)!important;border:1px solid var(--g-pill-edge)!important;border-radius:999px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px color-mix(in srgb,var(--accent) 18%,transparent)!important;
-  transition:transform .46s var(--g-spring),width .46s var(--g-spring)!important;pointer-events:none
-}
-html body #chips button,html body #profileThemeSeg button{background:transparent!important;box-shadow:none!important;border-color:transparent!important;position:relative;z-index:1}
-html body #chips button[aria-pressed=true],html body #profileThemeSeg button[aria-pressed=true]{color:var(--g-pill-text)!important}
-html body #chips{position:relative!important}
-.card .badge-popular{color:var(--text)!important}
-html body #settingsPanel #profileThemeSeg #themeSlider{background:var(--g-pill)!important;border:1px solid var(--g-pill-edge)!important}
-html body #settingsPanel #profileThemeSeg button{color:var(--muted)!important;background:transparent!important}
-html body #settingsPanel #profileThemeSeg button[aria-pressed=true]{color:var(--g-pill-text)!important;font-weight:700!important}
-
-/* empty cart: one centred column; guide, totals and checkout hide while there is nothing to buy */
-html body #lines li.st-empty{display:flex!important;flex-direction:column;align-items:center;grid-template-columns:none!important;grid-template-areas:none!important}
-html body #lines li.st-empty>*{grid-area:auto!important}
-#drawer:has(#lines li.st-empty) .stackd-purchase-guide,
-#drawer:has(#lines li.st-empty) footer{display:none!important}
-
-/* the code stays on one line; long codes shrink instead of breaking */
-.order-code-row{flex-wrap:wrap}
-.order-code-value{white-space:nowrap;letter-spacing:.08em;font-size:clamp(1.45rem,6.4vw,2.1rem)}
-@media (max-width:380px){.order-code-copy span{display:none}.order-code-copy{width:38px;padding:0;justify-content:center}}
-
-/* checkbox error: outline the box, keep the sentence readable */
-.terms-check.st-invalid-check{color:inherit!important}
-.terms-check.st-invalid-check input{outline:2px solid #d4502b;outline-offset:2px}
-.card .badge-popular,.card .badge-popular *{text-transform:none!important;letter-spacing:0!important}
+/* ── theme change cross-fade ── */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.26s;animation-timing-function:var(--m-ease)}
 
 /* ── admin settings: menu + one section + sticky save bar ── */
-#tab-settings{display:grid!important;grid-template-columns:220px minmax(0,1fr);grid-template-areas:"nav body" "bar bar";gap:18px;align-items:start;padding:18px 0 0!important}
-#tab-settings[style*="display: none"],#tab-settings[style*="display:none"]{display:none!important}
-.st-admin-nav{grid-area:nav;position:sticky;top:0;display:grid;gap:4px;padding:6px;border-radius:18px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow)}
-.st-admin-nav button{position:relative;text-align:left;padding:10px 12px;border:0;border-radius:12px;background:transparent;color:var(--muted);font:600 .86rem/1.25 inherit;cursor:pointer;transition:background-color .2s var(--g-ease),color .2s var(--g-ease)}
-.st-admin-nav button:hover{color:var(--text);background:color-mix(in srgb,var(--text) 5%,transparent)}
-.st-admin-nav button[aria-current=true]{background:var(--g-pill);color:var(--g-pill-text);box-shadow:inset 0 0 0 1px var(--g-pill-edge)}
-.st-admin-nav button.is-failed::after{content:"";position:absolute;right:10px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:#d4502b}
-.st-admin-body{grid-area:body;min-width:0}
-.st-admin-body>section{margin:0!important;animation:stSecIn .28s var(--g-ease)}
-@keyframes stSecIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.st-admin-bar{grid-area:bar;position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border-radius:16px;border:1px solid var(--g-edge);background:var(--g-fill-strong);box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-.st-admin-bar-msg{font-size:.86rem;font-weight:600;color:var(--muted)}
-.st-admin-bar-msg[data-state=ok]{color:#2f9e6a}
-.st-admin-bar-msg[data-state=error]{color:#d4502b}
+html body #editor #tab-settings{display:grid!important;grid-template-columns:230px minmax(0,1fr)!important;grid-template-areas:"nav body" "bar bar"!important;gap:18px!important;align-items:start;padding:18px 0 0!important}
+html body #editor #tab-settings[style*="display: none"],html body #editor #tab-settings[style*="display:none"]{display:none!important}
+.st-admin-nav{grid-area:nav!important;position:sticky;top:0;display:grid;gap:2px;padding:6px;border-radius:16px;border:1px solid var(--m-edge);background:var(--m-group)}
+.st-admin-nav button{position:relative;text-align:left;padding:9px 12px;border:0;border-radius:10px;background:transparent;color:var(--text);font:500 .88rem/1.25 inherit;cursor:pointer;transition:background-color .15s var(--m-ease)}
+.st-admin-nav button:hover{background:var(--m-fill-2)}
+.st-admin-nav button[aria-current=true]{background:var(--m-tint);color:var(--m-tint-text);font-weight:600}
+.st-admin-nav button.is-failed::after{content:"";position:absolute;right:10px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--m-danger)}
+.st-admin-body{grid-area:body!important;min-width:0}
+html body #editor #tab-settings .st-admin-body>section{margin:0!important;width:auto!important;max-width:none!important;animation:stFadeIn .25s var(--m-ease)}
+html body #editor #tab-settings .st-admin-body>section[hidden]{display:none!important}
+.st-admin-bar{grid-area:bar!important;position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 14px;border-radius:16px;border:1px solid var(--m-edge);background:var(--m-panel);box-shadow:var(--m-shadow);-webkit-backdrop-filter:var(--m-blur);backdrop-filter:var(--m-blur)}
+.st-admin-bar-msg{font-size:.86rem;font-weight:500;color:var(--muted)}
+.st-admin-bar-msg[data-state=ok]{color:var(--m-ok)}
+.st-admin-bar-msg[data-state=error]{color:var(--m-danger)}
 @media (max-width:760px){
-  #tab-settings{grid-template-columns:minmax(0,1fr);grid-template-areas:"nav" "body" "bar"}
+  html body #editor #tab-settings{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"nav" "body" "bar"!important}
   .st-admin-nav{position:static;display:flex;overflow-x:auto;scrollbar-width:none;padding:4px;border-radius:999px}
   .st-admin-nav::-webkit-scrollbar{display:none}
   .st-admin-nav button{flex:none;white-space:nowrap;border-radius:999px;padding:8px 13px}
 }
-@media (prefers-reduced-motion:reduce){.st-admin-body>section{animation:none}}
-html body #editor #tab-settings{grid-template-columns:230px minmax(0,1fr)!important;grid-template-areas:"nav body" "bar bar"!important;column-gap:18px!important}
-html body #editor #tab-settings .st-admin-body>section[hidden]{display:none!important}
-html body #editor #tab-settings .st-admin-body>section{width:auto!important;max-width:none!important;grid-column:auto!important}
-html body #editor #tab-settings>.st-admin-nav{grid-area:nav!important;width:auto!important}
-html body #editor #tab-settings>.st-admin-body{grid-area:body!important}
-html body #editor #tab-settings>.st-admin-bar{grid-area:bar!important}
-@media (max-width:760px){html body #editor #tab-settings{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"nav" "body" "bar"!important}}
-@media (min-width:681px){
-  html body #stackdProfileTrigger.st-profile-pill{
-    display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:9px!important;
-    width:auto!important;min-width:0!important;height:44px!important;min-height:44px!important;padding:4px 16px 4px 4px!important;
-    border-radius:999px!important;border:1px solid var(--g-edge)!important;background:var(--g-fill-strong)!important;
-    box-shadow:var(--g-shadow),inset 0 1px 0 var(--g-hi)!important;overflow:visible!important
-  }
-  html body #stackdProfileTrigger.st-profile-pill img{width:34px!important;height:34px!important;max-width:34px!important;border-radius:50%!important;flex:none}
-  html body #stackdProfileTrigger.st-profile-pill strong{position:static!important;display:inline!important;font:650 .86rem/1 inherit!important;color:var(--text)!important;clip:auto!important;width:auto!important;height:auto!important;opacity:1!important;transform:none!important;white-space:nowrap}
-  html body #stackdProfileTrigger.st-profile-pill small{display:none!important}
-  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--g-pill)!important;border-color:var(--g-pill-edge)!important}
-  html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true] strong{color:var(--g-pill-text)!important}
+#tab-settings .staked-save-all-row,#tab-settings .stackd-section-head span{display:none!important}
+
+/* ── accessibility fallbacks ── */
+@media (prefers-reduced-motion:reduce){
+  html body #chips .chips-slider,html body #settingsPanel #profileThemeSeg #themeSlider,html body .st-tab-ind,.st-site-bg,html body .card,html body .card .card-media img{transition:none!important}
+  .st-field-error,.st-shake,html body #lines li.st-empty,.st-admin-body>section{animation:none!important}
+  ::view-transition-old(root),::view-transition-new(root){animation:none!important}
 }
-.balance-display .b-label{text-transform:none!important;letter-spacing:0!important;font-weight:600!important}
+@media (prefers-reduced-transparency:reduce){
+  html body header.nav,html body #chips,html body .st-tabbar,html body .settings-panel,html body .stackd-profile-menu,html body dialog.modal,html body dialog.drawer{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+}
+/* phones: blur only on the fixed chrome, never on scrolling content */
+@media (pointer:coarse){
+  html body .card .badge-popular,html body .card .stackd-sale-badge{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(0,0,0,.62)!important}
+}
+.st-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media (min-width:681px){html body #settingsPanel{right:max(clamp(16px,4vw,40px),calc((100vw - var(--wrap-inner)) / 2))!important;top:68px!important;width:340px!important}}
