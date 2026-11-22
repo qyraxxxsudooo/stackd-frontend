@@ -319,7 +319,6 @@ html body #stackdProfileMenu #myOrdersBtn,html body #stackdProfileMenu #logoutBt
   border-radius:var(--m-r-group)!important;transition:background-color .15s var(--m-ease)!important;
 }
 html body #stackdProfileMenu #myOrdersBtn:not([style*="none"]){border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
-html body #stackdProfileMenu #myOrdersBtn:not([style*="none"])+#logoutBtn{margin-top:-11px!important;border-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;box-shadow:inset 0 1px 0 var(--m-sep)!important}
 html body #stackdProfileMenu #myOrdersBtn::after{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg);opacity:.7}
 html body #stackdProfileMenu #myOrdersBtn:hover,html body #stackdProfileMenu #logoutBtn:hover{background:var(--m-fill-2)!important}
 html body #stackdProfileMenu #logoutBtn{color:var(--m-danger)!important}
@@ -675,3 +674,121 @@ html body :is(button,a,[role=button],summary,select,input[type=checkbox],input[t
   html body .card .stackd-card-actions>.btn[data-act=add]:not(:disabled){width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important}
   html body .card .card-foot{gap:6px!important}
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   STAKED components v3. One rule per role, applied everywhere:
+   - every control (button, field, stepper, chip, header control) is a capsule;
+   - groups inside a panel share one surface, one edge and one radius;
+   - accent fill only for the main action of a view; no glows, no inner highlights.
+   ════════════════════════════════════════════════════════════════════════════ */
+:root{
+  --m-r-ctl:999px;--r-grp:18px;
+  --grp:rgba(255,255,255,.64);--grp-edge:rgba(0,0,0,.06);
+  --ctl:rgba(118,118,128,.12);--ctl-hover:rgba(118,118,128,.2);
+  --ico-plus:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3v10M3 8h10' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ico-minus:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h10' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ico-x:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='black' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+html[data-theme="dark"],html.stacked-dark{--grp:rgba(255,255,255,.055);--grp-edge:rgba(255,255,255,.07);--ctl:rgba(118,118,128,.24);--ctl-hover:rgba(118,118,128,.34)}
+
+/* buttons */
+html body .btn{border-radius:999px!important;font-weight:650!important;letter-spacing:-.005em}
+html body .btn-primary{background:var(--accent)!important;background-image:none!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important}
+html body .btn-primary:hover:not(:disabled){filter:brightness(1.06)}
+html body .btn-primary:disabled{opacity:.45!important;filter:none}
+html body dialog .btn-ghost,html body #auth .btn:not(.btn-primary),html body #orders .order-card .btn:not(.btn-primary){background:var(--ctl)!important;color:var(--text)!important;border:0!important;box-shadow:none!important}
+
+/* header: settings becomes a circle, the avatar a circle, the top-up glyph a flat accent dot */
+html body header.nav #stackdProfileTrigger.st-profile-pill img{border-radius:999px!important}
+html body header.nav #userProfile .balance-group{padding:0 5px 0 14px!important;gap:9px!important}
+html body header.nav #topupBtn{width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;font-size:0!important;color:var(--accent-ink)!important;box-shadow:none!important}
+html body header.nav #topupBtn::before{content:"";width:13px;height:13px;background:currentColor;-webkit-mask:var(--ico-plus) center/contain no-repeat;mask:var(--ico-plus) center/contain no-repeat}
+html body header.nav #topupBtn:hover{transform:none;filter:brightness(1.08)}
+
+/* close buttons: one 32px circle, one glyph, the same corner in every panel */
+html body :is(dialog,#settingsPanel,#stackdTopupHistory) :is(.icon-btn[data-act=close],[data-settings-close],.icon-btn.close),
+html body #stackdProfileMenu .stackd-profile-close,html body #stackdProfileMenu button[aria-label][class*=close]{
+  width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;padding:0!important;margin:0!important;
+  display:grid!important;place-items:center!important;border-radius:999px!important;border:0!important;box-shadow:none!important;
+  background:var(--ctl)!important;color:var(--muted)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  transition:background-color .2s var(--m-ease),color .2s var(--m-ease),transform .15s var(--m-ease)!important
+}
+html body :is(dialog,#settingsPanel,#stackdTopupHistory) :is(.icon-btn[data-act=close],[data-settings-close],.icon-btn.close):hover{background:var(--ctl-hover)!important;color:var(--text)!important}
+html body :is(dialog,#settingsPanel,#stackdTopupHistory) :is(.icon-btn[data-act=close],[data-settings-close],.icon-btn.close):active{transform:scale(.92)}
+html body :is(dialog,#settingsPanel,#stackdTopupHistory) :is(.icon-btn[data-act=close],[data-settings-close],.icon-btn.close) svg{width:14px!important;height:14px!important}
+html body :is(#orders,#topup,#drawer,#stackdTopupHistory)>header,html body #settingsPanel .settings-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px}
+html body :is(#orders,#topup,#drawer)>header>:is(.icon-btn,button):last-child{flex:none}
+html body #topup>.icon-btn.close,html body #auth>.icon-btn.close{position:absolute!important;top:18px!important;right:18px!important;z-index:3}
+
+/* product detail: inset photo, the close button floats on it in glass, price and action share a row */
+html body dialog#detail{padding:0!important;width:min(460px,calc(100vw - 24px))!important;overflow:hidden!important}
+html body #detail .detail{display:flex!important;flex-direction:column!important;gap:6px;padding:0 0 20px!important}
+html body #detail .detail>img{display:block;width:calc(100% - 16px)!important;max-width:none!important;height:auto!important;aspect-ratio:4/3;object-fit:cover;margin:8px 8px 10px!important;border-radius:18px!important}
+html body #detail .detail>:is(.tag,h2,p){margin:0!important;padding:0 20px!important;border:0!important}
+html body #detail .detail>.tag{font-size:.8rem!important;color:var(--muted)!important;background:none!important;text-transform:none!important;letter-spacing:0!important}
+html body #detail .detail>h2{font-size:1.35rem!important;line-height:1.2!important;font-weight:700!important}
+html body #detail .detail>p{color:var(--muted);font-size:.92rem;line-height:1.45}
+html body #detail .detail>.card-foot{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:10px 0 0!important;padding:0 20px!important;border:0!important}
+html body #detail .detail>.card-foot>strong{font-size:1.3rem!important;font-weight:700!important;font-variant-numeric:tabular-nums}
+html body #detail .detail>.card-foot>.btn{width:auto!important;height:44px!important;padding:0 22px!important;flex:none}
+html body #detail>.icon-btn.close{position:absolute!important;top:18px!important;right:18px!important;z-index:3;background:rgba(20,18,16,.42)!important;color:#fff!important;-webkit-backdrop-filter:blur(14px) saturate(160%)!important;backdrop-filter:blur(14px) saturate(160%)!important}
+html body #detail>.icon-btn.close:hover{background:rgba(20,18,16,.58)!important;color:#fff!important}
+
+/* one stepper for cards and cart lines: a capsule with two quiet round buttons */
+html body :is(.card .stackd-card-qty,#drawer #lines .qty){
+  display:inline-flex!important;align-items:center!important;justify-content:space-between!important;gap:2px!important;
+  height:36px!important;min-height:36px!important;padding:3px!important;border-radius:999px!important;
+  background:var(--ctl)!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important
+}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button{
+  position:relative;flex:none;width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;padding:0!important;margin:0!important;
+  border:0!important;border-radius:999px!important;background:transparent!important;box-shadow:none!important;color:var(--text)!important;font-size:0!important;line-height:0!important;
+  transition:background-color .18s var(--m-ease),transform .14s var(--m-ease),opacity .2s!important
+}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button::before{content:"";position:absolute;inset:0;margin:auto;width:14px;height:14px;background:currentColor;-webkit-mask:var(--ico-plus) center/contain no-repeat;mask:var(--ico-plus) center/contain no-repeat}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button[data-act=dec]::before{-webkit-mask-image:var(--ico-minus);mask-image:var(--ico-minus)}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button:hover:not(:disabled){background:var(--ctl-hover)!important}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button:active:not(:disabled){transform:scale(.88)}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty) button:disabled{opacity:.32!important}
+html body :is(.card .stackd-card-qty,#drawer #lines .qty)>span{min-width:24px;text-align:center;font-weight:650!important;font-size:.92rem!important;font-variant-numeric:tabular-nums;color:var(--text)}
+html body #drawer #lines .qty{margin-top:6px}
+
+/* groups inside panels: the same surface, edge and radius, 10px apart */
+html body :is(#stackdProfileMenu .stackd-profile-balance-row,#stackdProfileMenu #logoutBtn,#topup .payment-instructions,#topup .st-topup-history,#drawer .stackd-cart-guide,#settingsPanel .settings-sec,#stackdTopupHistory .stackd-history-item){
+  background:var(--grp)!important;border:1px solid var(--grp-edge)!important;border-radius:var(--r-grp)!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important
+}
+html body #stackdProfileMenu>:is(.stackd-profile-balance-row,#stackdProfilePromo,#logoutBtn){margin:0!important}
+html body #stackdProfileMenu .stackd-profile-balance-row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px;padding:14px 14px 14px 16px!important}
+html body #stackdProfileMenu .stackd-profile-balance-row small{display:block;font-size:.8rem;color:var(--muted)}
+html body #stackdProfileMenu .stackd-profile-balance-row strong{display:block;margin-top:2px;font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+html body #stackdProfileMenu #stackdProfileTopup{height:38px!important;padding:0 18px!important;border:0!important;border-radius:999px!important;background:var(--accent)!important;color:var(--accent-ink)!important;font-weight:650!important;font-size:.88rem!important;box-shadow:none!important}
+html body #stackdProfileMenu #logoutBtn{height:46px!important;justify-content:center!important;color:var(--m-danger)!important;font-weight:600!important;border-top:1px solid var(--grp-edge)!important}
+
+/* single-line fields: capsules on the group surface */
+html body :is(dialog,#stackdProfileMenu) :is(input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input:not([type])):not(#editor *){
+  height:48px!important;border-radius:999px!important;padding:0 18px!important;background:var(--grp)!important;border:1px solid var(--grp-edge)!important;box-shadow:none!important;font-size:16px!important
+}
+html body :is(dialog,#stackdProfileMenu) :is(input[type=text],input[type=email],input[type=password],input[type=number],input:not([type])):not(#editor *):focus{background:var(--m-card)!important;border-color:var(--m-tint-edge)!important;box-shadow:0 0 0 4px var(--m-tint)!important}
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form input[data-promo-input]{padding:0 124px 0 18px!important;border-radius:999px!important;background:var(--grp)!important;border:1px solid var(--grp-edge)!important}
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]{top:6px!important;right:6px!important;height:36px!important;border-radius:999px!important;padding:0 16px!important}
+html body #auth .btn,html body #topup button[type=submit]{height:46px!important;border-radius:999px!important}
+
+/* top-up: Telegram is a secondary action, the receipt submit stays the main one */
+html body #topup .tg-channel-btn{border-radius:999px!important;background:var(--ctl)!important;color:var(--text)!important;border:0!important;box-shadow:none!important;background-image:none!important}
+html body #topup .tg-channel-btn svg{color:#2aabee}
+html body #topup .st-amounts button{border-radius:999px!important;background:var(--grp)!important;border:1px solid var(--grp-edge)!important}
+html body #topup .st-amounts button[aria-pressed=true],html body #topup .st-amounts button.is-active{background:var(--m-tint)!important;border-color:var(--m-tint-edge)!important;color:var(--m-tint-text)!important}
+html body #topup .st-file{border-radius:var(--r-grp)!important;background:var(--grp)!important}
+html body #topup .st-file b{border-radius:999px!important}
+
+/* language picker in the header: compact on narrow phones, and the wordmark yields first */
+@media (max-width:479px){
+  html body header.nav .lang-selector{display:block!important}
+  html body header.nav{grid-template-columns:minmax(0,1fr) auto auto auto!important;grid-template-areas:"brand lang account settings" "search search search search"!important}
+  html body header.nav .lang-btn{width:44px!important;min-width:44px!important;max-width:44px!important;padding:0!important;justify-content:center!important;gap:0!important}
+  html body header.nav .lang-btn svg{display:none!important}
+}
+@media (max-width:369px){html body header.nav .brand>span{display:none!important}}
+html body header.nav #topupBtn{position:relative!important;display:block!important}
+html body header.nav #topupBtn::before{position:absolute;inset:0;margin:auto;width:14px;height:14px}

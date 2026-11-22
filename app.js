@@ -141,6 +141,12 @@ function fmtDate(date, withTime = true) {
 }
 window.stakedFmtDate = fmtDate;
 const L3 = (ru, en, az) => (S.lang === 'en' ? en : S.lang === 'az' ? az : ru);
+const CAT_LABELS = {
+  Burgers: { ru: 'Бургеры', en: 'Burgers', az: 'Burgerlər' }, Combos: { ru: 'Комбо', en: 'Combos', az: 'Kombo' },
+  Sides: { ru: 'Закуски', en: 'Sides', az: 'Qəlyanaltılar' }, Drinks: { ru: 'Напитки', en: 'Drinks', az: 'İçkilər' },
+  Desserts: { ru: 'Десерты', en: 'Desserts', az: 'Desertlər' }
+};
+const catLabel = category => CAT_LABELS[category]?.[S.lang] || category || '';
 const tr = key => translations[S.lang]?.[key] || translations.ru[key] || key;
 try { S.pendingPromoCode = String(localStorage.getItem('pdd.pendingPromo') || '').trim().toUpperCase() || null; } catch { S.pendingPromoCode = null; }
 // persist=false is used for the automatic first-visit choice, so a later browser-language
@@ -558,7 +564,7 @@ function toast(m) {
 function openDetail(id) {
   const p = find(id), d = $('#detail');
   if (!p || d?.open) return;
-  if ($('#detailBody')) $('#detailBody').innerHTML = `<div class="detail" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}"><span class="tag">${esc(p.category)}</span><h2>${esc(p.name)}</h2><p>${esc(p.description)}</p><div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary" data-act="add"${isAvailable(p) ? '' : ' disabled'}>${isAvailable(p) ? translations[S.lang].add_to_cart : translations[S.lang].out_of_stock}</button></div></div>`;
+  if ($('#detailBody')) $('#detailBody').innerHTML = `<div class="detail" data-id="${esc(p.id)}"><img src="${esc(imgSrc(p))}" alt="${esc(p.name || '')}" width="600" height="450" decoding="async"><span class="tag">${esc(catLabel(p.category))}</span><h2 id="dtn">${esc(p.name)}</h2>${p.description ? `<p>${esc(p.description)}</p>` : ''}<div class="card-foot"><strong>${fmt(p.price)}</strong><button class="btn btn-primary" data-act="add"${isAvailable(p) ? '' : ' disabled'}>${isAvailable(p) ? translations[S.lang].add_to_cart : translations[S.lang].out_of_stock}</button></div></div>`;
   d?.showModal();
 }
 

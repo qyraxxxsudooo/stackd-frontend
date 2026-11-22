@@ -296,6 +296,7 @@
     });
   }
   setTimeout(translateAttrs, 300);
+  document.addEventListener('staked:lang', () => setTimeout(translateAttrs, 0));
   document.addEventListener('click', (e) => { if (e.target.closest('[data-lang]')) setTimeout(translateAttrs, 150); });
 
   /* ── top-up: the review note sits under the submit button, history is the last row ── */
