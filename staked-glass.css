@@ -5,8 +5,8 @@
 
 /* ── tokens ─────────────────────────────────────────────────────────────── */
 :root{
-  --m-bar:rgba(250,250,251,.74);
-  --m-panel:rgba(250,250,251,.86);
+  --m-bar:rgba(250,250,251,.7);
+  --m-panel:rgba(250,250,251,.8);
   --m-card:rgba(255,255,255,.92);
   --m-group:rgba(255,255,255,.78);
   --m-fill:rgba(120,120,128,.12);
@@ -33,8 +33,8 @@
   --g-ease:var(--m-ease);--g-spring:var(--m-spring);
 }
 html[data-theme="dark"],html.stacked-dark{
-  --m-bar:rgba(24,24,26,.72);
-  --m-panel:rgba(30,30,32,.86);
+  --m-bar:rgba(24,24,26,.68);
+  --m-panel:rgba(30,30,32,.8);
   --m-card:rgba(38,38,40,.88);
   --m-group:rgba(255,255,255,.05);
   --m-fill:rgba(118,118,128,.24);
@@ -57,28 +57,43 @@ html body>svg[aria-hidden=true]{position:absolute!important;width:0!important;he
 html body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 html body h1,html body h2,html body h3{letter-spacing:-.018em}
 
-/* ── header: one full-width bar, content aligned to the page column ───────── */
+/* ── header ──────────────────────────────────────────────────────────────
+   Wide screens: one row, content on the page column.
+   Under 900px: row 1 = brand + controls, row 2 = search across the full width.
+   Under 480px the language moves into Settings so the search and balance never squeeze. */
 html body header.nav{
   position:sticky!important;top:0!important;z-index:60!important;
-  display:flex!important;align-items:center!important;gap:10px!important;
+  display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important;
   min-height:60px!important;margin:0!important;border-radius:0!important;
   padding:8px max(clamp(16px,4vw,40px),calc((100vw - var(--wrap-inner)) / 2))!important;
   background:var(--m-bar)!important;border:0!important;border-bottom:1px solid var(--m-edge)!important;
   box-shadow:none!important;-webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important;
 }
 html body header.nav::before,html body header.nav::after{display:none!important}
-html body header.nav .brand{order:0;display:inline-flex!important;align-items:center;gap:9px;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;margin-right:auto}
-html body header.nav .search-container{order:1;flex:0 1 380px!important;max-width:380px!important;margin:0 auto 0 0!important}
-html body header.nav .search{height:38px!important;border-radius:var(--m-r-ctl)!important;background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;padding:0 12px!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:background-color .2s var(--m-ease),box-shadow .2s var(--m-ease)!important}
-html body header.nav .search:focus-within{background:var(--m-card)!important;box-shadow:0 0 0 3px var(--m-tint)!important;border-color:var(--m-tint-edge)!important}
-html body header.nav .search input{font-size:.92rem!important;background:transparent!important}
+html body header.nav .brand{order:0;display:inline-flex!important;align-items:center;gap:9px;min-width:0;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;white-space:nowrap}
+html body header.nav .search-container{order:1;position:relative;flex:0 1 380px!important;max-width:380px!important;min-width:0;margin:0 auto 0 clamp(12px,4vw,56px)!important}
+html body header.nav .search{
+  display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;box-sizing:border-box!important;
+  height:40px!important;border-radius:var(--m-r-ctl)!important;padding:0 12px 0 13px!important;margin:0!important;
+  background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  transition:background-color .2s var(--m-ease),box-shadow .25s var(--m-ease),border-color .2s var(--m-ease)!important;
+}
+html body header.nav .search>svg{flex:none;width:17px!important;height:17px!important;position:static!important;inset:auto!important;transform:none!important;margin:0!important;color:var(--muted);transition:color .2s var(--m-ease)}
+html body header.nav .search input{flex:1 1 auto;min-width:0;width:auto!important;height:100%!important;padding:0!important;margin:0!important;border:0!important;outline:0;font-size:16px!important;background:transparent!important;color:var(--text)!important;box-shadow:none!important}
+html body header.nav .search input::placeholder{color:var(--muted);opacity:1;text-overflow:ellipsis}
+html body header.nav .search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;cursor:pointer;
+  background:var(--muted) center/10px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2 2l6 6M8 2L2 8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
+html body header.nav .search:focus-within{background:var(--m-card)!important;border-color:var(--m-tint-edge)!important;box-shadow:0 0 0 4px var(--m-tint)!important}
+html body header.nav .search:focus-within>svg{color:var(--accent)}
+html body header.nav .search-suggestions{left:0!important;right:0!important;width:auto!important;max-width:none!important}
 html body header.nav #adminBtn{order:2}
 html body header.nav .lang-selector{order:3}
 html body header.nav #userProfile{order:4;display:flex;align-items:center;gap:8px}
 html body header.nav #loginBtn{order:4}
 html body header.nav #settingsBtn{order:6}
 /* every control on the right is the same 38px quiet button */
-html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.nav #loginBtn,html body header.nav #settingsBtn,html body header.nav .balance-display{
+html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.nav #loginBtn,html body header.nav #settingsBtn{
   height:38px!important;min-height:38px!important;border-radius:var(--m-r-ctl)!important;
   background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;color:var(--text)!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;font-weight:600!important;font-size:.88rem!important;
@@ -87,18 +102,36 @@ html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.n
 html body header.nav .lang-btn,html body header.nav #adminBtn,html body header.nav #loginBtn{padding:0 12px!important}
 html body header.nav #settingsBtn{width:38px!important;padding:0!important;display:grid!important;place-items:center!important}
 html body header.nav .lang-btn:hover,html body header.nav #adminBtn:hover,html body header.nav #loginBtn:hover,html body header.nav #settingsBtn:hover{background:color-mix(in srgb,var(--text) 10%,transparent)!important}
-html body header.nav .lang-btn:active,html body header.nav #adminBtn:active,html body header.nav #settingsBtn:active{transform:scale(.96)}
+html body header.nav .lang-btn:active,html body header.nav #adminBtn:active,html body header.nav #loginBtn:active,html body header.nav #settingsBtn:active{transform:scale(.96)}
 html body header.nav #settingsBtn[aria-expanded=true],html body header.nav #settingsBtn.is-open{background:var(--m-tint)!important;color:var(--m-tint-text)!important}
-html body header.nav .balance-group{height:38px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;display:flex!important;align-items:center;gap:0;position:relative}
-html body header.nav .balance-display{display:inline-flex!important;align-items:center;gap:6px;padding:0 44px 0 12px!important;font-variant-numeric:tabular-nums;min-width:0!important}
+
+/* balance: the amount reads first, the top-up button sits inside the same capsule */
+html body header.nav #userProfile .balance-group{
+  display:inline-flex!important;align-items:center!important;gap:10px!important;position:relative!important;flex:none;
+  height:38px!important;margin:0!important;padding:0 4px 0 13px!important;border-radius:999px!important;
+  background:var(--m-fill)!important;border:1px solid transparent!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  transition:background-color .2s var(--m-ease)!important;
+}
+html body header.nav #userProfile .balance-group:hover{background:color-mix(in srgb,var(--text) 10%,transparent)!important}
+html body header.nav .balance-display{display:inline-flex!important;align-items:baseline!important;gap:0!important;height:auto!important;min-height:0!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;white-space:nowrap}
 html body header.nav .balance-display .b-label{display:none!important}
-html body header.nav .balance-display .b-amount{font-weight:700!important;font-size:.9rem!important;color:var(--text)!important}
-html body header.nav #topupBtn{position:absolute!important;right:4px!important;top:4px!important;bottom:auto!important;width:30px!important;height:30px!important;min-width:30px!important;border-radius:9px!important;margin:0!important;padding:0!important;background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important;font-size:1.05rem!important;line-height:30px!important;transition:transform .15s var(--m-ease),filter .2s!important}
-html body header.nav #topupBtn:hover{filter:brightness(1.07)}
-html body header.nav #topupBtn:active{transform:scale(.92)}
+html body header.nav .balance-display .b-amount{display:inline-flex!important;align-items:baseline;gap:4px;font-weight:600!important;font-size:.78rem!important;letter-spacing:.02em;color:var(--muted)!important}
+html body #userBalance{min-width:0!important;text-align:left!important;font-size:.95rem;font-weight:700;letter-spacing:-.01em;color:var(--text)!important}
+html body header.nav #topupBtn{
+  position:static!important;flex:none;display:grid!important;place-items:center!important;
+  width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;border-radius:999px!important;margin:0!important;padding:0!important;
+  background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;
+  box-shadow:0 1px 2px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  font-size:1.15rem!important;font-weight:600!important;line-height:1!important;
+  transition:transform .18s var(--m-spring),filter .2s,box-shadow .2s!important;
+}
+html body header.nav #topupBtn:hover{filter:brightness(1.07);transform:scale(1.06)}
+html body header.nav #topupBtn:active{transform:scale(.9);transition-duration:.08s!important}
+html body header.nav #topupBtn:focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px}
 html body header.nav .stackd-orders-shortcut,html body header.nav .cart-btn{display:none!important}
 /* profile: avatar and the word, same height as the rest */
-@media (min-width:681px){
+@media (min-width:900px){
   html body #stackdProfileTrigger.st-profile-pill{
     display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;
     width:auto!important;min-width:0!important;height:38px!important;min-height:38px!important;padding:0 12px 0 4px!important;
@@ -108,7 +141,7 @@ html body header.nav .stackd-orders-shortcut,html body header.nav .cart-btn{disp
   }
   html body #stackdProfileTrigger.st-profile-pill:hover{background:color-mix(in srgb,var(--text) 10%,transparent)!important}
   html body #stackdProfileTrigger.st-profile-pill:active{transform:scale(.97)}
-  html body #stackdProfileTrigger.st-profile-pill img{width:30px!important;height:30px!important;max-width:30px!important;border-radius:9px!important;border:0!important;flex:none;object-fit:cover}
+  html body #stackdProfileTrigger.st-profile-pill img{width:30px!important;height:30px!important;max-width:30px!important;border-radius:9px!important;border:0!important;flex:none;object-fit:cover;background:var(--m-fill-2)}
   html body #stackdProfileTrigger.st-profile-pill strong{position:static!important;display:inline!important;font:600 .88rem/1 inherit!important;color:var(--text)!important;clip:auto!important;width:auto!important;height:auto!important;opacity:1!important;transform:none!important;white-space:nowrap}
   html body #stackdProfileTrigger.st-profile-pill small{display:none!important}
   html body #stackdProfileTrigger.st-profile-pill[aria-expanded=true]{background:var(--m-tint)!important}
@@ -119,15 +152,34 @@ html body .lang-dropdown button{border-radius:9px!important;font-weight:500!impo
 html body .lang-dropdown button[aria-pressed=true]{background:var(--m-tint)!important;color:var(--m-tint-text)!important}
 html body .search-suggestions{background:var(--m-panel)!important;border:1px solid var(--m-edge)!important;border-radius:16px!important;box-shadow:var(--m-shadow-float)!important;-webkit-backdrop-filter:var(--m-blur)!important;backdrop-filter:var(--m-blur)!important}
 
-@media (max-width:680px){
-  html body header.nav{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;grid-template-areas:"brand lang account settings" "search search search search" "admin admin admin admin"!important;gap:8px!important;padding:8px 14px 10px!important;min-height:0!important}
-  html body header.nav .brand{grid-area:brand;margin:0}
+@media (max-width:899px){
+  html body header.nav{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;
+    grid-template-areas:"brand lang account settings" "search search search search"!important;
+    column-gap:8px!important;row-gap:10px!important;padding:10px 16px 12px!important;min-height:0!important;
+  }
+  html body header.nav:has(#adminBtn[style*="inline-flex"]){
+    grid-template-areas:"brand lang account settings" "search search search search" "admin admin admin admin"!important;
+  }
+  html body header.nav .brand{grid-area:brand;margin:0!important}
   html body header.nav .lang-selector{grid-area:lang}
-  html body header.nav #userProfile,html body header.nav #loginBtn{grid-area:account}
+  html body header.nav #userProfile,html body header.nav #loginBtn{grid-area:account;justify-self:end;min-width:0}
+  html body header.nav #userProfile .stackd-profile-anchor{display:flex!important;align-items:center}
+  html body header.nav #userProfile #stackdProfileTrigger{display:none!important}
   html body header.nav #settingsBtn{grid-area:settings}
-  html body header.nav .search-container{grid-area:search;max-width:none!important;flex:none!important;margin:0!important;width:100%}
-  html body header.nav #adminBtn{grid-area:admin;justify-self:stretch}
-  html body header.nav .balance-display{padding:0 42px 0 10px!important}
+  html body header.nav .search-container{grid-area:search;flex:none!important;width:100%!important;max-width:none!important;margin:0!important}
+  html body header.nav .search{height:42px!important}
+  html body header.nav #adminBtn{grid-area:admin;justify-self:start}
+}
+@media (max-width:479px){
+  html body header.nav .lang-selector{display:none!important}
+  html body header.nav{grid-template-columns:minmax(0,1fr) auto auto!important;grid-template-areas:"brand account settings" "search search search"!important}
+  html body header.nav:has(#adminBtn[style*="inline-flex"]){grid-template-areas:"brand account settings" "search search search" "admin admin admin"!important}
+}
+@media (max-width:340px){
+  html body header.nav{padding-left:12px!important;padding-right:12px!important;column-gap:6px!important}
+  html body header.nav .brand{gap:7px;font-size:.95rem}
+  html body header.nav #userProfile .balance-group{padding-left:11px!important;gap:8px!important}
 }
 
 /* ── capsule controls: categories, theme switch and the tab bar share one look ── */
@@ -406,17 +458,16 @@ html body #editor #tab-settings .st-admin-body>section[hidden]{display:none!impo
 .st-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 @media (min-width:681px){html body #settingsPanel{right:max(clamp(16px,4vw,40px),calc((100vw - var(--wrap-inner)) / 2))!important;top:68px!important;width:340px!important}}
 
-/* ── phones: one blur layer at a time. Scrolling content and full-screen layers never blur ── */
+/* ── phones: header, tab bar, menus and sheets are real glass (blur + saturation over the page).
+   Product cards scroll in large numbers, so they stay opaque instead of blurring on every frame. ── */
 @media (pointer:coarse){
   html body .card{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--c-fill-solid)!important}
-  html body #chips{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--m-panel)!important}
-  html body dialog::backdrop{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:rgba(0,0,0,.5)!important}
-  html body .settings-panel,html body .stackd-profile-menu,html body dialog.modal,html body dialog.drawer,html body dialog#stackdTopupHistory,
-  html body .lang-dropdown,html body .search-suggestions{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-  :root{--m-panel:rgba(250,250,251,.98)}
-  html[data-theme="dark"],html.stacked-dark{--m-panel:rgba(30,30,32,.98)}
-  html body header.nav,html body .st-tabbar{-webkit-backdrop-filter:saturate(160%) blur(14px)!important;backdrop-filter:saturate(160%) blur(14px)!important}
   html body .card,html body .card .card-media img{transition:none!important}
+}
+/* Browsers without backdrop-filter get the same panels as solid surfaces, never see-through text. */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  html body header.nav,html body .st-tabbar,html body #chips,html body .settings-panel,html body .stackd-profile-menu,
+  html body dialog.modal,html body dialog.drawer,html body .lang-dropdown,html body .search-suggestions,html body #toasts .toast{background:var(--surface)!important}
 }
 
 /* ── toasts: one pill at the top centre, above everything ── */
@@ -436,7 +487,6 @@ html body #toasts .toast{
 }
 html body #toasts .toast::before,html body #toasts .toast::after{display:none!important}
 @keyframes stToastIn{from{opacity:0;transform:translateY(-10px) scale(.96)}to{opacity:1;transform:none}}
-@media (pointer:coarse){html body #toasts .toast{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
 @media (prefers-reduced-motion:reduce){html body #toasts .toast{animation:none!important}}
 
 /* ── promo code: one field with the button inside it (profile and cart) ── */
@@ -480,49 +530,122 @@ html body #editor #pform .st-form-save .btn{flex:1;height:44px!important;border-
   html body #editor input,html body #editor textarea,html body #editor select{font-size:16px!important}
 }
 
-/* ── promo: one glass capsule, the apply button is the same round accent as top-up ── */
-html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form input[data-promo-input]{
-  height:46px!important;border-radius:999px!important;padding:0 118px 0 18px!important;
-  background:color-mix(in srgb,var(--text) 7%,transparent)!important;
-  border:1px solid color-mix(in srgb,var(--text) 12%,transparent)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(170%)!important;backdrop-filter:blur(18px) saturate(170%)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important;
-  font-size:.92rem!important;font-weight:600!important;letter-spacing:.04em!important;
-}
-html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]{
-  top:5px!important;right:5px!important;height:36px!important;padding:0 18px!important;border-radius:999px!important;
-  background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;
-  box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 24%,transparent)!important;font-weight:700!important;
-}
-html body :is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]:disabled{opacity:.45!important;box-shadow:none!important}
 
-/* ── balance: always visible in the header as a glass capsule, no profile click needed ── */
-html body header.nav #userProfile .balance-group{
-  display:flex!important;align-items:center;position:relative;height:38px!important;
-  padding:0 4px 0 0!important;margin-left:8px;border-radius:999px!important;
-  background:color-mix(in srgb,var(--text) 7%,transparent)!important;
-  border:1px solid color-mix(in srgb,var(--text) 12%,transparent)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(170%)!important;backdrop-filter:blur(18px) saturate(170%)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important;
+/* ── product cards: the image keeps equal insets, the price row always sits at the bottom ── */
+html body .card{display:flex!important;flex-direction:column!important}
+html body .card .card-media{display:block!important;width:auto!important;max-width:none!important;align-self:stretch;flex:none}
+html body .card .card-media img{display:block;width:100%!important;height:100%!important;object-fit:cover}
+html body .card .card-body{display:flex!important;flex-direction:column!important;flex:1 1 auto;gap:3px}
+html body .card h3{display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;margin:1px 0 0!important}
+html body .card .card-body>p{margin:0!important;color:var(--muted);font-size:.84rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html body .card .card-body>p:empty{display:none!important}
+html body .card .card-body>.stock-info{margin-top:auto!important;padding-top:6px}
+html body .card .card-body>p+.card-foot,html body .card .card-body>h3+.card-foot{margin-top:auto!important}
+html body .card .card-foot{display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap;gap:8px 10px!important}
+
+/* ── a category with one to three items: cards change shape instead of leaving empty columns ── */
+@media (min-width:900px){
+  html body #grid:has(>.card:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  html body #grid:has(>.card:nth-child(2):last-child){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html body #grid:has(>.card:only-child){grid-template-columns:minmax(0,760px)!important;justify-content:center!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card{flex-direction:row!important;align-items:stretch!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-media{width:min(44%,300px)!important;aspect-ratio:1/1!important;margin:7px!important;border-radius:17px!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-body{justify-content:center;padding:18px 22px 18px 12px!important;gap:6px}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card h3{font-size:1.22rem!important;min-height:0;-webkit-line-clamp:3}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-body>.stock-info{margin-top:4px!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-foot{margin-top:10px!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-foot>strong{font-size:1.2rem!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .card-foot{flex-wrap:nowrap!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .stackd-card-actions{width:auto!important;flex:none!important;flex-direction:row!important}
+  html body #grid:is(:has(>.card:nth-child(2):last-child),:has(>.card:only-child))>.card .stackd-card-actions>.btn{flex:none!important;width:auto!important;padding:0 18px!important}
 }
-html body header.nav #userProfile .balance-display{height:30px;padding:0 40px 0 12px!important;display:inline-flex!important;align-items:center;white-space:nowrap}
-html body header.nav #userProfile .balance-display .b-amount{font-weight:700!important;font-size:.9rem!important}
-html body header.nav #userProfile #topupBtn{position:absolute!important;right:4px!important;top:4px!important;width:30px!important;height:30px!important;min-width:30px!important;border-radius:999px!important;padding:0!important;font-size:1.05rem!important;line-height:30px!important}
-@media (max-width:680px){
-  html body header.nav #userProfile{min-width:0}
-  html body header.nav #userProfile .stackd-profile-trigger strong,html body header.nav #userProfile .stackd-profile-trigger small{display:none!important}
-  html body header.nav #userProfile .stackd-profile-trigger{width:38px!important;min-width:38px!important;height:38px!important;padding:0!important;justify-content:center!important;border-radius:999px!important}
-  html body header.nav #userProfile .balance-group{margin-left:0!important;max-width:100%}
-  html body header.nav #userProfile .balance-display{padding:0 36px 0 10px!important}
-  html body header.nav #userProfile .balance-display .b-amount{font-size:.84rem!important}
+
+/* ── promo code: one field with the apply button inside, in the same material as other fields ── */
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form input[data-promo-input]{
+  height:48px!important;border-radius:14px!important;padding:0 128px 0 16px!important;
+  background:var(--m-fill-2)!important;border:1px solid var(--m-edge)!important;box-shadow:none!important;
+  font-size:16px!important;font-weight:600!important;letter-spacing:.06em!important;
+  transition:background-color .2s var(--m-ease),border-color .2s var(--m-ease),box-shadow .25s var(--m-ease)!important;
 }
-html body header.nav #userProfile{grid-area:account!important;justify-self:end;display:flex!important;align-items:center;gap:0}
-@media (max-width:680px){
-  html body header.nav #userProfile .stackd-profile-trigger{display:none!important}
-  html body header.nav #userProfile .stackd-profile-anchor{display:flex!important;align-items:center}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form input[data-promo-input]:focus{background:var(--m-card)!important;border-color:var(--m-tint-edge)!important;box-shadow:0 0 0 4px var(--m-tint)!important}
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]{
+  top:6px!important;right:6px!important;height:36px!important;padding:0 16px!important;border-radius:10px!important;
+  background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;box-shadow:none!important;
+  font-size:.86rem!important;font-weight:650!important;transition:transform .16s var(--m-ease),filter .2s,opacity .2s!important;
 }
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]:active:not(:disabled){transform:scale(.95)}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]:disabled{opacity:.42!important}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form.is-error input[data-promo-input]{border-color:color-mix(in srgb,var(--m-danger) 55%,transparent)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--m-danger) 14%,transparent)!important;animation:stPromoShake .36s var(--m-ease)}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form.is-ok input[data-promo-input]{border-color:color-mix(in srgb,var(--m-ok) 55%,transparent)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--m-ok) 14%,transparent)!important}
+@keyframes stPromoShake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+
+/* ── language choice inside Settings (the header picker hides on narrow phones) ── */
+html body #settingsPanel #langChoice{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;padding:4px!important;border-radius:999px!important;background:var(--m-fill-2)!important;border:0!important;box-shadow:none!important}
+html body #settingsPanel #langChoice button{height:34px;border:0;border-radius:999px;background:transparent;color:var(--muted);font:600 .84rem/1 inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:background-color .25s var(--m-ease),color .2s var(--m-ease),transform .15s var(--m-ease)}
+html body #settingsPanel #langChoice button:hover{color:var(--text)}
+html body #settingsPanel #langChoice button:active{transform:scale(.96)}
+html body #settingsPanel #langChoice button[aria-pressed=true]{background:var(--m-card);color:var(--m-tint-text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+@media (prefers-reduced-motion:reduce){
+  html body :is(#stackdProfilePromo,#cartPromo) form.promo-form.is-error input[data-promo-input]{animation:none}
+  html body header.nav #topupBtn,html body #settingsPanel #langChoice button{transition:none!important}
+}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form.is-busy .btn[data-promo-apply]{color:transparent!important;opacity:1!important}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form.is-busy .btn[data-promo-apply]::after{content:"";position:absolute;inset:0;margin:auto;width:16px;height:16px;border-radius:50%;border:2px solid color-mix(in srgb,var(--accent-ink) 35%,transparent);border-top-color:var(--accent-ink);animation:stPromoSpin .7s linear infinite}
+html body .promo-status .promo-msg{animation:stMsgIn .28s var(--m-ease) both}
+html body .promo-status .promo-msg.is-error{color:var(--m-danger)!important}
+html body .promo-status .promo-msg.is-ok{color:var(--m-ok)!important}
+@keyframes stPromoSpin{to{transform:rotate(360deg)}}
+@keyframes stMsgIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){html body .promo-status .promo-msg{animation:none}}
+
+/* Author display rules (flex, grid) must never resurrect an element the code marked hidden. */
+html body [hidden]{display:none!important}
+/* Sheet scrims dim and soften the page the same way everywhere. */
 @media (max-width:680px){
-  html body header.nav{grid-template-columns:minmax(0,1fr) auto auto!important;grid-template-areas:"brand lang settings" "search search balance" "admin admin admin"!important}
-  html body header.nav #userProfile{grid-area:balance!important;justify-self:end!important;min-width:0}
-  html body header.nav #userProfile .balance-group{margin-left:0!important}
+  html body .settings-scrim{background:rgba(12,10,8,.32)!important;-webkit-backdrop-filter:blur(10px) saturate(130%);backdrop-filter:blur(10px) saturate(130%)}
+}
+html body #settingsPanel #langChoice button[aria-pressed=true]{background:var(--m-tint)!important;color:var(--m-tint-text)!important;box-shadow:none!important}
+html body .chips-wrapper.st-fade-end{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}
+html body .chips-wrapper.st-fade-start{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px);mask-image:linear-gradient(90deg,transparent,#000 36px)}
+html body .chips-wrapper.st-fade-start.st-fade-end{-webkit-mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,transparent,#000 36px,#000 calc(100% - 36px),transparent)}
+
+/* ── motion details ──
+   Durations: 0.16s press, 0.24s state change, 0.38s panels. Easing: --m-ease for movement that
+   settles, --m-spring only for indicators that travel (chips, tabs, theme). */
+html body.st-lang-swap :is(main,#grid,.hero,#how,footer,.foot,header.nav .brand,.st-tabbar,#settingsPanel .settings-body){animation:stLangIn .34s var(--m-ease)}
+@keyframes stLangIn{from{opacity:.2}to{opacity:1}}
+html body .search-suggestions.active{transform-origin:50% 0}
+html body .suggestion-item{transition:background-color .15s var(--m-ease)!important}
+html body dialog input,html body dialog select,html body dialog textarea{transition:border-color .2s var(--m-ease),box-shadow .25s var(--m-ease),background-color .2s var(--m-ease)!important}
+html body .btn{transition:transform .16s var(--m-ease),filter .2s var(--m-ease),background-color .24s var(--m-ease),color .24s var(--m-ease),box-shadow .24s var(--m-ease),opacity .2s!important}
+html body .btn:active:not(:disabled){transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){
+  html body.st-lang-swap *{animation:none!important}
+  html body .btn:active:not(:disabled){transform:none}
+}
+
+/* Sticky header: jump targets stop below it instead of under it. */
+html body :is(#catalog,#how,#top,section[id]){scroll-margin-top:84px}
+@media (max-width:899px){html body :is(#catalog,#how,#top,section[id]){scroll-margin-top:128px}}
+
+/* ── phone cards: price on the left, a round add button on the right; the stepper takes the row once the item is in the cart ── */
+@media (max-width:560px){
+  html body .card .card-foot{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;padding-top:8px!important}
+  html body .card .card-foot>strong,html body .card .card-foot .stackd-price-stack strong{font-size:1.02rem!important;text-align:left}
+  html body .card .stackd-card-actions{display:flex!important;width:auto!important;flex:none!important;flex-direction:row!important;align-items:center!important;gap:6px!important}
+  html body .card .stackd-card-actions>.btn[data-act=add]:not(:disabled){
+    position:relative;flex:none!important;width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;
+    padding:0!important;border-radius:999px!important;font-size:0!important;line-height:0!important;color:var(--accent-ink)!important
+  }
+  html body .card .stackd-card-actions>.btn[data-act=add]:not(:disabled)::before{
+    content:"";position:absolute;inset:0;margin:auto;width:16px;height:16px;background:currentColor;
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2.5v11M2.5 8h11' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2.5v11M2.5 8h11' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat
+  }
+  html body .card .stackd-card-actions>.btn[data-act=add]:disabled{height:30px!important;min-height:30px!important;padding:0 10px!important;font-size:.74rem!important;white-space:nowrap}
+  html body .card .card-foot:has(.stackd-card-qty){flex-wrap:wrap!important}
+  html body .card .card-foot:has(.stackd-card-qty) .stackd-card-actions{width:100%!important}
+  html body .card .stackd-card-qty{flex:1 1 auto;height:36px!important;display:flex!important;align-items:center;justify-content:space-between}
+  html body .card .stackd-card-qty~.btn[data-act=add]{display:none!important}
 }

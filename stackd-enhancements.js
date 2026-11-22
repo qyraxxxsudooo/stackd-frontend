@@ -756,7 +756,10 @@
     if (footerBrand) footerBrand.textContent = name;
     const footerDescription = $('.foot [data-i18n="footer_desc"]');
     if (footerDescription) footerDescription.textContent = tagline;
-    document.title = `${name} — скидки на еду в Баку`;
+    const pageTitle = { az: 'Bakıda yemək endirimləri', ru: 'Скидки на еду в Баку', en: 'Food deals in Baku' }[S.lang] || 'Bakıda yemək endirimləri';
+    document.title = `${name} | ${pageTitle}`;
+    const pageHeading = $('body > main h1.st-sr-only, h1.st-sr-only');
+    if (pageHeading) pageHeading.textContent = `${name}: ${pageTitle}`;
     const supportUrl = `https://t.me/${support}`;
     const channelUrl = `https://t.me/${channel}`;
     $$('.social-links a').forEach(anchor => {
@@ -1304,10 +1307,10 @@
     const menu = $('#stackdProfileMenu');
     if (!menu || $('#stackdProfilePromo')) return;
     const copy = {
-      ru: { title: 'Promo kodu daxil edin', placeholder: 'Promo kodu daxil edin', apply: 'Tətbiq et' },
+      ru: { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' },
       en: { title: 'Enter promo code', placeholder: 'Enter promo code', apply: 'Apply' },
       az: { title: 'Promokodu daxil edin', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
-    }[S.lang] || { title: 'Promo kod', placeholder: 'Promo kodu daxil edin', apply: 'Tətbiq et' };
+    }[S.lang] || { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' };
     const section = document.createElement('section');
     section.id = 'stackdProfilePromo';
     section.className = 'stackd-profile-promo st-promo-glass';
@@ -1494,7 +1497,7 @@
     const avatarUrl = S.user?.user_metadata?.avatar_url ||
       S.user?.user_metadata?.picture ||
       avatar?.getAttribute('src') ||
-      'assets/icons/placeholder.svg';
+      'assets/icons/avatar.svg';
     if (avatar) avatar.alt = 'Profile';
     if (profileAvatar) {
       const safeAvatarUrl = safeImageUrl(avatarUrl);

@@ -336,3 +336,38 @@
     }
   }
 })();
+
+/* Category chips: when they do not fit, fade the edge that hides more chips and keep the
+   chosen chip in view, so a category is never hidden off-screen without a hint. */
+(() => {
+  const wrap = document.querySelector('.chips-wrapper');
+  if (!wrap) return;
+  const sync = () => {
+    const over = wrap.scrollWidth - wrap.clientWidth > 2;
+    wrap.classList.toggle('st-fade-end', over && wrap.scrollLeft + wrap.clientWidth < wrap.scrollWidth - 2);
+    wrap.classList.toggle('st-fade-start', over && wrap.scrollLeft > 2);
+  };
+  wrap.addEventListener('scroll', sync, { passive: true });
+  addEventListener('resize', sync, { passive: true });
+  new MutationObserver(sync).observe(wrap, { childList: true, subtree: true, characterData: true });
+  wrap.addEventListener('click', (e) => {
+    const chip = e.target.closest('button[data-cat]');
+    if (!chip) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(() => chip.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }));
+  });
+  document.addEventListener('staked:lang', () => requestAnimationFrame(sync));
+  requestAnimationFrame(sync);
+})();
+
+/* Language switch: the new text fades in, so the swap reads as one change instead of a flicker. */
+(() => {
+  let first = true;
+  document.addEventListener('staked:lang', () => {
+    if (first) { first = false; return; }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off') return;
+    const b = document.body;
+    b.classList.remove('st-lang-swap'); void b.offsetWidth; b.classList.add('st-lang-swap');
+    clearTimeout(b._stLangT); b._stLangT = setTimeout(() => b.classList.remove('st-lang-swap'), 420);
+  });
+})();

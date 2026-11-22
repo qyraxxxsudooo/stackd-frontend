@@ -286,7 +286,7 @@
       chrome += '</g>';
       chrome += `<g data-k="capc"><rect x="520" y="158" width="170" height="124" rx="18" fill="${c.paper}" stroke="${c.line}" stroke-width="1"/>`;
       L.cap.forEach((t, i) => {
-        chrome += `<g data-k="cap${i}">${T(540, 186, '0' + (i + 1) + ' / 04', { sz: 8.5, w: 800, f: c.accent, ls: 1.2 })}${T(540, 214, t[0], { sz: 17, w: 800, f: c.ink })}${T(540, 238, t[1], { sz: 10, w: 600, f: c.muted })}${T(540, 252, t[2], { sz: 10, w: 600, f: c.muted })}</g>`;
+        chrome += `<g data-k="cap${i}">${T(540, 203, t[0], { sz: 17, w: 800, f: c.ink })}${T(540, 228, t[1], { sz: 10, w: 600, f: c.muted })}${T(540, 242, t[2], { sz: 10, w: 600, f: c.muted })}</g>`;
       });
       chrome += '</g>';
     } else if (!isSlice && narrow) {

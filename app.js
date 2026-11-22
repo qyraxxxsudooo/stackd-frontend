@@ -15,7 +15,7 @@ const PH = 'assets/icons/placeholder.svg';
 const CATS = ['Burgers', 'Sides', 'Drinks', 'Desserts'];
 const S = {
   products: [], cart: [], cat: 'All', q: '', adminQ: '', user: null, profile: null,
-  draft: null, lang: 'ru', catalogError: null, ordersTimer: null, ordersBusy: false,
+  draft: null, lang: 'az', catalogError: null, ordersTimer: null, ordersBusy: false,
   checkoutBusy: false, topupRequestId: crypto.randomUUID(), pendingPromoCode: null, 
 };
 
@@ -63,7 +63,7 @@ const translations = {
     settings_title: 'Настройки главной страницы', settings_hero_title: 'Заголовок на главной', settings_hero_sub: 'Подзаголовок / описание', settings_save: 'Сохранить настройки',
     form_new: 'Новый товар', form_edit: 'Редактировать', form_name: 'Название', form_desc: 'Описание', form_cat: 'Категория', form_price: 'Цена (AZN)', form_image: 'Картинка (с ПК)', form_save: 'Сохранить',
     added_to_cart: 'добавлен в корзину', cart_cleared: 'Корзина очищена', checkout_msg: 'Заказ создан!', product_deleted: 'Удалено', saved: 'Сохранено', out_of_stock: 'Нет в наличии', add_to_cart: 'В корзину', no_results: 'Ничего не найдено.', empty_catalog: 'Товаров пока нет.',
-    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'Код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия кода истёк', orders_show_qr: 'Показать код', orders_pending_note: 'Оператор проверяет заказ. Код для автомата появится здесь.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок действия кода истёк. Напишите в поддержку, и мы выдадим новый.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть код', orders_code_label: 'Код для автомата', orders_code_hint: 'Введите этот код в автомате заказа.', orders_copy: 'Скопировать', orders_copied: 'Код скопирован', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Когда он подтвердит, в «Моих заказах» появится код. Введите его в автомате.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть', settings_title: 'Настройки', set_appearance: 'Оформление', set_language: 'Язык', set_winter: 'Новогодняя тема', set_winter_label: 'Снег, огни и зимняя улица', set_motion: 'Анимации', set_motion_label: 'Отключить декоративные анимации', promo_title: 'Промокод', promo_enter: 'Введите промокод', promo_placeholder: 'Promo kodu daxil edin', promo_apply: 'Tətbiq et', promo_remove: 'Убрать', promo_invalid: 'Промокод недействителен или недоступен.', promo_already_used: 'Вы уже использовали этот промокод.', promo_not_applicable: 'Промокод не подходит к товарам в корзине.', promo_rate_limited: 'Слишком много попыток. Подождите минуту.', promo_applied: 'Промокод применён', promo_free_line: 'Бесплатно по промокоду', promo_free_tag: 'Бесплатно', promo_need_login: 'Войдите в аккаунт, чтобы применить промокод.', promo_discount_pct: 'Скидка {v}%', promo_discount_fix: 'Скидка {v}', promo_free_prod: 'Бесплатно: {name}', promo_scope_product: 'на «{name}»', promo_until: 'до {date}', promo_left: 'осталось {n}', promo_cart_hint: 'Есть промокод?', cart_subtotal: 'Сумма', cart_discount: 'Скидка', tg_title: 'Telegram', tg_hint: 'Получайте код заказа в личные сообщения.', tg_connect: 'Подключить уведомления', tg_open: 'Открыть Telegram', tg_connected: 'Telegram подключён', tg_error: 'Не удалось создать ссылку. Попробуйте позже.', admin_tab_promos: 'Промокоды', pr_new: 'Новый', pr_code: 'Код', pr_title: 'Название', pr_type: 'Тип', pr_percent: 'Процент', pr_fixed: 'Фиксированная сумма', pr_free: 'Бесплатный товар', pr_value: 'Размер скидки', pr_scope: 'Применяется к', pr_scope_all: 'Всему меню', pr_scope_product: 'Выбранному товару', pr_product: 'Товар', pr_max_uses: 'Общий лимит (пусто = без лимита)', pr_per_user: 'Лимит на пользователя', pr_starts: 'Начало', pr_ends: 'Окончание', pr_active: 'Активен', pr_save: 'Сохранить', pr_cancel: 'Отмена', pr_edit: 'Изменить', pr_archive: 'В архив', pr_restore: 'Вернуть', pr_delete: 'Удалить', pr_used: 'Использовано', pr_left: 'Осталось', pr_unlimited: 'без лимита', pr_empty: 'Промокодов пока нет.', pr_saved: 'Сохранено', pr_exists: 'Такой код уже существует.', pr_delete_blocked: 'У промокода есть история применений. Отправьте его в архив.', pr_confirm_delete: 'Удалить промокод?', pr_s_active: 'Активен', pr_s_off: 'Выключен', pr_s_expired: 'Истёк', pr_s_scheduled: 'Ещё не начался', pr_s_exhausted: 'Лимит исчерпан', pr_s_archived: 'В архиве',
+    orders_title: 'Мои заказы', orders_empty: 'У вас пока нет заказов.', orders_pending: 'Ожидает подтверждения', orders_ready: 'Код готов', orders_cancelled: 'Отменён', orders_completed: 'Выполнен', orders_expired: 'Срок действия кода истёк', orders_show_qr: 'Показать код', orders_pending_note: 'Оператор проверяет заказ. Код для автомата появится здесь.', orders_cancel: 'Отменить заказ', orders_time_left: 'Осталось', orders_expired_note: 'Срок действия кода истёк. Напишите в поддержку, и мы выдадим новый.', orders_load_error: 'Не удалось загрузить заказы. Попробуйте ещё раз.', orders_hide_qr: 'Скрыть код', orders_code_label: 'Код для автомата', orders_code_hint: 'Введите этот код в автомате заказа.', orders_copy: 'Скопировать', orders_copied: 'Код скопирован', wave_title: 'Заказ отправлен', wave_text: 'Оператор проверяет заказ. Когда он подтвердит, в «Моих заказах» появится код. Введите его в автомате.', wave_open: 'Открыть мои заказы', wave_close: 'Закрыть', settings_title: 'Настройки', set_appearance: 'Оформление', set_language: 'Язык', set_winter: 'Новогодняя тема', set_winter_label: 'Снег, огни и зимняя улица', set_motion: 'Анимации', set_motion_label: 'Отключить декоративные анимации', promo_title: 'Промокод', promo_enter: 'Введите промокод', promo_placeholder: 'Введите промокод', promo_apply: 'Применить', promo_remove: 'Убрать', promo_invalid: 'Промокод недействителен или недоступен.', promo_already_used: 'Вы уже использовали этот промокод.', promo_not_applicable: 'Промокод не подходит к товарам в корзине.', promo_rate_limited: 'Слишком много попыток. Подождите минуту.', promo_applied: 'Промокод применён', promo_free_line: 'Бесплатно по промокоду', promo_free_tag: 'Бесплатно', promo_need_login: 'Войдите в аккаунт, чтобы применить промокод.', promo_discount_pct: 'Скидка {v}%', promo_discount_fix: 'Скидка {v}', promo_free_prod: 'Бесплатно: {name}', promo_scope_product: 'на «{name}»', promo_until: 'до {date}', promo_left: 'осталось {n}', promo_cart_hint: 'Есть промокод?', cart_subtotal: 'Сумма', cart_discount: 'Скидка', tg_title: 'Telegram', tg_hint: 'Получайте код заказа в личные сообщения.', tg_connect: 'Подключить уведомления', tg_open: 'Открыть Telegram', tg_connected: 'Telegram подключён', tg_error: 'Не удалось создать ссылку. Попробуйте позже.', admin_tab_promos: 'Промокоды', pr_new: 'Новый', pr_code: 'Код', pr_title: 'Название', pr_type: 'Тип', pr_percent: 'Процент', pr_fixed: 'Фиксированная сумма', pr_free: 'Бесплатный товар', pr_value: 'Размер скидки', pr_scope: 'Применяется к', pr_scope_all: 'Всему меню', pr_scope_product: 'Выбранному товару', pr_product: 'Товар', pr_max_uses: 'Общий лимит (пусто = без лимита)', pr_per_user: 'Лимит на пользователя', pr_starts: 'Начало', pr_ends: 'Окончание', pr_active: 'Активен', pr_save: 'Сохранить', pr_cancel: 'Отмена', pr_edit: 'Изменить', pr_archive: 'В архив', pr_restore: 'Вернуть', pr_delete: 'Удалить', pr_used: 'Использовано', pr_left: 'Осталось', pr_unlimited: 'без лимита', pr_empty: 'Промокодов пока нет.', pr_saved: 'Сохранено', pr_exists: 'Такой код уже существует.', pr_delete_blocked: 'У промокода есть история применений. Отправьте его в архив.', pr_confirm_delete: 'Удалить промокод?', pr_s_active: 'Активен', pr_s_off: 'Выключен', pr_s_expired: 'Истёк', pr_s_scheduled: 'Ещё не начался', pr_s_exhausted: 'Лимит исчерпан', pr_s_archived: 'В архиве',
     cancel_confirm: 'Отменить заказ? Возврат средств выполняется сервером.', checkout_busy: 'Оформляем заказ…', checkout_success: 'Заказ оформлен. Код для автомата появится в «Моих заказах».', checkout_notify_error: 'Заказ создан, но уведомление Telegram не отправлено. Обратитесь в поддержку.',
     search_empty: 'Ничего не найдено.'
   },
@@ -143,13 +143,16 @@ window.stakedFmtDate = fmtDate;
 const L3 = (ru, en, az) => (S.lang === 'en' ? en : S.lang === 'az' ? az : ru);
 const tr = key => translations[S.lang]?.[key] || translations.ru[key] || key;
 try { S.pendingPromoCode = String(localStorage.getItem('pdd.pendingPromo') || '').trim().toUpperCase() || null; } catch { S.pendingPromoCode = null; }
-function applyLanguage(lang) {
-  const selected = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'ru';
+// persist=false is used for the automatic first-visit choice, so a later browser-language
+// change still applies until the visitor picks a language by hand.
+function applyLanguage(lang, persist = true) {
+  const selected = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'az';
   S.lang = selected;
-  try { localStorage.setItem('pdd.lang', selected); } catch {}
+  if (persist) { try { localStorage.setItem('pdd.lang', selected); } catch {} }
   document.documentElement.lang = selected;
+  document.dispatchEvent(new CustomEvent('staked:lang', { detail: selected }));
   if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
-  document.querySelectorAll('#langDropdown button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
+  document.querySelectorAll('#langDropdown button[data-lang], #langChoice button[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === selected)));
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const value = translations[selected]?.[element.dataset.i18n] ?? translations.ru[element.dataset.i18n];
     if (value !== undefined) element.textContent = value;
@@ -192,7 +195,7 @@ async function checkAuth({ loadData = false } = {}) {
       if ($('#myOrdersBtn')) $('#myOrdersBtn').style.display = 'inline-flex';
       if (adminBtn) adminBtn.style.display = isAdmin() ? 'inline-flex' : 'none';
       const avatarUrl = S.user.user_metadata?.avatar_url || S.user.user_metadata?.picture;
-      if ($('#userAvatar')) $('#userAvatar').src = safeImageUrl(avatarUrl);
+      if ($('#userAvatar')) $('#userAvatar').src = avatarUrl ? safeImageUrl(avatarUrl) : 'assets/icons/avatar.svg';
       const { data, error } = await _supabase.from('profiles').select('id,balance').eq('id', S.user.id).maybeSingle();
       if (error) throw error;
       S.profile = data || null;
@@ -929,8 +932,21 @@ function renderPromoUI() {
   [['#cartSubtotalRow', showSum], ['#cartDiscountRow', showSum]].forEach(([sel, on]) => { const node = $(sel); if (node) node.hidden = !on; });
   if ($('#cartSubtotal')) $('#cartSubtotal').textContent = fmt(est.subtotal);
   if ($('#cartDiscount')) $('#cartDiscount').textContent = '−' + fmt(est.discount);
+  document.querySelectorAll('form[data-promo-form]').forEach(form => {
+    form.classList.toggle('is-error', Boolean(S.promoMsg?.error));
+    form.classList.toggle('is-ok', Boolean(S.promo && S.promoMsg && !S.promoMsg.error));
+  });
 }
-function setPromoMsg(text, error) { S.promoMsg = text ? { text, error: Boolean(error) } : null; renderPromoUI(); }
+function setPromoMsg(text, error) {
+  S.promoMsg = text ? { text, error: Boolean(error) } : null;
+  // Restart the shake when the same error repeats.
+  if (error) document.querySelectorAll('form[data-promo-form].is-error').forEach(form => { form.classList.remove('is-error'); void form.offsetWidth; });
+  renderPromoUI();
+}
+document.addEventListener('input', e => {
+  const input = e.target.closest?.('[data-promo-input]');
+  if (input) input.closest('form')?.classList.remove('is-error');
+});
 async function applyPromo(raw) {
   const code = String(raw || '').trim().toUpperCase();
   if (!code || S.promoBusy) return;
@@ -945,7 +961,7 @@ async function applyPromo(raw) {
 
   const buttons = $$('[data-promo-apply]');
   S.promoBusy = true;
-  buttons.forEach(button => { button.disabled = true; });
+  buttons.forEach(button => { button.disabled = true; button.closest('form')?.classList.add('is-busy'); button.setAttribute('aria-busy', 'true'); });
   try {
     const cartItems = S.cart
       .filter(item => item && Number.isInteger(Number(item.qty)) && Number(item.qty) > 0)
@@ -1032,7 +1048,7 @@ async function applyPromo(raw) {
     }
   } finally {
     S.promoBusy = false;
-    buttons.forEach(button => { button.disabled = false; });
+    buttons.forEach(button => { button.disabled = false; button.closest('form')?.classList.remove('is-busy'); button.removeAttribute('aria-busy'); });
   }
 }
 document.addEventListener('submit', e => {
@@ -1430,12 +1446,25 @@ $('#topupForm')?.addEventListener('submit', async event => {
 });
 
 // Restore language and theme.
-let initialLanguage = 'ru';
+// Order: the visitor's saved choice, then the browser languages, then Azerbaijani.
+// Crawlers get Azerbaijani so search results show one consistent language.
+function detectBrowserLanguage() {
+  if (/bot|crawl|spider|slurp|facebookexternalhit|preview/i.test(navigator.userAgent || '')) return 'az';
+  const list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']);
+  for (const raw of list) {
+    const code = String(raw || '').toLowerCase().split('-')[0];
+    if (code === 'az' || code === 'tr') return 'az';
+    if (code === 'ru' || code === 'uk' || code === 'be' || code === 'kk') return 'ru';
+    if (code === 'en') return 'en';
+  }
+  return 'az';
+}
+let initialLanguage = null;
 try {
   const storedLanguage = localStorage.getItem('pdd.lang');
   if (storedLanguage && Object.prototype.hasOwnProperty.call(translations, storedLanguage)) initialLanguage = storedLanguage;
 } catch (error) { console.warn('Language preference unavailable:', error); }
-applyLanguage(initialLanguage);
+applyLanguage(initialLanguage || detectBrowserLanguage(), false);
 applyTheme();
 
 // Finalize OAuth callbacks before refreshing the account UI.
