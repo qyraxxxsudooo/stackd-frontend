@@ -249,6 +249,15 @@ try{
         <strong id="stackdProfileHint">Настройки профиля</strong>
         <small id="stackdProfileClick">Нажмите, чтобы открыть</small>
       </button>
+      <div class="balance-group">
+      <div class="balance-display">
+      <span class="b-label" data-i18n="balance_label">Баланс</span>
+      <span class="b-amount">
+      <span id="userBalance">0.00</span> AZN
+      </span>
+      </div>
+      <button class="btn-topup" id="topupBtn" title="Пополнить" aria-label="Пополнить баланс" type="button">+</button>
+      </div>
 
       <div id="stackdProfileMenu" class="stackd-profile-menu glass" hidden>
         <div class="stackd-profile-head">
@@ -274,15 +283,6 @@ try{
       </div>
     </div>
 
-    <div class="balance-group">
-      <div class="balance-display">
-        <span class="b-label" data-i18n="balance_label">Баланс</span>
-        <span class="b-amount">
-          <span id="userBalance">0.00</span> AZN
-        </span>
-      </div>
-      <button class="btn-topup" id="topupBtn" title="Пополнить" aria-label="Пополнить баланс" type="button">+</button>
-    </div>
   </div>
 
   <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn" type="button">Войти</button>

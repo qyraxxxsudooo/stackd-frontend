@@ -479,3 +479,50 @@ html body #editor #pform .st-form-save .btn{flex:1;height:44px!important;border-
   html body #editor #tab-products>div:first-child>.row h3{flex:1 1 100%;margin:0}
   html body #editor input,html body #editor textarea,html body #editor select{font-size:16px!important}
 }
+
+/* ── promo: one glass capsule, the apply button is the same round accent as top-up ── */
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form input[data-promo-input]{
+  height:46px!important;border-radius:999px!important;padding:0 118px 0 18px!important;
+  background:color-mix(in srgb,var(--text) 7%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--text) 12%,transparent)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%)!important;backdrop-filter:blur(18px) saturate(170%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important;
+  font-size:.92rem!important;font-weight:600!important;letter-spacing:.04em!important;
+}
+html body :is(#stackdProfilePromo,#cartPromo):is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]{
+  top:5px!important;right:5px!important;height:36px!important;padding:0 18px!important;border-radius:999px!important;
+  background:var(--accent)!important;color:var(--accent-ink)!important;border:0!important;
+  box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 24%,transparent)!important;font-weight:700!important;
+}
+html body :is(#stackdProfilePromo,#cartPromo) form.promo-form .btn[data-promo-apply]:disabled{opacity:.45!important;box-shadow:none!important}
+
+/* ── balance: always visible in the header as a glass capsule, no profile click needed ── */
+html body header.nav #userProfile .balance-group{
+  display:flex!important;align-items:center;position:relative;height:38px!important;
+  padding:0 4px 0 0!important;margin-left:8px;border-radius:999px!important;
+  background:color-mix(in srgb,var(--text) 7%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--text) 12%,transparent)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%)!important;backdrop-filter:blur(18px) saturate(170%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important;
+}
+html body header.nav #userProfile .balance-display{height:30px;padding:0 40px 0 12px!important;display:inline-flex!important;align-items:center;white-space:nowrap}
+html body header.nav #userProfile .balance-display .b-amount{font-weight:700!important;font-size:.9rem!important}
+html body header.nav #userProfile #topupBtn{position:absolute!important;right:4px!important;top:4px!important;width:30px!important;height:30px!important;min-width:30px!important;border-radius:999px!important;padding:0!important;font-size:1.05rem!important;line-height:30px!important}
+@media (max-width:680px){
+  html body header.nav #userProfile{min-width:0}
+  html body header.nav #userProfile .stackd-profile-trigger strong,html body header.nav #userProfile .stackd-profile-trigger small{display:none!important}
+  html body header.nav #userProfile .stackd-profile-trigger{width:38px!important;min-width:38px!important;height:38px!important;padding:0!important;justify-content:center!important;border-radius:999px!important}
+  html body header.nav #userProfile .balance-group{margin-left:0!important;max-width:100%}
+  html body header.nav #userProfile .balance-display{padding:0 36px 0 10px!important}
+  html body header.nav #userProfile .balance-display .b-amount{font-size:.84rem!important}
+}
+html body header.nav #userProfile{grid-area:account!important;justify-self:end;display:flex!important;align-items:center;gap:0}
+@media (max-width:680px){
+  html body header.nav #userProfile .stackd-profile-trigger{display:none!important}
+  html body header.nav #userProfile .stackd-profile-anchor{display:flex!important;align-items:center}
+}
+@media (max-width:680px){
+  html body header.nav{grid-template-columns:minmax(0,1fr) auto auto!important;grid-template-areas:"brand lang settings" "search search balance" "admin admin admin"!important}
+  html body header.nav #userProfile{grid-area:balance!important;justify-self:end!important;min-width:0}
+  html body header.nav #userProfile .balance-group{margin-left:0!important}
+}

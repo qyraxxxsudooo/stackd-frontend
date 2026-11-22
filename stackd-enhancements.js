@@ -1304,10 +1304,10 @@
     const menu = $('#stackdProfileMenu');
     if (!menu || $('#stackdProfilePromo')) return;
     const copy = {
-      ru: { title: 'Введите промокод', placeholder: 'Введите промокод', apply: 'Применить' },
+      ru: { title: 'Promo kodu daxil edin', placeholder: 'Promo kodu daxil edin', apply: 'Tətbiq et' },
       en: { title: 'Enter promo code', placeholder: 'Enter promo code', apply: 'Apply' },
       az: { title: 'Promokodu daxil edin', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
-    }[S.lang] || { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' };
+    }[S.lang] || { title: 'Promo kod', placeholder: 'Promo kodu daxil edin', apply: 'Tətbiq et' };
     const section = document.createElement('section');
     section.id = 'stackdProfilePromo';
     section.className = 'stackd-profile-promo st-promo-glass';
