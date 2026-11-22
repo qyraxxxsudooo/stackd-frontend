@@ -148,7 +148,9 @@ try { S.pendingPromoCode = String(localStorage.getItem('pdd.pendingPromo') || ''
 function applyLanguage(lang, persist = true) {
   const selected = Object.prototype.hasOwnProperty.call(translations, lang) ? lang : 'az';
   S.lang = selected;
-  if (persist) { try { localStorage.setItem('pdd.lang', selected); } catch {} }
+  if (persist) { try { localStorage.setItem('pdd.lang', selected); localStorage.setItem('pdd.langManual', '1'); } catch {} }
+  // Promo messages are stored as finished text; drop them so none stays in the previous language.
+  if (persist && S.promoMsg) S.promoMsg = null;
   document.documentElement.lang = selected;
   document.dispatchEvent(new CustomEvent('staked:lang', { detail: selected }));
   if ($('#currentLangLabel')) $('#currentLangLabel').textContent = selected.toUpperCase();
@@ -319,6 +321,7 @@ async function load() {
     S.products = [];
     S.catalogError = L3('Не удалось загрузить меню. Проверьте интернет и обновите страницу.', 'Could not load the menu. Check your connection and refresh the page.', 'Menyunu yükləmək olmadı. İnterneti yoxlayıb səhifəni yeniləyin.');
   } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
+  S.catalogReady = true;
   renderAll();
 }
 const find = id => S.products.find(p => String(p.id) === String(id));
@@ -376,9 +379,14 @@ function renderAll() {
   const grid = $('#grid');
 
   if (grid) {
+    // Until the first catalog response arrives, show card placeholders instead of "no products yet".
+    const loadingMarkup = `<p class="st-sr-only" role="status">${esc(L3('Загрузка меню…', 'Loading the menu…', 'Menyu yüklənir…'))}</p>` +
+      Array.from({ length: 6 }, () => '<div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div>').join('');
     const markup = list.length
       ? list.map(card).join('')
-      : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
+      : (!S.catalogReady && !S.catalogError && !L.length)
+        ? loadingMarkup
+        : `<div class="state"><p>${esc(S.catalogError || (L.length ? tr('no_results') : tr('empty_catalog')))}</p></div>`;
     const animateCards = () => {
       if (!gridChanged || reduce()) return;
       grid.querySelectorAll('.card').forEach((element, index) => {
@@ -1462,7 +1470,10 @@ function detectBrowserLanguage() {
 let initialLanguage = null;
 try {
   const storedLanguage = localStorage.getItem('pdd.lang');
-  if (storedLanguage && Object.prototype.hasOwnProperty.call(translations, storedLanguage)) initialLanguage = storedLanguage;
+  // Older builds saved "ru" on every visit, chosen or not. Without the manual flag a stored "ru"
+  // is treated as unknown; "az" and "en" could only have been picked by hand, so they stay.
+  const manual = localStorage.getItem('pdd.langManual') === '1' || (storedLanguage && storedLanguage !== 'ru');
+  if (manual && storedLanguage && Object.prototype.hasOwnProperty.call(translations, storedLanguage)) initialLanguage = storedLanguage;
 } catch (error) { console.warn('Language preference unavailable:', error); }
 applyLanguage(initialLanguage || detectBrowserLanguage(), false);
 applyTheme();

@@ -205,6 +205,7 @@
       S.products = [];
       S.catalogError = S.lang === 'en' ? 'Could not load the catalog. Check connection and database policies.' : S.lang === 'az' ? 'Kataloqu yükləmək mümkün olmadı. Bağlantını və verilənlər bazası icazələrini yoxlayın.' : 'Не удалось загрузить каталог. Проверьте подключение и права доступа.';
     } else S.products = Array.isArray(productResult.data) ? productResult.data : [];
+    S.catalogReady = true;
     renderAll();
     renderPromotionTargetOptions();
     syncPromotionForm();
@@ -1307,10 +1308,10 @@
     const menu = $('#stackdProfileMenu');
     if (!menu || $('#stackdProfilePromo')) return;
     const copy = {
-      ru: { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' },
+      ru: { title: 'Введите промокод', placeholder: 'Введите промокод', apply: 'Применить' },
       en: { title: 'Enter promo code', placeholder: 'Enter promo code', apply: 'Apply' },
       az: { title: 'Promokodu daxil edin', placeholder: 'Promokodu daxil edin', apply: 'Tətbiq et' }
-    }[S.lang] || { title: 'Промокод', placeholder: 'Введите промокод', apply: 'Применить' };
+    }[S.lang] || { title: 'Введите промокод', placeholder: 'Введите промокод', apply: 'Применить' };
     const section = document.createElement('section');
     section.id = 'stackdProfilePromo';
     section.className = 'stackd-profile-promo st-promo-glass';

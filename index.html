@@ -142,18 +142,18 @@ try{
         <span class="stackd-maintenance-eyebrow">STAKED • BAKU</span>
 
         <h1 class="stackd-maintenance-title" id="stackdMaintenanceTitle">
-          Скоро вернёмся
+          Tezliklə qayıdacağıq
         </h1>
 
         <p class="stackd-maintenance-message">
-          Сейчас мы обновляем STAKED. Сайт снова будет доступен совсем скоро.
+          STAKED yenilənir. Sayt tezliklə yenidən açılacaq.
         </p>
 
         <div class="stackd-maintenance-rule" aria-hidden="true"></div>
 
         <div class="stackd-maintenance-actions">
           <button id="stackdMaintenanceRetry" type="button" hidden>
-            Повторить проверку
+            Yenidən yoxla
           </button>
         </div>
 
@@ -224,7 +224,7 @@ try{
   <div class="search-container">
     <form class="search" role="search" id="searchForm">
       <svg class="ic"><use href="#i-search"/></svg>
-      <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="Поиск в STAKED" autocomplete="off">
+      <input id="q" type="search" data-i18n-placeholder="search_placeholder" placeholder="STAKED-də axtar" autocomplete="off">
     </form>
     <div class="search-suggestions glass" id="searchSuggestions"></div>
   </div>
@@ -246,12 +246,12 @@ try{
     <div class="stackd-profile-anchor">
       <button id="stackdProfileTrigger" class="stackd-profile-trigger" type="button" aria-expanded="false" aria-controls="stackdProfileMenu" title="Настройки профиля">
         <img id="userAvatar" src="assets/icons/avatar.svg" alt="">
-        <strong id="stackdProfileHint">Настройки профиля</strong>
-        <small id="stackdProfileClick">Нажмите, чтобы открыть</small>
+        <strong id="stackdProfileHint">Profil ayarları</strong>
+        <small id="stackdProfileClick">Açmaq üçün toxunun</small>
       </button>
       <div class="balance-group">
       <div class="balance-display">
-      <span class="b-label" data-i18n="balance_label">Баланс</span>
+      <span class="b-label" data-i18n="balance_label">Balans</span>
       <span class="b-amount">
       <span id="userBalance">0.00</span> AZN
       </span>
@@ -262,32 +262,30 @@ try{
       <div id="stackdProfileMenu" class="stackd-profile-menu glass" hidden>
         <div class="stackd-profile-head">
           <img id="stackdProfileAvatar" src="assets/icons/avatar.svg" alt="">
-          <strong id="stackdProfileTitle">Профиль</strong>
+          <strong id="stackdProfileTitle">Profil</strong>
           <small>
-            <span id="stackdProfileEmailLabel">Вы вошли как</span>
+            <span id="stackdProfileEmailLabel">Daxil olmusunuz:</span>
             <span id="stackdProfileEmail"></span>
           </small>
         </div>
 
         <p id="stackdProfileNote" class="stackd-profile-note">
-          Управляйте аккаунтом и оформлением сайта.
+          Hesabınızı və saytın görünüşünü idarə edin.
         </p>
 
         <button id="myOrdersBtn" class="stackd-profile-action" type="button" data-act="orders">
           Мои заказы
         </button>
 
-        <button id="logoutBtn" class="stackd-profile-action stackd-profile-logout" type="button" data-i18n="logout_btn">
-          Выйти из аккаунта
-        </button>
+        <button id="logoutBtn" class="stackd-profile-action stackd-profile-logout" type="button" data-i18n="logout_btn">Çıxış</button>
       </div>
     </div>
 
   </div>
 
-  <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn" type="button">Войти</button>
+  <button class="btn btn-ghost nav-btn" id="loginBtn" data-act="auth" data-i18n="login_btn" type="button">Daxil ol</button>
 
-  <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;" data-i18n="catalog_btn" type="button">Каталог</button>
+  <button class="btn btn-ghost nav-btn" id="adminBtn" data-act="manage" style="display:none;" data-i18n="catalog_btn" type="button">İdarəetmə</button>
 
   <button class="cart-btn" data-act="cart-open" aria-label="Открыть корзину" type="button">
     <svg class="ic"><use href="#i-cart"/></svg>
@@ -299,21 +297,21 @@ try{
 <div id="settingsScrim" class="settings-scrim" hidden></div>
 <div id="settingsPanel" class="settings-panel" role="dialog" aria-modal="false" aria-labelledby="settingsTitle" hidden>
   <div class="settings-head">
-    <h2 id="settingsTitle" data-i18n="settings_title">Настройки</h2>
+    <h2 id="settingsTitle" data-i18n="settings_title">Parametrlər</h2>
     <button class="icon-btn" type="button" data-settings-close aria-label="Закрыть"><svg class="ic"><use href="#i-x"/></svg></button>
   </div>
   <div class="settings-body">
     <section class="settings-sec">
-      <h3 data-i18n="set_appearance">Оформление</h3>
+      <h3 data-i18n="set_appearance">Görünüş</h3>
       <div class="seg" role="group" aria-label="Theme" id="profileThemeSeg">
         <div class="seg-slider" id="themeSlider"></div>
-        <button type="button" data-act="theme" data-v="light" data-i18n="theme_light">Светлая</button>
-        <button type="button" data-act="theme" data-v="dark" data-i18n="theme_dark">Тёмная</button>
-        <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Авто</button>
+        <button type="button" data-act="theme" data-v="light" data-i18n="theme_light">Açıq</button>
+        <button type="button" data-act="theme" data-v="dark" data-i18n="theme_dark">Tünd</button>
+        <button type="button" data-act="theme" data-v="system" data-i18n="theme_system">Avto</button>
       </div>
     </section>
     <section class="settings-sec">
-      <h3 data-i18n="set_language">Язык</h3>
+      <h3 data-i18n="set_language">Dil</h3>
       <div role="group" aria-label="Language" id="langChoice">
         <button type="button" data-lang="az" lang="az" aria-pressed="false">Azərbaycan</button>
         <button type="button" data-lang="ru" lang="ru" aria-pressed="false">Русский</button>
@@ -321,8 +319,8 @@ try{
       </div>
     </section>
     <section class="settings-sec st-winter-sec" hidden>
-      <h3 data-i18n="set_winter">Новогодняя тема</h3>
-      <label class="st-switch"><input type="checkbox" id="winterToggle"><span class="st-switch-ui" aria-hidden="true"></span><span data-i18n="set_winter_label">Снег, огни и зимняя улица</span></label>
+      <h3 data-i18n="set_winter">Yeni il mövzusu</h3>
+      <label class="st-switch"><input type="checkbox" id="winterToggle"><span class="st-switch-ui" aria-hidden="true"></span><span data-i18n="set_winter_label">Qar, işıqlar və qış küçəsi</span></label>
     </section>
   </div>
 </div>
@@ -335,21 +333,21 @@ try{
 
   <section class="wrap" id="catalog" aria-labelledby="ch">
     <div class="head">
-      <h2 id="ch" data-i18n="menu_title">Меню</h2>
+      <h2 id="ch" data-i18n="menu_title">Kataloq</h2>
       <nav class="chips-wrapper">
         <nav class="chips" id="chips" aria-label="Категории">
           <div class="chips-slider" id="chipsSlider"></div>
         </nav>
       </nav>
     </div>
-    <div class="grid" id="grid" aria-live="polite"></div>
+    <div class="grid" id="grid" aria-live="polite"><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div><div class="st-skel-card" aria-hidden="true"><span class="st-skel-media"></span><span class="st-skel-line"></span><span class="st-skel-line is-short"></span><span class="st-skel-line is-price"></span></div></div>
   </section>
 
   <section class="wrap stacked-how" id="how" aria-labelledby="howTitle">
     <div class="stacked-how-head">
       <span class="stacked-how-kicker">STAKED</span>
-      <h2 id="howTitle" data-i18n="how_title">Как работает STAKED</h2>
-      <p data-i18n="how_sub">Выберите предложение, оформите заказ, дождитесь обработки и заберите в ресторане.</p>
+      <h2 id="howTitle" data-i18n="how_title">STAKED necə işləyir</h2>
+      <p data-i18n="how_sub">Təklifi seçin, sifariş verin və «Sifarişlərim» bölməsindəki kodu avtomata daxil edin.</p>
     </div>
     <div class="stacked-how-stage">
       <stacked-motion type="full" size="large"></stacked-motion>
@@ -361,11 +359,11 @@ try{
   <div class="wrap">
     <div>
       <strong>STAKED</strong>
-      <p data-i18n="footer_desc">Лучшие предложения на еду в Баку.</p>
+      <p data-i18n="footer_desc">Təklifləri seçin, balansdan ödəyin və avtomat üçün kod alın.</p>
     </div>
 
     <div>
-      <strong data-i18n="footer_support">Поддержка</strong>
+      <strong data-i18n="footer_support">Dəstək</strong>
       <p>
         <a class="footer-telegram-link" href="https://t.me/sharkiff" target="_blank" rel="noopener noreferrer">
           Telegram: @sharkiff
@@ -374,15 +372,15 @@ try{
     </div>
 
     <div>
-      <strong data-i18n="footer_about">О проекте</strong>
-      <p data-i18n="footer_about_text">Данные хранятся в облаке Supabase.</p>
+      <strong data-i18n="footer_about">Layihə haqqında</strong>
+      <p data-i18n="footer_about_text">STAKED Bakı restoranlarının sərfəli təkliflərini toplayır. Sifariş balansdan ödənilir, avtomat üçün kod «Sifarişlərim» bölməsinə gəlir.</p>
     </div>
   </div>
 </footer>
 
 <dialog id="drawer" class="drawer glass" aria-labelledby="dh">
   <header>
-    <h2 id="dh" data-i18n="cart_title">Корзина</h2>
+    <h2 id="dh" data-i18n="cart_title">Səbət</h2>
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
@@ -390,26 +388,26 @@ try{
   <ul id="lines" class="lines"></ul>
   <footer>
     <div class="cart-promo" id="cartPromo" hidden></div>
-    <div class="cart-sum" id="cartSubtotalRow" hidden><span data-i18n="cart_subtotal">Сумма</span><span id="cartSubtotal"></span></div>
-    <div class="cart-sum cart-sum-discount" id="cartDiscountRow" hidden><span data-i18n="cart_discount">Скидка</span><span id="cartDiscount"></span></div>
+    <div class="cart-sum" id="cartSubtotalRow" hidden><span data-i18n="cart_subtotal">Məbləğ</span><span id="cartSubtotal"></span></div>
+    <div class="cart-sum cart-sum-discount" id="cartDiscountRow" hidden><span data-i18n="cart_discount">Endirim</span><span id="cartDiscount"></span></div>
     <div class="total">
-      <span data-i18n="cart_total">Итого</span>
+      <span data-i18n="cart_total">Cəmi</span>
       <strong id="total">0.00 AZN</strong>
     </div>
-    <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout" type="button">Оформить заказ</button>
-    <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear" type="button">Очистить</button>
+    <button class="btn btn-primary block" data-act="checkout" id="checkoutBtn" data-i18n="cart_checkout" type="button">Sifarişi rəsmiləşdir</button>
+    <button class="btn btn-ghost block" data-act="clear" id="clearBtn" data-i18n="cart_clear" type="button">Təmizlə</button>
   </footer>
 </dialog>
 
 <dialog id="orders" class="modal wide glass" aria-labelledby="ordersTitle">
   <header class="orders-dialog-header">
-    <h2 id="ordersTitle" data-i18n="orders_title">Мои заказы</h2>
+    <h2 id="ordersTitle" data-i18n="orders_title">Sifarişlərim</h2>
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
   </header>
   <div id="ordersList" class="orders-list" aria-live="polite">
-    <p class="orders-empty">Заказы появятся здесь после оформления.</p>
+    <p class="orders-empty">Sifarişlər rəsmiləşdirildikdən sonra burada görünəcək.</p>
   </div>
 </dialog>
 
@@ -425,22 +423,22 @@ try{
     <svg class="ic"><use href="#i-x"/></svg>
   </button>
   <div class="auth-content">
-    <h2 id="authTitle" data-i18n="auth_title">Добро пожаловать</h2>
-    <p class="auth-sub" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
+    <h2 id="authTitle" data-i18n="auth_title">Xoş gəlmisiniz</h2>
+    <p class="auth-sub" data-i18n="auth_sub">Daxil olun və ya hesab yaradın</p>
     <button class="btn btn-google" id="googleLoginBtn" type="button">
       <svg class="ic" width="20" height="20"><use href="#i-google"/></svg>
-      <span data-i18n="auth_google">Продолжить с Google</span>
+      <span data-i18n="auth_google">Google ilə davam et</span>
     </button>
     <div class="divider">
-      <span data-i18n="auth_or">или</span>
+      <span data-i18n="auth_or">və ya</span>
     </div>
     <form class="auth-form" id="authForm" novalidate>
       <input type="email" id="emailInput" placeholder="Email" autocomplete="email" required>
       <input type="password" id="passInput" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password" required minlength="6">
       <p class="msg" id="authMsg"></p>
       <div style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Войти</button>
-        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Регистрация</button>
+        <button type="submit" class="btn btn-primary" style="flex:1;" data-i18n="auth_login_btn">Daxil ol</button>
+        <button type="button" id="signUpBtn" class="btn btn-ghost" style="flex:1;" data-i18n="auth_register_btn">Qeydiyyat</button>
       </div>
     </form>
   </div>
@@ -450,85 +448,79 @@ try{
   <button class="icon-btn close" data-act="close" aria-label="Закрыть" type="button">
     <svg class="ic"><use href="#i-x"/></svg>
   </button>
-  <h2 style="margin-bottom:15px;" data-i18n="topup_title">Пополнение</h2>
+  <h2 style="margin-bottom:15px;" data-i18n="topup_title">Balansı artır</h2>
   <div class="payment-instructions" role="status">
-    <p data-i18n="topup_instructions">
-      Реквизиты для перевода находятся в закреплённом сообщении Telegram-канала. После оплаты прикрепите скриншот чека.
-    </p>
+    <p data-i18n="topup_instructions">Köçürmə rekvizitləri Telegram kanalının sabitlənmiş mesajındadır. Məbləği köçürün və aşağıda çekin skrinşotunu əlavə edin.</p>
     <a class="tg-channel-btn" href="https://t.me/stackdbaku" target="_blank" rel="noopener noreferrer">
       <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.96 7.22c.1 0 .32.02.47.14a.5.5 0 0 1 .17.33c.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.66-1.13-2.68-1.8-1.19-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.43.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z"/>
       </svg>
-      <span data-i18n="topup_channel">Открыть Telegram-канал</span>
+      <span data-i18n="topup_channel">Telegram kanalını aç</span>
       <span aria-hidden="true">↗</span>
     </a>
   </div>
-  <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">
-    Баланс пополнится, когда оператор проверит перевод.
-  </p>
+  <p class="warn" style="margin-bottom:15px;" data-i18n="topup_card_warn">Operator köçürməni yoxladıqdan sonra balans artırılacaq.</p>
   <form id="topupForm">
-    <label data-i18n="topup_amount">Сумма (AZN)</label>
+    <label data-i18n="topup_amount">Məbləğ (AZN)</label>
     <input type="number" id="topupAmount" required min="1" max="100" step="0.01">
-    <label data-i18n="topup_check">Скриншот чека</label>
+    <label data-i18n="topup_check">Qəbzin ekran görüntüsü</label>
     <input type="file" id="topupFile" accept="image/jpeg,image/png,image/webp" required>
     <label class="check terms-check">
       <input type="checkbox" id="termsCheck" required>
-      <span data-i18n="topup_terms">
-        Сумма в заявке совпадает с переводом, чек настоящий и мой.
-      </span>
+      <span data-i18n="topup_terms">Müraciətdəki məbləğ köçürməyə uyğundur, çek həqiqidir və mənimdir.</span>
     </label>
     <p class="msg" id="topupMsg"></p>
-    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Отправить чек</button>
+    <button type="submit" class="btn btn-primary block" data-i18n="topup_btn">Qəbzi göndər</button>
   </form>
 </dialog>
 
 <dialog id="editor" class="modal wide glass" aria-labelledby="eh">
   <header>
-    <h2 id="eh" data-i18n="admin_title">Управление</h2>
+    <h2 id="eh" data-i18n="admin_title">İdarəetmə</h2>
     <button class="icon-btn" data-act="close" aria-label="Закрыть" type="button">
       <svg class="ic"><use href="#i-x"/></svg>
     </button>
   </header>
 
   <div class="admin-tabs">
-    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">Товары</button>
-    <button class="btn btn-ghost" data-tab="promos" data-i18n="admin_tab_promos" type="button">Промокоды</button>
-    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">Настройки сайта</button>
+    <button class="btn btn-ghost active" data-tab="products" data-i18n="admin_tab_products" type="button">Məhsullar</button>
+    <button class="btn btn-ghost" data-tab="promos" data-i18n="admin_tab_promos" type="button">Promokodlar</button>
+    <button class="btn btn-ghost" data-tab="settings" data-i18n="admin_tab_settings" type="button">Sayt ayarları</button>
   </div>
 
   <div class="ed tab-content" id="tab-products">
     <div>
       <div class="row">
         <h3>
-          <span data-i18n="admin_products">Товары</span>
+          <span data-i18n="admin_products">Məhsullar</span>
           <span class="count" id="adminCount"></span>
         </h3>
-        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add" type="button">Добавить</button>
+        <button class="btn btn-ghost sm" data-act="new" data-i18n="admin_add" type="button">Məhsul əlavə et</button>
       </div>
       <div class="admin-filter">
-        <input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Поиск товаров" autocomplete="off">
+        <input id="adminSearch" type="search" data-i18n-placeholder="admin_search" placeholder="Məhsul axtar" autocomplete="off">
       </div>
       <ul id="adminList" class="alist"></ul>
     </div>
 
     <form id="pform" novalidate>
-      <h3 id="formTitle" data-i18n="form_new">Новый товар</h3>
-      <label for="pn" data-i18n="form_name">Название</label>
+      <h3 id="formTitle" data-i18n="form_new">Yeni məhsul</h3>
+      <label for="pn" data-i18n="form_name">Ad</label>
       <input id="pn" required maxlength="60">
-      <label for="pd" data-i18n="form_desc">Описание</label>
+      <label for="pd" data-i18n="form_desc">Təsvir</label>
       <textarea id="pd" rows="3" maxlength="200"></textarea>
       <div class="two">
         <div>
-          <label for="pc" data-i18n="form_cat">Категория</label>
+          <label for="pc" data-i18n="form_cat">Kateqoriya</label>
           <input id="pc" list="categoryOptions" required maxlength="40" placeholder="Burgers">
           <datalist id="categoryOptions"></datalist>
         </div>
         <div>
-          <label for="pp" data-i18n="form_price">Цена (AZN)</label>
+          <label for="pp" data-i18n="form_price">Qiymət (AZN)</label>
           <input id="pp" type="number" min="0" step="0.01" inputmode="decimal" required>
         </div>
       </div>
-      <label for="pf" data-i18n="form_image">Картинка (с ПК)</label>
+      <label for="pf" data-i18n="form_image">Şəkil (cihazdan)</label>
       <input id="pf" type="file" accept="image/jpeg,image/png,image/webp">
       <div class="upload-preview" id="productImagePreviewWrap" hidden>
         <img id="productImagePreview" alt="Предпросмотр изображения товара">
@@ -539,40 +531,40 @@ try{
       </div>
       <p class="msg" id="formMsg" role="alert"></p>
       <div class="row">
-        <button type="submit" class="btn btn-primary" data-i18n="form_save">Сохранить</button>
+        <button type="submit" class="btn btn-primary" data-i18n="form_save">Saxla</button>
       </div>
     </form>
   </div>
 
   <div class="ed tab-content" id="tab-promos" style="display:none">
-    <div class="row"><h3><span data-i18n="admin_tab_promos">Промокоды</span> <span class="count" id="promoCount"></span></h3><button class="btn btn-ghost sm" type="button" id="promoNewBtn" data-i18n="pr_new">Новый</button></div>
+    <div class="row"><h3><span data-i18n="admin_tab_promos">Promokodlar</span> <span class="count" id="promoCount"></span></h3><button class="btn btn-ghost sm" type="button" id="promoNewBtn" data-i18n="pr_new">Yeni</button></div>
     <form id="promoEditor" class="promo-editor" hidden autocomplete="off">
       <div class="pe-grid">
-        <label><span data-i18n="pr_code">Код</span><input name="code" maxlength="32" required autocapitalize="characters" spellcheck="false" placeholder="STAKED!"></label>
-        <label><span data-i18n="pr_title">Название</span><input name="title" maxlength="80" placeholder="STAKED Special Offer"></label>
-        <label><span data-i18n="pr_type">Тип</span><select name="kind"><option value="percent" data-i18n="pr_percent">Процент</option><option value="fixed" data-i18n="pr_fixed">Фиксированная сумма</option><option value="free_product" data-i18n="pr_free">Бесплатный товар</option></select></label>
-        <label data-pe="value"><span data-i18n="pr_value">Размер скидки</span><input name="value" type="number" inputmode="decimal" min="0.01" step="0.01"></label>
-        <label data-pe="scope"><span data-i18n="pr_scope">Применяется к</span><select name="scope"><option value="all" data-i18n="pr_scope_all">Всему меню</option><option value="product" data-i18n="pr_scope_product">Выбранному товару</option></select></label>
-        <label data-pe="product"><span data-i18n="pr_product">Товар</span><select name="product_id"></select></label>
-        <label><span data-i18n="pr_max_uses">Общий лимит (пусто = без лимита)</span><input name="max_uses" type="number" inputmode="numeric" min="1" step="1"></label>
-        <label><span data-i18n="pr_per_user">Лимит на пользователя</span><input name="per_user_limit" type="number" inputmode="numeric" min="1" step="1" value="1" required></label>
-        <label><span data-i18n="pr_starts">Начало</span><input name="starts_at" type="datetime-local"></label>
-        <label><span data-i18n="pr_ends">Окончание</span><input name="ends_at" type="datetime-local"></label>
+        <label><span data-i18n="pr_code">Kod</span><input name="code" maxlength="32" required autocapitalize="characters" spellcheck="false" placeholder="STAKED!"></label>
+        <label><span data-i18n="pr_title">Ad</span><input name="title" maxlength="80" placeholder="STAKED Special Offer"></label>
+        <label><span data-i18n="pr_type">Növ</span><select name="kind"><option value="percent" data-i18n="pr_percent">Faiz</option><option value="fixed" data-i18n="pr_fixed">Sabit məbləğ</option><option value="free_product" data-i18n="pr_free">Pulsuz məhsul</option></select></label>
+        <label data-pe="value"><span data-i18n="pr_value">Endirim həcmi</span><input name="value" type="number" inputmode="decimal" min="0.01" step="0.01"></label>
+        <label data-pe="scope"><span data-i18n="pr_scope">Tətbiq sahəsi</span><select name="scope"><option value="all" data-i18n="pr_scope_all">Bütün menyu</option><option value="product" data-i18n="pr_scope_product">Seçilmiş məhsul</option></select></label>
+        <label data-pe="product"><span data-i18n="pr_product">Məhsul</span><select name="product_id"></select></label>
+        <label><span data-i18n="pr_max_uses">Ümumi limit (boş = limitsiz)</span><input name="max_uses" type="number" inputmode="numeric" min="1" step="1"></label>
+        <label><span data-i18n="pr_per_user">İstifadəçi limiti</span><input name="per_user_limit" type="number" inputmode="numeric" min="1" step="1" value="1" required></label>
+        <label><span data-i18n="pr_starts">Başlanğıc</span><input name="starts_at" type="datetime-local"></label>
+        <label><span data-i18n="pr_ends">Bitmə</span><input name="ends_at" type="datetime-local"></label>
       </div>
-      <label class="pe-check"><input type="checkbox" name="active" checked><span data-i18n="pr_active">Активен</span></label>
+      <label class="pe-check"><input type="checkbox" name="active" checked><span data-i18n="pr_active">Aktiv</span></label>
       <p class="msg" id="promoMsg" role="status"></p>
-      <div class="pe-actions"><button class="btn btn-primary" type="submit" data-i18n="pr_save">Сохранить</button><button class="btn btn-ghost" type="button" id="promoCancelBtn" data-i18n="pr_cancel">Отмена</button></div>
+      <div class="pe-actions"><button class="btn btn-primary" type="submit" data-i18n="pr_save">Yadda saxla</button><button class="btn btn-ghost" type="button" id="promoCancelBtn" data-i18n="pr_cancel">Ləğv et</button></div>
     </form>
     <div id="promoList" class="promo-list"></div>
   </div>
 
   <div class="tab-content" id="tab-settings" style="display:none;padding:20px 0;">
-    <h3 data-i18n="settings_title">Настройки главной страницы</h3>
-    <label for="settingHeroTitle" data-i18n="settings_hero_title">Заголовок на главной</label>
+    <h3 data-i18n="settings_title">Parametrlər</h3>
+    <label for="settingHeroTitle" data-i18n="settings_hero_title">Ana səhifə başlığı</label>
     <input id="settingHeroTitle" type="text" placeholder="Добро пожаловать в STAKED">
-    <label for="settingHeroSub" data-i18n="settings_hero_sub">Подзаголовок / Описание</label>
+    <label for="settingHeroSub" data-i18n="settings_hero_sub">Alt başlıq / təsvir</label>
     <textarea id="settingHeroSub" rows="2" placeholder="Лучшие предложения на еду..."></textarea>
-    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Сохранить настройки</button>
+    <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top:10px;" type="button" data-i18n="settings_save">Ayarları saxla</button>
     <p class="msg" id="settingsMsg"></p>
   </div>
 </dialog>

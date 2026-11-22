@@ -353,7 +353,7 @@
   wrap.addEventListener('click', (e) => {
     const chip = e.target.closest('button[data-cat]');
     if (!chip) return;
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off';
     requestAnimationFrame(() => chip.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }));
   });
   document.addEventListener('staked:lang', () => requestAnimationFrame(sync));
@@ -362,9 +362,8 @@
 
 /* Language switch: the new text fades in, so the swap reads as one change instead of a flicker. */
 (() => {
-  let first = true;
+  // app.js applies the start-up language before this file loads, so every event seen here is a real switch.
   document.addEventListener('staked:lang', () => {
-    if (first) { first = false; return; }
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off') return;
     const b = document.body;
     b.classList.remove('st-lang-swap'); void b.offsetWidth; b.classList.add('st-lang-swap');
