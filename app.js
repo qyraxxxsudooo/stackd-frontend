@@ -1159,7 +1159,7 @@ function openPromoEditor(row) {
   const f = PROMO_FORM(); if (!f) return;
   f.reset(); f.dataset.id = row?.id || ''; fillPromoProducts(row?.product_id);
   f.code.value = row?.code || ''; f.title.value = row?.title || ''; f.kind.value = row?.kind || 'percent';
-  f.value.value = row?.value ?? ''; f.scope.value = row?.scope || 'all';
+  f.value.value = row?.value ?? ''; f.scope.value = row?.scope === 'product' ? 'product' : 'cart';
   f.max_uses.value = row?.max_uses ?? ''; f.per_user_limit.value = row?.per_user_limit ?? 1;
   f.starts_at.value = toLocalInput(row?.starts_at); f.ends_at.value = toLocalInput(row?.ends_at);
   f.active.checked = row ? Boolean(row.active) : true;
@@ -1193,7 +1193,7 @@ PROMO_FORM()?.addEventListener('submit', async e => {
 
   const f = e.currentTarget, msg = $('#promoMsg'), free = f.kind.value === 'free_product';
   const kind = f.kind.value;
-  const scope = free ? 'product' : f.scope.value;
+  const scope = free ? 'product' : (f.scope.value === 'product' ? 'product' : 'cart');
   const code = String(f.code.value || '').trim().toUpperCase();
   const title = String(f.title.value || '').trim() || code;
   const productId = free || scope === 'product' ? String(f.product_id.value || '') : '';

@@ -792,3 +792,22 @@ html body #topup .st-file b{border-radius:999px!important}
 @media (max-width:369px){html body header.nav .brand>span{display:none!important}}
 html body header.nav #topupBtn{position:relative!important;display:block!important}
 html body header.nav #topupBtn::before{position:absolute;inset:0;margin:auto;width:14px;height:14px}
+
+/* Admin forms: every field (text, number, select, date) shares one shape and height */
+html body #editor :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]),select){
+  height:48px!important;min-height:48px!important;box-sizing:border-box!important;padding:0 14px!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--text) 10%,transparent)!important;
+  background-color:var(--m-fill-2)!important;box-shadow:none!important;color:var(--text)!important;
+  font:inherit!important;font-size:15px!important;font-weight:600!important;line-height:normal!important;
+}
+html body #editor textarea{border-radius:14px!important;border:1px solid color-mix(in srgb,var(--text) 10%,transparent)!important;background:var(--m-fill-2)!important;padding:12px 14px!important}
+html body #editor select{appearance:none!important;-webkit-appearance:none!important;padding-right:38px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;background-position:right 13px center!important;background-size:16px!important}
+html body #editor :is(input,select,textarea):focus{outline:none!important;border-color:var(--m-tint-edge,var(--accent))!important;box-shadow:0 0 0 3px var(--m-tint,rgba(232,93,4,.18))!important}
+html body #editor input[type=datetime-local]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
+html body #editor .promo-editor{border-radius:var(--r-grp,18px)!important;background:var(--grp,var(--bg))!important;border:1px solid var(--grp-edge,var(--line))!important}
+html body #editor .promo-editor label:not(:has(input[type=checkbox])){display:grid;gap:8px;align-content:start}
+html body #editor .promo-editor label:has(input[type=checkbox]){display:flex!important;align-items:center;gap:10px;grid-column:1/-1}
+html body #editor .promo-editor input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:var(--accent)}
+html body #editor .promo-editor .btn{height:46px!important;border-radius:999px!important}
