@@ -756,7 +756,7 @@
     if (footerBrand) footerBrand.textContent = name;
     const footerDescription = $('.foot [data-i18n="footer_desc"]');
     if (footerDescription) footerDescription.textContent = tagline;
-    document.title = `${name} - Premium digital deals`;
+    document.title = `${name} — скидки на еду в Баку`;
     const supportUrl = `https://t.me/${support}`;
     const channelUrl = `https://t.me/${channel}`;
     $$('.social-links a').forEach(anchor => {
