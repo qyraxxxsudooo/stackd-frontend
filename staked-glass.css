@@ -811,3 +811,12 @@ html body #editor .promo-editor label:not(:has(input[type=checkbox])){display:gr
 html body #editor .promo-editor label:has(input[type=checkbox]){display:flex!important;align-items:center;gap:10px;grid-column:1/-1}
 html body #editor .promo-editor input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:var(--accent)}
 html body #editor .promo-editor .btn{height:46px!important;border-radius:999px!important}
+
+/* Cart: header, guide and footer stay put; only the item list scrolls, so lines never slide under the totals */
+html body #drawer[open]{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html body #drawer>header,html body #drawer>.stackd-purchase-guide,html body #drawer>footer{flex:none!important;position:relative!important;top:auto!important;bottom:auto!important}
+html body #drawer>#lines{flex:0 1 auto!important;min-height:112px;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0!important;
+  -webkit-mask-image:linear-gradient(#000 calc(100% - 18px),transparent);mask-image:linear-gradient(#000 calc(100% - 18px),transparent)}
+html body #drawer>#lines:empty{min-height:0}
+html body #drawer>footer{border-top:1px solid color-mix(in srgb,var(--text) 8%,transparent)!important;padding-top:14px!important}
+@media (max-height:640px){html body #drawer>.stackd-purchase-guide{display:none!important}}
